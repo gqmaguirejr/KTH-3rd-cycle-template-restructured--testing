@@ -1,0 +1,53 @@
+name: Bug Report
+description: Report a problem with the template
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please ensure you are using **LuaLaTeX**, as it is required for the template's logic to function.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected to happen.
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Overleaf
+        - Local TeX Live (Linux)
+        - Local TeX Live (Mac/MacTeX)
+        - Local TeX Live (Windows)
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: compiler
+    attributes:
+      label: Compiler
+      options:
+        - LuaLaTeX (Required for Lua functionality)
+        - Other (Build will likely fail)
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant LaTeX Logs
+      description: Paste error messages here.
+      render: text
+  - type: checkboxes
+    id: checkboxes
+    attributes:
+      label: Validation
+      options:
+        - label: I am using LuaLaTeX as the compiler.
+          required: true
+        - label: I have checked the Quick_Start_Guide.
+          required: true
+

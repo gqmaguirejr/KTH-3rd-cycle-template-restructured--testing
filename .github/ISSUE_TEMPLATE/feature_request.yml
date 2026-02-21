@@ -1,0 +1,47 @@
+name: Feature Request
+description: Suggest an idea or enhancement for the template
+title: "[Enhancement]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to propose new automation or features (e.g., DiVA/LADOK integration).
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Description of the enhancement
+      description: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: data-sources
+    attributes:
+      label: External Data Sources
+      description: What other source(s) or information are needed? (e.g., DiVA, ORCID, KTH API)
+      placeholder: e.g., "Requires a MODS (Metadata Object Description Schema) export of the student's DiVA publications."
+    validations:
+      required: true
+- type: textarea
+    id: api-details
+    attributes:
+      label: API Information
+      description: Is there a public/internal API? If so, provide documentation links or endpoints if known.
+      placeholder: |
+        e.g., "DiVA provides an export feed via:
+        https://kth.diva-portal.org/smash/export.jsf?format=mods&addFilename=true&aq=[[{\"personId\":\"u1d13i2c\"}]]&..."
+  - type: textarea
+    id: user-config
+    attributes:
+      label: User Configuration
+      description: How should a user configure their project to use this? (e.g., adding a specific marker in the examplethesis.tex file where the list of publications should be placed)
+      placeholder: e.g., "The user would need to provide their KTHID in the custom_configuration.tex file"
+  - type: checkboxes
+    id: research-check
+    attributes:
+      label: Technical Reality Check
+      options:
+        - label: I understand that LuaLaTeX's socket/http libraries might be required for live API calls.
+          required: true
+        - label: I have verified that this data is publicly accessible or accessible via KTH credentials.
+          required: true

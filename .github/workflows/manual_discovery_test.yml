@@ -1,0 +1,45 @@
+name: Manual DiVA Discovery Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-discovery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install bibtexparser thefuzz python-Levenshtein pymods requests pandas
+
+      - name: Run Discovery Script
+        run: python3 -u scripts/DiVA_discovery.py
+
+      - name: Debug Output
+        run: |
+          if [ -f "publications_map.json" ]; then
+            echo "--- CONTENT OF publications_map.json ---"
+            cat publications_map.json
+          else
+            echo "ERROR: File not found in workspace."
+          fi
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add publications_map.json
+          # Only commit if there are actually changes to avoid 128/non-zero exits
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update publications map"
+          git push
+
