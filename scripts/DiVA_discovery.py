@@ -21,16 +21,33 @@ DIVA_MODS_TEMP = '/tmp/diva_discovery_mods.xml'
 FUZZY_THRESHOLD = 90
 
 def get_kthid_from_config():
-    """Extracts KTHID from the LaTeX configuration file."""
+    """Extracts and validates KTHID from the LaTeX configuration file."""
+    placeholder_id = "u1XXXXXX"
+    fallback_id = "u1d13i2c"
+    
     try:
         with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-            content = f.read()
-            match = re.search(r'\\kthid\{([^}]+)\}', content)
-            if match:
-                return match.group(1)
+            for line in f:
+                # 1. Ignore commented lines and look for \kthid{...}
+                match = re.search(r'^\s*\\kthid\{([^}]+)\}', line)
+                if match:
+                    found_id = match.group(1).strip()
+                    
+                    # 2. Reject the placeholder u1XXXXXX
+                    if found_id == placeholder_id:
+                        print(f"Info: Found placeholder {placeholder_id}. Using fallback.")
+                        return fallback_id
+                    
+                    # 3. Optional: Validate format (starts with u)
+                    if not found_id.startswith('u'):
+                        print(f"Warning: Extracted ID '{found_id}' looks invalid. Using fallback.")
+                        return fallback_id
+                        
+                    return found_id
     except FileNotFoundError:
-        print(f"Warning: {CONFIG_FILE} not found. Falling back to test ID.")
-    return "u1d13i2c"
+        print(f"Warning: {CONFIG_FILE} not found. Using fallback ID.")
+    
+    return fallback_id
 
 def normalize_text(text):
     """Simple normalization for fuzzy matching."""
