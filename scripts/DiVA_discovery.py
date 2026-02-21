@@ -139,15 +139,29 @@ def sync_discovery():
             pub_map[diva_id]["year"] = year
             pub_map[diva_id]["pubtype"] = pub_type
 
-        # Cross-reference with .bib
-        norm_diva_title = normalize_text(main_title)
+# --- Robust Cross-referencing with .bib ---
         found_in_bib = False
+        diva_doi = normalize_text(pub_map[diva_id].get('doi', '')) # Ensure DOI is captured in discovery
+
         for entry in bib_entries:
-            bib_title = normalize_text(entry.get('title', ''))
-            if fuzz.ratio(norm_diva_title, bib_title) > FUZZY_THRESHOLD:
+            # 1. Primary Match: DOI
+            bib_doi = normalize_text(entry.get('doi', ''))
+            if diva_doi and bib_doi and (diva_doi == bib_doi):
+                found_in_bib = True
+            
+            # 2. Secondary Match: Title (if DOI fails)
+            if not found_in_bib:
+                # Strip LaTeX braces from BibTeX title: {New} -> New
+                bib_title_raw = entry.get('title', '').replace('{', '').replace('}', '')
+                norm_bib_title = normalize_text(bib_title_raw)
+                
+                # Check for direct inclusion (handles subtitles) or fuzzy similarity
+                if (norm_diva_title in norm_bib_title) or (fuzz.ratio(norm_diva_title, norm_bib_title) > FUZZY_THRESHOLD):
+                    found_in_bib = True
+
+            if found_in_bib:
                 pub_map[diva_id]["in_bib"] = True
                 pub_map[diva_id]["bib_key"] = entry['ID']
-                found_in_bib = True
                 break
         
         if not found_in_bib:
