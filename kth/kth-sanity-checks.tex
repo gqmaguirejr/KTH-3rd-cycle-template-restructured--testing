@@ -1,0 +1,369 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Experimental code for doing a sanity check - to see what default values are still in the document
+% these should have been replaced by the author.
+%
+
+\makeatletter
+% --- Expl3 Definitions for SDG Range Check ---
+\ExplSyntaxOn
+
+% Declare expl3 variables for the check process
+\int_new:N \l_kththesis_check_min_int      % Stores the minimum allowed value
+\int_new:N \l_kththesis_check_max_int      % Stores the maximum allowed value
+\int_new:N \l_kththesis_current_item_int   % Stores the current item from the list as an integer
+\seq_new:N \g_kththesis_invalid_sdgs_seq    % Stores items from the list that are out of range
+\bool_new:N \g_kththesis_all_sdgs_valid_bool % Flag to indicate if all items were within range
+
+
+% --- Main function to check SDG range ---
+% #1 = comma-separated list of SDGs (e.g., "1,9")
+% #2 = minimum allowed value (e.g., 1)
+% #3 = maximum allowed value (e.g., 17)
+\cs_new_protected:Npn \kththesis_check_sdg_range:nnn #1#2#3 {
+    %checking~"#1"~"#2"~"#3"\par
+    %\typeout{checking~#1:~Actual="#1",~Min=#2,~Max=#3} % Debugging: shows in .log file
+    % Set effective min/max values for comparison (min-1 and max+1)
+    % Note that we have to decrement the first and increment the last
+    % as the  \int_compare_p:nNn comparison relations are < and > -- rather than <= and >=
+    \int_set:Nn \l_kththesis_check_min_int {#2}
+    \int_decr:N \l_kththesis_check_min_int              % Becomes min-1
+    \int_set:Nn \l_kththesis_check_max_int {#3}
+    \int_incr:N \l_kththesis_check_max_int              % Becomes max+1
+    
+    % Clear results from previous runs of this function
+    \seq_gclear:N \g_kththesis_invalid_sdgs_seq
+    \bool_gset_true:N \g_kththesis_all_sdgs_valid_bool % Assume all items are valid until proven otherwise
+    \seq_set_split:Nne \l_tmpa_seq { , }  { #1 } % 'e' expansion to expand #1 before splitting
+    
+    %~value~is:~\seq_use:Nnnn \l_tmpa_seq { ~and~ } { ,~ } { ,~and~ } \par
+    % Iterate through each item in the sequence
+    \seq_map_variable:NNn \l_tmpa_seq \l_tmpa_tl {
+        % For robust error handling check if the input is not a number
+        % --- CRITICAL FIX: Check if the item is numeric first ---
+        \IfInteger{\l_tmpa_tl}
+        { % True: Item is numeric, proceed with comparison
+            %l_tmpa_tl~is:~\tl_use:N {\l_tmpa_tl}\par
+            \int_set:Nn \l_kththesis_current_item_int {\l_tmpa_tl}
+            % Debugging output for each item
+            %\typeout{ -- Checking~item: \tl_use:N \l_tmpa_tl\ (int: \int_use:N \l_kththesis_current_item_int)}
+            % Compare the current item with the min/max range
+            % \bool_lazy_and:nTF checks if (item > min-1) AND (item < max+1)
+            \bool_lazy_and:nnTF
+                { \int_compare_p:nNn { \l_kththesis_current_item_int } > { \l_kththesis_check_min_int } }
+                { \int_compare_p:nNn { \l_kththesis_current_item_int } < { \l_kththesis_check_max_int } }
+            { % True branch: Item is within range (do nothing, it's valid)
+                %\typeout{~~~~--~Item~is~within~range.}
+            }
+            { % False branch: Item is OUT of range
+                %\typeout{~~~~--~Item~is~OUT~of~range!}
+                \bool_gset_false:N \g_kththesis_all_sdgs_valid_bool % Mark the overall check as having invalid items
+                \seq_gput_right:Ne \g_kththesis_invalid_sdgs_seq {\l_tmpa_tl} % Add the _value_ of the invalid item to the sequence
+            }
+        }{
+        % False: Item is NOT numeric
+            %\typeout{ ~-~Checking~item:~\tl_use:N \l_tmpa_tl\ (non-numeric)}
+            \bool_gset_false:N \g_kththesis_all_sdgs_valid_bool % Mark overall check as invalid
+            \seq_gput_right:Ne \g_kththesis_invalid_sdgs_seq { \l_tmpa_tl } % Add non-numeric item to invalid list
+        }
+    }
+    
+}
+
+% --- Wrapper macro for easy calling from standard LaTeX mode ---
+% This macro is what you will use in your document.
+% #1 = The comma-separated list of SDGs (e.g., from \@SDGs)
+% #2 = Minimum allowed value
+% #3 = Maximum allowed value
+\newcommand{\checkSDGRange}[3]{
+    \ExplSyntaxOn % Activate expl3 syntax for the call to the expl3 function
+    \tl_if_empty:eTF {#1} {
+    Empty~list
+    }
+    {
+        % Call the expl3 core function to perform the check
+        \kththesis_check_sdg_range:nnn {#1}{#2}{#3}
+    
+        % Report results based on the flags set by the expl3 function
+        \bool_if:NTF \g_kththesis_all_sdgs_valid_bool
+        { % All items were valid
+            % The following informational message (if uncommented) will appear at the end of the PDF file
+            %All~SDGs~are~within~the~range~[#2-#3].
+        }
+        { % Some items were invalid
+            % The following informational message (if uncommented) will appear at the end of the PDF file
+            %The~following~SDGs~are~out~of~range~[#2-#3]:~\seq_use:Nn \g_kththesis_invalid_sdgs_seq {,~} .
+            \PackageWarning{kththesis}{The~following~SDGs~are~out~of~range~[#2-#3]:~\seq_use:Nn \g_kththesis_invalid_sdgs_seq {,~}.~Detected~at~end~of~document~}%
+        }
+    }
+    \ExplSyntaxOff % Deactivate expl3 syntax
+}
+
+\newcommand{\checkSDGs}[0]{
+\checkSDGRange{\@SDGs}{1}{17}
+}
+\ExplSyntaxOff % End of all expl3 definitions
+
+% --- Expl3 Definitions for National Subject Categories Check ---
+\ExplSyntaxOn
+
+% Declare expl3 variables for the check process
+\seq_new:N \g_kththesis_invalid_NSCs_seq    % Stores items from the list that are out of range
+\bool_new:N \g_kththesis_all_NSCs_valid_bool % Flag to indicate if all items were within range
+
+\seq_const_from_clist:Nn \c_kththesis_all_NSCs_seq { 1,101,10101,10102,10103,10104,10105,10106,10199,102,10201,10202,10203,10204,10205,10206,10207,10208,10210,10211,10212,10213,10214,10299,103,10301,10302,10303,10304,10305,10307,10308,10399,104,10401,10402,10403,10404,10405,10406,10407,10408,10499,105,10501,10502,10503,10504,10505,10506,10507,10508,10509,10510,10599,106,10601,10604,10605,10606,10607,10608,10609,10610,10611,10612,10613,10614,10615,10616,10699,107,10799,2,201,20101,20102,20103,20104,20105,20106,20107,20109,20110,20199,202,20201,20202,20203,20204,20205,20206,20207,20208,20209,20299,203,20301,20302,20304,20305,20306,20307,20309,20310,20399,204,20402,20403,20405,20406,20407,20499,205,20501,20502,20503,20504,20505,20506,20599,206,20601,20602,20603,20604,20605,20606,20699,207,20702,20703,20704,20705,20707,20799,208,20801,20802,20803,20899,209,20901,20902,20903,20904,20905,20906,20909,20999,210,21002,21003,21004,21005,21099,211,21199,3,301,30101,30102,30103,30104,30105,30106,30107,30108,30109,30110,30111,30112,30113,30114,30115,30116,30117,30118,30199,302,30201,30202,30203,30204,30205,30206,30207,30208,30209,30211,30212,30213,30215,30216,30217,30218,30219,30220,30221,30222,30223,30224,30225,30226,30227,30228,30229,30230,30299,303,30301,30303,30304,30305,30306,30307,30308,30309,30310,30311,30312,30313,30314,30399,304,30401,30402,30403,30499,305,30501,30502,30599,4,401,40101,40102,40103,40104,40105,40106,40107,402,40201,403,40301,40302,40303,40399,404,40401,40402,405,40502,40504,40505,40506,40507,40599,5,501,50101,50102,502,50201,50202,50203,503,50301,50302,50304,50399,504,50401,50402,50404,50405,50406,505,50501,50503,506,50601,50604,507,50701,50702,50703,508,50801,50804,50805,509,50902,50903,50904,50905,50906,50907,50908,50909,50910,50911,50912,50999,6,601,60101,60102,60103,60104,60105,602,60201,60202,60203,60204,60205,60206,60207,603,60301,60302,60303,60304,60306,604,60407,60408,60409,60410,60411,60412,60413,60414,60415,60416,60417,60418,60419,605,60502,60503,60504,60599 }
+
+
+% --- Main function to check SDG range ---
+% #1 = comma-separated list of SDGs (e.g., "1,9")
+\cs_new_protected:Npn \kththesis_check_NSCs:n #1 {
+    %checking~"#1"\par
+    %\typeout{checking~#1:~Actual="#1"} % Debugging: shows in .log file
+
+    % Clear results from previous runs of this function
+    \seq_gclear:N \g_kththesis_invalid_NSCs_seq
+    \bool_gset_true:N \g_kththesis_all_NSCs_valid_bool % Assume all items are valid until proven otherwise
+    \seq_set_split:Nne \l_tmpa_seq { , }  { #1 } % 'e' expansion to expand #1 before splitting
+    
+    %~value~is:~\seq_use:Nnnn \l_tmpa_seq { ~and~ } { ,~ } { ,~and~ } \par
+    % Iterate through each item in the sequence
+    \seq_map_variable:NNn \l_tmpa_seq \l_tmpa_tl {
+        % For robust error handling check if the input is not a number
+        % --- CRITICAL FIX: Check if the item is numeric first ---
+        \IfInteger{\l_tmpa_tl}
+        { % True: Item is numeric, proceed with comparison
+            % Compare the current item with the valid values
+            \seq_if_in:NVTF \c_kththesis_all_NSCs_seq {\l_tmpa_tl}
+            { % True branch: Item is within range (do nothing, it's valid)
+                %\typeout{~~~~--~Item~is~valid.}
+            }
+            { % False branch: Item is invalid
+                %\typeout{~~~~--~Item~is~invalid!}
+                \bool_gset_false:N \g_kththesis_all_NSCs_valid_bool % Mark the overall check as having invalid items
+                \seq_gput_right:Ne \g_kththesis_invalid_NSCs_seq {\l_tmpa_tl} % Add the _value_ of the invalid item to the sequence
+            }
+        }{
+        % False: Item is NOT numeric
+            %\typeout{ ~-~Checking~item:~\tl_use:N \l_tmpa_tl\ (non-numeric)}
+            \bool_gset_false:N \g_kththesis_all_NSCs_valid_bool % Mark overall check as invalid
+            \seq_gput_right:Ne \g_kththesis_invalid_NSCs_seq { \l_tmpa_tl } % Add non-numeric item to invalid list
+        }
+    }
+    
+}
+
+% --- Wrapper macro for easy calling from standard LaTeX mode ---
+% This macro is what you will use in your document.
+% #1 = The comma-separated list of SDGs (e.g., from \@SDGs)
+\newcommand{\checkNSCs}[1]{
+    \ExplSyntaxOn % Activate expl3 syntax for the call to the expl3 function
+    \tl_if_empty:eTF {#1} {
+    Empty~list
+    }
+    {
+        % Call the expl3 core function to perform the check
+        \kththesis_check_NSCs:n {#1}
+    
+        % Report results based on the flags set by the expl3 function
+        \bool_if:NTF \g_kththesis_all_NSCs_valid_bool
+        { % All items were valid
+            %All~national~subject~categories~are~valid.
+        }
+        { % Some items were invalid
+            %The~following~national~subject~categories~are~invalid:~\seq_use:Nn \g_kththesis_invalid_NSCs_seq {,~} .
+            \PackageWarning{kththesis}{The~following~national~subject~categories~are~invalid:~\seq_use:Nn \g_kththesis_invalid_NSCs_seq {,~}.~Detected~at~end~of~document~}%
+        }
+    }
+    \ExplSyntaxOff % Deactivate expl3 syntax
+}
+
+\newcommand{\checknationalsubjectcategories}[0]{
+\checkNSCs{\@nationalsubjectcategories}
+}
+\ExplSyntaxOff % End of all expl3 definitions
+
+% --- Expl3 Definitions for Sanity Check ---
+% All expl3 commands and variable declarations must be within \ExplSyntaxOn / \ExplSyntaxOff.
+\ExplSyntaxOn
+
+% --- Global Counters and Sequence for Sanity Check Results ---
+\int_new:N \g_kth@defaultCount_int       % Counts values that are still at default
+\int_new:N \g_kth@totalCheckedCount_int   % Counts total values checked
+\seq_new:N \g_kth@unchangedValues_seq     % Stores names of values that are still at default
+
+% --- Helper Macro to Compare a Value with its Default (expl3 syntax) ---
+% #1 = A descriptive name for the value (e.g., "Author Name")
+% #2 = The actual stored value (will be expanded via 'e' type)
+% #3 = The default value (will be expanded via 'e' type)
+\cs_new_protected:Npn \kth@check@value:nnn #1#2#3 {
+    %\typeout{Checking #1: Actual="#2", Default="#3"} % Debugging: shows in .log file
+    \int_gincr:N \g_kth@totalCheckedCount_int % Increment global total count
+    \str_if_eq:eeTF {#2}{#3} % Robust string comparison (expands both arguments 'e')
+    { % True branch: Value is still at default
+        %\typeout{ -- Still at default value} % Debugging
+        \int_gincr:N \g_kth@defaultCount_int % Increment global default count
+        \seq_gput_right:Nn \g_kth@unchangedValues_seq {#1} % Add descriptive name to global sequence
+    }
+    { % False branch: Value has been changed
+        %\typeout{ -- Value changed (OK)} % Debugging
+        % Do nothing, as per requirement "warning message per unchanged value"
+    }
+}
+ 
+% --- The Main Sanity Check Macro (expl3 version) ---
+% This macro runs the checks and issues warnings.
+\cs_new_protected:Npn \kth@perform@sanity@check_expl3: {
+    % Reset counters and sequence for each run
+    \int_gzero:N \g_kth@defaultCount_int
+    \int_gzero:N \g_kth@totalCheckedCount_int
+    \seq_gclear:N \g_kth@unchangedValues_seq
+
+    % --- Call expl3 helper for each item to check ---
+    % Pass the content of the standard LaTeX macros directly.
+
+    % Added checks
+    \kth@check@value:nnn {programcode}{\@programcode}{KTHXXX}
+    \kth@check@value:nnn {degreeName}{\@degreeName}{XXX}
+    \ifinswedish
+    \kth@check@value:nnn {subjectArea}{\@subjectArea}{*****Okänt~ämneområde*****}
+    \else
+    \kth@check@value:nnn {subjectArea}{\@subjectArea}{*****Unknown~subject~area*****}
+    \fi
+    
+    % title related
+    \kth@check@value:nnn {title}{\@title}{This~is~the~title~in~the~language~of~the~thesis}
+    \kth@check@value:nnn {subtitle}{\@subtitle}{A~subtitle~in~the~language~of~the~thesis}
+    \ifinswedish
+    \kth@check@value:nnn {alttitle}{\@alttitle}{This is the English translation of the title}
+    \kth@check@value:nnn {altsubtitle}{\@altsubtitle}{This is the English translation of the subtitle}
+    \else
+    \kth@check@value:nnn {alttitle}{\@alttitle}{Detta~är~den~svenska~översättningen~av~titeln}
+    \kth@check@value:nnn {altsubtitle}{\@altsubtitle}{Detta~är~den~svenska~översättningen~av~undertiteln}
+    \fi
+
+    % --- Author Information ---
+    \kth@check@value:nnn {authorsLastname}{\@authorsLastname}{Student}
+    \kth@check@value:nnn {authorsFirstname}{\@authorsFirstname}{Fake~A.}
+    \kth@check@value:nnn {email}{\@email}{XXXXXXXXXXXX@kth.se}
+    \kth@check@value:nnn {kthid}{\@kthid}{u1XXXXXX}
+    \kth@check@value:nnn {authorsSchool}{\@authorsSchool}{\schoolAcronym{XXX}}
+    \kth@check@value:nnn {orcid}{\@orcid}{xxxxx-xxxx-xxxx-xxxx}
+
+    \tl_if_empty:NTF \@hostcompany
+    { % nothing to do - there is no host company
+    }
+    { % otherwise, check details of host company
+    \kth@check@value:nnn {hostcompany}{\@hostcompany}{Företaget~AB}
+    }
+
+    \tl_if_empty:NTF \@hostorganization
+    { % nothing to do - there is no host organization
+    }
+    { % otherwise, check details of host organization
+    \kth@check@value:nnn {hostorganization}{\@hostorganization}{XXXNationalLab}
+    }
+
+    
+    % If there is a second author - add them here:
+    \tl_if_empty:NTF \@secondAuthorsLastname
+    { % nothing to do - there is no second author
+    }
+    { % otherwise, check details of second author
+    \kth@check@value:nnn {secondAuthorsLastname}{\@secondAuthorsLastname}{Student}
+    \kth@check@value:nnn {secondAuthorsFirstname}{\@secondAuthorsFirstname}{Fake~B.}
+    \kth@check@value:nnn {secondemail}{\@secondemail}{XXXXXXXXXXXX@kth.se}
+    \kth@check@value:nnn {secondkthid}{\@secondkthid}{u1XXXXXX}
+    \kth@check@value:nnn {secondAuthorsSchool}{\@secondAuthorsSchool}{\schoolAcronym{XXX}}
+    \kth@check@value:nnn {secondorcid}{\@secondorcid}{xxxxx-xxxx-xxxx-xxxx}
+    }
+
+    % --- Supervisor Information ---
+    \tl_if_empty:NTF \@supervisorAsLastname
+    { % nothing to do - there is no second supervisor
+    }
+    { % otherwise, check details of first supervisor
+    \kth@check@value:nnn {supervisorAsLastname}{\@supervisorAsLastname}{Supervisor}
+    \kth@check@value:nnn {supervisorAsFirstname}{\@supervisorAsFirstname}{A.~Busy}
+    \kth@check@value:nnn {supervisorAsEmail}{\@supervisorAsEmail}{XXXXXXXXXXXX@kth.se}
+    \kth@check@value:nnn {supervisorAsKTHID}{\@supervisorAsKTHID}{u1XXXXXX}
+    \kth@check@value:nnn {supervisorAsSchool}{\@supervisorAsSchool}{\schoolAcronym{XXX}}
+    \kth@check@value:nnn {supervisorAsDepartment}{\@supervisorAsDepartment}{XXX}
+    }
+    
+    % If there is a second supervisor add them here:
+    \tl_if_empty:NTF \@supervisorBsLastname
+    { % nothing to do - there is no second supervisor
+    }
+    { % otherwise, check details of second supervisor
+    \kth@check@value:nnn {supervisorBsLastname}{\@supervisorBsLastname}{Supervisor}
+    \kth@check@value:nnn {supervisorBsFirstname}{\@supervisorBsFirstname}{Another~Busy}
+    \kth@check@value:nnn {supervisorBsEmail}{\@supervisorBsEmail}{XXXXXXXXXXXX@kth.se}
+    \kth@check@value:nnn {supervisorBsKTHID}{\@supervisorBsKTHID}{u1XXXXXX}
+    \kth@check@value:nnn {supervisorBsSchool}{\@supervisorBsSchool}{\schoolAcronym{XXX}}
+    \kth@check@value:nnn {supervisorBsDepartment}{\@supervisorBsDepartment}{XXX}
+    }
+
+    % If there is a third supervisor add them here:
+    \tl_if_empty:NTF \@supervisorCsLastname
+    { % nothing to do - there is no third supervisor
+    }
+    { % otherwise, check details of third supervisor
+    \kth@check@value:nnn {supervisorCsLastname}{\@supervisorCsLastname}{Supervisor}
+    \kth@check@value:nnn {supervisorCsFirstname}{\@supervisorCsFirstname}{Third~Busy}
+    \kth@check@value:nnn {supervisorCsEmail}{\@supervisorCsEmail}{XXXXXXXXXXXX@tu.va}
+    \kth@check@value:nnn {supervisorCsOrganization}{\@supervisorCsOrganization}{Timbuktu~University,~Department~of~Pseudoscience}
+    }
+
+    \kth@check@value:nnn {nationalsubjectcategories}{\@nationalsubjectcategories}{ddddd,~ddddd}
+    \kth@check@value:nnn {SDGs}{\@SDGs}{XXX,~XXX}
+
+    \kth@check@value:nnn {EnglishKeywords}{\@EnglishKeywords}{KeywordA,~KeywordB,~KeywordC}
+    \kth@check@value:nnn {SwedishKeywords}{\@SwedishKeywords}{NyckelordA,~NyckelordB,~NyckelordC}
+
+    %% Should one add checks for ISBN and TRITA series and numbers?
+    
+    % --- Issue Warnings based on results (using expl3 variables and sequence) ---
+    \int_compare:nNnTF { \g_kth@totalCheckedCount_int } = { 0 }
+    { % No values were checked (e.g., if list of checks is empty)
+        % No warning needed
+    }
+    { % Values were checked
+        \int_compare:nNnTF { \g_kth@defaultCount_int } = { \g_kth@totalCheckedCount_int } % All values are at default
+        { % All values are at default
+            \PackageWarning{kththesis}{The~state~of~the~project~is~the~default~configuration,~please~customize~it~for~yourself.~Detected~at~end~of~document~}
+        }
+        { % Some values are default, some are changed
+            \int_compare:nNnTF { \g_kth@defaultCount_int } > { 0 } % Only if there are any unchanged values
+            { % There are some unchanged values. Use \seq_use:Nnnn for formatted list.
+              % Nnnn means it uses the sequence, then a separator for the last two items,
+              % a separator for all items, and a separator for the last two items in a list of 3+.
+              % Here: {item1, item2 and item3}
+                \PackageWarning{kththesis}{Some~values~are~still~set~at~their~default~value.~Please~review~the~following:~\seq_use:Nnnn \g_kth@unchangedValues_seq {~and~}{,~}{,~and~}.~Detected~at~end~of~document~}%
+            }
+            { % No unchanged values left (all changed)
+                % No action
+            }
+        }
+    }
+    \@ifpackagelater{expl3}{2024-03-14}{%
+        \checkSDGs{}
+    }{%
+        % need the expl3 package as of TeX Live 2024 for
+        % \tl_if_empty:eTF and \seq_set_split:Nne
+        % USed when checking SDGs
+    }
+    \checknationalsubjectcategories{}
+}
+\ExplSyntaxOff % End of expl3 definitions
+
+% --- Standard LaTeX wrapper macro for calling the expl3 helper ---
+% This makes the expl3-based sanity check callable from standard LaTeX mode.
+\ExplSyntaxOn
+\NewDocumentCommand{\kthPerformSanityCheck}{}
+{%
+    \kth@perform@sanity@check_expl3: % Call the expl3 helper (note the colon)
+}
+\ExplSyntaxOff % Deactivate expl3 syntax
+\makeatother
+
+
+\AtEndDocument{}

@@ -1,0 +1,2137 @@
+\documentclass[12pt, twoside]{article}
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+\newif\ifxeorlua
+\ifxetex\xeorluatrue\fi
+\ifluatex\xeorluatrue\fi
+
+\RequirePackage{silence}
+\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
+\WarningFilter{latexfont}{Font shape}
+
+
+\newif\ifinswedish
+\inswedishfalse
+
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+% include a variety of packages that are useful
+\input{lib/includes}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+
+\ifinswedish
+    \usepackage[english, main=swedish, bidi=basic]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+\fi
+
+
+% Set up to use biblatex
+\newif\ifbiblatex
+\biblatextrue
+
+\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\section*{#1}%   skip \centering 
+}
+  
+    \addbibresource{references.bib}    
+\input{kth/kthcolors}
+
+
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+
+\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+%% In overleaf, if this file is in a folder and not the root
+%% using \makeglossaries will not work, as the Overleaf latexmk
+%% will not run the program to take the output.acn file and make the output.acr file
+%\makeglossaries
+% However, you can get TeX to do the work with the following:
+\makenoidxglossaries
+% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
+%% Potentially, one could set up a latexmkrc file in the folder
+
+\input{lib/acronyms}                %load the acronyms file
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+ 
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \XeLaTeX and \LuaLaTeX logos
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+
+    \babelfont{rm}{TeX Gyre Termes}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+  
+    %\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+    \babelfont{sf}{TeX Gyre Heros}
+    %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+    \babelfont{tt}{TeX Gyre Cursor}
+ \begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+ %  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+ \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=normal]
+  %%\setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+
+  %    Define a new math alphabet mapping that uses
+  %    the font's Stylistic Set 1 for the \mathcal range.
+  \setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
+
+    % To access the Stylistic Set 1 <ss01> such as ℋ
+    \newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+    % use english as a fallback when in other languages
+    \babelprovide[import, onchar=ids fonts]{english}
+
+    
+  % for new KTH cover
+  % Load the Figtree font as it is used for the new KTH graphical profile
+  % 
+
+    \newfontfamily{\FigtreeFont}[Ligatures=TeX,
+        Path=../Figtree/static/,
+        Extension = .ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        BoldItalicFont=*-BoldItalic,
+        ItalicFont=*-Italic,
+        FontFace={l}{n}{*-Light},
+        FontFace={l}{it}{*-LightItalic},
+        FontFace={md}{n}{*-Medium},
+        FontFace={md}{it}{*-MediumItalic},
+        FontFace={sb}{n}{*-Semibold},
+        FontFace={sb}{it}{*-SemiBoldItalic},
+        %FontFace={k}{n}{*-Black},
+        %FontFace={k}{it}{*-BlackItalic},
+        %FontFace={eb}{n}{Font=*-ExtraBold},
+        %FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+        ]{Figtree}
+
+
+\newfontfamily\pageNumberFont{Figtree} %% set the font to use for page numbering
+
+\newfontfamily{\NotoEmojiFont}[Ligatures=TeX,
+    Path=../Noto_Emoji/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    %FontFace={l}{n}{*-Light.ttf},
+    FontFace={md}{n}{*-Medium},
+    FontFace={sb}{n}{*-SemiBold},
+    ]{NotoEmoji}
+
+   % To set the abstract headings in Figtree we redefine the abstravt environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Polyglossia or Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the sans serif font.
+   % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
+
+      \babelprovide[import, onchar=ids fonts]{greek}
+      \babelprovide[import, onchar=ids fonts]{russian}
+      \babelprovide[import, onchar=ids fonts]{vietnamese}
+      \babelfont[greek. russian, vietnamese]{rm}{Noto Serif}
+      \babelfont[greek. russian, vietnamese]{sf}{Noto Sans}
+      \babelfont[greek. russian, vietnamese]{tt}{Noto Mono}
+
+  
+    \babelprovide[import, onchar=ids fonts]{hindi}
+    \babelfont[hindi]{rm}{Noto Serif Devanagari}
+    \babelfont[hindi]{sf}{Noto Sans Devanagari}
+    \babelfont[hindi]{tt}{Noto Sans Devanagari} % Noto Mono does not have the glyphs
+
+    %\babelprovide[import, onchar=ids fonts]{russian}
+    %\babelfont[russian]{rm}{Noto Serif}
+    %\babelfont[russian]{sf}{Noto Sans}
+    %\babelfont[russian]{tt}{Noto Mono}
+
+    \babelprovide[import, onchar=ids fonts]{chinese-simplified}
+    \babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+    \babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+    \babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+\begin{comment}  
+    \babelfont[chinese-traditional]{rm}{Noto Serif CJK TC}
+    \babelfont[chinese-traditional]{sf}{Noto Sans CJK TC}
+    \babelfont[chinese-traditional]{tt}{Noto Sans Mono CJK TC}
+\end{comment}
+
+    \babelprovide[import, onchar=ids fonts]{japanese}
+    \babelfont[japanese]{rm}{Noto Serif CJK JP}
+    \babelfont[japanese]{sf}{Noto Sans CJK JP}
+    \babelfont[japanese]{tt}{Noto Sans Mono CJK JP}
+  
+  % If you are going to use Arabic
+
+    \babelprovide[import, onchar=ids fonts]{arabic}
+    \babelfont[arabic, centralkurdish]{rm}{Noto Naskh Arabic}
+    \babelfont[arabic, centralkurdish]{sf}{Noto Sans Arabic}
+    \babelfont[arabic, centralkurdish]{tt}{Noto Sans Arabic}
+    % If one really needs a monospaced font, one might try Kawkab Mono
+    % However, it seems that it is a work in progress - see https://makkuk.com/kawkab-mono/ and https://github.com/aiaf/kawkab-mono/tree/master
+
+    \babelprovide[import, onchar=ids fonts]{centralkurdish}
+    %\babelfont[centralkurdish]{rm}{Noto Naskh Arabic}
+    %\babelfont[centralkurdish]{sf}{Noto Sans Arabic}
+    %\babelfont[centralkurdish]{tt}{Noto Sans Arabic}
+
+      
+  % If you are going to use Hebrew
+    \babelprovide[import, onchar=ids fonts]{hebrew}
+    \babelfont[hebrew]{rm}{Noto Serif Hebrew}
+    \babelfont[hebrew]{sf}{Noto Sans Hebrew}
+    \babelfont[hebrew]{tt}{Noto Sans Hebrew}
+  
+    % The Overleaf TeX Live includes these fonts, so there is little you have to do!
+    % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
+    %
+\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
+    ]{Noto Sans Mono CJK JP}
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSans-Regular,
+    BoldFont = NotoSans-Bold,
+    ItalicFont = NotoSans-Italic,
+    BoldItalicFont = NotoSans-BoldItalic
+    ]{NotoSansCustomA}
+     
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSerif-Regular,
+    BoldFont = NotoSerif-Bold,
+    ItalicFont = NotoSerif-Italic,
+    BoldItalicFont = NotoSerif-BoldItalic
+    ]{NotoSerifCustomA}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,
+    ]{DejaVu Sans}
+
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\pageNumberFont\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\pageNumberFont\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\pageNumberFont\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{%
+\markboth{#1}{}}
+
+
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+
+
+\lstdefinestyle{latexExampleForAuthors}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    extendedchars=true,
+    inputencoding=utf8,
+    escapechar={|},
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode,
+      nationalsubjectcategories, todo, ifbiblatex, subsection}
+}
+
+
+\lstdefinestyle{latexExample}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    tabsize=2,
+    columns=flexible,
+}
+\lstset{style=latexExample}
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+% define the visible space character
+\makeatletter
+\def\lst@visiblespace{\texttt{^^^^2423}}
+\makeatother
+
+\usepackage{luacode}
+% --- LUA BACKEND ---
+\begin{luacode*}
+-- Record start time
+compilation_start_time = os.clock()
+
+-- Function for logging an event with a timestamp
+function log_event(message)
+  local current_time = os.clock()
+  local elapsed = current_time - compilation_start_time
+  local log_message = string.format("[+%.3fs] %s", elapsed, message)
+  tex.sprint("\\wlog{" .. log_message .. "}")
+end
+\end{luacode*}
+
+% --- LATEX FRONTEND ---
+% Command for explicit, manual logging
+\newcommand{\ReportTimeStamp}[1]{\directlua{log_event("#1")}}
+
+% Use the modern, built-in hook to log a message for each page
+\AddToHook{shipout/before}{\ReportTimeStamp{Shipping out page \thepage}}
+
+\title{Notes on 3rd cycle version of the template}
+
+\author{Gerald Q. Maguire Jr.}
+\date{July 2025}
+
+\begin{document}
+\ReportTimeStamp{Beginning of Document}
+\glsresetall[]
+\maketitle
+\fancypagestyle{empty}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+This document describes the third-cycle version of the thesis template I have developed for use at \gls{KTH}. This version was developed based on an examination of the thesis template ``\foreignlanguage{swedish}{Avhandlingsmall Word}'' from
+\url{https://www.kth.se/student/studier/examensarbete/avhandlingarochexamensarbeten/mall-for-avhandling-1.458236} [hereafter referred to as the AW-template].
+My new template is designed to overcome many of what I view as deficiencies of the AW-template\footnote{Note that my referring to them as deficiencies is my own personal view of certain features (or lack thereof) of the AW-template and should \textbf{not} be taken as \textit{personal criticism of those who were involved in the creation of the AW-template}, but rather should be viewed as constructive criticism that hopefully can be used to improve the AW-template or other similar efforts.}.
+\markboth{Notes on 3rd cycle version of the template}{}
+\cleardoublepage
+% Include Table of Contents (TOC) ---
+\fancypagestyle{plain}{}
+\renewcommand{\sectionmark}[1]{ \markboth{#1}{}}
+\tableofcontents
+\markboth{\contentsname}{}
+\cleardoublepage
+\section{Deficiencies}
+I believe that these deficiencies include (but are \textit{not} limited to) the following:
+\begin{itemize}[label=\color{red}\ding{56}]
+  \item The AW-template lacks a cover or a title page - so the reader will \textbf{not} know the title of this document from its contents.
+  
+\item There is no backside of the title page - so the student cannot easily specify a copyright or choose to use one of the Creative Commons licenses\footnote{Interestingly, KI requires that the thesis is published
+electronically in KI Open Archive under a Creative Commons license, for example CC-BY9. - see  §7.2.8 Public notification – "nailing" on page 23 of \textit{Rules for doctoral education at Karolinska Institutet}, \url{https://staff.ki.se/media/1742/download} and \textit{Policy for open publication at Karolinska Institutet} \url{https://staff.ki.se/research-support/policy-for-open-publication-at-karolinska-institutet}} nor specify the International Standard Book Number (ISBN) and TRITA numbers.
+
+\item The AW-template does not address the question of abstracts in languages other than English and Swedish. There is no reason to limit the thesis to having abstracts in only Swedish and English. As can be seen in \gls{DiVA} there are a variety of languages used for abstracts in addition to English and Swedish\footnote{In DiVA there are abstracts in the following language codes: alb, ara, cat, chi, dan, dut, eng, fin, fre, ger, gre, heb, hin, hun, ice, ita, jpn, kur, lat, lav, nor, pol, por, rum, rus, scc, slo, spa, swa, swe, tur, ukr, und, and vie. Additionally, there are keywords in the following language codes: ara, cat, chi, dut, eng, fin, fre, ger, gre, hun, ice, ita, lat, lav, nor, per, pol, por, rum, rus, scc, slo, spa, swa, swe, tur, and ukr.}{}.
+
+\item The choice of the font used for Heading 1 on the "Abstract" page is Figtree Medium 24 pt. Unfortunately, Figtree does not support Greek - characters, so a student would not be able to have "{\NotoSansFont Περίληψη}" to indicate an abstract in the Greek language. There are similar problems for other languages that use characters that are not included in Figtree. Note that this same problem occurs when using Figtree in the other levels of headings and the title and subtitle (if there were to be a cover or title page).
+\end{itemize}
+\clearpage
+\begin{itemize}[resume*, label=\color{red}\ding{56}]
+\item The abstract pages (and other preface pages) lack a page number, which would generally be a lowercase Roman numeral, i.e., i, ii, iii, iv, etc.
+
+\item There seems to be nothing done to make it easy to mechanically collect the abstracts for input to DiVA, the National Subject Category information, the UN's Sustainable Development Goals (SDGs) information, or other data that is needed for the DiVA entry for input to DiVA. This other data includes information about the author(s) and supervisors.
+
+\item The acknowledgments page seems to be missing the so-called ``acknowledgments signature'' with the place, date, and author's name.
+
+\item I would have expected the Table of Contents \textit{before} the List of Figures; List of Tables, Listings, Acronyms and Abbreviations; List of Symbols Used (aka Nomenclature); and List of Publications. Note that some of these pages (while optional) are missing from the AW-template.
+
+\item The ``List of Publications'' page in the AW-template seems to only consider peer-reviewed articles and scientific papers, and seems to ignore patents, patent applications, data sets, and other material that may have previously been published and be included as part of this thesis.
+
+\item The ``List of Publications'' page says that the titles of the publications are to be set in Figtree; however, this may not be possible as Figtree lacks Greek characters, math symbols, etc., that may appear in the titles.
+
+\item There is a similar problem with the Figtree font for the ``List of
+Abbreviations''.
+
+\item The examples of figures show figures that lack sufficient contrast to be clearly readable and represent poor visual presentations of data (for example, the figure is missing labels for the axes, labels above the bars, scale, etc.).
+
+\item The examples of tables show the use of numeric values set in Georgia Bold - which is \textbf{not} a fixed-width font, so numeric values will not nicely align vertically, making it more difficult for the reader to compare the values. Additionally, using the percentage symbol following each number when the row heading says ``Percentage'' is both redundant and confusing.
+\end{itemize}
+\clearpage
+\begin{itemize}[resume*, label=\color{red}\ding{56}]
+\item The footnote shown on the ``Results'' page shows the use of numeric footnotes -- this is generally a very poor choice in scientific and engineering theses as these numeric superscripts can be confused with exponents, such as $10^{2}$ or \qty{e4} and 1\ m\textsuperscript{3} or \qty{1}{\metre\squared}.  It is much better to use symbols (such as dagger, double dagger, etc.) and restart the symbols on each page.
+
+\item The ``Conclusions'' chapter seems to be missing a subheading that addresses future work. It probably should also have a subheading of ``Reflections on Ethical and Sustainability Issues'' -- to be in keeping with the aim to identify these issues and clarify which were actually thought about. [In some cases, this is done earlier in the thesis -- but should be addressed somewhere.] \textbf{NB} DiVA includes fields for listing which UN SDG goals a thesis contributes to.
+
+\item The format of the references (APA) shown is quite uncommon in theses outside of psychology and medicine -- it will also make it very hard to find a given reference among possibly hundreds of cited references. [see, for example,
+\url{https://urn.kb.se/resolve?urn=urn%3Anbn%3Ase%3Akth%3Adiva-355029}]
+Moreover, by not encouraging the use of ISBNs, DOIs, URLs, etc. in the references (when they are relevant) makes the reader's job much harder when they want to access the actual reference. This also makes it much harder for tools to extract references and use them when reference counting.
+
+\item  The example of a ``Points of perspective'' chapter seems very odd and would be very unusual in a technical thesis, but is found in the description of a compilation thesis at Karolinska Institutet (KI) (see \url{https://staff.ki.se/doctoral-education/time-to-defend-your-thesis/content-of-the-thesis}).
+
+\item The AW-template does not give an example of how to include and number the appendices.
+
+\item The AW-template provides no actual guidance on how to add the tabbed pages before each of the included publications (that, in some cases, must include specific citations in order to satisfy the copyright holder's required statement when the document is republished in the thesis).
+\end{itemize}
+\clearpage
+\begin{itemize}[resume*, label=\color{red}\ding{56}]
+\item While the AW-template shows how one can include English and Swedish keywords, there is a need to support titles (and subtitles) in at least English and Swedish\footnote{In the case of my \LaTeX\ template, I have used the ``subject'' PDF document property to show the alternative title (for example, the Swedish title if the document's title is in English). In this way, when you open a document, you can quickly see in the document's properties the English and Swedish titles.}.
+\end{itemize}
+
+The above are my personal comments based on my looking at the AW-template in more detail on 2025-04-04 and 2025-05-23. I had given some comments earlier via e-mail and in meetings of the \foreignlanguage{swedish}{språkkommittén}. The aim of my comments is to be constructive. Additionally, I wanted to be able to translate the \gls{DOCX} file into a \LaTeX\ template. Moreover, I hope that my template addresses the above deficiencies and will better support the needs of the author(s), supervisors, and different readers (and other users).
+
+% Extend the XML style
+\lstdefinestyle{OOXML}{
+    language=XML,
+    columns=flexible,
+    breaklines=true,
+    showspaces=false,                       % Don't make spaces visible
+    showtabs=false,                         % Don't make tabs visible
+    breakatwhitespace=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+    basicstyle=\ttfamily\small,
+    columns=fixed,
+    extendedchars=true,
+    inputencoding=utf8,
+    escapechar=£,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+    basicstyle=\ttfamily\color{blue}\bfseries\small,
+    morestring=[s][\color{black}]{"}{"},
+    morestring=[s][\color{black}]{>}{<},
+    morestring=[s]{>}{<},
+    morecomment=[s]{<?}{?>},
+    stringstyle=\color{black}\ttfamily,
+    identifierstyle=\color{blue},
+    keywordstyle=\color{red}\bfseries,
+    morekeywords={w:pgSz, w:pgMar},
+}
+
+\section{Deeper dive into the AW-template}
+\label{sec:cycle3DeepDive}
+To get more information about the details of the AW-template, I copied the \gls{DOCX} file to a ZIP file and examined the \gls{XML} files.
+\gls{DOCX} files, as generated with Microsoft Office, utilize \gls{OOXML}\,\cite{ISOIEC_29500_1:2016}. When reading the \gls{OOXML} files, one needs to understand some details of this format,
+
+\subsection{Page size and some units used in OOXML}
+The \texttt{document.xml} file says that the page size is:
+\begin{lstlisting}[style=OOXML]
+<w:pgSz w:w="11907" w:h="16840" w:code="9"/>
+\end{lstlisting}
+
+The page size is specified in twentieth of a point (\ie dxa), thus this
+corresponds to \qty{210.02625}{\milli\metre} $\times$ \qty{297.038889}{\milli\metre} or 595.35 PostScript points $\times$ 842 PostScript points - \ie an ISO 216 A4 page (this also seems to be the meaning of w:code=9). The dxa unit is used to specify page dimensions, margins, tabs, etc. While the number of significant digits is a bit excessive in the floating-point numbers shown above, the internal units used by Microsoft's Word are all integers.
+
+An additional unit is ``half-points''. This unit is used to specify font sizes; therefore, a font size of 12pt equals 24 half points.
+
+When specifying tables, one can use a relative measurement unit called ``fiftieths of a Percent'' (with the type ``pct'').
+
+Yet another unit is \glspl{EMU} - with one inch being \qty{914400} EMUs or a centimeter being \qty{360000} EMUs. This unit is used in vector drawings.
+
+\textbf{NB} The AW-template should note that it is designed for printing on an A4 page, even though the thesis will be printed in G5 size (\qty{169}{\milli\metre} $\times$ \qty{239}{\milli\metre}.) 
+
+
+\subsection{Page margins}
+The page margins (shown in \Cref{tab:cycle3pageMargins}) are specified as:
+\begin{lstlisting}[style=OOXML]
+<w:pgMar w:top="2041" w:right="1247" w:bottom="1701" w:left="2438" w:header="567" w:footer="567" w:gutter="0"/>
+\end{lstlisting}
+
+\begin{table}[!ht]
+  \begin{center}
+    \caption{Page margins}
+    \label{tab:cycle3pageMargins}
+    \begin{tabular}{l| S[table-format=6.0] | S[table-format=4.4]} % <-- Alignments: 1st column left, 2nd middle, with vertical lines in between
+      \textbf{Margin} & \textbf{dxa} & \textbf{millimeters} \\
+      \hline
+top margin &    2041  &	36.001 \\
+right margin&  1247 &	21.996 \\
+bottom margin& 1701 &	30.004 \\
+left margin&   2438 &	43.004 \\
+header margin&  567 &	10.001 \\
+footer margin&  567 &	10.001 \\
+    \end{tabular}
+  \end{center}
+\end{table}
+\FloatBarrier
+
+Based on the above, I slightly adjusted the top, bottom, inner, and outer margins with:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\RequirePackage[a4paper,twoside,
+  top=36mm,bottom=30mm,inner=43mm,outer=22mm,
+  headsep=15mm,headheight=6mm,footskip=25mm]{geometry} % Set paper and contents dimensions
+\end{lstlisting}
+\clearpage
+
+\subsection{Fonts}
+\label{sec:cycle3Fonts}
+
+The AW-template has selected Figtree as a sans serif font for headings and much of the front matter and selected Georgia as the serif font for the body of the thesis. More specifically,  Figtree Medium, Figtree Bold, Figtree SemiBold, and Figtree (aka Figtree Regular) are used along with the serif fonts: Georgia, Georgia Pro, Georgia Italics, and Georgia Bold. See \Cref{sec:cycle3AdditionalFonts} for a note about the use (or non-use) of Georgia Pro.
+
+\subsubsection{Figtree}
+
+One can get the Figree font from \url{https://fonts.google.com/specimen/Figtree} and then install it (following the directions for your \gls{OS} - see the \texttt{README.txt} included with the font). There are two versions of the font: \first static and \Second variable. At the time of my download in Spring 2025, there are 14 static font faces in the Figtee font: Light, Light Italic, Regular, Italic, Medium, Medium Italic, SemiBold, SemiBold Italic, Bold, Bold Italic, ExtraBold, ExtraBold Italic, Black, and Black Italic. Note that there is no small caps font in the download. The font itself is licensed under the SIL Open Font License, Version 1.1, see \url{https://fonts.google.com/specimen/Figtree/license}.
+
+\textbf{NB} If you are using Word and you have \textbf{not} installed the Figtree font, then saving the file as PDF will utilize Calibri rather than Figtree!
+
+\Needspace*{4\baselineskip}
+As Figtree does not have a small caps font, Word sets the small caps as caps but in a smaller font. For example, for a \texttt{Heading 6} in the AW-template - the caps are 12pt\footnote{In this document, I have used the traditional typographic convention of writing the number \textit{without} a space between the number and the unit (``pt'') - as the ``pt'' is considered part of the font size. However, when points is spelled out, then I will proceed it with a space.}, while the imitated small caps are caps set at 9.48pt. This would appear to be a scaling by a factor of \num{0.79}.
+
+\subsubsection{Georgia}
+Microsoft's Georgia is a serif typeface, see \url{https://learn.microsoft.com/en-us/typography/font-list/georgia}. I would suggest that instead of using a proprietary font, one should use a freely available serif font, such as \texttt{TeX Gyre Termes}.
+
+\subsubsection{Additional Fonts in the AW-template}
+\label{sec:cycle3AdditionalFonts}
+
+In the AW-template, there are some additional fonts used:
+\begin{enumerate}
+    \item In the AW-template, Georgia Pro is used as the font for the default paragraph style and in the paragraph styles for ``Publisher'' and ``EndnoteReference''.
+
+    \item DM Sans - is indicated as the default document font and in the paragraph styles: ``Kursiverat'' and``Romerskaseparatlista'';
+
+    \item Tahoma - is used in the ``Balloon Text'' paragraph style
+\end{enumerate}
+
+Note that Georgia Pro is the original version of Georgia - it is separately licensed by Microsoft. I would suggest that if these paragraph styles are needed, one should use a freely available serif font. Note that no examples are given in the AW-template that use either of these paragraph styles.
+
+\Needspace*{7\baselineskip}
+The DM Sans font is available from \url{https://fonts.google.com/specimen/DM+Sans} and licensed under SIL Open Font License, Version 1.1, see \url{https://fonts.google.com/specimen/DM+Sans/license}. This font is a sans serif font designed for use for smaller text. I would suggest that if these paragraph styles are needed, one could use a freely available sans serif font in the font size of the body text. It is unclear why you would utilize (yet) another sans serif font for these paragraph styles. Note that no examples are given in the AW-template that use these paragraph styles.
+
+\Needspace*{6\baselineskip}
+Tahoma is one of Microsoft's sans serif typefaces. For details and a link to the font licensing site, see \url{https://learn.microsoft.com/en-us/typography/font-list/tahoma}. As this is a proprietary font, I have not used it anywhere in this template. I would suggest that if this paragraph style is needed, one could use a freely available sans serif font. Note that no examples are given in the AW-template that use this paragraph style.
+
+\subsubsection{Need for a different choice of fonts}
+\label{sec:cycle3ChooseBetterFonts}
+I complained a long time ago\footnote{When it was first revealed that Figtree had been chosen as the sans serif font.} about the choice of Figtree versus a font such as Noto, based on the fact that Figtree does not support the set of characters that have actually been used in English and Swedish thesis titles and subtitles at KTH. I was easily able to compute which characters were unsupported for the titles and subtitles by looking at the actual titles and subtitles from DiVA using a Jupyter notebook with the code snippet shown in Listing \ref{lst:checkingForFigtree}\footnote{The complete notebook that gets data from a DiVA MODS format feed and makes a panda dataframe is available on request.}. Part of the output is shown in \Cref{lst:missingFigtreeABE,lst:missingFigtreeITM,lst:missingFigtreeCBH,lst:missingFigtreeSCI,lst:missingFigtreeEECS}.
+Unfortunately, there has been no change in the selection of the sans serif font. 
+
+\begin{lstlisting}[language=Python, escapechar=|, caption={[Figtree as a font for titles and subtitles]A python code snippet looking a Figtree as a possible font by using DiVA data about titles and subtitles. The glyphs in Figtree and some manual additions of characters that occurred in titles and subtitles.}, label=lst:checkingForFigtree]
+figtree_characters=["\u0020", # space
+"\u0021", # exclam
+"\u0022", # quotedbl
+"\u0023", # numbersign
+"\u0024", # dollar
+"\u0025", # percent
+"\u0026", # ampersand
+"\u0027", # quotesingle
+"\u0028", # parenleft
+"\u0029", # parenright
+"\u002a", # asterisk
+"\u002b", # plus
+"\u002c", # comma
+"\u002d", # hyphen
+"\u002e", # period
+"\u002f", # slash
+"\u0030", # zero
+"\u0031", # one
+"\u0032", # two
+"\u0033", # three
+"\u0034", # four
+"\u0035", # five
+"\u0036", # six
+"\u0037", # seven
+"\u0038", # eight
+"\u0039", # nine
+"\u003a", # colon
+"\u003b", # semicolon
+"\u003c", # less
+"\u003d", # equal
+"\u003e", # greater
+"\u003f", # question
+"\u0040", # at
+"\u0041", # A
+"\u0042", # B
+"\u0043", # C
+"\u0044", # D
+"\u0045", # E
+"\u0046", # F
+"\u0047", # G
+"\u0048", # H
+"\u0049", # I
+"\u004a", # J
+"\u004b", # K
+"\u004c", # L
+"\u004d", # M
+"\u004e", # N
+"\u004f", # O
+"\u0050", # P
+"\u0051", # Q
+"\u0052", # R
+"\u0053", # S
+"\u0054", # T
+"\u0055", # U
+"\u0056", # V
+"\u0057", # W
+"\u0058", # X
+"\u0059", # Y
+"\u005a", # Z
+"\u005b", # bracketleft
+"\u005c", # backslash
+"\u005d", # bracketright
+"\u005e", # asciicircum
+"\u005f", # underscore
+"\u0060", # grave
+"\u0061", # a
+"\u0062", # b
+"\u0063", # c
+"\u0064", # d
+"\u0065", # e
+"\u0066", # f
+"\u0067", # g
+"\u0068", # h
+"\u0069", # i
+"\u006a", # j
+"\u006b", # k
+"\u006c", # l
+"\u006d", # m
+"\u006e", # n
+"\u006f", # o
+"\u0070", # p
+"\u0071", # q
+"\u0072", # r
+"\u0073", # s
+"\u0074", # t
+"\u0075", # u
+"\u0076", # v
+"\u0077", # w
+"\u0078", # x
+"\u0079", # y
+"\u007a", # z
+"\u007b", # braceleft
+"\u007c", # bar
+"\u007d", # braceright
+"\u007e", # asciitilde
+"\u00a0", # uni00A0
+"\u00a1", # exclamdown
+"\u00a2", # cent
+"\u00a3", # sterling
+"\u00a4", # currency
+"\u00a5", # yen
+"\u00a6", # brokenbar
+"\u00a7", # section
+"\u00a8", # dieresis
+"\u00a9", # copyright
+"\u00aa", # ordfeminine
+"\u00ab", # guillemotleft
+"\u00ac", # logicalnot
+"\u00ae", # registered
+"\u00af", # macron
+"\u00b0", # degree
+"\u00b1", # plusminus
+"\u00b2", # uni00B2
+"\u00b3", # uni00B3
+"\u00b4", # acute
+"\u00b5", # uni00B5
+"\u00b6", # paragraph
+"\u00b7", # periodcentered
+"\u00b8", # cedilla
+"\u00b9", # uni00B9
+"\u00ba", # ordmasculine
+"\u00bb", # guillemotright
+"\u00bc", # onequarter
+"\u00bd", # onehalf
+"\u00be", # threequarters
+"\u00bf", # questiondown
+"\u00c0", # Agrave
+"\u00c1", # Aacute
+"\u00c2", # Acircumflex
+"\u00c3", # Atilde
+"\u00c4", # Adieresis
+"\u00c5", # Aring
+"\u00c6", # AE
+"\u00c7", # Ccedilla
+"\u00c8", # Egrave
+"\u00c9", # Eacute
+"\u00ca", # Ecircumflex
+"\u00cb", # Edieresis
+"\u00cc", # Igrave
+"\u00cd", # Iacute
+"\u00ce", # Icircumflex
+"\u00cf", # Idieresis
+"\u00d0", # Eth
+"\u00d1", # Ntilde
+"\u00d2", # Ograve
+"\u00d3", # Oacute
+"\u00d4", # Ocircumflex
+"\u00d5", # Otilde
+"\u00d6", # Odieresis
+"\u00d7", # multiply
+"\u00d8", # Oslash
+"\u00d9", # Ugrave
+"\u00da", # Uacute
+"\u00db", # Ucircumflex
+"\u00dc", # Udieresis
+"\u00dd", # Yacute
+"\u00de", # Thorn
+"\u00df", # germandbls
+"\u00e0", # agrave
+"\u00e1", # aacute
+"\u00e2", # acircumflex
+"\u00e3", # atilde
+"\u00e4", # adieresis
+"\u00e5", # aring
+"\u00e6", # ae
+"\u00e7", # ccedilla
+"\u00e8", # egrave
+"\u00e9", # eacute
+"\u00ea", # ecircumflex
+"\u00eb", # edieresis
+"\u00ec", # igrave
+"\u00ed", # iacute
+"\u00ee", # icircumflex
+"\u00ef", # idieresis
+"\u00f0", # eth
+"\u00f1", # ntilde
+"\u00f2", # ograve
+"\u00f3", # oacute
+"\u00f4", # ocircumflex
+"\u00f5", # otilde
+"\u00f6", # odieresis
+"\u00f7", # divide
+"\u00f8", # oslash
+"\u00f9", # ugrave
+"\u00fa", # uacute
+"\u00fb", # ucircumflex
+"\u00fc", # udieresis
+"\u00fd", # yacute
+"\u00fe", # thorn
+"\u00ff", # ydieresis
+"\u0100", # Amacron
+"\u0101", # amacron
+"\u0102", # Abreve
+"\u0103", # abreve
+"\u0104", # Aogonek
+"\u0105", # aogonek
+"\u0106", # Cacute
+"\u0107", # cacute
+"\u0108", # Ccircumflex
+"\u0109", # ccircumflex
+"\u010a", # Cdotaccent
+"\u010b", # cdotaccent
+"\u010c", # Ccaron
+"\u010d", # ccaron
+"\u010e", # Dcaron
+"\u010f", # dcaron
+"\u0110", # Dcroat
+"\u0111", # dcroat
+"\u0112", # Emacron
+"\u0113", # emacron
+"\u0116", # Edotaccent
+"\u0117", # edotaccent
+"\u0118", # Eogonek
+"\u0119", # eogonek
+"\u011a", # Ecaron
+"\u011b", # ecaron
+"\u011c", # Gcircumflex
+"\u011d", # gcircumflex
+"\u011e", # Gbreve
+"\u011f", # gbreve
+"\u0120", # Gdotaccent
+"\u0121", # gdotaccent
+"\u0122", # uni0122
+"\u0123", # uni0123
+"\u0124", # Hcircumflex
+"\u0125", # hcircumflex
+"\u0126", # Hbar
+"\u0127", # hbar
+"\u012a", # Imacron
+"\u012b", # imacron
+"\u012e", # Iogonek
+"\u012f", # iogonek
+"\u0130", # Idotaccent
+"\u0131", # dotlessi
+"\u0132", # IJ
+"\u0133", # ij
+"\u0134", # Jcircumflex
+"\u0135", # jcircumflex
+"\u0136", # uni0136
+"\u0137", # uni0137
+"\u0139", # Lacute
+"\u013a", # lacute
+"\u013b", # uni013B
+"\u013c", # uni013C
+"\u013d", # Lcaron
+"\u013e", # lcaron
+"\u0141", # Lslash
+"\u0142", # lslash
+"\u0143", # Nacute
+"\u0144", # nacute
+"\u0145", # uni0145
+"\u0146", # uni0146
+"\u0147", # Ncaron
+"\u0148", # ncaron
+"\u014a", # Eng
+"\u014b", # eng
+"\u014c", # Omacron
+"\u014d", # omacron
+"\u0150", # Ohungarumlaut
+"\u0151", # ohungarumlaut
+"\u0152", # OE
+"\u0153", # oe
+"\u0154", # Racute
+"\u0155", # racute
+"\u0156", # uni0156
+"\u0157", # uni0157
+"\u0158", # Rcaron
+"\u0159", # rcaron
+"\u015a", # Sacute
+"\u015b", # sacute
+"\u015c", # Scircumflex
+"\u015d", # scircumflex
+"\u015e", # Scedilla
+"\u015f", # scedilla
+"\u0160", # Scaron
+"\u0161", # scaron
+"\u0164", # Tcaron
+"\u0165", # tcaron
+"\u016a", # Umacron
+"\u016b", # umacron
+"\u016c", # Ubreve
+"\u016d", # ubreve
+"\u016e", # Uring
+"\u016f", # uring
+"\u0170", # Uhungarumlaut
+"\u0171", # uhungarumlaut
+"\u0172", # Uogonek
+"\u0173", # uogonek
+"\u0174", # Wcircumflex
+"\u0175", # wcircumflex
+"\u0176", # Ycircumflex
+"\u0177", # ycircumflex
+"\u0178", # Ydieresis
+"\u0179", # Zacute
+"\u017a", # zacute
+"\u017b", # Zdotaccent
+"\u017c", # zdotaccent
+"\u017d", # Zcaron
+"\u017e", # zcaron
+"\u01cd", # uni01CD
+"\u01ce", # uni01CE
+"\u0218", # uni0218
+"\u0219", # uni0219
+"\u021a", # uni021A
+"\u021b", # uni021B
+"\u0237", # uni0237
+"\u02c6", # circumflex
+"\u02c7", # caron
+"\u02d8", # breve
+"\u02d9", # dotaccent
+"\u02da", # ring
+"\u02db", # ogonek
+"\u02dc", # tilde
+"\u02dd", # hungarumlaut
+"\u0300", # gravecomb
+"\u0301", # acutecomb
+"\u0302", # uni0302
+"\u0303", # tildecomb
+"\u0304", # uni0304
+"\u0306", # uni0306
+"\u0307", # uni0307
+"\u0308", # uni0308
+"\u030a", # uni030A
+"\u030b", # uni030B
+"\u030c", # uni030C
+"\u0312", # uni0312
+"\u0326", # uni0326
+"\u0327", # uni0327
+"\u0328", # uni0328
+"\u1e80", # Wgrave
+"\u1e81", # wgrave
+"\u1e82", # Wacute
+"\u1e83", # wacute
+"\u1e84", # Wdieresis
+"\u1e85", # wdieresis
+"\u1e9e", # uni1E9E
+"\u1ef2", # Ygrave
+"\u1ef3", # ygrave
+"\u2013", # endash
+"\u2014", # emdash
+"\u2018", # quoteleft
+"\u2019", # quoteright
+"\u201a", # quotesinglbase
+"\u201c", # quotedblleft
+"\u201d", # quotedblright
+"\u201e", # quotedblbase
+"\u2020", # dagger
+"\u2021", # daggerdbl
+"\u2022", # bullet
+"\u2026", # ellipsis
+"\u2039", # guilsinglleft
+"\u203a", # guilsinglright
+"\u2044", # fraction
+"\u2070", # uni2070
+"\u2074", # uni2074
+"\u2075", # uni2075
+"\u2076", # uni2076
+"\u2077", # uni2077
+"\u2078", # uni2078
+"\u2079", # uni2079
+"\u2080", # uni2080
+"\u2081", # uni2081
+"\u2082", # uni2082
+"\u2083", # uni2083
+"\u2084", # uni2084
+"\u2085", # uni2085
+"\u2086", # uni2086
+"\u2087", # uni2087
+"\u2088", # uni2088
+"\u2089", # uni2089
+"\u20ac", # Euro
+"\u2122", # trademark
+"\u215b", # oneeighth
+"\u215c", # threeeighths
+"\u215d", # fiveeighths
+"\u215e", # seveneighths
+"\u2190", # arrowleft
+"\u2191", # arrowup
+"\u2192", # arrowright
+"\u2193", # arrowdown
+"\u2196", # uni2196
+"\u2197", # uni2197
+"\u2198", # uni2198
+"\u2199", # uni2199
+"\u2212", # minus
+"\u2215", # uni2215
+"\u2260", # notequal
+"\u2264", # lessequal
+"\u2265", # greaterequal
+                    # manual additions
+'\n',
+'\t',
+'\u200b', # ZERO WIDTH SPACE
+#'\u200c',   # ZERO WIDTH NON-JOINER
+'\xad',    # SOFT HYPHEN
+'‐',
+
+]
+
+not_in_figtree=set()
+
+def check_in_figtree(s, d, where, diva_id):
+    for idx, c in enumerate(s):
+        if c not in figtree_characters:
+            not_in_figtree.add(c)
+            print(f'{c=} at {idx} in "{s}" in {where} diva_id: {diva_id}, year: {d}')
+
+for school in schools_info:
+    print(f"{school=}")
+    df1=gdf[gdf.school == school]
+    if df1 is not None and not df1.empty:
+        for idx, row in gdf[gdf.school == school].iterrows():
+            #print(f"{idx=}")
+            diva_id=row['recordInfo.recordIdentifier']
+            d=row['Year']
+            title=row['title.eng']
+            if title and isinstance(title, str) and len(title) > 0:
+                check_in_figtree(title, d, 'title.eng', diva_id)
+            alt_title=row['title.swe']
+            if alt_title and isinstance(alt_title, str) and len(alt_title) > 0:
+                check_in_figtree(alt_title, d, 'title.swe', diva_id)
+            subtitle_eng=row['subtitle.eng']
+            subtitle_swe=row['subtitle.swe']
+            if subtitle_eng and isinstance(subtitle_eng, str) and len(subtitle_eng) > 0:
+                check_in_figtree(subtitle_eng, d, 'subtitle.eng', diva_id)
+            if subtitle_swe and isinstance(subtitle_swe, str) and len(subtitle_swe) > 0:
+                check_in_figtree(subtitle_swe, d, 'subtitle.swe', diva_id)
+            
+    print(not_in_figtree)
+    not_in_figtree=set()
+ \end{lstlisting}
+
+
+\Needspace*{38\baselineskip}
+
+\begin{lstlisting}[style=latexExampleForAuthors, 
+caption={Part of the output about characters missing from Figtree that were used in DiVA in English and Swedish titles and subtitles - for the ABE school. Note that not all of the characters can be shown in the font used in this document. However, they can be seen in the output when you run the notebook. Here, these characters have been manually edited to use another font where the character exists.},
+label=lst:missingFigtreeABE]
+\end{lstlisting}
+\begin{Verbatim}[breaklines=true, commandchars=\\\{\}]
+school='ABE'
+c='Δ' at 4 in "DELTΔ: exploring the fragility of perception through the medium of light." in title.eng diva_id: diva2:1683225, year: 2022
+c='{\mystixmathfont{♀}}' at 3 in "RIN{\mystixmathfont{♀}}EBY - Exploring feminist design tools" in title.eng diva_id: diva2:998705, year: 2016
+c='ụ' at 0 in "ụlọ - An exploration of the relevance of Igbo architecture in a low-cost housing context" in title.eng diva_id: diva2:1466320, year: 2020
+c='ọ' at 2 in "ụlọ - An exploration of the relevance of Igbo architecture in a low-cost housing context" in title.eng diva_id: diva2:1466320, year: 2020
+c='Ｔ' at 0 in "ＴＨＥ ＥＦＦＥＣＴ ＯＦ ＩＮＴＥＲＥＳＴ ＲＡＴＥS ＯＮ ＨＯＵＳＩＮＧ ＰＲＩＣＥＳ ＩＮ ＳＷＥＤＥＮ :" in title.eng diva_id: diva2:503696, year: 2011
+c='ﬀ' at 1 in "Eﬀect of gritting sand quality on road dust pollution" in title.eng diva_id: diva2:1039310, year: 2016
+c='{\mystixmathfont{\char"01D706}}' at 10 in "Using the {\mystixmathfont{\char"01D706}} coefficient method" in subtitle.eng diva_id: diva2:1880760, year: 2024
+c='U+feff' at 0 in "﻿﻿﻿A study of a low energy house - methods for improvning energy performance while maintaining cost efficiency" in title.swe diva_id: diva2:404035, year: 2010
+c='U+fffd' at 24 in "En studie kring ombyggna^^^^fffdoners påverkan på den sociala hållbarheten i miljonprogramsområden" in subtitle.swe diva_id: diva2:1785925, year: 2023
+c='U+0084' at 36 in "Experimental Studies Focusing on Stiffness &amp; Transport Properties" in subtitle.eng diva_id: diva2:816099, year: 2015
+c='U+0087' at 57 in "Evaluation of Customer requirements and environmental effects" in subtitle.eng diva_id: diva2:781452, year: 2014
+
+[U+0084, U+0087, 'Δ', 'ọ', 'ụ', '{\mystixmathfont ―}', '{\mystixmathfont{♀}}', 'ﬀ', 'ﬁ', U+00feff, 'Ａ', 'Ｃ', 'Ｄ', 'Ｅ', 'Ｆ', 'Ｇ', 'Ｈ', 'Ｉ', 'Ｎ', 'Ｏ', 'Ｐ', 'Ｒ', 'Ｓ', 'Ｔ', 'Ｕ', 'Ｗ',  U+fffd, '{\mystixmathfont{\char"01D706}}']
+\end{Verbatim}
+\FloatBarrier
+
+\Cref{tab:missingCharsABE} summarizes the missing characters for ABE. While it is likely that U+0084, U+0087, U+FEFF, and U+FFFD are transcription errors, the remaining characters were likely intended by the authors of the theses.
+
+\begin{table}[!ht]
+  \begin{center}
+    \caption[Summary of missing Figtree characters for ABE]{Summary of \textbf{missing} Figtree characters for ABE}
+    \label{tab:missingCharsABE}
+    \begin{tabular}{L{6cm}| L{2.5cm} |L{3.75cm}}
+      \textbf{Unicode character or block} & \textbf{characters} & \textbf{Unicode - range} \\
+      \hline
+<Index> (IND) &  &	U+0084 \\
+<End of Selected Area> (ESA)  &  &	U+0087 \\ \hline
+Alphabetic Presentation Forms (Ligatures) &  ﬀ ﬁ &	U+FB00 - U+FB4F \\ \hline
+Fullwidth Latin Letters &  ＡＣＤＥ ＦＧＨＩ ＮＯＰＲ ＳＴＵＷ   &	U+FF01 - U+FF60\\ \hline
+Greek and Coptic  & Δ & U+0370 - U+03FF\\ \hline
+Latin Extended Additional & ọ ụ & U+1E00 - U+1EFF \\ \hline
+General Punctuation & {\mystixmathfont ―} & U+2000 - U+206F \\ \hline
+Miscellaneous Symbols  & {\mystixmathfont{♀}} & U+2600 - U+26FF\\ \hline
+Zero Width No-Break Space (BOM, ZWNBSP) &  &	U+FEFF \\\hline
+Replacement Character &  {\mystixmathfont ^^^^fffd} & U+FFFD \\ \hline
+Mathematical Alphanumeric Symbols  & {\mystixmathfont\char"01D706} &	U+1D400 - U+1D7FF \\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+\clearpage
+
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|, 
+caption={Part of the output about characters missing from Figtree that are actually used in DiVA in English and Swedish titles and subtitles  - for the ITM school.},
+label=lst:missingFigtreeITM]
+\end{lstlisting}
+
+\begin{Verbatim}[breaklines=true, commandchars=\\\{\}]
+school='ITM'
+c='η' at 47 in "Solubility of chromium in tungsten carbide and η-phase" in subtitle.eng diva_id: diva2:460797, year: 2010
+c='η' at 18 in "Evaluation of the η (Eta) nitride with three laboratory melts" in title.eng diva_id: diva2:865850, year: 2015
+c='ε' at 2 in "k-ε turbulence modeling for a wind turbine" in title.eng diva_id: diva2:586991, year: 2011
+c='{\mystixmathfont{─}}' at 57 in "Optimization of orders and informationmanagement systems {\mystixmathfont{─}} a case of study of a craft business" in title.swe diva_id: diva2:736430, year: 2014
+
+{'η', 'ε', '{\mystixmathfont{─}}'}
+\end{Verbatim}
+\FloatBarrier
+Summarizing \Cref{lst:missingFigtreeITM}, we see that there are two missing Greek characters (Greek Small Letter Eta and Greek Small Letter Epsilon) and a long line (\ie Box Drawings Light Horizontal). All of these were clearly intended by the authors of these theses.
+\clearpage
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|, 
+caption={Part of the output about characters missing from Figtree that are actually used in DiVA in English and Swedish titles and subtitles - for the SCI school.},
+label=lst:missingFigtreeSCI]
+\end{lstlisting}
+
+
+\begin{Verbatim}[breaklines=true, commandchars=\\\{\}]
+school='SCI'
+c='ﬀ' at 25 in "An Investigation of the Eﬀects of Sustained G-Forces on the Human Body During Suborbital Spaceﬂight" in title.eng diva_id: diva2:1183272, year: 2017
+c='β' at 47 in "Co-evolutional anaylsis of the Na+,K+-ATPase’s β-subunit dimerization" in title.eng diva_id: diva2:1768469, year: 2023
+c='α' at 42 in "Method development for the study of human α-synuclein overexpressing rodent model of parkinsonism using MRI" in title.eng diva_id: diva2:1215368, year: 2018
+c='λ' at 50 in "New scaling approach to critical exponents of the λ transition" in title.eng diva_id: diva2:1250812, year: 2018
+c='{\mystixmathfont{ф}}' at 50 in "Optimization and Miniaturization of a Fiber-Optic {\mystixmathfont{ф}}-OTDR Distributed Vibration Sensor" in title.eng diva_id: diva2:1230989, year: 2018
+c='ﬁ' at 34 in "Kvantsäker gitterbaserad kryptograﬁ" in title.swe diva_id: diva2:935425, year: 2016
+c='∗' at 82 in "Search for VBF Standard Model Higgs boson production in the <em>H → W W </em>(<em>∗</em>)  decay channelusing boosted decision trees" in title.eng diva_id: diva2:628055, year: 2013
+c='∗' at 69 in "Spin studies of the discovered 125 GeV Higgs boson in the<em>H → W W ∗→ <em>£ν£ν</em> </em> channel using the ATLAS detector" in title.eng diva_id: diva2:628052, year: 2013
+c='ν' at 77 in "Spin studies of the discovered 125 GeV Higgs boson in the<em>H → W W ∗→ <em>£ν£ν</em> </em> channel using the ATLAS detector" in title.eng diva_id: diva2:628052, year: 2013
+c='γ' at 0 in "γ-ray spectroscopy for earthquake forecasting" in title.eng diva_id: diva2:1881360, year: 2024
+
+{'∗', 'β', 'ﬂ', 'λ', 'α', 'ﬀ', 'ﬁ', 'ν', 'γ', '{\mystixmathfont{ф}}'}
+\end{Verbatim}
+\FloatBarrier
+Summarizing \Cref{lst:missingFigtreeSCI}, we see a number of Greek characters and ligatures, but we also see in diva2:628055 and diva2:628052 other problems -- specifically, a missing space and the Higgs decay channel expression being incorrectly entered in DiVA. In HTML, the first should be <em>H</em> \&rarr; <em>W W<sup>\&lowast;</sup></em> and the second should be <em>H</em> \&rarr; <em>W W<sup>\&lowast;</sup></em> \&rarr; <em>\&ell;\&nu;\&ell;\&nu;</em>.
+\clearpage
+
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|, 
+caption={Part of the output about characters missing from Figtree that are actually used in DiVA in English and Swedish titles and subtitles - for the CBH school.},
+label=lst:missingFigtreeCBH]
+\end{lstlisting}
+\begin{Verbatim}[breaklines=true, commandchars=\\\{\}]
+school='CBH'
+c='α' at 57 in "Amino Alcohols from Asymmetric Transfer Hydrogenation of α-Amido-β-Keto Esters Possessing Olefins: Formal Total Synthesis of Sphingosine" in title.eng diva_id: diva2:766179, year: 2012
+c='β' at 65 in "Amino Alcohols from Asymmetric Transfer Hydrogenation of α-Amido-β-Keto Esters Possessing Olefins: Formal Total Synthesis of Sphingosine" in title.eng diva_id: diva2:766179, year: 2012
+c='γ' at 47 in "Catalytic Ozonation with MnOx-CeO<sub>x</sub>/ γ-Al<sub>2</sub>O<sub>3</sub> for Wastewater Treatment of Textile Effluent" in title.eng diva_id: diva2:1382127, year: 2019
+c='ω' at 48 in "Changing or improving the enantioselectivity of ω-transaminase towards (R)-amines, utilizing a semi-rational design approach" in title.eng diva_id: diva2:744712, year: 2013
+c='{\mystixmathfont{ɣ}}' at 86 in "Characterization of diazepam binding inhibitor as a structure-function tool for human {\mystixmathfont{ɣ}}-aminobutyric acid-A receptors" in title.eng diva_id: diva2:1788591, year: 2023
+c='ﬂ' at 22 in "Djupinlärningsbaserad ﬂer-etikett klassiﬁcering av målvolymer för prostatacancer inom strålterapi" in title.swe diva_id: diva2:1392274, year: 2019
+c='{\mystixmathfont{\char"01D6FD}}' at 76 in "Development and Validation of an Analytical Method for the Determination of {\mystixmathfont{\char"01D6FD}}-antithrombin" in title.eng diva_id: diva2:1774619, year: 2023
+c='ﬀ' at 86 in "Implementing a Next Generation Sequencing (NGS) method to characterize padlock probe eﬀiciency" in title.eng diva_id: diva2:1876306, year: 2024
+c='U+2029' at 19 in "vattenkvalitet och  tillgänglighet" in subtitle.swe diva_id: diva2:826701, year: 2013
+c='δ' at 18 in "POLYMERIZATION OF δ-VALERO LACTONE BY NOVEL CYCLODEXTRIN DIMER" in title.eng diva_id: diva2:765808, year: 2012
+
+{'{\mystixmathfont{ɣ}}', 'β', 'ﬂ', 'α', 'ﬁ', 'ﬀ', '{\mystixmathfont{\char"01D6FD}}', U+2029, 'δ', 'ω', 'γ'}
+\end{Verbatim}
+\FloatBarrier
+
+Summarizing \Cref{lst:missingFigtreeCBH}, we see the expected ligatures and Greek characters and also Mathematical Italic Small Beta ({\mystixmathfont\char"01D6FD}), and Latin Small Letter Gamma ({\mystixmathfont γ}). Finally, there is a Paragraph Separator (U+2029) that is probably a result of a cut and paste from the PDF file of the thesis diva2:826701.
+\clearpage
+
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|, 
+caption={Part of the output about characters missing from Figtree that are actually used in DiVA in English and Swedish titles and subtitles - for the EECS school.},
+label=lst:missingFigtreeEECS]
+\end{lstlisting}
+\begin{Verbatim}[breaklines=true, commandchars=\\\{\}]
+school='EECS'
+c='◦' at 25 in "A 2-layer Solution for 45◦ Slant Polarized Slotted Waveguide Arrays in Gap Waveguide Technology" in title.eng diva_id: diva2:1888346, year: 2023
+c='U+200c' at 62 in "Adaptation of an online course from desktop to mobile browsers‌‌" in title.eng diva_id: diva2:1088548, year: 2016
+c='U+3000' at 0 in "　 Jämförelse av teknik för tredimensionell TV med avseende på bildupplevelse" in title.eng diva_id: diva2:467409, year: 2011
+c='ﬁ' at 17 in "Innehållsbaserad ﬁltrering för applikationsprogramvara" in title.swe diva_id: diva2:1186070, year: 2018
+c='U+2028' at 39 in "Evaluating Situation Awareness Oriented  Design Principles as a Design Tool" in title.eng diva_id: diva2:823781, year: 2015
+c='α' at 3 in "Ly-α Dayglow on Uranus" in title.eng diva_id: diva2:1545323, year: 2021
+c='U+0092' at 74 in "Shared UMTS Networks - A Techno-Economic Study on Mobile Network Operators Possibilities to Deliver Unique Products and Services" in title.eng diva_id: diva2:383909, year: 2005
+c='U+feff' at 71 in "Simulation and parameter estimation of spectrophotometric instruments  ﻿" in title.eng diva_id: diva2:308052, year: 2009
+c='ﬀ' at 33 in "The backtracking algorithm and diﬀerent representations for solving Sudoku Puzzles" in title.eng diva_id: diva2:721641, year: 2014
+c=';' at 74 in "Validering av enterpriseLang Ett domänspecifikt språk baserat på ramverket; Meta Attack Language" in subtitle.swe diva_id: diva2:1596039, year: 2021
+c='μ' at 0 in "μSPL - Proprietär grafikspråkstranspilator" in title.swe diva_id: diva2:1634246, year: 2021
+
+[U+0092, ';', 'α', 'μ', U+200c, U+2028, '◦', U+3000, 'ﬀ', 'ﬁ', U+feff]
+\end{Verbatim}
+\FloatBarrier
+
+\Needspace*{7\baselineskip}
+Note that in \Cref{lst:missingFigtreeEECS}, we see the expected ligatures and Greek characters, but we also see a surprise as the Greek Question Mark (';' U+037E - which looks like a semicolon) is not in Figtree. Also unexpected are a <Private Use Two> (PU2) (U+0092) character. a Zero Width Non-Joiner (ZWNJ) (U+200C), a Line Separator (U+2028), an Ideographic Space (U+3000), and a Zero Width No-Break Space (BOM, ZWNBSP) (U+FEFF). Most of these unexpected characters are probably the result of cut and paste transcription errors and not intended by the authors of the theses.
+
+In addition to ligatures, wide characters, and some curious characters that should probably not actually be stored in titles and subtitles in DiVA, what is commonly missing are Greek characters. One might think that in an engineering school, one would be guided by looking at the data\footnote{As an example of making use of data to guide research and development, see Alfred Spector, Peter Norvig, and Slav Petrov, ‘Google’s hybrid approach to research’\cite{10.1145/2209249.2209262}.}. Oops -- Figtree has no support and plans no support for Greek!
+
+\textbf{NB} It is important to note that the problems associated with characters that are missing in the Figtree font are now exacerbated since Figtree is specified in the AW-template as the font for \textit{all of the headings in the thesis} and not just for titles and subtitles on the cover and title page.
+
+Looking at Noto Sans, we can see in \Cref{tab:missingCharsNotoSans} that the Alphabetic Presentation Forms (Ligatures), the Greek and Coptic characters, and Latin Extended Additional are present in NotoSans. However, there are still missing characters for Arrows, Mathematical Operators, Miscellaneous Symbols, and Mathematical Alphanumeric Symbols. Note that the two characters shown in Mathematical Alphanumeric Symbols look like Greek characters, but they are actually the Mathematical Italic Small Lamda and the Mathematical Italic Small Beta. Note that the FullWidth Latin characters are in the \textit{Noto Sans Mono CJK JP} font. The General Punctuation, Arrows, Mathematical Operators,  Box Drawing, and Miscellaneous Symbols are in the \textit{STIX Two Math} font.
+\begin{table}[!ht]
+  \begin{center}
+    \caption[Summary of missing Noto Sans characters for all schools]{Summary of \textbf{missing} Noto Sans characters for all schools}
+    \label{tab:missingCharsNotoSans}
+    \begin{tabular}{L{6cm}| L{2.5cm} |L{3.75cm}}
+      \textbf{Unicode character or block} & \textbf{characters} & \textbf{Unicode - range} \\
+      \hline
+<Index> (IND) &  &	U+0084 \\
+<End of Selected Area> (ESA)  &  &	U+0087 \\ \hline
+Alphabetic Presentation Forms (Ligatures) &  &	U+FB00 - U+FB4F \\ \hline
+Fullwidth Latin Letters &  ＡＣＤＥ ＦＧＨＩ ＮＯＰＲ ＳＴＵＷ   &	U+FF01 - U+FF60\\ \hline
+Greek and Coptic  &  & U+0370 - U+03FF\\ \hline
+Latin Extended Additional &  & U+1E00 - U+1EFF \\ \hline
+General Punctuation & {\mystixmathfont ―} {\mystixmathfont−} & U+2000 - U+206F \\ \hline
+Arrows & {\mystixmathfont →}  &  U+2190 - U+21FF\\ \hline
+Mathematical Operators & {\mystixmathfont −}  {\mystixmathfont ∗} {\mystixmathfont ≈} &  U+2200 - U+22FF\\ \hline
+Box Drawing & {\mystixmathfont ─} & U+2500 - U+257F\\ \hline
+Miscellaneous Symbols  & {\mystixmathfont{♀}} & U+2600 - U+26FF\\ \hline
+Zero Width No-Break Space (BOM, ZWNBSP) &  &	U+FEFF \\\hline
+Replacement Character &   & U+FFFD \\ \hline
+Mathematical Alphanumeric Symbols  & {\mystixmathfont\char"01D706} {\mystixmathfont\char"01D6FD} &	U+1D400 - U+1D7FF \\ \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+\FloatBarrier
+
+\subsubsection{Use of fonts within the thesis}
+\label{sec:cycle3useOfFontsWithinThesis}
+
+The thesis template ``\foreignlanguage{swedish}{Avhandlingsmall Word}'' from
+\url{https://www.kth.se/student/studier/examensarbete/avhandlingarochexamensarbeten/mall-for-avhandling-1.458236} specifies the use of fonts for the preface pages and the body of the thesis. Figree has been used as a sans serif font for headings. They have specified the use of Georgia as the serif font for the body. Unfortunately, Georgia is a proprietary font; hence, there may be license issues with using it via \LaTeX.
+
+\Needspace*{12\baselineskip}
+To avoid problems with proprietary fonts, this template has used the font setup shown in Listing \ref{lst:FontsUsed} - as the default main font, sans serif font, and monospaced font in the thesis. More specifically, this template has used TeX Gyre Termes, a Times-like font, as the main font; TeX Gyre Heros, a Helvetica-like font, as the sans serif font;  TeX Gyre Cursor, a Courier-like font, as the monospaced font; and 
+STIX Two Math as the math font\footnote{Alternatively, one might use TeX Gyre Pagella Math as the math font.}. Additionally, it makes available the STIX\footnote{STIX Project (Scientific and Technical Information Exchange)} Two Math font as \texttt{\textbackslash mystixmathfont}. This font contains a very large number (more than \num{5200}) glyphs that are useful - see the CTAN\footnote{Comprehensive \TeX\  Archive Network} documentation for the package ``\href{https://ctan.org/pkg/stix2-otf/?lang=en}{\texttt{stix2-otf}} – OpenType Unicode text and maths fonts''. Moreover, the STIX fonts are available under the SIL Open Font License. For additional information, see \href{https://www.overleaf.com/learn/latex/Articles/OpenType-based_math_typesetting%3A_An_introduction_to_the_STIX2_OpenType_fonts}{OpenType-based math typesetting: An introduction to the STIX2 OpenType fonts}.
+
+Note also that \texttt{\textbackslash babelfont} has been used to provide fonts suitable for a number of languages that might be used in a thesis, especially in abstracts and keywords. 
+
+\begin{lstlisting}[style=latexExampleForAuthors, caption={The main fonts used in the template in addition to Figtree}, label=lst:FontsUsed]
+\RequirePackage{fontspec}
+\defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+\ifinswedish
+    \usepackage[english, main=swedish, bidi=basic]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+\fi
+
+\babelfont{rm}{TeX Gyre Termes}
+\DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+\DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+\DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+  
+%\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+\babelfont{sf}{TeX Gyre Heros}
+%\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+\babelfont{tt}{TeX Gyre Cursor}
+\begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+%  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=normal]
+  \setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \newfontfamily\mystixtextfont{STIX Two Text}
+
+    % use english as a fallback when in other languages
+    \babelprovide[import, onchar=ids fonts]{english}
+
+    
+  % for new KTH cover
+  % Load the Figtree font as it is used for the new KTH graphical profile
+  % 
+
+    \newfontfamily{\FigtreeFont}[Ligatures=TeX,
+        Path=./Figtree/static/,
+        Extension = .ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        BoldItalicFont=*-BoldItalic,
+        ItalicFont=*-Italic,
+        FontFace={l}{n}{*-Light},
+        FontFace={l}{it}{*-LightItalic},
+        FontFace={md}{n}{*-Medium},
+        FontFace={md}{it}{*-MediumItalic},
+        FontFace={sb}{n}{*-Semibold},
+        FontFace={sb}{it}{*-SemiBoldItalic},
+        FontFace={k}{n}{*-Black},
+        FontFace={k}{it}{*-BlackItalic},
+        FontFace={eb}{n}{Font=*-ExtraBold},
+        FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+        ]{Figtree}
+
+
+\newfontfamily\pageNumberFont{Figtree} %% set the font to use for page numbering
+
+\newfontfamily{\NotoEmojiFont}[Ligatures=TeX,
+    Path=./Noto_Emoji/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    FontFace={l}{n}{*-Light.ttf},
+    FontFace={md}{n}{*-Medium},
+    FontFace={sb}{n}{*-SemiBold},
+    ]{NotoEmoji}
+
+   % To set the abstract headings in Figtree we redefine the abstravt environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the ssans erif font.
+   % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
+
+      \babelprovide[import, onchar=ids fonts]{greek}
+      \babelfont[greek]{rm}{Noto Serif}
+      \babelfont[greek]{sf}{Noto Sans}
+      \babelfont[greek]{tt}{Noto Mono}
+
+  
+    \babelprovide[import, onchar=ids fonts]{hindi}
+    \babelfont[hindi]{rm}{Noto Serif Devanagari}
+    \babelfont[hindi]{sf}{Noto Sans Devanagari}
+    \babelfont[hindi]{tt}{Noto Sans Devanagari} % Noto Mono does not have the glyphs
+
+    \babelprovide[import, onchar=ids fonts]{russian}
+    \babelfont[russian]{rm}{Noto Serif}
+    \babelfont[russian]{sf}{Noto Sans}
+    \babelfont[russian]{tt}{Noto Mono}
+
+    \babelprovide[import, onchar=ids fonts]{chinese-simplified}
+    \babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+    \babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+    \babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+    
+    \babelfont[chinese-traditional]{rm}{Noto Serif CJK TC}
+    \babelfont[chinese-traditional]{sf}{Noto Sans CJK TC}
+    \babelfont[chinese-traditional]{tt}{Noto Sans Mono CJK TC}
+  
+    \babelprovide[import, onchar=ids fonts]{japanese}
+    \babelfont[japanese]{rm}{Noto Serif CJK JP}
+    \babelfont[japanese]{sf}{Noto Sans CJK JP}
+    \babelfont[japanese]{tt}{Noto Sans Mono CJK JP}
+  
+  % If you are going to use Arabic
+
+    \babelprovide[import, onchar=ids fonts]{arabic}
+    \babelfont[arabic]{rm}{Noto Naskh Arabic}
+    \babelfont[arabic]{sf}{Noto Sans Arabic}
+    \babelfont[arabic]{tt}{Noto Sans Arabic}
+    % If one really needs a monospaced font, one might try Kawkab Mono
+    % However, it seems that it is a work in progress - see https://makkuk.com/kawkab-mono/ and https://github.com/aiaf/kawkab-mono/tree/master
+
+    \babelprovide[import, onchar=ids fonts]{centralkurdish}
+    \babelfont[centralkurdish]{rm}{Noto Naskh Arabic}
+    \babelfont[centralkurdish]{sf}{Noto Sans Arabic}
+    \babelfont[centralkurdish]{tt}{Noto Sans Arabic}
+
+      
+  % If you are going to use Hebrew
+    \babelprovide[import, onchar=ids fonts]{hebrew}
+    \babelfont[hebrew]{rm}{Noto Serif Hebrew}
+    \babelfont[hebrew]{sf}{Noto Sans Hebrew}
+    \babelfont[hebrew]{tt}{Noto Sans Hebrew}
+
+    \babelprovide[import, onchar=ids fonts]{vietnamese}
+    \babelfont[vietnamese]{rm}{Noto Serif}
+    \babelfont[vietnamese]{sf}{Noto Sans}
+    \babelfont[vietnamese]{tt}{Noto Mono}
+  
+    % The Overleaf TeX Live includes these fonts, so there is little you have to do!
+    % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
+    %
+\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
+    ]{Noto Sans Mono CJK JP}
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+    ]{Noto Sans}
+    
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+    ]{Noto Serif}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,
+    ]{DejaVu Sans}
+
+\end{lstlisting}
+
+
+\subsubsection{Mapping unicode characters to fonts}
+
+It is possible to map a given unicode character to a character in a given font. For example, it is possible to always transform the unicode character β to the character β in a Greek font (in this case \textbackslash greekfont), as shown in \Cref{lst:MappingbetaToGreekfont}.
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Mapping the unicode β character to a particular character in the greekfont}, label=lst:MappingbetaToGreekfont]
+\newunicodechar{β}{\iffontchar\font`β β\else{{\greekfont β}}\fi} % Greek Small Letter Beta
+\end{lstlisting}
+
+This mapping is very useful, as it enables an author who uses a tool that allows entry and display of unicode content to directly type what they want. As long as there is a mapping in the font that is currently being used, there is no extra work needed. However, when you want to use this character outside of an environment that provides the desired character, you will get an error in the log file about a missing character. For each of these missing characters, you can define a mapping and then use this character anywhere. This is further illustrated in \Cref{{sec:cycle3LanguagesInAbstracts}}.
+
+\Needspace*{12\baselineskip}
+To help the author, these mappings are placed in files in a folder called \texttt{unicode\_blocks} in files with names of the form:\linebreak[4]
+\texttt{U+<start\_hex>-U+<end\_hex>-<Block Name>.tex}.
+\begin{description}[labelwidth =\widthof{\textbf{U+<start\_hex>-U+<end\_hex>}}, leftmargin = !]
+    \item[U+<start\_hex>-U+<end\_hex>] Provides the precise Unicode range, which is standardized and unambiguous.
+\item[<Block Name>] Adds a human-readable description (e.g., ``Greek and Coptic'', ` ``Devanagari''), making it intuitive.
+\item[.tex] Standard extension for LaTeX source files.
+\end{description}
+
+\Needspace*{5\baselineskip}
+The content of these files in this template is based on those I found relevant or interesting when working on this template and its examples\footnote{I have tried to include most of the characters used in titles, subtitles, abstracts, and keywords of theses in DiVA on or before 2025-05-28. As of that date, 2001 different characters had been used from a variety of fonts. After excluding characters that are in the Private Use Area (U+E000 - U+F8FF), and the Supplementary Private Use Area-B (U+100000 - U+10FFFF); along with non-printing control characters in Latin-1 Supplement (U+0080 - U+00FF). There are 1941 characters used.}. The file \texttt{lib/defines.tex} inputs the different files, so you are free to comment out the input if it is not relevant to your thesis or to add additional files as needed for your thesis.
+
+The files \texttt{README\_notes/characters\_used\_reduced} and\linebreak[4] \texttt{{README\_notes/characters\_used}}  use the \texttt{longtable} package to realize multi-page long tables. Note that in some cases, the characters are replaced by macros that generate a version of the character while avoiding problems with the parsing of the table entries. Also note that in some cases, the characters have to be used in a \textbf{math} environment; hence, they are within a pair of dollar signs.
+\iflabelexists{tab:charactersUsed}{\Cref{tab:charactersUsed} shows a very detailed table with all of the non-excluded characters that were used.
+Note that this table is ~85 pages long.
+}
+\iflabelexists{tab:charactersUsedReduced}{\Cref{tab:charactersUsedReduced} shows a condensed table with all of the non-excluded characters that were used. Note that this table is slightly more than 5 pages long.
+}
+
+\warningExpl{Note that some lines in these files are commented out. The characters have the following values and meanings: 0xfdd3 is unassigned (\ie it does not have a printed representation) from the Arabic Presentation Forms-A block,
+0xfe0f is VARIATION SELECTOR-16 from the Variation Selectors block,
+0xfeff is a ZERO WIDTH NO-BREAK SPACE from the Arabic Presentation Forms-B block, and 
+0xff5e is FULLWIDTH TILDE from the Halfwidth and Fullwidth Forms block. The last of these seems to trigger the parsing that would occur for a tilde character, even though this character has a different unicode point. VARIATION SELECTOR-16 (VS16) is used in conjunction with emojis (as the previous character) to specify emoji-style (with color), while VS15 is used to specify text-style (\ie monochrome) emojis.
+}
+\engExpl{If you are working with the unicode values, two useful references are: 
+\href{https://ftp.jaist.ac.jp/pub/CTAN/fonts/stix2-otf/STIXTwoMath-Regular.pdf}{Unicode Charts for STIX Two Math Regular} and \href{https://www.compart.com/en/unicode/}{Compart AG's Unicode webpages}. If you are on a Linux machine, you can use the command: \texttt{fc-list:charset=xxxx}, where xxxx is the hexadecimal value of a unicode point - this will list which fonts on your system include this codepoint. After determining which font or fonts include this codepoint, you then look for an applicable font name in \texttt{kththesis.cls} to use when making your entry into the relevant \textbf{unicode\_blocks} file. \Cref{lst:pythonNewunicodecharGenerator} on \pageref{lst:pythonNewunicodecharGenerator} shows a Python code snippet that might be helpful.
+}
+\engExpl{Another useful source is \href{https://tug.ctan.org/info/symbols/comprehensive/symbols-a4.pdf}{The Comprehensive \LaTeX\ Symbol List} with its \qty{20323} symbols and commands.
+}
+% If you want to see all of the characters used - in the long form uncomment the following
+\begin{comment}
+\input{README_notes/characters_used}
+\clearpage
+\FloatBarrier
+\end{comment}
+\clearpage
+\input{README_notes/characters_used_reduced}
+\FloatBarrier
+\clearpage
+
+\begin{lstlisting}[language={Python}, caption={Python snippet to generate a range of \textbackslash newunicodechar entries, in this case for U+0900-U+097F-Devanagari}, label=lst:pythonNewunicodecharGenerator]
+import unicodedata
+
+def main():
+    #fontname='mystixmathfont'
+    fontname='hindifont'
+
+    # U+0900-U+097F-Devanagari.tex
+    start_value=0x0900
+    end_value=0x097F
+    for i in range(start_value, end_value+1):
+        hex_value=f"{i:x}"
+        cx_length=len(hex_value)
+        xprefix=''
+        for j in range(1, cx_length+1):
+            xprefix=xprefix+'^'
+        hex_value=f"{xprefix}{hex_value}"
+        #print(f"{i}\t{hex_value}")
+        try:
+            x1=unicodedata.name(chr(i))
+        except ValueError:
+            print(f"%% {i:x} is unassigned")
+            continue
+        print("\\newunicodechar{"+f"{hex_value}"+"}{\\iffontchar\\font`"+f"{hex_value}"+f" {hex_value}"+"\\else{{\\{fontname} "+f"{hex_value}"+"}}\\fi} % "+f"{unicodedata.name(chr(i))}")
+\end{lstlisting}
+
+\generalExpl{In most theses, there is no need for having the character outside of a suitable language context, either entered by a \texttt{\textbackslash selectlanguage\{x\}} or \texttt{\textbackslash foreignlanguage\{x\}\{xxxxx\}\}} - thus most of the mechanisms described above are unnecessary. This is one of the great advantages of using babel.}
+
+\clearpage
+\FloatBarrier
+\subsection{Headings}
+\label{sec:cycle3Headings}
+
+The optional Dedication page does not have a heading. All of the other preface pages (except for the ``Table of Contents'') have an unnumbered heading. The AW-template calls this paragraph style ``\texttt{RomanList}''. However, I believe that this paragraph style \textbf{should} be called ``\texttt{Unnumbered heading 1}''. This style sets the text in Figtree Medium 24pt.
+Chapters should use this same style, but with numbering. This chapter numbering style is called ``\texttt{Heading 1}'' in the AW-template.
+
+The table of contents heading uses a style called ``\texttt{TOCHeading}'' in the AW-template. This uses Figtree Medium 22pt and all caps. It is not clear to me why there is this difference in style. My assumption is that since the table of contents is automatically generated, this heading is also automatically generated and that this uses a style called ``\texttt{TOC Heading}''. I think that to be more consistent with the other preface pages, this should also be set in Figtree Medium 24pt and \textbf{not} set in all caps.
+
+The previous two paragraphs illustrate a difference in how paragraph styles are referred to by names and IDs. This is illustrated in the \gls{XML} as:
+\begin{lstlisting}[style=OOXML, caption={Two lines of the TOCHeading paragraph style}, label=lst:TOCHeadingTwoLines]
+  <w:style w:type="paragraph" w:styleId="TOCHeading">
+    <w:name w:val="TOC Heading"/>
+\end{lstlisting}
+
+\begin{lstlisting}[style=OOXML, caption={Two lines of the Heading 1 paragraph style}, label=lst:Heading1TwoLines]
+  <w:style w:type="paragraph" w:styleId="Heading1">
+    <w:name w:val="heading 1"/>
+\end{lstlisting}
+
+\Needspace*{4\baselineskip}
+At present, I do not understand why the capitalization and spacing are as they appear to be, with the paragraph style appearing in the list of paragraph styles as ``Heading 1'' - but it has the name and ID as shown above. I will try to write the names as they appear in the list of styles unless another ID or name is more suitable.
+
+
+Note that the AW-template does not define something equivalent to a \LaTeX\ part. My \LaTeX\ template defines formatting for those headings shown in Table \ref{tab:headingEquiv}.
+
+\warningExpl{At present, my template does not try to reproduce the line spacing.}
+
+\begin{table}[!ht]
+  \begin{center}
+    \caption{Heading paragraph styles}
+    \label{tab:headingEquiv}
+\resizebox{\columnwidth}{!}{%
+    \begin{tabular}{l|l|l| r| l| r| r| l | l } % <-- Alignments: 1st column left, 2nd middle, with vertical lines in between
+      \textbf{\LaTeX} & \textbf{OOXML} & \textbf{Figtree}  & \textbf{Size}  & \textbf{features}  & \textbf{Above}  & \textbf{Below} & \textbf{Tabs} & \textbf{Line}\\
+        \textbf{} & \textbf{} & \textbf{Font}  & \textbf{pt}  & \textbf{}  & \textbf{pt}  & \textbf{pt} & \textbf{cm} & \textbf{spacing}\\
+      \hline
+part & & Medium & 28 & centered &  178 & 18 &  & \\
+chapter & heading 1 &  Medium & 24 & & 178 & 18 & 1 & 1.15\\
+section & heading 2 &  SemiBold & 14 & Bold & 12 & 12 & 1 & 1\\
+subsection& heading 3 &  SemiBold & 12 & Bold & 12 & 10 & 1.27 & 1\\
+subsubsection& heading 4 &  SemiBold & 12 & Bold Italic & 12 &  10 & 1.52 & 1\\
+paragraph& heading 5 &  Regular & 12 & Underline & 14 &  & 1.78 & 1\\
+subparagraph& heading 6 &  Regular & 12 & Small caps &  & 4 & 2.03 & 1\\
+& heading 7 &  Regular & 12 & All caps & 4 & 3 & 2.29 & 1\\
+& heading 8 &  Regular & 12 & centered &  &  & 2.54 & 1.5\\
+& heading 9 &  Regular & 12 &  &  &  &  1.79 & 1.5\\
+    \end{tabular}
+} % end of resize box
+  \end{center}
+\end{table}
+\FloatBarrier
+
+The \LaTeX\ headings and spacing are done using the \texttt{titlesec} package via the macros \textbackslash titleformat and \textbackslash titlespacing, such as:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\titleformat{\chapter}
+  {\FigtreeFont\fontsize{24}{26}\selectfont}
+  {\thechapter }{20pt}{}
+\titlespacing{\chapter}{-1.0cm}{178pt}{18pt}
+\end{lstlisting}
+
+Only the chapter heading is outdented, \ie with a negative hanging indent; all of the others are even with the left margin of the text.
+
+\Needspace*{7\baselineskip}
+However, as Figtree does \textbf{not} have a small caps regular font (or, in fact, any complete font with small caps) it is not possible to set the subparagraph as per the AW-template. Word solves this problem by emitting special formatting to set the lowercase letters in a string as capital letters using a slightly smaller version of the font in use\footnote{A similar solution for \LaTeX\ is described at \url{https://tex.stackexchange.com/questions/499007/use-fauxsc-if-small-caps-not-avaiaible}.}. An alternative would be to simply swap the features of heading 7 with those of heading 6, \ie use all caps. At present, I have chosen to use yet another alternative, which is to use a different font that has small caps; see the examples that follow:
+\subsubsection{For testing}
+\paragraph{For testing}
+\subparagraph{Some test text in various cases XML, Foo.}
+<<An empty paragraph>>\\
+\vspace{0.5cm}
+
+\Needspace*{6\baselineskip}
+A more complete solution would be to design a complete small caps font for Figtree Regular, much as \foreignlanguage{swedish}{Universitetsservice US-AB} (hereafter, simply US-AB) has done for a small subset of Figtree Medium (called Figtree-Medium-SC700, see \Cref{sec:cycle3NameofInstitutionOnCover}).  However, I have no real desire to be a font designer, so I punted and simply used another sans serif font that includes small caps.
+
+Of course, the best solution would be to select a font that actually has small caps and supports more glyphs (such as Google's Noto - with its 210 families - see \url{https://fonts.google.com/noto}). For some comments about the choice of this font, see \Cref{sec:cycle3ChooseBetterFonts}.
+
+
+
+\section{Cover}
+\label{sec:cycle3cover}
+The AW-template does not include the cover, title page, and book info pages, as for the third-cycle theses they assume that US-AB will do this. However, for the students and their supervisors, it is important to have at least the title page and book information pages so that they can know which document is which and to ensure that all of the contents of these pages are correct. Therefore, I have developed the cover, title page, and book info pages based upon my template for 1\textsuperscript{st} and 2\textsuperscript{nd} cycle theses - together with an examination of a number of PDF files where these pages were generated by US-AB.
+
+All of the text on the cover is centered. The logo is in \texttt{KTH\_logo\_RGB\_bla.png}. The cover is generated from the main \LaTeX\ file with \texttt{\textbackslash kthcover}.
+
+\subsection{Type of thesis}
+\label{sec:cycleTypeofThesis}
+The first line on the cover shows the type of document and the subject, such as ``Doctoral Thesis in Information and Communication Technology''. This text is set in Figtree Regular 10pt.
+
+This is be based on the values set in the file \texttt{custom\_configuration.tex} or in the main thesis file, as shown below:
+
+\begin{lstlisting}[style=latexExampleForAuthors]
+\programcode{KTHIKT}
+\degreeName{Doctorate}
+%\degreeName{Licentiate}
+\subjectArea{Information and Communication Technology}
+\end{lstlisting}
+
+The program codes with their English and Swedish expansions are given in the file \texttt{schools\_and\_programs\_3rd\_cycle.ins}.
+
+\Needspace*{22\baselineskip}
+At present, I use the degreeName in a case statement to generate the line of text as follows:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\begin{center}
+  \ifinswedish
+  {\FigtreeFont\fontsize{12}{13}\selectfont 
+  \IfEqCase{\@degreeName}{%
+    {Doctorate}{Doktorsavhandling}%
+    {Licentiate}{Licentitatavhandling}%
+    }[\typeout{unknown degreeName}]%
+\ inom \@subjectArea\\
+  }
+
+  \else
+{\FigtreeFont\fontsize{10}{12}\selectfont
+  \IfEqCase{\@degreeName}{%
+    {Doctorate}{Doctoral Thesis}%
+    {Licentiate}{Licentiate Thesis}%
+    }[\typeout{unknown degreeName}]%
+\ in \@subjectArea\\
+}
+
+\fi
+\end{lstlisting}
+
+However, I question this handling for the Swedish version of the licentiate, as described in  \Cref{sec:cycleSwedishLicentiateThesisType}.
+Additionally, the subjectArea should generally be set automatically based on the programmecode (as is shown in the \texttt{custom\_configuration.tex} file).
+An additional question concerns the handling of Tekn. Dr. and PhD degrees, see \Cref{sec:cycleDoctoralDegreeQuestion}.
+
+\subsubsection{Uncertainty about type of thesis in Swedish}
+\label{sec:cycleSwedishLicentiateThesisType}
+
+I looked at all of the theses at KTH written in Swedish during 2024 and as of early April 2025. There are only 4 of them: 3 licentiate theses and one doctoral thesis.
+
+Of the three 2024 licentiate theses in Swedish, two refer to the type of thesis as ``\foreignlanguage{swedish}{Licentitatavhandling}'' and one as ``\foreignlanguage{swedish}{Licentiatuppsats}''. And two use the connective as ``\foreignlanguage{swedish}{INOM}'' and one uses``\foreignlanguage{swedish}{i}''.
+
+\Needspace*{14\baselineskip}
+The licentiate ``\foreignlanguage{swedish}{Koordinatbestämda fastighetsgränser: Analys av förutsättningar och förslag till reform av detsvenska gränssystemet}'' by Linda Aldén - \url{https://kth.diva-portal.org/smash/record.jsf?pid=diva2%3A1891543} shows the name of the university under the author's name in English and the type and subject of the thesis  as ``\foreignlanguage{swedish}{Licentitatavhandling inom fastigheter och byggande}''. This thesis uses the new cover format.
+As does the licentiate thesis by Yael Bratel, ``\foreignlanguage{swedish}{Urban rättvisa: Bortom segregation och ojämlikhet – stadsutformning för en rättvis stad}'' and it states ``\foreignlanguage{swedish}{Licentiatavhandling i Planering och Beslutsanalys}'' - \url{https://kth.diva-portal.org/smash/record.jsf?pid=diva2%3A1907707}.
+The licentiate thesis by Anna Strohmayer, ``\foreignlanguage{swedish}{Vardagslivsrummet och meningsskapandet: Vardagsresande och social hållbarhet i den regionala planeringen i Barkarbystaden}'' says that it is a ``\foreignlanguage{swedish}{Licentiatuppsats i planering och beslutsanalys}'' - \url{https://kth.diva-portal.org/smash/record.jsf?pid=diva2%3A1908492}. 
+
+The doctoral thesis by Anna Hrdlicka, ``\foreignlanguage{swedish}{Tidig medborgardialog i svensk detaljplanering: Kan den motiveras?}'' 
+-- \url{https://kth.diva-portal.org/smash/record.jsf?pid=diva2%3A1853301} - shows the type of thesis and subject as ``\foreignlanguage{swedish}{Doktorsavhandling inom Fastigheter och byggande}''. Notee that this thesis uses an old style cover.
+
+\subsubsection{Uncertainty about the names of doctoral degrees}
+\label{sec:cycleDoctoralDegreeQuestion}
+
+The official list of all of the degree names at KTH are given at \url{https://www.kth.se/student/studier/examen/examensregler-1.5685}. For example, it is possible to do a \textit{Tekn. Dr.} degree or a \textit{Doctor of Philosophy} (PhD) degree. How should one distinguish between these two, and where should this distinction be made? I have addressed this by adding a \texttt{\textbackslash degreeModifier} macro and the author sets this in the \texttt{custom\_configuration.tex} file as shown below:
+
+\begin{lstlisting}[style=latexExampleForAuthors]
+\degreeName{Doctorate}
+%\degreeName{Licentiate}
+
+% To support Doctor of Philosophy and Licentiate of Philosophy degrees in addition to Tekn. Dr. and Tekn. Lic. - Uncomment the following line.
+%\degreeModifier{Philosophy}
+\end{lstlisting}
+
+One place where this difference is evident is in the description of the defense on the title page.
+
+\Needspace*{8\baselineskip}
+The template automatically generates the defense description on the title page based on the degree information above and the following:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\presentationDateAndTimeISO{2025-04-15 14:00}
+\presentationLanguage{eng}
+\presentationRoom{via Zoom https://kth-se.zoom.us/j/ddddddddddd}
+\presentationAddress{Isafjordsgatan 22 (Kistagången 16)}
+\presentationCity{Stockholm}
+\end{lstlisting}
+
+\warningExpl{The specification of the "swedish" option to the datetime2 package causes a warning message: "Package glossaries Warning: No language module detected for `swedish'. Language modules need to be installed separately. Please check on CTAN for a bundle called `glossaries-swedish' or similar." To prevent this error message, you can add the "\texttt{notranslate}" option for the glossaries package. If you are writing in Swedish, the template will change the title of the glossary in \textbackslash printglossary to the correct Swedish language title \ie ``Lista över akronymer och förkortningar''.}
+
+
+\Needspace*{4\baselineskip}
+\subsection{Title, Subtitle, and Author's name}
+
+The title is set in Figtree Bold 24pt, the subtitle is set in Figtree SemiBold 14pt, and the author's name is set in all caps using Figtree SemiBold 11.5pt.
+
+\subsection{Name of institution under author's name}
+\label{sec:cycle3NameofInstitutionOnCover}
+
+While trying to make a version of the cover, title page, and book info (i.e., copyright page), I noticed that in a number of the covers (One such thesis is the licentiate ``\foreignlanguage{swedish}{Koordinatbestämda fastighetsgränser: Analys av förutsättningar och förslag till reform av det svenska gränssystemet}'' by Linda Aldén - \url{https://kth.diva-portal.org/smash/record.jsf?pid=diva2%3A1891543} shows the name of the university under the author's name in English.)  that US-AB has set as ``kth royal institute of technology'' in Figtree Medium SC700 (Figtree-Medium-SC700) on the cover at 6.3pt. [The font size is based on the size used in the PostScript when printing on A4 paper and when viewed using Adobe Acrobat. Note that the title on the cover is in 24pt, the author 12pt, and the institution 6pt - as measured with my font ruler.]
+
+\Needspace*{7\baselineskip}
+The embedded font appears as a Type 42 font to encode a subset of a TrueType font. The PostScript code seems to create a GlyphDirectory containing the local ID in the Dict with the ID FCJMUS+Figtree-Medium-SC700 and then adds the required glyphs (/space, /A, /C, /E, /F, /G, /H, /I, /K, /L, /N, /O, /R, /S, /T, /U, /Y) to this directory. Extracting the font using FontForge, I can get a TrueType file DKBYEW+Figtree-Medium-SC700.ttf. This file (of course) only has the required lowercase letters.
+
+I am unsure exactly where the glyphs in the above font originate from or how they were derived. US-AB has said that they produced them using (Adobe) Indesign. The embedded font's copyright string says ``Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)''. Another possible means of generating them is using FontForge as described at \url{https://fontforge.org/docs/ui/dialogs/Styles.html}.
+
+On 2025-04-10, I sent the following questions to US-AB:
+\begin{enumerate}
+    \item Is there a document specifying the layout of the cover, title page, and copyright page?
+    
+    \item As far as I know, Figtree does not have a small caps font, as such. Where did you get this font? Why are you using the lowercase string and small caps rather than setting the text as ``KTH ROYAL INSTITUTE OF TECHNOLOGY'' in Figtree Medium at 6.3pt?
+    
+    \item Is there a source for the whole Figtree Medium SC700 font as a TrueType font?
+        
+    \item  I know that you will generate the covers and other material for printing in G5 format, but perhaps I can make it so that you can get all of the information that you need for this in machine-readable format. Would you be interested in this?
+\end{enumerate}  
+
+\Needspace*{5\baselineskip}
+On 2025-04.11, I got a reply from US-AB that indicated they had done their own small cap font using Indesign. There was no answer to question 1, and a partial answer to questions 2 and 3. They currently have the students fill out a form to request printing for their thesis. From this form, they collect the information that they need. Thus, they did not see any need for the automation of this.
+
+\Needspace*{6\baselineskip}
+At the present time, I have set the university's name on the cover using Figtree Medium 6.3pt using the uppercase version of the university's name. A potential future alternative is to add the limited embedded font file with small caps (\texttt{DKBYEW+Figtree-Medium-SC700.ttf}) to the Overleaf project and then set the string using this small cap font. However, this is \textbf{not} a task that I have given priority to - as US-AB would generally be generating the cover page.
+
+
+
+\subsection{Cover illustration}
+\label{sec:cycle3coverIllustration}
+Some theses feature an optional cover illustration. Although I have not gotten an answer from the KTH communications unit about the specifications of the cover illustration, I have tried to infer something suitable based on an examination of 32 recent covers with an illustration other than the default..
+\warningExpl{Due to the lack of a specification for the cover illustration, one should treat this feature of my template as an experimental feature that will be subject to change. Use at your own risk.}
+
+    
+\subsubsection{Cover images and figures}
+Two macros are introduced to make this process simpler, see \Cref{lst:SettingCoverIllustration}. The first (\texttt{\textbackslash coverIllustration}) provides the filename of the illustration to be used. The template includes a \texttt{figures/image1.png} file\footnote{US-AB says they want a jpg or tiff file - see \href{https://www.kth.se/en/student/studier/examensarbete/avhandlingarochexamensarbeten/trycka-avhandlingar-1.900190}{Printing Thesis}}. This blue rectangular image was taken from the \gls{DOCX} template for undergraduate theses. The author should replace this file name with the name of the file containing the illustration that they want to use.
+
+\textbf{NB} There are some constraints about what you can put on the cover. If in doubt, query KTH's \href{https://intra.kth.se/en/styrning/kths-organisation/verksamhetsstod/kommunikationsavdelningen-1.872391}{Communications Department (COM)}.
+
+\Needspace*{5\baselineskip}
+The second macro (\texttt{\textbackslash coverIllustrationCredit}) enables the author to acknowledge the creator of the illustration. Here, we will assume that the author has the creator's permission to include the illustration on the cover of their thesis. If the author has created their own illustration, then they do not need to specify any credit, as it is implicitly the work of the author.
+
+\Needspace*{7\baselineskip}
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Configuring a cover illustration}, label=lst:SettingCoverIllustration]
+% It is possible to have a cover illustration
+\coverIllustration{figures/image1.png}
+% if so, the author might acknowledge this or give the copyright information for it with:
+\coverIllustrationCredit{A. B. Normal}
+\end{lstlisting}
+
+\textbf{NB} In the \texttt{kththesis.cls} file, the author may have to manually adjust the  \texttt{\textbackslash imageTopMargin} (default \qty{1}{cm}) and \texttt{\textbackslash imageBottomMargin}(default \qty{6}{mm}) parameters. These force a minimum space above and below the illustration.  The maximum height is calculated based on the space available below the ``KTH ROYAL INSTITUTE OF TECHNOLOGY" line and the physical bottom of the page, less the sum of the image margins. The width option is set to 90\% of the \texttt{\textbackslash textwidth} to the \texttt{\textbackslash includegraphics} command. Because the \texttt{keepaspectratio} option is specified, the image will be scaled (keeping the aspect ratio) to the first limitation (in width or height) that occurs. The author can adjust the parameters to get the results that they want. For example, you could change it to allow the image to be \texttt{\textbackslash paperwidth} in width; keep in mind that you will need to go outside the width of the text margins (using the \texttt{adjustbox} package). If you make the illustration too large, it will appear on a second page and \textbf{not} on the cover. If this occurs, you need to reduce the height of the illustration.
+
+The code to do the calculation of space and include graphics is shown in \Cref{lst:codeToIncludeCoverIllustration}.
+
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Configuring a cover illustration}, label=lst:codeToIncludeCoverIllustration]
+
+\zsaveposy{kthlinebottom} % Save Y-coordinate just after KTH line (bottom of its baseline box)
+\vfill % This will fill up remaining space *before* the fixed \vspace* and image
+       % This might not be what you want if you want the image to use up the space.
+       % Let's remove \vfill here and let the image height calculation do the work.
+
+\ifx\@coverIllustration\@empty\relax
+% If you want to add your own LaTeX-generated cover content: remove the \relax above
+% then add your own code here.
+\else
+    \newdimen\imageTopMargin\imageTopMargin=1cm
+    \newdimen\imageBottomMargin\imageBottomMargin=6mm
+    \newdimen\calculatedMaxHeight
+
+    \zifrefundefined{kthlinebottom}{%
+        % True: kthlinebottom is undefined (first run)
+        \calculatedMaxHeight=100mm % Fallback default max height
+        \typeout{LaTeX Warning: Label 'kthlinebottom' undefined. Using default image height. Rerun LaTeX.}
+    }{%
+        % False: kthlinebottom is defined (subsequent runs)
+        \calculatedMaxHeight=\dimexpr \zposy{kthlinebottom}sp - \imageTopMargin - \imageBottomMargin \relax
+        \ifdim\calculatedMaxHeight<10pt \calculatedMaxHeight=10pt \fi % Min sensible height
+    }%
+
+    \par\vspace*{\imageTopMargin}
+
+    \begin{center}
+    \IfFileExists{\@coverIllustration}{%
+        \noindent\includegraphics[
+            width=0.9\textwidth,
+            height=\calculatedMaxHeight,
+            keepaspectratio
+        ]{\@coverIllustration}%
+    }{}%
+    \end{center}
+\fi
+\end{lstlisting}
+
+Potentially, an author could implement a ``Bottom-Bleed Layout'' with the following characteristics:
+\begin{itemize}
+    \item The image starts at a calculated vertical position safely below the KTH logo's required keep-out zone (the bottom of the logo + 1/4 of its height).
+    
+    \item Then the image extends to the full width of the page and down to the bottom edge. Thus, the title, subtitle, author's name, and university name are overlaid directly on top of this image.
+\end{itemize}
+
+The primary challenge of this layout is that the author must select an image that allows the overlaid text to remain highly readable.
+\warningExpl{This sort of cover illustration could be very impactful, but it is not something for the faint of heart. It could also require consideration of the printer's trim margins.}
+
+
+\warningExpl{Because the computation of the available space is not available until the page has been output, you will need to rerun \LaTeX\ to use the value. The y-position data is stored in the \texttt{output.aux} file.}
+
+\Needspace*{9\baselineskip}
+\subsubsection{Draw and make your own cover illustration in \LaTeX{}}
+It is also possible to generate your own cover illustration using \LaTeX{}, for example, using Tikz or another package. You can also include equations. Simply replace the \texttt{\textbackslash relax} in the line \texttt{\textbackslash ifx  \textbackslash @coverIllustration \textbackslash @empty \textbackslash relax}  
+in the code shown in \Cref{lst:codeToIncludeCoverIllustration} with your code to generate the illustration that you want. Alternatively, you can generate the illustration by running your code in another \LaTeX\ project and then just include the results as an image (using the above method). You will probably need to give the graphics to US-AB as an image file.
+
+
+\section{Title page}
+\label{sec:cycle3Titlepage}
+
+
+All of the text on the cover is set flush left. The title page is generated from the main \LaTeX\ file with \texttt{\textbackslash titlepage}.
+The fonts and font sizes used for the title, subtitle, and author's names are the same as on the cover.
+
+The defense description is set in 8pt Figtree Regular and placed 68pt below the author's name.
+
+At the bottom of the page, set in 8pt Figtree Regular, is some information about the thesis. The first line is the type of degree and subject area (the same as the cover). The bottom two lines are \first the institution name and  \Second the city and country of the institution, followed by the year of the thesis. These fields are set in either English or Swedish (based on the author's choice of the language of the thesis)\iflabelexists{sec:cycle3authorConfigs}{, see \Cref{{sec:cycle3authorConfigs}}}.
+
+\Needspace*{10\baselineskip}
+For my version of the template, I have also included a line (or lines) for the supervisors and for the alternative title and subtitle. 
+For example:
+\begin{lstlisting}
+Doctoral Thesis in Information and Communication Technology
+Supervisors: A. Busy Supervisor, Another Busy Supervisor, Third Busy Supervisor
+Swedish title: Detta är den svenska översättningen av titeln
+Swedish subtitle: Detta är den svenska översättningen av undertiteln
+KTH Royal Institute of Technology
+Stockholm, Sweden 2025
+\end{lstlisting}
+
+By adding the extra lines in the middle, I've basically kept the format - while providing a way to add the extra metadata (needed for DiVA) in a visible form.
+
+\section{Book info page}
+\label{sec:cycle3BookinfoPage}
+
+All of the text on this page is set flush left at the bottom of the page in Figtree Regular 8pt.
+
+There are two versions of this page: \textbackslash bookinfopage and \textbackslash bookinfopageCC (for a Creative Commons license). Each generates the top part of the text at the bottom of the page.
+
+\textit{Optionally}, there is a 1ex space before and after a line that acknowledges the copyright/author of the cover illustration. For example, the author might acknowledge this with:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\coverIllustrationCredit{A. B. Normal}
+\end{lstlisting}
+producing in a thesis in English:
+\begin{verbatim}
+Cover illustration: A. B. Normal
+\end{verbatim}
+or in a thesis in Swedish:
+\begin{verbatim}
+Omslagsillustration: A. B. Normal
+\end{verbatim}
+
+Next, there is a 1ex space before the TRITA number and ISBN numbers are given (one line for each).
+
+Next, there is a 1ex space before information about the printer is given, for example as:
+\begin{verbatim}
+Printed by: Universitetsservice US-AB, Sweden 2025
+\end{verbatim}
+The \texttt{printedBy} is set in the thesis with the macro:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\printedBy{Universitetsservice US-AB, Sweden 2025}
+\end{lstlisting}
+Alternatively, a Swedish version of the thesis 
+that includes the following in the thesis:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\printedBy{Universitetsservice US-AB, Stockholm 2025}
+\end{lstlisting}
+will result in:
+\begin{verbatim}
+Tryck: Universitetsservice US-AB, Stockholm 2025
+\end{verbatim}
+
+For both \texttt{\textbackslash coverIllustrationCredit} and \texttt{\textbackslash printedBy}, the default value is empty. If the string is empty, then nothing is printed.
+
+\section{Back Cover}
+\label{sec:cycle3Backcover}
+
+The AW-template does not specify a back cover, as it leaves this up to US-AB. I have used the same \texttt{\textbackslash kthbackcover°} as used in my earlier template, but \first added the ISBN number and \Second moved the place and year to the top of the page (with the same white space above it as to the left of it).
+
+\section{Abstracts and keywords}
+\label{sec:cycle3AbstractsAndKeywords}
+
+One of the important features of the template is the ability to have abstracts and keywords in a number of different languages - while at the same time making it easier to extract the abstracts and keywords for input to DiVA.
+
+To provide a heading consistent with the AW-template, I have changed the abstract environment to use the \texttt{chapter*} rather than \texttt{section*} heading style:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\renewenvironment{abstract}{\chapter*{\abstractname}}
+\end{lstlisting}
+
+As these headings are unnumbered, there needs to be a change in the spacing for the starred version of the spacing for a chapter, by using \texttt{\textbackslash titlespacing*} as follows: 
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|]
+\titlespacing*{\chapter}{|\textcolor{kth-lightblue}{0.0cm}|}{178pt}{18pt}
+\end{lstlisting}
+
+\textbf{NB} As this heading style takes up a lot of vertical space on a page, many abstracts will go from a single page to two (or more) pages. I think that this is a poor design choice as it makes it harder for a reader (of the printed or PDF versions) to get a quick overview of the thesis and thus likely decreases the probability that they read the rest of the abstract. Alternatively, it will be a forcing function to cause authors to shorten their abstracts so that the abstract and keywords can fit in the remaining space on the page!
+
+Note that some subject areas commonly use structured abstracts, see the section ``Structured abstracts'' of \texttt{README\_3rd\_cycle\_author.tex}.
+
+\subsection{Language and font usage in Abstracts}
+\label{sec:cycle3LanguagesInAbstracts}
+
+In order to easily support abstracts in multiple languages, this template uses the \texttt{Babel} package. This package enables the user to indicate which language a block or string is written in using the name of the language in lowercase. \Cref{lst:FrenchAbstract} uses the \texttt{abstract\_french.tex} file as an example.
+The file begins with \texttt{\textbackslash selectlanguage\{french\}}. It is important to note that the \texttt{\textbackslash cleardoublepage} is before the end of the region that is going to be in French. This is necessary because the running heading uses the French name for the abstract/summary. The running heading uses the ``mark'' given by \texttt{\textbackslash abstractname}. For each language that babel supports, there is a \hbox{\textit{language}\texttt{.ldf}} file that defines a number of values, such as \texttt{\textbackslash abstractname}. However, I have chosen to have the user provide the name via an explicit directive of the form: \texttt{\textbackslash setlocalecaption\{french\}\{abstract\}\{Résumé\}}. This has the advantage of allowing the user to easily change the name of the ``abstract'' to be the correct term for a \textit{summary} in the language when what is given is actually a summary and not an abstract, \ie the text is not necessarily a translation of the abstract in the language of the thesis.
+
+Additionally, there is no name defined for the keywords heading, so this has to be provided by you as an author using the \texttt{\textbackslash keywordHeading\{\}} command.
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|, caption={Structure of abstract\_french.tex}, label=lst:FrenchAbstract]
+\selectlanguage{french}
+\setlocalecaption{french}{abstract}{Résumé}
+\begin{abstract}
+    \markboth{\abstractname}{}
+\begin{ThesisAbstract}{fre}
+Résumé en français.
+\end{ThesisAbstract}
+
+\keywordHeading{Mots-clés}
+\begin{ThesisKeywords}{fre}
+5-6 mots-clés
+\end{ThesisKeywords}
+\end{abstract}
+\cleardoublepage
+\end{lstlisting}
+
+Part of the functionality of the selection of a language is to change the hyphenation rules to those for the selected language and to introduce new commands of the form \hbox{\textit{language}\texttt{text\{\}}} and \hbox{\textit{language}\texttt{sftext\{\}}} that can be used to switch the font used to output the content in this language. These new commands are automatically invoked when a language is selected.
+
+\Needspace*{11\baselineskip}
+\Cref{lst:FontConfigurationForChinese} shows an example of configuring three fonts (a serif font, a sans serif font, and a monospacing font) for use with Chinese. When the author selects the language, they specify either \texttt{chinese-simplified} or \texttt{chinese-traditional}.
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|, caption={Font configuration for Chinese}, label=lst:FontConfigurationForChinese]
+\babelprovide[import, onchar=ids fonts]{chinese-simplified}
+\babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+\babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+\babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+    
+\babelfont[chinese-traditional]{rm}{Noto Serif CJK TC}
+\babelfont[chinese-traditional]{sf}{Noto Sans CJK TC}
+\babelfont[chinese-traditional]{tt}{Noto Sans Mono CJK TC}
+\end{lstlisting}
+
+As a result, the contents will be set using these fonts. This also means that the running heading in the language of the abstract will use the correct font! However, not all fonts contain the letters that appear in lowercase Roman numerals as used for the page numbers.
+To address this problem, a sans serif font has been selected to be used for page numbering, see \Cref{lst:pageNumeringFont}.
+\begin{lstlisting}[style=latexExampleForAuthors,  escapechar=|, caption={Font configuration for page numbering}, label=lst:pageNumeringFont]
+\newfontfamily\pageNumberFont{TeX Gyre Heros}
+\end{lstlisting}
+
+In this template, the sans serif font (used in the body of the text) has been selected for the page number. Potentially, this could have been Figtree. However, as noted previously for many languages, Figtree does not have the characters needed, so the rest of the running heading has to be set in the appropriate font for the language that is being used. When the language used does not require a font different from that used for the main body of the thesis, the default sans serif font is used for the running heading. For consistency, I have used the same font for the page numbering. This means that there will potentially be some font dissonance in these running headings (\eg with Chinese, Greek, Hebrew, Hindi, Japanese, Russian, and Vietnamese). However, I think that this dissonance is minimal as \first I have used a sans serif font from the same font family for each of these languages and \Second this same font is being used when setting the \texttt{abstractname}. The alternative would be to use the numbering scheme of the specific language, but I think that this would be unnecessarily complex to implement (especially when it comes to lowercase Roman numerals and bidirectional typesetting).
+
+\subsection{Keywords in Abstracts}
+\label{sec:cycle3KeywordsInAbstracts}
+The AW-template says that the heading ``Keywords'' in the abstract should be set in Georgia Bold 12pt. Personally, I find this choice by the AW-template a bit ugly as one is using a serif font in what is functionally a heading -- when all of the other headings are in sans serif. Additionally, as noted earlier, Georgia Bold is a proprietary font.
+
+I have added a macro to handle the keywords header in the abstract, so rather than saying:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\subsection*{Keywords}
+\end{lstlisting}
+one uses the \texttt{\textbackslash keywordHeading} command. This command is defined as:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\newcommand{\keywordHeading}[1]{\vspace{24pt}\noindent{\rmfamily\fontsize{12}{14}\fontseries{b}\selectfont {#1}}\par}
+\end{lstlisting}
+
+\Needspace*{3\baselineskip}
+In this way, if others also find it ugly, they can simply replace \textbackslash keywordHeading\{x\} with \textbackslash subsection*\{x\} \textbf{or} just change the definition of the macro to:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\newcommand{\keywordHeading}[1]{\subsection*{#1}}
+\end{lstlisting}
+
+\subsection{Tables and images in abstracts}
+\label{sec:cycle3TablesAndImagesInAbstracts}
+\warningExpl{This template and the tools that I have written to help enter the metadata into DiVA do \textbf{not} support tables and figures in abstracts.}
+
+As an abstract in DiVA can contain HTML code, it is technically possible to make tables and include figures in a DiVA abstract. The problems are \first that I do not know a general means of transforming a table from LaTeX to HTML, and \Second I do not know of a good way of passing the image (or images) that might be in a LaTeX abstract (via tools) to DiVA. The second problem might be addressed by attaching the image files to the PDF and adding code to the generated HTML to refer to these images. One problem with this is that the images would probably need to be uploaded as supplemental/supporting material, and then there would need to be some tool to update the abstract to refer to this uploaded file.
+
+In a recent correction that I suggested for a thesis abstract in DiVA, I manually created the table in HTML to match the table that was in the abstract in the printed thesis.
+\warningExpl{The DiVA administrator who entered the thesis into DiVA had not put \emph{any} of the abstract in, but simply put "See file" in the abstract field!}
+
+\subsection{Graphical or visual abstracts}
+\label{sec:cycle3GraphicalAbstracts}
+
+KI has an excellent page about graphical abstracts, see \href{https://kib.ki.se/en/visualise-present/visualising-data/graphical-abstracts}{Graphical abstracts}. At present, this template does \textbf{not} provide any special support for graphical abstracts. One can use the usual mechanisms to include a figure in the abstract; however, see \Cref{sec:cycle3TablesAndImagesInAbstracts}.
+
+\warningExpl{I am unsure \first how to deal with such figures with respect to facilitating their inclusion in DiVA (Could it be uploaded separately as supplemental material?), and \Second it is unclear to me whether this graphical abstract would be placed before or after the keywords in the LaTeX file. This will require some further evaluation.}
+
+\engExpl{Recently, I helped create a graphical abstract (for a journal paper) using \texttt{tikz}. This method might have some advantages in terms of accessibility if the \texttt{tikz} source code were available to a (screen) reader. This might be done by including the source code in a \texttt{alt} tag.}
+
+
+\section{Table of contents and its placement}
+\label{sec:cycle3TableOfContents}
+
+Following the page order described in the \textit{Chicago Manual of Style}, the table of contents is located before the lists of figures, tables, abbreviations, \etc. In contrast, the AW-template places the table of contents after these lists. I see no reason to follow the page ordering of the AW-template; hence, I have placed the table of contents after the acknowledgments and before the various lists. In this way, the list-like front matter is all together, and the text-like front matter is also together\footnote{At Karolinska Institutet, they place the acknowledgments after the \textit{Points of Perspective} and the \textit{Declaration about the use of Generative AI}, and the \textit{References} - see \url{https://staff.ki.se/doctoral-education/time-to-defend-your-thesis/content-of-the-thesis}.}.
+
+Note that the AW-template sets the heading of the table of contents as all caps in 22pt. However, as noted earlier, I see no reason to do so, especially as this is \textit{not} in keeping with the other \textit{front matter} pages. Additionally, I set it in 24pt to match the other preface page headings.
+
+If someone really wants the table of contents heading in all caps, then one can add the command \texttt{\textbackslash MakeUppercase} as shown below:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\renewcommand{\cfttoctitlefont}{\FigtreeFont\fontsize{24}{26}\fontseries{md}\selectfont\MakeUppercase}
+\tableofcontents
+\end{lstlisting}
+
+
+I have used the \texttt{tocloft} package to change the font and font size used for the entries in the table of contents and the page numbers in the table of contents.
+
+
+\section{The List of Figures, List of Tables, Listings, etc.}
+
+The AW-template places these lists after the table of contents and numbers them starting from the first page after the table of contents. However, this does not make sense as these pages are part of the front matter and not part of the body of the thesis.
+
+\textbf{NB} Note that the words ``Figures'' and ``Tables'' are capitalized. Saying ``List of Listings'' would seem redundant; hence, I have simply titled it ``Listings''.
+
+The AW-template, seems to ignore the fact that it is often very useful to number figures, tables, listings with a hierarchical label \textit{within} the relevant section. For example, having a ``Figure 2.2'', a ``Table D.1'', and Listing ``E.4''. Additionally, there is no need to name the entry in the list of figures, as ``Figure 2.2'', it can simply be ``2.2'' with its description - as ``Figure'' is common to all of the entries in the list of figures.
+
+\Needspace*{7\baselineskip}
+Note that the entries in the table of contents in the AW-template are misleading, as they contain the description of the setting for the heading and \textbf{not} for the entry in the table of contents! From a reader's point of view, it would have been better to add the formatting information as comments in the \gls{DOCX} document. Moreover, it would have been better to systematically name the paragraph styles that are used. Additionally, as the template is written in English, all of the paragraph style names (and character style names) should be in English.
+
+\Needspace*{4\baselineskip}
+I am not sure why the AW-template specifies that the entries in these tables are set using Georgia Regular 9pt. I expect that this will be unreadable for many readers. It makes much more sense to set these as the same font and font size as used in the body of the thesis. Therefore,I have used the serifed font and size used in the body of the thesis.
+
+\Needspace*{4\baselineskip}
+It is also useful to know that in \LaTeX\ it is possible to specify a ``short'' description that is to be used in the List of ``X'' - just as one can do for headings that appear in the table of contents. The use of the optional short form enables a short description in the table of contents or List of ``X'', while having a (very) long heading or description.
+
+
+\Needspace*{8\baselineskip}
+\section{List of acronyms and abbreviations}
+To get the page heading in the correct place, set \texttt{section=chapter} in the options to the \texttt{glossaries-extra} package:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\usepackage[acronym, style=super, section=chapter, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}\end{lstlisting}
+
+\section{List of Symbols Used}
+
+An optional section that is useful in some theses is a ``List of Symbols Used'', \ie nomenclature. This list should indicate where a given symbol is defined. To have such a table included, one simply enables this option in the \texttt{\textbackslash documentclass}.
+
+\section{List of publications}
+\label{sec:cycle3ListOfPublications}
+
+The AW-template has a page listing all of the publications included in the thesis, with an option for additional scientific publications that are not included in the thesis. While the AW-template says that these additional publications should be placed on a new page, this does not make much sense to me, since either this would be on the back side of the list of publications page or on the next odd page. Additionally, it is likely to be rare that the list (when listing \textit{only titles}) of publications included in the thesis would exceed one page.
+
+Stylistically, having such a list as a separate page does not make a lot of sense for a \textit{reader of the thesis}, as the list of publications and the author's contributions are generally given in the body of the thesis. If the purpose of this list is to facilitate \textit{a DIVA administrator or the student} entering a list of the \textit{included publications} in DiVA, then the list should list the publications in their full reference format, as even though the DiVA page for the thesis will simply list them by title -- each of these titles has a hyperlink to a DiVA page for the publication. Without having the full reference in this list, what is a suitable means of helping the reader find the full reference to the item being described? This template proposes a means of having a list of publications while collecting the relevant information about the included papers as part of the process of producing the divider pages.
+
+\Needspace*{5\baselineskip}
+Increasingly, there are peer-reviewed artifacts, in addition to patents, along with other scientific output (datasets, patent applications, posters, reports, \etc). Therefore, I have expanded the list of publications to be able to include numbered lists: \texttt{ListOfPapers},  \texttt{ListOfPosters},  \texttt{ListOfPatents},
+\texttt{ListOfReports}, \texttt{ListOfPatentApplications},  \texttt{ListOfArtifacts}, and \texttt{ListOfDatasets}. You can create groups of publications as shown in the ``List of Publications''\iflabelexists{chap:listOfPublications}{on page\,\pageref{chap:listOfPublications}}.
+
+\Needspace*{10\baselineskip}
+The basic form for each of these new lists is illustrated in the following code for \texttt{ListOfPapers}:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\newlist{ListOfPapers}{enumerate}{1}
+\setlist[ListOfPapers]{
+    leftmargin=*,
+    label={Paper \Alph*},
+    ref={Paper \Alph*},
+    resume=listOFPapers,
+    itemsep=0em,
+    first=\raggedright
+  }
+\end{lstlisting}
+
+These lists use the \texttt{enumitem} package. The labels are automatically set for the type of publication, along with a reference to it. This reference can be used when making the tabs on the divider pages (with \texttt{\textbackslash ref*\{paper:A\}}) and when writing about the publication (\texttt{\textbackslash ref\{paper:A\}}). The first form does \textit{not} have a hyperlink or coloring of the hyperlink, while the second form will. The \texttt{resume} has been set so that the numbering for a given type of publication continues when this environment is used again. The items are set ragged right to avoid hyphenation and justification of the text.
+
+\section{Chapters within the thesis}
+\label{sec:cycle3ChaptersWithThesis}
+
+The names of the chapters in the AW-template are best ignored, as while there are some theses that might be organized this way - \textbf{not} all theses will have these chapters and organization.
+
+
+
+\section{Paragraph formatting within the thesis body}
+\label{sec:cycle3ParagraphFOrmattingQuestionable}
+
+In Section 2.1 of the AW-template there is an example of a bulleted list with a description of the indent and font size to be used. I am not sure that it is worth trying to follow these paragraph-level styles in my template - as I am not sure that they are better than what the template already does.
+
+
+
+\section{References}
+\label{sec:cycle3Refrences}
+The AW-template uses the American Psychological Association (APA) reference style\footnote{I suspect that this choice is because this is one of the reference formats supported by Word.} and specifies that the entries are to be formatted in Georgia Regular 11pt. In contrast, this template lets the author choose the citation and reference style. Additionally, it sets the references in the same font size as used for the body of the text (as I see no reason to reduce the point size of the text in each of the references by 1 pt).
+
+\Needspace*{2\baselineskip}
+The template sets the title of the reference page to ``References'' using:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\renewcommand{\bibname}{References}
+\end{lstlisting}
+
+\Needspace*{5\baselineskip}
+When using biblatex, the following is used to change the heading for the references page to use the \texttt{chapter*} format:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\defbibheading{bibliography}[\bibname]{%
+  \chapter*{#1}%
+  }
+\end{lstlisting}
+
+Note that, unlike the AW-template, this template uses an unnumbered chapter heading for the references (as the references are \textbf{not} a chapter).
+
+\section{Appendices}
+\label{sec:cycle3Appendices}
+The AW-template provides no guidance about appendices. In contrast, this template numbers the appendices with capital letters, starting with 'A'.
+
+\section{Included papers}
+\label{sec:cycle3IncludedPapers}
+The AW-template provides no guidance about how to include publications or how the divider pages should be formatted. In this template, section ``Including the PDF of a publication'' of \texttt{README\_3rd\_cycle\_author.tex}. shows how to include PDF files of publications, while \Cref{sec:cycle3DividerPages} describes and illustrates how to make divider pages.
+
+
+\section{Divider pages}
+\label{sec:cycle3DividerPages}
+
+It is highly desirable for a compilation thesis to have divider pages inserted before each of the included publications. My aim is to automate much of the generation of such pages.
+
+\Needspace*{4\baselineskip}
+Looking at the printed thesis \textit{Data verification for GNSS systems and protection of GNSS services} by Marco Spanghero, URN: \href{https://urn.kb.se/resolve?urn=urn%3Anbn%3Ase%3Akth%3Adiva-361272}{urn:nbn:se:kth:diva-361272}, ISBN: 978-91-8106-231-1 (print), I found that the positioning of the tabs follows (roughly) the parameters shown in \Cref{lst:myfaancytabParameters}.
+
+\Needspace*{12\baselineskip}
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Parameters used with myfancytab macro}, label=lst:myfaancytabParameters]
+\fancytabsWidth{5cm}     % width of tabs
+\fancytabsHeight{1.9cm}  % height of tab
+\fancytabsCount{10}      % maximum tab positions per page
+\fancytabsGap{0.5cm}     % spacing between tabs
+\fancytabsTop{1.8cm}     % space above first tab
+\fancytabsTextHPos{0.25} % fraction of tab width for start of text
+\fancytabsStyle{\FigtreeFont\fontsize{24}{30}} % font to use for text on the tab
+\end{lstlisting}
+
+\subsection{How to make divider pages}
+\label{sec:cycle3HowToMakeDividerPages}
+
+\Needspace*{7\baselineskip}
+The \texttt{fancytabs} package is used with the parameters shown in \Cref{lst:myfaancytabParameters}
+and a customized \texttt{myfancytab} macro. The definition of this macro is in the \texttt{examplethesis.tex} file. The arguments to the macro are \texttt{LEFT/RIGHT}, the text to be shown in white on a black tab, the index of the tab (starting at 1) the bibliographic tab for the entry to be used, and the name of the bibliography file that the bibentry can be found it. The end of the \texttt{examplethesis.tex} file shows examples of tabs for different types of publications and how to include the PDF of the included publications
+
+Note that the \texttt{myfancytab} macro retains the same initial arguments as the \texttt{fancytab} macro, so that if an author wanted to have \textit{very} fancy tabs, they could readily modify the \texttt{myfancytab} macro.
+
+The two additional arguments to the \texttt{myfancytab} macro were made based upon a request from one of the KTH librarians\footnote{< Andersson} to make it easier for people to add the publications that they have included in DiVA before they register their thesis in DiVA. Therefore, as a side effect of processing the divider pages \texttt{myfancytab} emits information into a file called \texttt{citedtags.bib}. In the case of bibtex, each of the bib entries for the included publication is inserted into the file. Unfortunately, since biblatex can search a number of bibliography files for an entry and it has no means to provide just the bibliography file where the entry was found or to return the bib entry itself, it has to use the separate \texttt{Paper\_A.bib}, etc. bib files to provide these entries - just the same as for bibtex. In the case of biblatex, the \texttt{myfancytab} macro also writes a fake bibentry with a tag of the form \texttt{fakebibN} where N is the integer index of the tab number. For some examples, see \Cref{lst:fakebibentry}.  Alternatively, one might just include all of the bibliography files that were available. The idea is that the \texttt{citedtags.bib} could later be processed by an external script that could check whether the publication is already in DIVA and if not, then offer to add it to DiVA for the user. Note that writing such a script remains for future work and the availability of the new Cora API that will be used for the new version of DiVA\footnote{Expected to be used by KTH in late Spring 2026}.
+
+
+\Needspace*{34\baselineskip}
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Examples of fake bibliographic entries}, label=lst:fakebibentry]
+@misc{fakebib1, cited="ioannidis\_coherent\_1991" bib="Included\_publications/Paper\_A"}
+@article{ioannidis\_coherent\_1991\_pub, title = {Coherent {File} {Distribution} {Protocol}}, volume = {RFC 1235 (Experimental)}, issn = {2070-1721}, url = {http://www.rfc-editor.org/rfc/rfc1235.txt}, doi = {10.17487/RFC1235}, abstract = {This memo describes the Coherent File Distribution Protocol (CFDP). This is an Experimental Protocol for the Internet community. It does not specify an Internet standard.}, journal = {Internet Request for Comments}, author = {Ioannidis, J. and Maguire, G.}, month = jun, year = {1991} }
+@misc{fakebib2, cited="maguire\_jr\_new\_2014" bib="Included\_publications/Paper\_B"}
+@article{maguire\_jr\_new\_2014\_pub, title = {A {New} {Automated} {Way} to {Measure} {Polyethylene} {Wear} in {THA} {Using} a {High} {Resolution} {CT} {Scanner}: {Method} and {Analysis}}, volume = {2014}, issn = {2356-6140, 1537-744X}, shorttitle = {A {New} {Automated} {Way} to {Measure} {Polyethylene} {Wear} in {THA} {Using} a {High} {Resolution} {CT} {Scanner}}, url = {http://www.hindawi.com/journals/tswj/2014/528407/}, doi = {10.1155/2014/528407}, abstract = {As the most advantageous total hip arthroplasty (THA) operation is the first, timely replacement of only the liner is socially and economically important because the utilization of THA is increasing as younger and more active patients are receiving implants and they are living longer. Automatic algorithms were developed to infer liner wear by estimating the separation between the acetabular cup and femoral component head given a computed tomography (CT) volume. Two series of CT volumes of a hip phantom were acquired with the femoral component head placed at 14 different positions relative to the acetabular cup. The mean and standard deviation (SD) of the diameter of the acetabular cup and femoral component head, in addition to the range of error in the expected wear values and the repeatability of all the measurements, were calculated. The algorithms resulted in a mean (±SD) for the diameter of the acetabular cup of 54.21 (±0.011) mm and for the femoral component head of 22.09 (±0.02) mm. The wear error was ±0.1 mm and the repeatability was 0.077 mm. This approach is applicable clinically as it utilizes readily available computed tomography imaging systems and requires only five minutes of human interaction.}, language = {english}, journal = {The Scientific World Journal}, author = {Maguire Jr., Gerald Q. and Noz, Marilyn E. and Olivecrona, Henrik and Zeleznik, Michael P. and Weidenhielm, Lars}, year = {2014}, pages = {1--9} }
+\end{lstlisting}
+
+
+\section{Writing additional files}
+\label{sec:cycle3WritingFiles}
+
+As described in the previous section, there is a \texttt{citedtags.bib} being written as a side effect of the \texttt{myfancytab} macro. To make it easier to open, close, and write to such files, a number of new commands were added to the \texttt{kththesis.cls} class file. These commands are shown in \Cref{lst:fileIOmacros}.
+
+\begin{lstlisting}[style=latexExampleForAuthors, caption={File I/O macros}, label=lst:fileIOmacros]
+% Define some functions to make it easier to open, close, and write to the file if it is open, while generating errors if the file is not open
+\newcommand{\FileOpen}[2]{%
+% arg 1 is a filehandle as a string
+% arg 2 is a filename
+    \expandafter\newwrite\csname#1\endcsname%
+    \expandafter\immediate\expandafter\openout\csname#1\endcsname #2%
+}
+
+\newcommand{\FileClose}[1]{%
+% arg 1 is a filehandle as a string
+    \expandafter\immediate\expandafter\closeout\csname#1\endcsname%
+    \expandafter\let\csname#1\endcsname\undefined % Mark the handle as undefined after closing
+}
+
+\newcommand{\WriteIfFileOpen}[2]{%
+% arg 1 is a filehandle
+% arg 2 is content to be written to a file
+  \expandafter\ifcsname\string#1\endcsname
+    % The control sequence for the file handle exists
+    \immediate\write\csname #1\endcsname{#2}%
+  \else
+    % The control sequence for the file handle is not defined
+    \PackageWarning{mypackage}{File handle '#1' is not defined (or closed).}%
+  \fi
+}
+\end{lstlisting}
+
+\Needspace*{9\baselineskip}
+While the above macros might seem complex due to the many uses of \texttt{\textbackslash expandafter} - they use the same mechanism to take a text string as a filehandle and use this with the underlying \texttt{\textbackslash newwrite}, \texttt{\textbackslash openout},  \texttt{\textbackslash closeout}, and \texttt{\textbackslash write} commands. The \texttt{\textbackslash immediate} command is used to force the operation to occur immediately rather than when a page is being output. A very subtle twist to all of this code is the testing for the filehandle being defined as a command sequence and the redefinition of the command sequence to be undefined when the file is closed. This twist enables the code to generate a warning if the user tries to write to the file before it is opened or after it is closed. The format of such a warning is shown in \Cref{lst:filewarnings}.
+
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Examples of warning when using a file that is not open}, label=lst:filewarnings]
+Package kththesis Warning: File handle 'citedtagsfile' is not defined (or closed). on input line xxxx.
+\end{lstlisting}
+
+Using these new macros, one opens the \texttt{citedtags.bib} file before generating the fancytabs and including the PDF files as shown in \Cref{lst:filewOpening} and then closing the file after having included all of the publications as shown in \Cref{lst:filewOClosing}.
+
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Opening a file}, label=lst:filewOpening]
+\FileOpen{citedtagsfile}{citedtags.bib}
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=latexExampleForAuthors, caption={Closing a file}, label=lst:filewOClosing]
+\FileClose{citedtagsfile}
+\end{lstlisting}
+
+
+\section{Posting}
+\label{sec:cycle3Spik}
+
+In conjunction with the posting (or ``nailing'') of the thesis, there is a need to produce an announcement with details of the thesis and the details of the time and place of the public defense. However, as the required information now needs to be on the title page, there is no longer a need to produce a separate document (\foreignlanguage{swedish}{spikblad}) for this\footnote{See \foreignlanguage{swedish}{Avskaffa spikblad för licentiatuppsatser och doktorsavhandlingar
+ Dnr V-2017 - Fakultetsrådet protokoll} 1/18, 2018-02-07.}.
+ 
+ \warningExpl{The \texttt{fordiva.json} file could be used to produce an announcement (ie calendar event) via the KTH Calendar. Potentially, this could be automated. Who would be responsible for this?}
+ 
+\ifinswedish
+\printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
+och förkortningar}]
+\else
+%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+\printnoidxglossaries
+\fi
+\clearpage
+
+% --- print the bibliography ---
+% Print the bibliography (and make it appear in the table of contents)
+
+% Specify the title of the references page
+% This will work for both BibLaTeX and BibTeX.
+% It works for BibTeX because the thesis format is basically that of a Report.
+\renewcommand{\bibname}{References}
+
+\ifbiblatex
+    %\typeout{Biblatex current language is \currentlang}
+
+    \printbibliography[heading=bibintoc, title={References}]
+\else
+   
+    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
+    \addcontentsline{toc}{chapter}{References}
+    \bibliography{references}
+\fi
+
+\ReportTimeStamp{Ending of Document}
+\end{document}
+
+
+ 

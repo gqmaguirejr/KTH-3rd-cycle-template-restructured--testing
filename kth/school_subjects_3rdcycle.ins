@@ -1,0 +1,121 @@
+\newcommand{\schoolAcronym}[1]{%
+  \ifinswedish
+    \strcompare{#1}{ABE}{Skolan för Arkitektur och samhällsbyggnad}{}%
+    \strcompare{#1}{ITM}{Skolan för Industriell teknik och management}{}%
+    \strcompare{#1}{SCI}{Skolan för Teknikvetenskap}{}%
+    \strcompare{#1}{CBH}{Skolan för Kemi, bioteknologi och hälsa}{}%
+    \strcompare{#1}{EECS}{Skolan för Elektroteknik och datavetenskap}{}%
+    \strcompare{#1}{XXX}{*****Skolan för XXX*****}{}% Fake school for use in template
+  \else
+    \strcompare{#1}{ABE}{School of Architecture and the Built Environment}{}%
+    \strcompare{#1}{ITM}{School of Industrial Engineering and Management}{}%
+    \strcompare{#1}{SCI}{School of Engineering Sciences}{}%
+    \strcompare{#1}{CBH}{School of Engineering Sciences in Chemistry, Biotechnology and Health}{}%
+    \strcompare{#1}{EECS}{School of Electrical Engineering and Computer Science}{}%
+    \strcompare{#1}{XXX}{*****School of XXX*****}{}% Fake school for use in template
+  \fi
+}
+
+\newcommand{\educationcodeToString}[1]{%
+  \ifinswedish
+     \strcompare{#1}{ARKITEKT}{Arkitektur}{}%
+     \strcompare{#1}{BIOLFYS}{Biologisk fysik}{}%
+     \strcompare{#1}{BIOTEKN}{Bioteknologi}{}%
+     \strcompare{#1}{BYV}{Byggvetenskap}{}%
+     \strcompare{#1}{DATALGEM}{Datalogi}{}%
+     \strcompare{#1}{DATALOGI}{Datalogi}{}%
+     \strcompare{#1}{ELSYSETS}{Elektro- och systemteknik}{}%
+     \strcompare{#1}{ELSYSGEM}{Elektro- och systemteknik}{}%
+     \strcompare{#1}{ELSYTEKN}{Elektro- och systemteknik}{}%
+     \strcompare{#1}{ENERGIT}{Energiteknik}{}%
+     \strcompare{#1}{FARKTE}{Farkostteknik}{}%
+     \strcompare{#1}{FASTBYGG}{Fastigheter och byggande}{}%
+     \strcompare{#1}{FIBERPOL}{Fiber- och polymervetenskap}{}%
+     \strcompare{#1}{FILOSOFI}{Filosofi}{}%
+     \strcompare{#1}{FLYGRYMD}{Flyg- och rymdteknik}{}%
+     \strcompare{#1}{FYSIK}{Fysik}{}%
+     \strcompare{#1}{BUSINADM}{Företagsekonomi}{}%
+     \strcompare{#1}{GEODEINF}{Geodesi och geoinformatik}{}%
+     \strcompare{#1}{ISTTVM}{Historiska studier av teknik, vetenskap och miljö}{}%
+     \strcompare{#1}{HALLBST}{Hållbarhetsstudier}{}%
+     \strcompare{#1}{HÅLLF}{Hållfasthetslära}{}%
+     \strcompare{#1}{INDEKOL}{Industriell ekologi}{}%
+     \strcompare{#1}{INDEKO}{Industriell ekonomi och organisation}{}%
+     \strcompare{#1}{INDPROD}{Industriell produktion}{}%
+     \strcompare{#1}{INFKTEKN}{Informations- och kommunikationsteknik}{}%
+     \strcompare{#1}{INFKTGEM}{Informations- och kommunikationsteknik}{}%
+     \strcompare{#1}{KEMI}{Kemi}{}%
+     \strcompare{#1}{KEMITEKN}{Kemiteknik}{}%
+     \strcompare{#1}{MASKINKO}{Maskinkonstruktion}{}%
+     \strcompare{#1}{MATTE}{Matematik}{}%
+     \strcompare{#1}{MEDICINT}{Medicinsk teknologi}{}%
+     \strcompare{#1}{MEDIAT}{Medieteknik}{}%
+     \strcompare{#1}{MILJOTEK}{Miljöteknik}{}%
+     \strcompare{#1}{MÄNDATOR}{Människa-datorinteraktion}{}%
+     \strcompare{#1}{NATIEKON}{Nationalekonomi}{}%
+     \strcompare{#1}{SAMHPLAN}{Samhällsplanering}{}%
+     \strcompare{#1}{TALMUKOM}{Tal- och musikkommunikation}{}%
+     \strcompare{#1}{TEKHÄLSA}{Teknik och hälsa}{}%
+     \strcompare{#1}{TECLEARN}{Teknik och lärande}{}%
+     \strcompare{#1}{TEVLKOMM}{Teknikvetenskapens lärande och kommunikation}{}%
+     \strcompare{#1}{TEMATRVE}{Teknisk materialvetenskap}{}%
+     \strcompare{#1}{TEMEKAN}{Teknisk mekanik}{}%
+     \strcompare{#1}{TKEMIBIO}{Teoretisk kemi och biologi}{}%
+     \strcompare{#1}{TILLFYS}{Tillämpad fysik}{}%
+     \strcompare{#1}{TIMABEMA}{Tillämpad matematik och beräkningsmatematik}{}%
+     \strcompare{#1}{TRANGEM}{Transportvetenskap}{}%
+     \strcompare{#1}{TRANSPVP}{Transportvetenskap}{}%
+     \strcompare{#1}{VATTVTEK}{Vattenvårdsteknik}{}%
+     \strcompare{#1}{KTHXXX}{*****Okänt ämneområde*****}{}% % Fake subject for use in template
+  \else
+     \strcompare{#1}{ARKITEKT}{Architecture}{}%
+     \strcompare{#1}{BIOLFYS}{Biological Physics}{}%
+     \strcompare{#1}{BIOTEKN}{Biotechnology}{}%
+     \strcompare{#1}{BYV}{Civil and Architectural Engineering}{}%
+     \strcompare{#1}{DATALGEM}{Computer Science}{}%
+     \strcompare{#1}{DATALOGI}{Computer Science}{}%
+     \strcompare{#1}{ELSYSETS}{Electrical Engineering}{}%
+     \strcompare{#1}{ELSYSGEM}{Electrical Engineering}{}%
+     \strcompare{#1}{ELSYTEKN}{Electrical Engineering}{}%
+     \strcompare{#1}{ENERGIT}{Energy Technology}{}%
+     \strcompare{#1}{FARKTE}{Vehicle and Maritime Engineering}{}%
+     \strcompare{#1}{FASTBYGG}{Real Estate and Construction Management}{}%
+     \strcompare{#1}{FIBERPOL}{Fibre and Polymer Science}{}%
+     \strcompare{#1}{FILOSOFI}{Philosophy}{}%
+     \strcompare{#1}{FLYGRYMD}{Aerospace Engineering}{}%
+     \strcompare{#1}{FYSIK}{Physics}{}%
+     \strcompare{#1}{BUSINADM}{Business Studies}{}%
+     \strcompare{#1}{GEODEINF}{Geodesy and Geoinformatics}{}%
+     \strcompare{#1}{ISTTVM}{History of Science, Technology and Environment}{}%
+     \strcompare{#1}{HALLBST}{Sustainability studies}{}%
+     \strcompare{#1}{HÅLLF}{Solid Mechanics}{}%
+     \strcompare{#1}{INDEKOL}{Industrial Ecology}{}%
+     \strcompare{#1}{INDEKO}{Industrial Engineering and Management}{}%
+     \strcompare{#1}{INDPROD}{Production Engineering}{}%
+     \strcompare{#1}{INFKTEKN}{Information and Communication Technology}{}%
+     \strcompare{#1}{INFKTGEM}{Information and Communication Technology}{}%
+     \strcompare{#1}{KEMI}{Chemistry}{}%
+     \strcompare{#1}{KEMITEKN}{Chemical Engineering}{}%
+     \strcompare{#1}{MASKINKO}{Machine Design}{}%
+     \strcompare{#1}{MATTE}{Mathematics}{}%
+     \strcompare{#1}{MEDICINT}{Medical Technology}{}%
+     \strcompare{#1}{MEDIAT}{Media Technology}{}%
+     \strcompare{#1}{MILJOTEK}{Environmental Engineering}{}%
+     \strcompare{#1}{MÄNDATOR}{Human-computer Interaction}{}%
+     \strcompare{#1}{NATIEKON}{Economics}{}%
+     \strcompare{#1}{SAMHPLAN}{Urban and Regional Planning}{}%
+     \strcompare{#1}{TALMUKOM}{Speech and Music Communication}{}%
+     \strcompare{#1}{TEKHÄLSA}{Technology and Health}{}%
+     \strcompare{#1}{TECLEARN}{Technology and Learning}{}%
+     \strcompare{#1}{TEVLKOMM}{Education and Communication in the Technological Sciences}{}%
+     \strcompare{#1}{TEMATRVE}{Materials Science and Engineering}{}%
+     \strcompare{#1}{TEMEKAN}{Engineering Mechanics}{}%
+     \strcompare{#1}{TKEMIBIO}{Theoretical Chemistry and Biology}{}%
+     \strcompare{#1}{TILLFYS}{Applied Physics}{}%
+     \strcompare{#1}{TIMABEMA}{Applied and Computational Mathematics}{}%
+     \strcompare{#1}{TRANGEM}{Transport Science}{}%
+     \strcompare{#1}{TRANSPVP}{Transport Science}{}%
+     \strcompare{#1}{VATTVTEK}{Water Resources Engineering}{}%
+     \strcompare{#1}{KTHXXX}{*****Unknown subject area*****}{}% % Fake subject for use in template
+  \fi
+}

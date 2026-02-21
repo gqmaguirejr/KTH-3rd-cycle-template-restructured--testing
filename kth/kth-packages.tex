@@ -1,0 +1,66 @@
+%\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%\ProvidesPackage{kth-packages}
+%   [2025/07/19 v0.1 Provides packages needed for kththesis.cls]
+\RequirePackage{environ}
+\RequirePackage{verbatim}
+\RequirePackage{luacode}
+
+% to do string comparison
+\RequirePackage{xstring}
+
+%% Load other packages
+\RequirePackage{comment}
+
+% used when placing an illustration on the cover
+\RequirePackage{zref-savepos}
+
+% for use in defining some new commands
+\RequirePackage{etoolbox}
+\RequirePackage{xparse}
+
+% This package makes it easy to have dates and times adjusted to the language being used.
+\ifinswedish
+    \usepackage[calc, useregional, en-GB, en-US, swedish]{datetime2}
+\else
+    \usepackage[calc, useregional, en-GB, swedish, en-US]{datetime2}
+\fi
+%% The calc is needed to compute the day of the week 
+%% Note that the last regional package specified becomes the default in the document
+
+
+\ifgfivepaper
+\RequirePackage[paperwidth=169mm,paperheight=239mm,twoside,
+  top=30mm,bottom=30mm,inner=36mm,outer=18mm,
+  headsep=10mm,headheight=5mm]{geometry} % Set paper and contents dimensions
+\else
+\RequirePackage[a4paper,twoside,
+  top=36mm,bottom=30mm,inner=43mm,outer=22mm,
+  headsep=15mm,headheight=6mm,footskip=25mm]{geometry} % Set paper and contents dimensions
+\fi
+
+\RequirePackage{fancyhdr} % Take control of headers and footers
+%\RequirePackage{emptypage} % Suppress page numbers on otherwise empty pages
+
+\RequirePackage{pdfpages} % Used to include the preformatted KTH cover pages
+\makeatletter
+\RequirePackage{titlesec} % Redefine the appearance of headers
+\RequirePackage{tocloft} % to enable redefinition of TOC entries
+
+% === Patch to circumvent a bug in the titlesec package version 2.10.1
+\@ifpackagelater{titlesec}{2016/03/21}{%
+ % Package titlesec is on version 2.10.2 or higher, nothing to do %
+}{%
+ % Check if package titlesec is on version 2.10.1 %
+ \@ifpackagelater{titlesec}{2016/03/15}{%
+  % Package titlesec on version 2.10.1, patch accordingly %
+  \RequirePackage{etoolbox}%
+  \patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}%
+  \patchcmd{\ttlh@hang}{\noindent}{}{}{}%
+ }{%
+  % Package titlsecon is on version 2.10.0 or lower, nothing to do %
+ }%
+}
+% === End of titlesec patch
+
+\RequirePackage{fontspec}
+\RequirePackage{enumitem}

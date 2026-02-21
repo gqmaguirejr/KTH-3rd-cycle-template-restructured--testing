@@ -1,0 +1,278 @@
+\usepackage{luacode}
+\RequirePackage{verbatim} % Required for \verbatiminput
+\RequirePackage{comment}
+
+
+\begin{luacode*}
+-- This function gets the current wall clock time and logs it with a message.
+function log_wall_clock_time(message)
+  -- Get the current time and format it as "Day Month Date HH:MM:SS YYYY"
+  local formatted_time = os.date("%c")
+  
+  local log_message = string.format("%s: %s", message, formatted_time)
+  tex.sprint("\\wlog{" .. log_message .. "}")
+end
+
+function my_check_font_cache()
+    tex.sprint("\\wlog{entering my_check_font_cache}")
+    if luaotfload then
+        tex.sprint("\\wlog{luaotfload found}")
+        if luaotfload.db then
+            tex.sprint("\\wlog{luaotfload.db found}")
+            if luaotfload.db.names then
+                tex.sprint("\\wlog{luaotfload.db.names found}")
+            end
+        end
+        if fonts then
+            tex.sprint("\\wlog{fonts found}")
+            if fonts.names then
+                tex.sprint("\\wlog{fonts.names found}")
+            end
+        end
+    end
+end
+
+function my_check_font_cache_status()
+  tex.sprint("\\wlog{--- Font Cache Status ---}")
+
+  if fonts and fonts.names and fonts.names.data then
+    local font_database = fonts.names.data()
+    local font_count = 0
+    
+    -- Loop through the table to count the number of fonts
+    for _ in pairs(font_database) do
+      font_count = font_count + 1
+    end
+    
+    tex.sprint("\\wlog{Status: LOADED with " .. font_count .. " font entries.}")
+  else
+    tex.sprint("\\wlog{Status: NOT LOADED (tables do not exist).}")
+  end
+
+  tex.sprint("\\wlog{-----------------------}")
+end
+
+function create_font_cache_file()
+  -- Define the command to be executed
+  local command = "luaotfload-tool --cache=show"
+  
+  -- Use io.popen to run the command and get its output
+  local handle = io.popen(command)
+  if not handle then return end
+  
+  local output = handle:read("*a")
+  handle:close()
+  
+  -- Write the captured output to a temporary file
+  local outputFile = io.open("font_cache.tmp", "w")
+  if outputFile then
+    outputFile:write(output)
+    outputFile:close()
+  end
+end
+
+function recursive_list_directory(path, outputFile)
+  -- 1. Load the LuaFileSystem library
+  local lfs = require("lfs")
+  
+  -- 2. Use ipairs with lfs.dir(path) to ensure we can handle any file names
+  for entry in lfs.dir(path) do
+    -- Ignore the parent and current directory entries to prevent infinite loops
+    if entry ~= "." and entry ~= ".." then
+      -- 3. Construct the full path for the current entry
+      local full_path = path .. "/" .. entry
+      
+      -- 4. Get the attributes of the full path
+      local attrs = lfs.attributes(full_path)
+      
+      if attrs then
+        local mod_time = attrs.modification
+        local formatted_time = os.date("%c", mod_time)
+        local file_size = attrs.size
+        
+        -- 5. If the entry is a directory, print its info and then RECURSE
+        if attrs.mode == "directory" then
+          outputFile:write("Directory: " .. full_path .. " -- Modified: " .. formatted_time .. file_size .. "\n")
+          recursive_list_directory(full_path, outputFile) -- The recursive call
+        else
+          outputFile:write("File:      " .. full_path .. " -- Modified: " .. formatted_time .. file_size .. "\n")
+        end
+      else
+        outputFile:write("Could not read attributes for: " .. full_path .. "\n")
+      end
+    end
+  end
+end
+
+-- This is a wrapper function to make calling from LaTeX easier
+function start_directory_listing(dname)
+  local outputFile = io.open("dir_listing.tmp", "w")
+  if not outputFile then return end
+  
+  outputFile:write("--- Directory Listing for: " .. dname .. " ---\n")
+  recursive_list_directory(dname, outputFile)
+  outputFile:write("----------------------------------------------\n")
+  
+  outputFile:close()
+end
+
+function get_font_cache_count()
+  local font_count = 0
+  -- Check if the font database tables exist
+  if fonts and fonts.names and fonts.names.data then
+    local font_database = fonts.names.data()
+    -- Loop through the table to count the number of fonts
+    for _ in pairs(font_database) do
+      font_count = font_count + 1
+    end
+  end
+  -- Return the final count to LaTeX
+  tex.sprint(font_count)
+end
+
+function save_font_cache()
+    local KTHFontMgr = require("kth.kth-font-cache")
+    KTHFontMgr.my_save_font_cache()
+end
+
+function restore_font_cache()
+    local KTHFontMgr = require("kth.kth-font-cache")
+    KTHFontMgr.restore_font_cache()
+end
+
+
+function update_font_cache_file()
+  -- Define the command to be executed
+  local command = "luaotfload-tool --update"
+  
+  -- Use io.popen to run the command and get its output
+  local handle = io.popen(command)
+  if not handle then return end
+  
+  local output = handle:read("*a")
+  handle:close()
+  
+  -- Write the captured output to a temporary file
+  local outputFile = io.open("update_font_cache.tmp", "w")
+  if outputFile then
+    outputFile:write(output)
+    outputFile:close()
+  end
+end
+
+function find_font_via_tool(fontname)
+  -- Define the command to be executed
+  local command = "luaotfload-tool --find='" .. fontname .. "' -F"
+  
+  -- Use io.popen to run the command and get its output
+  local handle = io.popen(command)
+  if not handle then return end
+  
+  local output = handle:read("*a")
+  handle:close()
+  
+  -- Write the captured output to a temporary file
+  local outputFile = io.open("find_font_via_tool.tmp", "w")
+  if outputFile then
+    outputFile:write(output)
+    outputFile:close()
+  end
+end
+
+function find_font_file_definitively(fontname)
+  local output_message = ""
+  
+  -- Check if the main luaotfload system is available
+  if luaotfload and luaotfload.resolve and luaotfload.resolve.name then
+    
+    -- 1. This is the high-level function that fontspec uses.
+    --    It takes a font name and returns a table of data.
+    local font_data = luaotfload.resolve.name(fontname)
+    
+    if font_data and font_data.filename then
+      -- 2. Extract the filename from the returned data table.
+      output_message = "Found '" .. fontname .. "' at: " .. font_data.filename
+    else
+      output_message = "Could not resolve font '" .. fontname .. "' using luaotfload.resolve.name."
+    end
+  else
+    output_message = "Error: luaotfload.resolve.name function is not available. Is fontspec loaded?"
+  end
+
+  -- Write the result to a temporary file
+  local outputFile = io.open("find_font_result.tmp", "w")
+  if outputFile then
+    outputFile:write(output_message)
+    outputFile:close()
+  end
+end
+
+\end{luacode*}
+% 1. Log the start time immediately
+\directlua{log_wall_clock_time("Compilation started")}
+
+% 2. Use the \AtEndDocument hook to log the end time
+\AtEndDocument{%
+  \directlua{log_wall_clock_time("Compilation finished")}%
+}
+
+% This command will orchestrate the process
+\newcommand{\ShowDirectoryListing}[1]{%
+  \directlua{start_directory_listing("#1")}%
+  \begin{footnotesize}%
+  \verbatiminput{dir_listing.tmp}]%
+  \end{footnotesize}%
+}
+
+
+% This command now orchestrates the process:
+% 1. Calls Lua to create the temporary file.
+% 2. Typesets a heading.
+% 3. Uses \verbatiminput to display the file's contents.
+\newcommand{\ShowFontCache}{%
+  \directlua{create_font_cache_file()}%
+  \section*{Luaotfload Cache Status}%
+  \verbatiminput{font_cache.tmp}%
+}
+
+\newcommand{\UpdateFontCache}{%
+  \directlua{update_font_cache_file()}%
+  \section*{Luaotfload Font Cache Update}%
+  \verbatiminput{update_font_cache.tmp}%
+}
+
+\newcommand{\FindFontViaTool}[1]{%
+  \directlua{find_font_via_tool("#1")}%
+  \section*{Find font #1 via Luaotfload-tool}%
+  \verbatiminput{find_font_via_tool.tmp}%
+}
+
+\newcommand{\MyCheckFontCache}{%
+\directlua{my_check_font_cache()}%
+\textbf{Invoked my\_check\_font\_cache()}\par%
+}
+
+\newcommand{\MyCheckFontCacheStatus}{%
+\directlua{my_check_font_cache_status()}
+\textbf{Invoked my\_check\_font\_cache\_status()}\par%
+}
+
+% 1. Execute the Lua function and store the returned count in a new macro \FontCacheCount
+\newcommand{\GetFontCacheCount}{\directlua{get_font_cache_count()}}
+\edef\FontCacheCount{\GetFontCacheCount}
+
+\newcommand{\MySaveFontCache}{%
+\directlua{save_font_cache()()}%
+\textbf{Invoked save\_font\_cache()()}\par%
+}
+
+\newcommand{\RestoreFontCache}{%
+\directlua{restore_font_cache()()}%
+\textbf{Invoked restore\_font\_cache()()}\par%
+}
+
+\newcommand{\FindFont}[1]{%
+  \directlua{find_font_file_definitively("#1")}%
+  \section*{Result for font '#1'}%
+  \verbatiminput{find_font_result.tmp}%
+}

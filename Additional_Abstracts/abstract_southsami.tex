@@ -1,0 +1,25 @@
+%% This is my attempt at a skeleton abstract for South Sami (sydsamiska (södra))
+% I have assumed that the setting of the text by babel will follow the rules of Swedish, i.e., using the Swedish spacing, hyphenation, etc. rules.
+% The abstract and keywords have the correct ISO 639-2 B code.
+\selectlanguage{swedish} % babel does not have a language for this
+% It might be user-friendly to define two helper macros
+% For the capital letter Ï
+%\newcommand{\Ixx}{\"I}
+% For the small letter ï
+%\newcommand{\ix}{\"i}
+% --- South Sami Abstract ---
+% Set the caption for 'abstract' to the South Sami translation
+\setlocalecaption{swedish}{abstract}{Åssjalommes}
+\begin{abstract}
+    \markboth{\abstractname}{}
+\begin{ThesisAbstract}{sma} % Using the ISO 639-3 code for South Sami
+Åssjalommes saemien gïelesne.
+\end{ThesisAbstract}
+
+% Set the caption for 'keywords'
+\keywordHeading{Ohtsemebaakoeh}
+\begin{ThesisKeywords}{sma}
+vijhte-govhte ohtsemebaakoeh
+\end{ThesisKeywords}
+\end{abstract}
+\cleardoublepage

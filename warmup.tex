@@ -1,0 +1,34 @@
+\documentclass[examplethesis]{subfiles}
+
+% Redefine the sanity check command to do nothing for this file
+\let\kthPerformSanityCheck\relax
+
+\begin{document}
+\ifinswedish
+\selectlanguage{swedish}
+\chapter*{Uppvärmning}
+\else
+\selectlanguage{english}
+\chapter*{Warmup}
+\fi
+\section{Look at the project directory, i.e., '.'}
+\ShowDirectoryListing{.}
+
+% Now, just call the command directly.
+\ShowFontCache
+
+% Call the command with the directory you want to list
+\ShowDirectoryListing{/home/tex/texmf-var/luatex-cache/generic/fonts}
+\ShowDirectoryListing{/home/tex/texmf-var/luatex-cache/generic/names/}
+
+% To save or restore the fond cache
+\MySaveFontCache
+%\RestoreFontCache
+
+% Now, just call the command directly.
+
+\ShowFontCache
+
+% Call the command with the directory you want to list
+\ShowDirectoryListing{/home/tex/texmf-var/luatex-cache/generic/fonts}
+\end{document}

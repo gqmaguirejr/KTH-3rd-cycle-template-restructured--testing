@@ -1,0 +1,3072 @@
+\documentclass[12pt, twoside]{article}
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+\newif\ifxeorlua
+\ifxetex\xeorluatrue\fi
+\ifluatex\xeorluatrue\fi
+
+\RequirePackage{silence}
+\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
+\WarningFilter{latexfont}{Font shape}
+
+
+\newif\ifinswedish
+\inswedishfalse
+
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+% include a variety of packages that are useful
+\input{lib/includes}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+
+\ifinswedish
+    \usepackage[english, main=swedish, bidi=basic]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+\fi
+
+
+% Set up to use biblatex
+\newif\ifbiblatex
+\biblatextrue
+
+\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\section*{#1}%   skip \centering 
+}
+  
+    \addbibresource{references.bib}    
+\input{kth/kthcolors}
+
+
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+
+\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+%% In overleaf, if this file is in a folder and not the root
+%% using \makeglossaries will not work, as the Overleaf latexmk
+%% will not run the program to take the output.acn file and make the output.acr file
+%\makeglossaries
+% However, you can get TeX to do the work with the following:
+%\makenoidxglossaries
+% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
+%% Potentially, one could set up a latexmkrc file in the folder
+
+\input{lib/acronyms}                %load the acronyms file
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+ 
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \XeLaTeX and \LuaLaTeX logos
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+
+    \babelfont{rm}{TeX Gyre Termes}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+  
+    %\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+    \babelfont{sf}{TeX Gyre Heros}
+    %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+    \babelfont{tt}{TeX Gyre Cursor}
+ \begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+ %  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+ \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=normal]
+  %%\setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+
+  %    Define a new math alphabet mapping that uses
+  %    the font's Stylistic Set 1 for the \mathcal range.
+  \setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
+
+    % To access the Stylistic Set 1 <ss01> such as ℋ
+    \newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+    % use english as a fallback when in other languages
+    \babelprovide[import, onchar=ids fonts]{english}
+
+% to be able to access the latinmodern-math font
+\newfontfamily\latinmathfont{latinmodern-math.otf}
+
+
+    
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSans-Regular,
+    BoldFont = NotoSans-Bold,
+    ItalicFont = NotoSans-Italic,
+    BoldItalicFont = NotoSans-BoldItalic
+    ]{NotoSansCustomA}
+     
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSerif-Regular,
+    BoldFont = NotoSerif-Bold,
+    ItalicFont = NotoSerif-Italic,
+    BoldItalicFont = NotoSerif-BoldItalic
+    ]{NotoSerifCustomA}
+
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{%
+\markboth{#1}{}}
+
+
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+
+
+\lstdefinestyle{latexExampleForAuthors}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    extendedchars=true,
+    inputencoding=utf8,
+    escapechar={|},
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea,
+      nationalsubjectcategories, todo, ifbiblatex, subsection}
+}
+
+
+\lstdefinestyle{latexExample}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    tabsize=2,
+    columns=flexible,
+}
+\lstset{style=latexExample}
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{Notes on `Tekla''-template}
+
+\author{Gerald Q. Maguire Jr.}
+\date{September 2025}
+
+\begin{document}
+\glsresetall[]
+\maketitle
+\fancypagestyle{empty}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+This document describes and contrasts the third-cycle version of the thesis
+template I have developed for use at \gls{KTH} with that of the thesis
+template ``KTH Doctoral Thesis Template'' at 
+\url{https://www.overleaf.com/latex/templates/kth-doctoral-thesis-template/gtbtnpgjnbsn} referred to from \url{https://www.kth.se/en/student/studier/examensarbete/avhandlingarochexamensarbeten/mall-for-avhandling-1.458236}
+[hereafter referred to as the Tekla-template].
+My \LaTeX{} template overcomes many of what I view as deficiencies of the Tekla-template\footnote{Note that my referring to them as deficiencies is my own personal view of certain features (or lack thereof) of the Tekla-template and should \textbf{not} be taken as \textit{personal criticism of those who were involved in the creation of the Tekla-template}, but rather should be viewed as constructive criticism that hopefully can be used to improve the Tekla-template or other similar efforts.}.
+\markboth{Notes on the Tekla-template}{}
+\cleardoublepage
+% Include Table of Contents (TOC) ---
+\fancypagestyle{plain}{}
+\renewcommand{\sectionmark}[1]{ \markboth{#1}{}}
+\tableofcontents
+\markboth{\contentsname}{}
+\cleardoublepage
+\section{Good features of the Tekla-template}
+The Tekla-template has a number of good features, these include (but are \textit{not} limited to):
+\begin{itemize}[label=\color{green}\ding{51}]
+\item The \fname{my-phd-thesis.tex} file is very simple and easy to understand. It
+does have a front cover, title page, and book information page. While these will
+later be typeset by the printing service, they are very useful for the
+student, their supervisors, and others - especially to see that the degree, title, subtitle, and author's name are correct.
+
+\item The \texttt{\textbackslash paper} macro is nice.
+
+\item The inclusion of patents in addition to papers is nice.
+
+\item The equation (4.1.2) nicely uses the modern notation: 
+\texttt{\textbackslash symbf{A} \textbackslash symbfit{x} = \textbackslash
+  symbfit{b}}
+
+\item The requirement for the \texttt{mathtools} and \texttt{unicode-math} packages is good.
+
+\item The example figures, table, and code listing are good.
+
+\item The use of \texttt{\textbackslash Cref} for the table, equations, figures, and the listing is good.
+
+\item The \fname{acronyms.tex} file includes a nice collection of acronyms and a glossary entry.
+
+\item The \fname{macros.tex} file includes some nice examples of macros, including:
+\begin{lstlisting}[style=latexExample, caption={Examples macros from macros.tex}, columns=fullflexible, showstringspaces=false, label=lst:examplemacro]
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\BigO}[1]{\(\mathcal{O}\left(#1\right)\)}
+\newcommand{\di}{\mathrm{i}\mkern1mu} % imaginary i in roman and with correct spacing
+\end{lstlisting}
+
+\item The use of the \texttt{microtype} package is nice.
+
+\item the use of the \texttt{lstfiracode} package and its subsequent use in \texttt{style=FiraCodeStyle} when defining the listing format for Python is very nice.
+\end{itemize}
+
+\section{Deficiencies}
+
+I believe that the Tekla-template has a number of deficiencies. These deficiencies include (but are \textit{not} limited to) the following:
+
+\begin{itemize}[label=\color{red}\ding{56}]
+  \item The Tekla-template fails to consider the entire process related to the thesis. For example, the student (or someone else) needs to enter the metadata into DiVA and the English and Swedish titles will need to be entered into LADOK.
+
+  \item The Tekla-template lacks a back cover. [Note that this too will be generated by the printing service - so this is a \textit{minor} deficiency.]
+
+  \item The Tekla-template does not seem to consider languages other than English and Swedish. Additionally, the support for Swedish is quite limited; for example, there is no information about a Swedish title or subtitle on the title page. Additionally, there is no configuration for the thesis being written in Swedish.
+
+  \item The \texttt{\textbackslash defence} macro collects the relevant information but the \texttt{\textbackslash titlepage} macro does not have any support for a defense in Swedish.
+
+  \item The Tekla-template has not parameterized the degree program or the degree - so the student may or may not correctly fill in this information.
+
+  \item The title page lacks information about the supervisors.
+
+  \item The book information page only seems to consider a traditional
+    copyright and does not have any support for copyleft, such as Creative Commons licenses.
+
+  \item The book information page does not seem to have any support to
+    acknowledge the source of the optional cover illustration.
+
+  \item The \texttt{dedication} environment sets the page \texttt{\textbackslash raggedleft} in italics.
+
+  \item While the AW-template also places the ``List of included papers'' before the table of contents - as does the Tekla-template, I think it should be placed just before the start of the kappa part (if there is a kappa). Additionally, the page should have the title ``List of Publications'', since they are not necessarily all papers. Also, the capitalization is inconsistent with the capitalization of the other preface pages. Also, this page includes the paragraph:
+    \begin{quote}
+    \textbackslash paragraph\{Contributions\} This doctoral dissertation consists of two parts. The first part provides an overview of the research field on which I focused and a summary of my contributions to it. The second part comprises the contributions that I have made to this research field through published works and patent applications.
+    \end{quote}
+
+    However, this text is misleading in that it does not describe the author's contributions to the publication. Furthermore, this description should be in the body of the text and ideally follow a taxonomy such as \gls{CRediT}.
+
+    Moreover, in the case of a compilation thesis, the first \texttt{part} is the kappa and the second \texttt{part} is the included publications. The kappa is \textbf{not} simply an overview of the research field.
+
+  \item The mechanism for the included papers does not effectively utilize the BibTeX file (or even include citations to the publications).
+
+  \item While the Tekla-template's inclusion of patents in addition to papers is nice; however, there is no support for other sorts of publications, such as software, datasets, and artifacts.
+
+  \item The position of the ``Contents'' heading is not consistent with the other preface pages.
+
+  \item I do not see why the preface pages should be listed in the table of contents.
+
+  \item The table of contents lists the kappa and Appended papers with the capital Roman numeral numbering - but the pages themselves are not numbered!
+
+  \item I do not think that the included papers should be in a \texttt{part} with the name ``Appended papers'' - as they are ``Included publications''.
+
+  \item While the included chapters provide some style examples, Chapters 2 and 3 are missing text before the first section in each chapter, which I think is a poor example for students. Additionally, the chapters fail to provide useful guidance to the author for the content that would be expected in the chapters.
+
+\item There is nothing in the template that explains what content would be in the chapter entitled ``Points of perspective''.
+
+\item The chapters and sections should probably all have labels to facilitate cross-references in the document.
+
+\item The table \texttt{tab:summary} might be a better example using \texttt{S[table-format=3.2]} rather than \texttt{r\@\{\}} for decimal aligning the prices.
+
+\item The \fname{macros.tex} file is a mix of macros and \texttt{\textbackslash usepackage}, it might be better to separate these into two files.
+
+\item In the definition of \fname{macros.tex} file, the definition for \textbackslash BigO when used with STIX Two Math would be \texttt{\textbackslash mathscr\{O\}} rather than \texttt{\textbackslash mathcal\{O\}} - as the letter that is wanted is capital O in chancery Script (\ie \(\mathscr{O})\) and not a roundhand script (\ie \(\mathcal{O}\)). However, \texttt{unicode-math} already defines \texttt{\textbackslash mscrO} which generates \(\mscrO\), \ie the mathematical script capital O symbol, which is Unicode character U+1D4AA.
+
+\item I would think that the tabbed page and the bibliographic information \& copyright/permission information could all be on one page; rather than as separate pages as done in the Tekla-template. Also, the tabs printed by \mbox{US-AB} are shorter.
+
+\item The file \fname{includedpapers.tex} states ``\% This file defines the included papers in a kappa.''. However, it really only defines the tabbed page and the bibliographic information \& copyright/permission information page - it does not tell the student \textit{how to include the publications into the thesis} nor does the template provide a folder for these included publications. Moreover, the papers are \textbf{not} included \textit{in} the kappa, but rather are included together with the kappa in the (compilation) thesis.
+
+  \item While \textbf{Fira Code} is nice for program listings, it is unclear to me why the mono-spaced font should be \textbf{Fira Code}. There are places other than program listings where a mono-spaced font would be suitable, and this font should probably be chosen to suit the font used for the body text [hence my use of TeXGyreCursor with TeXGyreTermes and TeXGyreHeros]. It is surprising that since \textbf{Fira Code} is known for its programming ligatures, the example chosen does not show this feature.
+
+  \item \textbf{Fira Code} has 1585 glyphs, and one of these is a visible space, \ie Open Box “␣” (U+2423). The \texttt{lstinputlisting} of the Python example program uses \textbf{CMTT10} for this character.
+  This can be fixed by adding the code in \Cref{lst:svisiblespace} to \fname{macros.tex}.
+  \Needspace*{4\baselineskip}
+  \begin{lstlisting}[style=latexExample, caption={Set the character used for a visible space in listings}, columns=fullflexible, showstringspaces=false, label=lst:svisiblespace]
+\makeatletter
+\def\lst@visiblespace{\texttt{^^^^2423}}
+\makeatother
+    \end{lstlisting}
+
+\item In the definition of \texttt{\textbackslash lstset} for Python, you might set \texttt{tabsize=4}, as this is the number of spaces your \fname{example.py} used for the indent.
+
+\item While the use of the microtype package is nice, one might add the \texttt{babel=true} option to the second \texttt{\textbackslash microtypesetup}. Note also that the \texttt{babel} package must be loaded before the \texttt{microtype} package when using the babel option.
+
+\item When you specify the cleveref form for an equation in \Cref{lst:eqcref}, you might add a comment that you are going to use a parenthesized equation number to refer to the equation from your text; therefore, there are no singular or plural cross-reference names.
+Additionally, you might promote the use of descriptive label names, for example \texttt{eq:integralAsLimitoFSum} instead of \texttt{eq:three}.
+  \begin{lstlisting}[style=latexExample, caption={Configuring cleveref for equations}, columns=fullflexible, showstringspaces=false, label=lst:eqcref]
+\crefname{equation}{}{}
+\Crefname{equation}{}{}
+  \end{lstlisting}
+
+\item In your examples of equations, you might note that there is a subtle issue about when equations should be numbered and when not, \ie if they are not referred to from elsewhere, then they should not be numbered. This can be done automatically with the \texttt{mathtools} package with
+\texttt{\textbackslash mathtoolsset\{showonlyrefs\}}. Note that this will \textbf{only} work if you use \texttt{\textbackslash eqref} to reference your equations\footnote{There is also a bug when using the ntheorem package if the option thmmarks is active. See the mathtools manual for details and solutions.}. The cleveref manual states: ``Cleveref is currently incompatible with the mathtools package’s showonlyrefs option, which automatically labels only those equations that are cross-referenced. The autonum package provides a possible alternative, which implements similar features in a cleveref-compatible manner.''.
+
+
+  \item While the glossary entry for ``PhD'' is humorous, it is a bit misleading and perhaps not helpful to your readers. There are only a very small fraction (113/7292 = 1.5 \%) of theses that are 300 or more pages (including preface pages); in fact, the CDF of total pages at 300 pages are approximately:
+  ABE:	0.9793,
+CBH:	0.9972,
+EECS:	0.9939,
+ITM:	0.9905, and
+SCI:	0.9916. Looking at the CDF of total pages, the first bin (using a bin size of 10) of lengths exceeding 0.90 occurs at: ABE: 120, CBH: 90, EECS: 110, ITM: 110, and SCI: 100 pages.
+
+
+\item The Tekla-template does not include the keywords in the document's properties.
+
+\item The Tekla-template does not include the copyright information in the additional metadata.
+
+\item In setting fontsize, for example, when setting the fontsize for a section in \Cref{lst:sectionHeadingFont}, 
+it might be better to use \texttt{\textbackslash fontsize\{14\}\{16\}\textbackslash fontseries\{sb\}} to set \texttt{\textbackslash baselineskip} to be larger than the font size of the text and to select the semibold version of the glyphs. The AW-template specified that the font size for a section was 14pt.
+
+\begin{lstlisting}[style=latexExample, caption={Setting font for section hadings}, columns=fullflexible, showstringspaces=false, label=lst:sectionHeadingFont]
+\titleformat{\section}
+  {\sffamily\fontsize{13pt}{13pt}\selectfont\bfseries} % Figtree Semibold, 13pt
+  {\thesection}{1em}{}
+\end{lstlisting}
+
+\item \textbf{LMSans17-Regular} is one of the embedded fonts, and it uses a custom coding (note that it appears twice). This font is used in \texttt{example-image-a} and \texttt{example-image-b} images provided by the \texttt{mwe} package. \textbf{CMTT10} is another embedded font. \textbf{CMTT10} is used for the visible space in the code listing. [See \Cref{lst:svisiblespace} for how to avoid the use of \textbf{CMTT10}.]
+
+\item While the requirement for the \texttt{mathtools} and
+  \texttt{unicode-math} packages were good, it is unclear to me why the mathfont used is \fname{latinmodern-math.otf} rather than a more complete font such as \textbf{STIX Two Math}:
+  latinmodern-math has 2045 glyphs versus STIX Two Math with 4605 glyphs. For the list of characters present in one, but not the other see \Cref{tab:missing_from_STIXTwoMath,tab:missing_from_latinmodern_math}. Note that some of the glyphs in STIX Two Math make use of the Private Use Area, U+E000 - U+F8FF; specifically, U+E000 to  U+E3FF. These unicode values \textbf{cannot} be interpreted without the knowledge that the font being used was STIX Two Math. This means that these characters \textbf{cannot} be used in DiVA and LADOK.
+
+\end{itemize}
+%\cleardoublepage
+\begin{longtable}{L{1.0cm} L{2.0cm} >{\footnotesize}L{10cm}}
+    \caption{Characters in latinmodern-math but not in STIX Two math}
+    \label{tab:missing_from_STIXTwoMath}\\
+\textbf{char} & \textbf{hex} & \textbf{Name}  \\\\
+\endfirsthead
+\multicolumn{3}{c}%
+{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+\hline       \textbf{char} & \textbf{hex} & \textbf{Name} \\
+\hline 
+\endhead
+\hline \multicolumn{3}{|r|}{{Continued on next page}} \\
+\hline
+\endfoot
+\hline
+\hline
+\endlastfoot
+
+\latinmathfont{‽}&0x203d&INTERROBANG\\
+\latinmathfont{⁠}&0x2060&WORD JOINER\\
+\latinmathfont{₡}&0x20a1&COLON SIGN\\
+\latinmathfont{⇳}&0x21f3&UP DOWN WHITE ARROW\\
+\latinmathfont{▁}&0x2581&LOWER ONE EIGHTH BLOCK\\
+\latinmathfont{❚}&0x275a&HEAVY VERTICAL BAR\\
+\latinmathfont{➡}&0x27a1&BLACK RIGHTWARDS ARROW\\
+\latinmathfont{⬄}&0x2b04&LEFT RIGHT WHITE ARROW\\
+\latinmathfont{⬅}&0x2b05&LEFTWARDS BLACK ARROW\\
+\latinmathfont{⬆}&0x2b06&UPWARDS BLACK ARROW\\
+\latinmathfont{⬇}&0x2b07&DOWNWARDS BLACK ARROW\\
+\latinmathfont{⬌}&0x2b0c&LEFT RIGHT BLACK ARROW\\
+\latinmathfont{⬍}&0x2b0d&UP DOWN BLACK ARROW\\
+\latinmathfont{⸘}&0x2e18&INVERTED INTERROBANG\\
+\latinmathfont{〖}&0x3016&LEFT WHITE LENTICULAR BRACKET\\
+\latinmathfont{〗}&0x3017&RIGHT WHITE LENTICULAR BRACKET\\
+\latinmathfont{﻿}&0xfeff&ZERO WIDTH NO-BREAK SPACE\\
+\end{longtable}
+\clearpage
+    
+\begin{longtable}{L{1.0cm} L{2.0cm} >{\footnotesize}L{10cm}}
+    \caption{Characters in STIX Two math but not in latinmodern-math. Entries with ``*** has no name ***'' are from a private use area.}
+    \label{tab:missing_from_latinmodern_math}\\
+\textbf{char} & \textbf{hex} & \textbf{Name}  \\\\
+\endfirsthead
+\multicolumn{3}{c}%
+{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+\hline       \textbf{char} & \textbf{hex} & \textbf{Name} \\
+\hline 
+\endhead
+\hline \multicolumn{3}{|r|}{{Continued on next page}} \\
+\hline
+\endfoot
+\hline
+\hline
+\endlastfoot
+
+$­$&0xad&SOFT HYPHEN\\
+$²$&0xb2&SUPERSCRIPT TWO\\
+$³$&0xb3&SUPERSCRIPT THREE\\
+$¹$&0xb9&SUPERSCRIPT ONE\\
+$¼$&0xbc&VULGAR FRACTION ONE QUARTER\\
+\\
+$½$&0xbd&VULGAR FRACTION ONE HALF\\
+\\
+$¾$&0xbe&VULGAR FRACTION THREE QUARTERS\\
+\\
+\mystixmathfont{Ĉ}&0x0108&LATIN CAPITAL LETTER C WITH CIRCUMFLEX\\
+\mystixmathfont{ĉ}&0x0109&LATIN SMALL LETTER C WITH CIRCUMFLEX\\
+\mystixmathfont{Ċ}&0x010a&LATIN CAPITAL LETTER C WITH DOT ABOVE\\
+\mystixmathfont{ċ}&0x010b&LATIN SMALL LETTER C WITH DOT ABOVE\\
+\mystixmathfont{đ}&0x0111&LATIN SMALL LETTER D WITH STROKE\\
+\mystixmathfont{Ĕ}&0x0114&LATIN CAPITAL LETTER E WITH BREVE\\
+\mystixmathfont{ĕ}&0x0115&LATIN SMALL LETTER E WITH BREVE\\
+\mystixmathfont{Ĝ}&0x011c&LATIN CAPITAL LETTER G WITH CIRCUMFLEX\\
+\mystixmathfont{ĝ}&0x011d&LATIN SMALL LETTER G WITH CIRCUMFLEX\\
+\mystixmathfont{Ġ}&0x0120&LATIN CAPITAL LETTER G WITH DOT ABOVE\\
+\mystixmathfont{ġ}&0x0121&LATIN SMALL LETTER G WITH DOT ABOVE\\
+\mystixmathfont{Ĥ}&0x0124&LATIN CAPITAL LETTER H WITH CIRCUMFLEX\\
+\mystixmathfont{ĥ}&0x0125&LATIN SMALL LETTER H WITH CIRCUMFLEX\\
+\mystixmathfont{Ħ}&0x0126&LATIN CAPITAL LETTER H WITH STROKE\\
+\mystixmathfont{ħ}&0x0127&LATIN SMALL LETTER H WITH STROKE\\
+\mystixmathfont{Ĭ}&0x012c&LATIN CAPITAL LETTER I WITH BREVE\\
+\mystixmathfont{ĭ}&0x012d&LATIN SMALL LETTER I WITH BREVE\\
+\mystixmathfont{Ĵ}&0x0134&LATIN CAPITAL LETTER J WITH CIRCUMFLEX\\
+\mystixmathfont{ĵ}&0x0135&LATIN SMALL LETTER J WITH CIRCUMFLEX\\
+\mystixmathfont{ĸ}&0x0138&LATIN SMALL LETTER KRA\\
+\mystixmathfont{Ŀ}&0x013f&LATIN CAPITAL LETTER L WITH MIDDLE DOT\\
+\mystixmathfont{ŀ}&0x0140&LATIN SMALL LETTER L WITH MIDDLE DOT\\
+\mystixmathfont{ŉ}&0x0149&LATIN SMALL LETTER N PRECEDED BY APOSTROPHE\\
+\mystixmathfont{Ŏ}&0x014e&LATIN CAPITAL LETTER O WITH BREVE\\
+\mystixmathfont{ŏ}&0x014f&LATIN SMALL LETTER O WITH BREVE\\
+\mystixmathfont{Ŝ}&0x015c&LATIN CAPITAL LETTER S WITH CIRCUMFLEX\\
+\mystixmathfont{ŝ}&0x015d&LATIN SMALL LETTER S WITH CIRCUMFLEX\\
+\mystixmathfont{Ŧ}&0x0166&LATIN CAPITAL LETTER T WITH STROKE\\
+\mystixmathfont{ŧ}&0x0167&LATIN SMALL LETTER T WITH STROKE\\
+\mystixmathfont{Ŭ}&0x016c&LATIN CAPITAL LETTER U WITH BREVE\\
+\mystixmathfont{ŭ}&0x016d&LATIN SMALL LETTER U WITH BREVE\\
+\mystixmathfont{Ŵ}&0x0174&LATIN CAPITAL LETTER W WITH CIRCUMFLEX\\
+\mystixmathfont{ŵ}&0x0175&LATIN SMALL LETTER W WITH CIRCUMFLEX\\
+\mystixmathfont{Ŷ}&0x0176&LATIN CAPITAL LETTER Y WITH CIRCUMFLEX\\
+\mystixmathfont{ŷ}&0x0177&LATIN SMALL LETTER Y WITH CIRCUMFLEX\\
+\mystixmathfont{ƀ}&0x0180&LATIN SMALL LETTER B WITH STROKE\\
+\mystixmathfont{ƈ}&0x0188&LATIN SMALL LETTER C WITH HOOK\\
+\mystixmathfont{Ɛ}&0x0190&LATIN CAPITAL LETTER OPEN E\\
+\mystixmathfont{ƒ}&0x0192&LATIN SMALL LETTER F WITH HOOK\\
+\mystixmathfont{ƕ}&0x0195&LATIN SMALL LETTER HV\\
+\mystixmathfont{ƙ}&0x0199&LATIN SMALL LETTER K WITH HOOK\\
+\mystixmathfont{ƚ}&0x019a&LATIN SMALL LETTER L WITH BAR\\
+\mystixmathfont{ƛ}&0x019b&LATIN SMALL LETTER LAMBDA WITH STROKE\\
+\mystixmathfont{ƞ}&0x019e&LATIN SMALL LETTER N WITH LONG RIGHT LEG\\
+\mystixmathfont{ƥ}&0x01a5&LATIN SMALL LETTER P WITH HOOK\\
+\mystixmathfont{ƪ}&0x01aa&LATIN LETTER REVERSED ESH LOOP\\
+\mystixmathfont{ƫ}&0x01ab&LATIN SMALL LETTER T WITH PALATAL HOOK\\
+\mystixmathfont{ƭ}&0x01ad&LATIN SMALL LETTER T WITH HOOK\\
+\mystixmathfont{Ƶ}&0x01b5&LATIN CAPITAL LETTER Z WITH STROKE\\
+\mystixmathfont{ƺ}&0x01ba&LATIN SMALL LETTER EZH WITH TAIL\\
+\mystixmathfont{ƻ}&0x01bb&LATIN LETTER TWO WITH STROKE\\
+\mystixmathfont{ƾ}&0x01be&LATIN LETTER INVERTED GLOTTAL STOP WITH STROKE\\
+\mystixmathfont{ǀ}&0x01c0&LATIN LETTER DENTAL CLICK\\
+\mystixmathfont{ǁ}&0x01c1&LATIN LETTER LATERAL CLICK\\
+\mystixmathfont{ǂ}&0x01c2&LATIN LETTER ALVEOLAR CLICK\\
+\mystixmathfont{ǃ}&0x01c3&LATIN LETTER RETROFLEX CLICK\\
+\mystixmathfont{Ǟ}&0x01de&LATIN CAPITAL LETTER A WITH DIAERESIS AND MACRON\\
+\mystixmathfont{ǟ}&0x01df&LATIN SMALL LETTER A WITH DIAERESIS AND MACRON\\
+\mystixmathfont{ǰ}&0x01f0&LATIN SMALL LETTER J WITH CARON\\
+\mystixmathfont{Ǻ}&0x01fa&LATIN CAPITAL LETTER A WITH RING ABOVE AND ACUTE\\
+\mystixmathfont{ǻ}&0x01fb&LATIN SMALL LETTER A WITH RING ABOVE AND ACUTE\\
+\mystixmathfont{Ǽ}&0x01fc&LATIN CAPITAL LETTER AE WITH ACUTE\\
+\mystixmathfont{ǽ}&0x01fd&LATIN SMALL LETTER AE WITH ACUTE\\
+\mystixmathfont{Ǿ}&0x01fe&LATIN CAPITAL LETTER O WITH STROKE AND ACUTE\\
+\mystixmathfont{ǿ}&0x01ff&LATIN SMALL LETTER O WITH STROKE AND ACUTE\\
+\mystixmathfont{ȡ}&0x0221&LATIN SMALL LETTER D WITH CURL\\
+\mystixmathfont{Ȩ}&0x0228&LATIN CAPITAL LETTER E WITH CEDILLA\\
+\mystixmathfont{ȩ}&0x0229&LATIN SMALL LETTER E WITH CEDILLA\\
+\mystixmathfont{ȴ}&0x0234&LATIN SMALL LETTER L WITH CURL\\
+\mystixmathfont{ȵ}&0x0235&LATIN SMALL LETTER N WITH CURL\\
+\mystixmathfont{ȶ}&0x0236&LATIN SMALL LETTER T WITH CURL\\
+\mystixmathfont{ɐ}&0x0250&LATIN SMALL LETTER TURNED A\\
+\mystixmathfont{ɑ}&0x0251&LATIN SMALL LETTER ALPHA\\
+\mystixmathfont{ɒ}&0x0252&LATIN SMALL LETTER TURNED ALPHA\\
+\mystixmathfont{ɓ}&0x0253&LATIN SMALL LETTER B WITH HOOK\\
+\mystixmathfont{ɔ}&0x0254&LATIN SMALL LETTER OPEN O\\
+\mystixmathfont{ɕ}&0x0255&LATIN SMALL LETTER C WITH CURL\\
+\mystixmathfont{ɖ}&0x0256&LATIN SMALL LETTER D WITH TAIL\\
+\mystixmathfont{ɗ}&0x0257&LATIN SMALL LETTER D WITH HOOK\\
+\mystixmathfont{ɘ}&0x0258&LATIN SMALL LETTER REVERSED E\\
+\mystixmathfont{ə}&0x0259&LATIN SMALL LETTER SCHWA\\
+\mystixmathfont{ɚ}&0x025a&LATIN SMALL LETTER SCHWA WITH HOOK\\
+\mystixmathfont{ɛ}&0x025b&LATIN SMALL LETTER OPEN E\\
+\mystixmathfont{ɜ}&0x025c&LATIN SMALL LETTER REVERSED OPEN E\\
+\mystixmathfont{ɝ}&0x025d&LATIN SMALL LETTER REVERSED OPEN E WITH HOOK\\
+\mystixmathfont{ɞ}&0x025e&LATIN SMALL LETTER CLOSED REVERSED OPEN E\\
+\mystixmathfont{ɟ}&0x025f&LATIN SMALL LETTER DOTLESS J WITH STROKE\\
+\mystixmathfont{ɠ}&0x0260&LATIN SMALL LETTER G WITH HOOK\\
+\mystixmathfont{ɡ}&0x0261&LATIN SMALL LETTER SCRIPT G\\
+\mystixmathfont{ɢ}&0x0262&LATIN LETTER SMALL CAPITAL G\\
+\mystixmathfont{ɣ}&0x0263&LATIN SMALL LETTER GAMMA\\
+\mystixmathfont{ɤ}&0x0264&LATIN SMALL LETTER RAMS HORN\\
+\mystixmathfont{ɥ}&0x0265&LATIN SMALL LETTER TURNED H\\
+\mystixmathfont{ɦ}&0x0266&LATIN SMALL LETTER H WITH HOOK\\
+\mystixmathfont{ɧ}&0x0267&LATIN SMALL LETTER HENG WITH HOOK\\
+\mystixmathfont{ɨ}&0x0268&LATIN SMALL LETTER I WITH STROKE\\
+\mystixmathfont{ɩ}&0x0269&LATIN SMALL LETTER IOTA\\
+\mystixmathfont{ɪ}&0x026a&LATIN LETTER SMALL CAPITAL I\\
+\mystixmathfont{ɫ}&0x026b&LATIN SMALL LETTER L WITH MIDDLE TILDE\\
+\mystixmathfont{ɬ}&0x026c&LATIN SMALL LETTER L WITH BELT\\
+\mystixmathfont{ɭ}&0x026d&LATIN SMALL LETTER L WITH RETROFLEX HOOK\\
+\mystixmathfont{ɮ}&0x026e&LATIN SMALL LETTER LEZH\\
+\mystixmathfont{ɯ}&0x026f&LATIN SMALL LETTER TURNED M\\
+\mystixmathfont{ɰ}&0x0270&LATIN SMALL LETTER TURNED M WITH LONG LEG\\
+\mystixmathfont{ɱ}&0x0271&LATIN SMALL LETTER M WITH HOOK\\
+\mystixmathfont{ɲ}&0x0272&LATIN SMALL LETTER N WITH LEFT HOOK\\
+\mystixmathfont{ɳ}&0x0273&LATIN SMALL LETTER N WITH RETROFLEX HOOK\\
+\mystixmathfont{ɴ}&0x0274&LATIN LETTER SMALL CAPITAL N\\
+\mystixmathfont{ɵ}&0x0275&LATIN SMALL LETTER BARRED O\\
+\mystixmathfont{ɶ}&0x0276&LATIN LETTER SMALL CAPITAL OE\\
+\mystixmathfont{ɷ}&0x0277&LATIN SMALL LETTER CLOSED OMEGA\\
+\mystixmathfont{ɸ}&0x0278&LATIN SMALL LETTER PHI\\
+\mystixmathfont{ɹ}&0x0279&LATIN SMALL LETTER TURNED R\\
+\mystixmathfont{ɺ}&0x027a&LATIN SMALL LETTER TURNED R WITH LONG LEG\\
+\mystixmathfont{ɻ}&0x027b&LATIN SMALL LETTER TURNED R WITH HOOK\\
+\mystixmathfont{ɼ}&0x027c&LATIN SMALL LETTER R WITH LONG LEG\\
+\mystixmathfont{ɽ}&0x027d&LATIN SMALL LETTER R WITH TAIL\\
+\mystixmathfont{ɾ}&0x027e&LATIN SMALL LETTER R WITH FISHHOOK\\
+\mystixmathfont{ɿ}&0x027f&LATIN SMALL LETTER REVERSED R WITH FISHHOOK\\
+\mystixmathfont{ʀ}&0x0280&LATIN LETTER SMALL CAPITAL R\\
+\mystixmathfont{ʁ}&0x0281&LATIN LETTER SMALL CAPITAL INVERTED R\\
+\mystixmathfont{ʂ}&0x0282&LATIN SMALL LETTER S WITH HOOK\\
+\mystixmathfont{ʃ}&0x0283&LATIN SMALL LETTER ESH\\
+\mystixmathfont{ʄ}&0x0284&LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK\\
+\mystixmathfont{ʅ}&0x0285&LATIN SMALL LETTER SQUAT REVERSED ESH\\
+\mystixmathfont{ʆ}&0x0286&LATIN SMALL LETTER ESH WITH CURL\\
+\mystixmathfont{ʇ}&0x0287&LATIN SMALL LETTER TURNED T\\
+\mystixmathfont{ʈ}&0x0288&LATIN SMALL LETTER T WITH RETROFLEX HOOK\\
+\mystixmathfont{ʉ}&0x0289&LATIN SMALL LETTER U BAR\\
+\mystixmathfont{ʊ}&0x028a&LATIN SMALL LETTER UPSILON\\
+\mystixmathfont{ʋ}&0x028b&LATIN SMALL LETTER V WITH HOOK\\
+\mystixmathfont{ʌ}&0x028c&LATIN SMALL LETTER TURNED V\\
+\mystixmathfont{ʍ}&0x028d&LATIN SMALL LETTER TURNED W\\
+\mystixmathfont{ʎ}&0x028e&LATIN SMALL LETTER TURNED Y\\
+\mystixmathfont{ʏ}&0x028f&LATIN LETTER SMALL CAPITAL Y\\
+\mystixmathfont{ʐ}&0x0290&LATIN SMALL LETTER Z WITH RETROFLEX HOOK\\
+\mystixmathfont{ʑ}&0x0291&LATIN SMALL LETTER Z WITH CURL\\
+\mystixmathfont{ʒ}&0x0292&LATIN SMALL LETTER EZH\\
+\mystixmathfont{ʓ}&0x0293&LATIN SMALL LETTER EZH WITH CURL\\
+\mystixmathfont{ʔ}&0x0294&LATIN LETTER GLOTTAL STOP\\
+\mystixmathfont{ʕ}&0x0295&LATIN LETTER PHARYNGEAL VOICED FRICATIVE\\
+\mystixmathfont{ʖ}&0x0296&LATIN LETTER INVERTED GLOTTAL STOP\\
+\mystixmathfont{ʗ}&0x0297&LATIN LETTER STRETCHED C\\
+\mystixmathfont{ʘ}&0x0298&LATIN LETTER BILABIAL CLICK\\
+\mystixmathfont{ʙ}&0x0299&LATIN LETTER SMALL CAPITAL B\\
+\mystixmathfont{ʚ}&0x029a&LATIN SMALL LETTER CLOSED OPEN E\\
+\mystixmathfont{ʛ}&0x029b&LATIN LETTER SMALL CAPITAL G WITH HOOK\\
+\mystixmathfont{ʜ}&0x029c&LATIN LETTER SMALL CAPITAL H\\
+\mystixmathfont{ʝ}&0x029d&LATIN SMALL LETTER J WITH CROSSED-TAIL\\
+\mystixmathfont{ʞ}&0x029e&LATIN SMALL LETTER TURNED K\\
+\mystixmathfont{ʟ}&0x029f&LATIN LETTER SMALL CAPITAL L\\
+\mystixmathfont{ʠ}&0x02a0&LATIN SMALL LETTER Q WITH HOOK\\
+\mystixmathfont{ʡ}&0x02a1&LATIN LETTER GLOTTAL STOP WITH STROKE\\
+\mystixmathfont{ʢ}&0x02a2&LATIN LETTER REVERSED GLOTTAL STOP WITH STROKE\\
+\mystixmathfont{ʣ}&0x02a3&LATIN SMALL LETTER DZ DIGRAPH\\
+\mystixmathfont{ʤ}&0x02a4&LATIN SMALL LETTER DEZH DIGRAPH\\
+\mystixmathfont{ʥ}&0x02a5&LATIN SMALL LETTER DZ DIGRAPH WITH CURL\\
+\mystixmathfont{ʦ}&0x02a6&LATIN SMALL LETTER TS DIGRAPH\\
+\mystixmathfont{ʧ}&0x02a7&LATIN SMALL LETTER TESH DIGRAPH\\
+\mystixmathfont{ʨ}&0x02a8&LATIN SMALL LETTER TC DIGRAPH WITH CURL\\
+\mystixmathfont{ʩ}&0x02a9&LATIN SMALL LETTER FENG DIGRAPH\\
+\mystixmathfont{ʪ}&0x02aa&LATIN SMALL LETTER LS DIGRAPH\\
+\mystixmathfont{ʫ}&0x02ab&LATIN SMALL LETTER LZ DIGRAPH\\
+\mystixmathfont{ʬ}&0x02ac&LATIN LETTER BILABIAL PERCUSSIVE\\
+\mystixmathfont{ʭ}&0x02ad&LATIN LETTER BIDENTAL PERCUSSIVE\\
+\mystixmathfont{ʮ}&0x02ae&LATIN SMALL LETTER TURNED H WITH FISHHOOK\\
+\mystixmathfont{ʯ}&0x02af&LATIN SMALL LETTER TURNED H WITH FISHHOOK AND TAIL\\
+\mystixmathfont{ʰ}&0x02b0&MODIFIER LETTER SMALL H\\
+\mystixmathfont{ʱ}&0x02b1&MODIFIER LETTER SMALL H WITH HOOK\\
+\mystixmathfont{ʲ}&0x02b2&MODIFIER LETTER SMALL J\\
+\mystixmathfont{ʳ}&0x02b3&MODIFIER LETTER SMALL R\\
+\mystixmathfont{ʴ}&0x02b4&MODIFIER LETTER SMALL TURNED R\\
+\mystixmathfont{ʵ}&0x02b5&MODIFIER LETTER SMALL TURNED R WITH HOOK\\
+\mystixmathfont{ʶ}&0x02b6&MODIFIER LETTER SMALL CAPITAL INVERTED R\\
+\mystixmathfont{ʷ}&0x02b7&MODIFIER LETTER SMALL W\\
+\mystixmathfont{ʸ}&0x02b8&MODIFIER LETTER SMALL Y\\
+\mystixmathfont{ʹ}&0x02b9&MODIFIER LETTER PRIME\\
+\mystixmathfont{ʺ}&0x02ba&MODIFIER LETTER DOUBLE PRIME\\
+\mystixmathfont{ʻ}&0x02bb&MODIFIER LETTER TURNED COMMA\\
+\mystixmathfont{ʼ}&0x02bc&MODIFIER LETTER APOSTROPHE\\
+\mystixmathfont{ʽ}&0x02bd&MODIFIER LETTER REVERSED COMMA\\
+\mystixmathfont{ʾ}&0x02be&MODIFIER LETTER RIGHT HALF RING\\
+\mystixmathfont{ʿ}&0x02bf&MODIFIER LETTER LEFT HALF RING\\
+\mystixmathfont{ˀ}&0x02c0&MODIFIER LETTER GLOTTAL STOP\\
+\mystixmathfont{ˁ}&0x02c1&MODIFIER LETTER REVERSED GLOTTAL STOP\\
+\mystixmathfont{˂}&0x02c2&MODIFIER LETTER LEFT ARROWHEAD\\
+\mystixmathfont{˃}&0x02c3&MODIFIER LETTER RIGHT ARROWHEAD\\
+\mystixmathfont{˄}&0x02c4&MODIFIER LETTER UP ARROWHEAD\\
+\mystixmathfont{˅}&0x02c5&MODIFIER LETTER DOWN ARROWHEAD\\
+\mystixmathfont{ˈ}&0x02c8&MODIFIER LETTER VERTICAL LINE\\
+\mystixmathfont{ˉ}&0x02c9&MODIFIER LETTER MACRON\\
+\mystixmathfont{ˊ}&0x02ca&MODIFIER LETTER ACUTE ACCENT\\
+\mystixmathfont{ˋ}&0x02cb&MODIFIER LETTER GRAVE ACCENT\\
+\mystixmathfont{ˌ}&0x02cc&MODIFIER LETTER LOW VERTICAL LINE\\
+\mystixmathfont{ˍ}&0x02cd&MODIFIER LETTER LOW MACRON\\
+\mystixmathfont{ˎ}&0x02ce&MODIFIER LETTER LOW GRAVE ACCENT\\
+\mystixmathfont{ˏ}&0x02cf&MODIFIER LETTER LOW ACUTE ACCENT\\
+\mystixmathfont{ː}&0x02d0&MODIFIER LETTER TRIANGULAR COLON\\
+\mystixmathfont{ˑ}&0x02d1&MODIFIER LETTER HALF TRIANGULAR COLON\\
+\mystixmathfont{˒}&0x02d2&MODIFIER LETTER CENTRED RIGHT HALF RING\\
+\mystixmathfont{˓}&0x02d3&MODIFIER LETTER CENTRED LEFT HALF RING\\
+\mystixmathfont{˔}&0x02d4&MODIFIER LETTER UP TACK\\
+\mystixmathfont{˕}&0x02d5&MODIFIER LETTER DOWN TACK\\
+\mystixmathfont{˖}&0x02d6&MODIFIER LETTER PLUS SIGN\\
+\mystixmathfont{˗}&0x02d7&MODIFIER LETTER MINUS SIGN\\
+\mystixmathfont{˞}&0x02de&MODIFIER LETTER RHOTIC HOOK\\
+\mystixmathfont{˟}&0x02df&MODIFIER LETTER CROSS ACCENT\\
+\mystixmathfont{ˠ}&0x02e0&MODIFIER LETTER SMALL GAMMA\\
+\mystixmathfont{ˡ}&0x02e1&MODIFIER LETTER SMALL L\\
+\mystixmathfont{ˢ}&0x02e2&MODIFIER LETTER SMALL S\\
+\mystixmathfont{ˣ}&0x02e3&MODIFIER LETTER SMALL X\\
+\mystixmathfont{ˤ}&0x02e4&MODIFIER LETTER SMALL REVERSED GLOTTAL STOP\\
+\mystixmathfont{˥}&0x02e5&MODIFIER LETTER EXTRA-HIGH TONE BAR\\
+\mystixmathfont{˦}&0x02e6&MODIFIER LETTER HIGH TONE BAR\\
+\mystixmathfont{˧}&0x02e7&MODIFIER LETTER MID TONE BAR\\
+\mystixmathfont{˨}&0x02e8&MODIFIER LETTER LOW TONE BAR\\
+\mystixmathfont{˩}&0x02e9&MODIFIER LETTER EXTRA-LOW TONE BAR\\
+\mystixmathfont{ˬ}&0x02ec&MODIFIER LETTER VOICING\\
+\mystixmathfont{˭}&0x02ed&MODIFIER LETTER UNASPIRATED\\
+\mystixmathfont{˷}&0x02f7&MODIFIER LETTER LOW TILDE\\
+\mystixmathfont{̍}&0x030d&COMBINING VERTICAL LINE ABOVE\\
+\mystixmathfont{̎}&0x030e&COMBINING DOUBLE VERTICAL LINE ABOVE\\
+\mystixmathfont{̐}&0x0310&COMBINING CANDRABINDU\\
+\mystixmathfont{̒}&0x0312&COMBINING TURNED COMMA ABOVE\\
+\mystixmathfont{̓}&0x0313&COMBINING COMMA ABOVE\\
+\mystixmathfont{̔}&0x0314&COMBINING REVERSED COMMA ABOVE\\
+\mystixmathfont{̕}&0x0315&COMBINING COMMA ABOVE RIGHT\\
+\mystixmathfont{̖}&0x0316&COMBINING GRAVE ACCENT BELOW\\
+\mystixmathfont{̗}&0x0317&COMBINING ACUTE ACCENT BELOW\\
+\mystixmathfont{̘}&0x0318&COMBINING LEFT TACK BELOW\\
+\mystixmathfont{̙}&0x0319&COMBINING RIGHT TACK BELOW\\
+\mystixmathfont{̚}&0x031a&COMBINING LEFT ANGLE ABOVE\\
+\mystixmathfont{̛}&0x031b&COMBINING HORN\\
+\mystixmathfont{̜}&0x031c&COMBINING LEFT HALF RING BELOW\\
+\mystixmathfont{̝}&0x031d&COMBINING UP TACK BELOW\\
+\mystixmathfont{̞}&0x031e&COMBINING DOWN TACK BELOW\\
+\mystixmathfont{̟}&0x031f&COMBINING PLUS SIGN BELOW\\
+\mystixmathfont{̠}&0x0320&COMBINING MINUS SIGN BELOW\\
+\mystixmathfont{̡}&0x0321&COMBINING PALATALIZED HOOK BELOW\\
+\mystixmathfont{̢}&0x0322&COMBINING RETROFLEX HOOK BELOW\\
+\mystixmathfont{̤}&0x0324&COMBINING DIAERESIS BELOW\\
+\mystixmathfont{̥}&0x0325&COMBINING RING BELOW\\
+\mystixmathfont{̧}&0x0327&COMBINING CEDILLA\\
+\mystixmathfont{̨}&0x0328&COMBINING OGONEK\\
+\mystixmathfont{̩}&0x0329&COMBINING VERTICAL LINE BELOW\\
+\mystixmathfont{̪}&0x032a&COMBINING BRIDGE BELOW\\
+\mystixmathfont{̫}&0x032b&COMBINING INVERTED DOUBLE ARCH BELOW\\
+\mystixmathfont{̴}&0x0334&COMBINING TILDE OVERLAY\\
+\mystixmathfont{̵}&0x0335&COMBINING SHORT STROKE OVERLAY\\
+\mystixmathfont{̶}&0x0336&COMBINING LONG STROKE OVERLAY\\
+\mystixmathfont{̷}&0x0337&COMBINING SHORT SOLIDUS OVERLAY\\
+\mystixmathfont{̹}&0x0339&COMBINING RIGHT HALF RING BELOW\\
+\mystixmathfont{̺}&0x033a&COMBINING INVERTED BRIDGE BELOW\\
+\mystixmathfont{̻}&0x033b&COMBINING SQUARE BELOW\\
+\mystixmathfont{̼}&0x033c&COMBINING SEAGULL BELOW\\
+\mystixmathfont{̽}&0x033d&COMBINING X ABOVE\\
+\mystixmathfont{̾}&0x033e&COMBINING VERTICAL TILDE\\
+\mystixmathfont{͆}&0x0346&COMBINING BRIDGE ABOVE\\
+\mystixmathfont{͇}&0x0347&COMBINING EQUALS SIGN BELOW\\
+\mystixmathfont{͌}&0x034c&COMBINING ALMOST EQUAL TO ABOVE\\
+\mystixmathfont{͙}&0x0359&COMBINING ASTERISK BELOW\\
+\mystixmathfont{͜}&0x035c&COMBINING DOUBLE BREVE BELOW\\
+\mystixmathfont{͠}&0x0360&COMBINING DOUBLE TILDE\\
+\mystixmathfont{͡}&0x0361&COMBINING DOUBLE INVERTED BREVE\\
+\mystixmathfont{͢}&0x0362&COMBINING DOUBLE RIGHTWARDS ARROW BELOW\\
+\mystixmathfont{;}&0x037e&GREEK QUESTION MARK\\
+\mystixmathfont{΄}&0x0384&GREEK TONOS\\
+\mystixmathfont{΅}&0x0385&GREEK DIALYTIKA TONOS\\
+\mystixmathfont{Ά}&0x0386&GREEK CAPITAL LETTER ALPHA WITH TONOS\\
+\mystixmathfont{·}&0x0387&GREEK ANO TELEIA\\
+\mystixmathfont{Έ}&0x0388&GREEK CAPITAL LETTER EPSILON WITH TONOS\\
+\mystixmathfont{Ή}&0x0389&GREEK CAPITAL LETTER ETA WITH TONOS\\
+\mystixmathfont{Ί}&0x038a&GREEK CAPITAL LETTER IOTA WITH TONOS\\
+\mystixmathfont{Ό}&0x038c&GREEK CAPITAL LETTER OMICRON WITH TONOS\\
+\mystixmathfont{Ύ}&0x038e&GREEK CAPITAL LETTER UPSILON WITH TONOS\\
+\mystixmathfont{Ώ}&0x038f&GREEK CAPITAL LETTER OMEGA WITH TONOS\\
+\mystixmathfont{ΐ}&0x0390&GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS\\
+\mystixmathfont{Ϊ}&0x03aa&GREEK CAPITAL LETTER IOTA WITH DIALYTIKA\\
+\mystixmathfont{Ϋ}&0x03ab&GREEK CAPITAL LETTER UPSILON WITH DIALYTIKA\\
+\mystixmathfont{ά}&0x03ac&GREEK SMALL LETTER ALPHA WITH TONOS\\
+\mystixmathfont{έ}&0x03ad&GREEK SMALL LETTER EPSILON WITH TONOS\\
+\mystixmathfont{ή}&0x03ae&GREEK SMALL LETTER ETA WITH TONOS\\
+\mystixmathfont{ί}&0x03af&GREEK SMALL LETTER IOTA WITH TONOS\\
+\mystixmathfont{ΰ}&0x03b0&GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND TONOS\\
+\mystixmathfont{ϊ}&0x03ca&GREEK SMALL LETTER IOTA WITH DIALYTIKA\\
+\mystixmathfont{ϋ}&0x03cb&GREEK SMALL LETTER UPSILON WITH DIALYTIKA\\
+\mystixmathfont{ό}&0x03cc&GREEK SMALL LETTER OMICRON WITH TONOS\\
+\mystixmathfont{ύ}&0x03cd&GREEK SMALL LETTER UPSILON WITH TONOS\\
+\mystixmathfont{ώ}&0x03ce&GREEK SMALL LETTER OMEGA WITH TONOS\\
+\mystixmathfont{ϐ}&0x03d0&GREEK BETA SYMBOL\\
+\mystixmathfont{ϒ}&0x03d2&GREEK UPSILON WITH HOOK SYMBOL\\
+\mystixmathfont{Ϙ}&0x03d8&GREEK LETTER ARCHAIC KOPPA\\
+\mystixmathfont{ϙ}&0x03d9&GREEK SMALL LETTER ARCHAIC KOPPA\\
+\mystixmathfont{Ϛ}&0x03da&GREEK LETTER STIGMA\\
+\mystixmathfont{ϛ}&0x03db&GREEK SMALL LETTER STIGMA\\
+\mystixmathfont{Ϝ}&0x03dc&GREEK LETTER DIGAMMA\\
+\mystixmathfont{ϝ}&0x03dd&GREEK SMALL LETTER DIGAMMA\\
+\mystixmathfont{Ϟ}&0x03de&GREEK LETTER KOPPA\\
+\mystixmathfont{ϟ}&0x03df&GREEK SMALL LETTER KOPPA\\
+\mystixmathfont{Ϡ}&0x03e0&GREEK LETTER SAMPI\\
+\mystixmathfont{ϡ}&0x03e1&GREEK SMALL LETTER SAMPI\\
+\mystixmathfont{϶}&0x03f6&GREEK REVERSED LUNATE EPSILON SYMBOL\\
+\mystixmathfont{Ѐ}&0x0400&CYRILLIC CAPITAL LETTER IE WITH GRAVE\\
+\mystixmathfont{Ё}&0x0401&CYRILLIC CAPITAL LETTER IO\\
+\mystixmathfont{Ђ}&0x0402&CYRILLIC CAPITAL LETTER DJE\\
+\mystixmathfont{Ѓ}&0x0403&CYRILLIC CAPITAL LETTER GJE\\
+\mystixmathfont{Є}&0x0404&CYRILLIC CAPITAL LETTER UKRAINIAN IE\\
+\mystixmathfont{Ѕ}&0x0405&CYRILLIC CAPITAL LETTER DZE\\
+\mystixmathfont{І}&0x0406&CYRILLIC CAPITAL LETTER BYELORUSSIAN-UKRAINIAN I\\
+\mystixmathfont{Ї}&0x0407&CYRILLIC CAPITAL LETTER YI\\
+\mystixmathfont{Ј}&0x0408&CYRILLIC CAPITAL LETTER JE\\
+\mystixmathfont{Љ}&0x0409&CYRILLIC CAPITAL LETTER LJE\\
+\mystixmathfont{Њ}&0x040a&CYRILLIC CAPITAL LETTER NJE\\
+\mystixmathfont{Ћ}&0x040b&CYRILLIC CAPITAL LETTER TSHE\\
+\mystixmathfont{Ќ}&0x040c&CYRILLIC CAPITAL LETTER KJE\\
+\mystixmathfont{Ѝ}&0x040d&CYRILLIC CAPITAL LETTER I WITH GRAVE\\
+\mystixmathfont{Ў}&0x040e&CYRILLIC CAPITAL LETTER SHORT U\\
+\mystixmathfont{Џ}&0x040f&CYRILLIC CAPITAL LETTER DZHE\\
+\mystixmathfont{А}&0x0410&CYRILLIC CAPITAL LETTER A\\
+\mystixmathfont{Б}&0x0411&CYRILLIC CAPITAL LETTER BE\\
+\mystixmathfont{В}&0x0412&CYRILLIC CAPITAL LETTER VE\\
+\mystixmathfont{Г}&0x0413&CYRILLIC CAPITAL LETTER GHE\\
+\mystixmathfont{Д}&0x0414&CYRILLIC CAPITAL LETTER DE\\
+\mystixmathfont{Е}&0x0415&CYRILLIC CAPITAL LETTER IE\\
+\mystixmathfont{Ж}&0x0416&CYRILLIC CAPITAL LETTER ZHE\\
+\mystixmathfont{З}&0x0417&CYRILLIC CAPITAL LETTER ZE\\
+\mystixmathfont{И}&0x0418&CYRILLIC CAPITAL LETTER I\\
+\mystixmathfont{Й}&0x0419&CYRILLIC CAPITAL LETTER SHORT I\\
+\mystixmathfont{К}&0x041a&CYRILLIC CAPITAL LETTER KA\\
+\mystixmathfont{Л}&0x041b&CYRILLIC CAPITAL LETTER EL\\
+\mystixmathfont{М}&0x041c&CYRILLIC CAPITAL LETTER EM\\
+\mystixmathfont{Н}&0x041d&CYRILLIC CAPITAL LETTER EN\\
+\mystixmathfont{О}&0x041e&CYRILLIC CAPITAL LETTER O\\
+\mystixmathfont{П}&0x041f&CYRILLIC CAPITAL LETTER PE\\
+\mystixmathfont{Р}&0x0420&CYRILLIC CAPITAL LETTER ER\\
+\mystixmathfont{С}&0x0421&CYRILLIC CAPITAL LETTER ES\\
+\mystixmathfont{Т}&0x0422&CYRILLIC CAPITAL LETTER TE\\
+\mystixmathfont{У}&0x0423&CYRILLIC CAPITAL LETTER U\\
+\mystixmathfont{Ф}&0x0424&CYRILLIC CAPITAL LETTER EF\\
+\mystixmathfont{Х}&0x0425&CYRILLIC CAPITAL LETTER HA\\
+\mystixmathfont{Ц}&0x0426&CYRILLIC CAPITAL LETTER TSE\\
+\mystixmathfont{Ч}&0x0427&CYRILLIC CAPITAL LETTER CHE\\
+\mystixmathfont{Ш}&0x0428&CYRILLIC CAPITAL LETTER SHA\\
+\mystixmathfont{Щ}&0x0429&CYRILLIC CAPITAL LETTER SHCHA\\
+\mystixmathfont{Ъ}&0x042a&CYRILLIC CAPITAL LETTER HARD SIGN\\
+\mystixmathfont{Ы}&0x042b&CYRILLIC CAPITAL LETTER YERU\\
+\mystixmathfont{Ь}&0x042c&CYRILLIC CAPITAL LETTER SOFT SIGN\\
+\mystixmathfont{Э}&0x042d&CYRILLIC CAPITAL LETTER E\\
+\mystixmathfont{Ю}&0x042e&CYRILLIC CAPITAL LETTER YU\\
+\mystixmathfont{Я}&0x042f&CYRILLIC CAPITAL LETTER YA\\
+\mystixmathfont{а}&0x0430&CYRILLIC SMALL LETTER A\\
+\mystixmathfont{б}&0x0431&CYRILLIC SMALL LETTER BE\\
+\mystixmathfont{в}&0x0432&CYRILLIC SMALL LETTER VE\\
+\mystixmathfont{г}&0x0433&CYRILLIC SMALL LETTER GHE\\
+\mystixmathfont{д}&0x0434&CYRILLIC SMALL LETTER DE\\
+\mystixmathfont{е}&0x0435&CYRILLIC SMALL LETTER IE\\
+\mystixmathfont{ж}&0x0436&CYRILLIC SMALL LETTER ZHE\\
+\mystixmathfont{з}&0x0437&CYRILLIC SMALL LETTER ZE\\
+\mystixmathfont{и}&0x0438&CYRILLIC SMALL LETTER I\\
+\mystixmathfont{й}&0x0439&CYRILLIC SMALL LETTER SHORT I\\
+\mystixmathfont{к}&0x043a&CYRILLIC SMALL LETTER KA\\
+\mystixmathfont{л}&0x043b&CYRILLIC SMALL LETTER EL\\
+\mystixmathfont{м}&0x043c&CYRILLIC SMALL LETTER EM\\
+\mystixmathfont{н}&0x043d&CYRILLIC SMALL LETTER EN\\
+\mystixmathfont{о}&0x043e&CYRILLIC SMALL LETTER O\\
+\mystixmathfont{п}&0x043f&CYRILLIC SMALL LETTER PE\\
+\mystixmathfont{р}&0x0440&CYRILLIC SMALL LETTER ER\\
+\mystixmathfont{с}&0x0441&CYRILLIC SMALL LETTER ES\\
+\mystixmathfont{т}&0x0442&CYRILLIC SMALL LETTER TE\\
+\mystixmathfont{у}&0x0443&CYRILLIC SMALL LETTER U\\
+\mystixmathfont{ф}&0x0444&CYRILLIC SMALL LETTER EF\\
+\mystixmathfont{х}&0x0445&CYRILLIC SMALL LETTER HA\\
+\mystixmathfont{ц}&0x0446&CYRILLIC SMALL LETTER TSE\\
+\mystixmathfont{ч}&0x0447&CYRILLIC SMALL LETTER CHE\\
+\mystixmathfont{ш}&0x0448&CYRILLIC SMALL LETTER SHA\\
+\mystixmathfont{щ}&0x0449&CYRILLIC SMALL LETTER SHCHA\\
+\mystixmathfont{ъ}&0x044a&CYRILLIC SMALL LETTER HARD SIGN\\
+\mystixmathfont{ы}&0x044b&CYRILLIC SMALL LETTER YERU\\
+\mystixmathfont{ь}&0x044c&CYRILLIC SMALL LETTER SOFT SIGN\\
+\mystixmathfont{э}&0x044d&CYRILLIC SMALL LETTER E\\
+\mystixmathfont{ю}&0x044e&CYRILLIC SMALL LETTER YU\\
+\mystixmathfont{я}&0x044f&CYRILLIC SMALL LETTER YA\\
+\mystixmathfont{ѐ}&0x0450&CYRILLIC SMALL LETTER IE WITH GRAVE\\
+\mystixmathfont{ё}&0x0451&CYRILLIC SMALL LETTER IO\\
+\mystixmathfont{ђ}&0x0452&CYRILLIC SMALL LETTER DJE\\
+\mystixmathfont{ѓ}&0x0453&CYRILLIC SMALL LETTER GJE\\
+\mystixmathfont{є}&0x0454&CYRILLIC SMALL LETTER UKRAINIAN IE\\
+\mystixmathfont{ѕ}&0x0455&CYRILLIC SMALL LETTER DZE\\
+\mystixmathfont{і}&0x0456&CYRILLIC SMALL LETTER BYELORUSSIAN-UKRAINIAN I\\
+\mystixmathfont{ї}&0x0457&CYRILLIC SMALL LETTER YI\\
+\mystixmathfont{ј}&0x0458&CYRILLIC SMALL LETTER JE\\
+\mystixmathfont{љ}&0x0459&CYRILLIC SMALL LETTER LJE\\
+\mystixmathfont{њ}&0x045a&CYRILLIC SMALL LETTER NJE\\
+\mystixmathfont{ћ}&0x045b&CYRILLIC SMALL LETTER TSHE\\
+\mystixmathfont{ќ}&0x045c&CYRILLIC SMALL LETTER KJE\\
+\mystixmathfont{ѝ}&0x045d&CYRILLIC SMALL LETTER I WITH GRAVE\\
+\mystixmathfont{ў}&0x045e&CYRILLIC SMALL LETTER SHORT U\\
+\mystixmathfont{џ}&0x045f&CYRILLIC SMALL LETTER DZHE\\
+\mystixmathfont{Ѣ}&0x0462&CYRILLIC CAPITAL LETTER YAT\\
+\mystixmathfont{ѣ}&0x0463&CYRILLIC SMALL LETTER YAT\\
+\mystixmathfont{Ѫ}&0x046a&CYRILLIC CAPITAL LETTER BIG YUS\\
+\mystixmathfont{ѫ}&0x046b&CYRILLIC SMALL LETTER BIG YUS\\
+\mystixmathfont{Ѳ}&0x0472&CYRILLIC CAPITAL LETTER FITA\\
+\mystixmathfont{ѳ}&0x0473&CYRILLIC SMALL LETTER FITA\\
+\mystixmathfont{Ѵ}&0x0474&CYRILLIC CAPITAL LETTER IZHITSA\\
+\mystixmathfont{ѵ}&0x0475&CYRILLIC SMALL LETTER IZHITSA\\
+\mystixmathfont{Ґ}&0x0490&CYRILLIC CAPITAL LETTER GHE WITH UPTURN\\
+\mystixmathfont{ґ}&0x0491&CYRILLIC SMALL LETTER GHE WITH UPTURN\\
+
+\mystixmathfont{ᴀ}&0x1d00&LATIN LETTER SMALL CAPITAL A\\
+\mystixmathfont{ᴇ}&0x1d07&LATIN LETTER SMALL CAPITAL E\\
+\mystixmathfont{ᴜ}&0x1d1c&LATIN LETTER SMALL CAPITAL U\\
+\mystixmathfont{ᶁ}&0x1d81&LATIN SMALL LETTER D WITH PALATAL HOOK\\
+\mystixmathfont{ᶄ}&0x1d84&LATIN SMALL LETTER K WITH PALATAL HOOK\\
+\mystixmathfont{ᶅ}&0x1d85&LATIN SMALL LETTER L WITH PALATAL HOOK\\
+\mystixmathfont{ᶊ}&0x1d8a&LATIN SMALL LETTER S WITH PALATAL HOOK\\
+\mystixmathfont{ᶍ}&0x1d8d&LATIN SMALL LETTER X WITH PALATAL HOOK\\
+\mystixmathfont{ᶎ}&0x1d8e&LATIN SMALL LETTER Z WITH PALATAL HOOK\\
+\mystixmathfont{ᶘ}&0x1d98&LATIN SMALL LETTER ESH WITH RETROFLEX HOOK\\
+\mystixmathfont{ᶛ}&0x1d9b&MODIFIER LETTER SMALL TURNED ALPHA\\
+\mystixmathfont{ᶣ}&0x1da3&MODIFIER LETTER SMALL TURNED H\\
+\mystixmathfont{Ḁ}&0x1e00&LATIN CAPITAL LETTER A WITH RING BELOW\\
+\mystixmathfont{ḁ}&0x1e01&LATIN SMALL LETTER A WITH RING BELOW\\
+\mystixmathfont{Ḃ}&0x1e02&LATIN CAPITAL LETTER B WITH DOT ABOVE\\
+\mystixmathfont{ḃ}&0x1e03&LATIN SMALL LETTER B WITH DOT ABOVE\\
+\mystixmathfont{Ḅ}&0x1e04&LATIN CAPITAL LETTER B WITH DOT BELOW\\
+\mystixmathfont{ḅ}&0x1e05&LATIN SMALL LETTER B WITH DOT BELOW\\
+\mystixmathfont{Ḇ}&0x1e06&LATIN CAPITAL LETTER B WITH LINE BELOW\\
+\mystixmathfont{ḇ}&0x1e07&LATIN SMALL LETTER B WITH LINE BELOW\\
+\mystixmathfont{Ḉ}&0x1e08&LATIN CAPITAL LETTER C WITH CEDILLA AND ACUTE\\
+\mystixmathfont{ḉ}&0x1e09&LATIN SMALL LETTER C WITH CEDILLA AND ACUTE\\
+\mystixmathfont{Ḋ}&0x1e0a&LATIN CAPITAL LETTER D WITH DOT ABOVE\\
+\mystixmathfont{ḋ}&0x1e0b&LATIN SMALL LETTER D WITH DOT ABOVE\\
+\mystixmathfont{Ḍ}&0x1e0c&LATIN CAPITAL LETTER D WITH DOT BELOW\\
+\mystixmathfont{ḍ}&0x1e0d&LATIN SMALL LETTER D WITH DOT BELOW\\
+\mystixmathfont{Ḏ}&0x1e0e&LATIN CAPITAL LETTER D WITH LINE BELOW\\
+\mystixmathfont{ḏ}&0x1e0f&LATIN SMALL LETTER D WITH LINE BELOW\\
+\mystixmathfont{Ḑ}&0x1e10&LATIN CAPITAL LETTER D WITH CEDILLA\\
+\mystixmathfont{ḑ}&0x1e11&LATIN SMALL LETTER D WITH CEDILLA\\
+\mystixmathfont{Ḓ}&0x1e12&LATIN CAPITAL LETTER D WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{ḓ}&0x1e13&LATIN SMALL LETTER D WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{Ḕ}&0x1e14&LATIN CAPITAL LETTER E WITH MACRON AND GRAVE\\
+\mystixmathfont{ḕ}&0x1e15&LATIN SMALL LETTER E WITH MACRON AND GRAVE\\
+\mystixmathfont{Ḗ}&0x1e16&LATIN CAPITAL LETTER E WITH MACRON AND ACUTE\\
+\mystixmathfont{ḗ}&0x1e17&LATIN SMALL LETTER E WITH MACRON AND ACUTE\\
+\mystixmathfont{Ḙ}&0x1e18&LATIN CAPITAL LETTER E WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{ḙ}&0x1e19&LATIN SMALL LETTER E WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{Ḛ}&0x1e1a&LATIN CAPITAL LETTER E WITH TILDE BELOW\\
+\mystixmathfont{ḛ}&0x1e1b&LATIN SMALL LETTER E WITH TILDE BELOW\\
+\mystixmathfont{Ḝ}&0x1e1c&LATIN CAPITAL LETTER E WITH CEDILLA AND BREVE\\
+\mystixmathfont{ḝ}&0x1e1d&LATIN SMALL LETTER E WITH CEDILLA AND BREVE\\
+\mystixmathfont{Ḟ}&0x1e1e&LATIN CAPITAL LETTER F WITH DOT ABOVE\\
+\mystixmathfont{ḟ}&0x1e1f&LATIN SMALL LETTER F WITH DOT ABOVE\\
+\mystixmathfont{Ḡ}&0x1e20&LATIN CAPITAL LETTER G WITH MACRON\\
+\mystixmathfont{ḡ}&0x1e21&LATIN SMALL LETTER G WITH MACRON\\
+\mystixmathfont{Ḣ}&0x1e22&LATIN CAPITAL LETTER H WITH DOT ABOVE\\
+\mystixmathfont{ḣ}&0x1e23&LATIN SMALL LETTER H WITH DOT ABOVE\\
+\mystixmathfont{Ḥ}&0x1e24&LATIN CAPITAL LETTER H WITH DOT BELOW\\
+\mystixmathfont{ḥ}&0x1e25&LATIN SMALL LETTER H WITH DOT BELOW\\
+\mystixmathfont{Ḧ}&0x1e26&LATIN CAPITAL LETTER H WITH DIAERESIS\\
+\mystixmathfont{ḧ}&0x1e27&LATIN SMALL LETTER H WITH DIAERESIS\\
+\mystixmathfont{Ḩ}&0x1e28&LATIN CAPITAL LETTER H WITH CEDILLA\\
+\mystixmathfont{ḩ}&0x1e29&LATIN SMALL LETTER H WITH CEDILLA\\
+\mystixmathfont{Ḫ}&0x1e2a&LATIN CAPITAL LETTER H WITH BREVE BELOW\\
+\mystixmathfont{ḫ}&0x1e2b&LATIN SMALL LETTER H WITH BREVE BELOW\\
+\mystixmathfont{Ḭ}&0x1e2c&LATIN CAPITAL LETTER I WITH TILDE BELOW\\
+\mystixmathfont{ḭ}&0x1e2d&LATIN SMALL LETTER I WITH TILDE BELOW\\
+\mystixmathfont{Ḯ}&0x1e2e&LATIN CAPITAL LETTER I WITH DIAERESIS AND ACUTE\\
+\mystixmathfont{ḯ}&0x1e2f&LATIN SMALL LETTER I WITH DIAERESIS AND ACUTE\\
+\mystixmathfont{Ḱ}&0x1e30&LATIN CAPITAL LETTER K WITH ACUTE\\
+\mystixmathfont{ḱ}&0x1e31&LATIN SMALL LETTER K WITH ACUTE\\
+\mystixmathfont{Ḳ}&0x1e32&LATIN CAPITAL LETTER K WITH DOT BELOW\\
+\mystixmathfont{ḳ}&0x1e33&LATIN SMALL LETTER K WITH DOT BELOW\\
+\mystixmathfont{Ḵ}&0x1e34&LATIN CAPITAL LETTER K WITH LINE BELOW\\
+\mystixmathfont{ḵ}&0x1e35&LATIN SMALL LETTER K WITH LINE BELOW\\
+\mystixmathfont{Ḷ}&0x1e36&LATIN CAPITAL LETTER L WITH DOT BELOW\\
+\mystixmathfont{ḷ}&0x1e37&LATIN SMALL LETTER L WITH DOT BELOW\\
+\mystixmathfont{Ḹ}&0x1e38&LATIN CAPITAL LETTER L WITH DOT BELOW AND MACRON\\
+\mystixmathfont{ḹ}&0x1e39&LATIN SMALL LETTER L WITH DOT BELOW AND MACRON\\
+\mystixmathfont{Ḻ}&0x1e3a&LATIN CAPITAL LETTER L WITH LINE BELOW\\
+\mystixmathfont{ḻ}&0x1e3b&LATIN SMALL LETTER L WITH LINE BELOW\\
+\mystixmathfont{Ḽ}&0x1e3c&LATIN CAPITAL LETTER L WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{ḽ}&0x1e3d&LATIN SMALL LETTER L WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{Ḿ}&0x1e3e&LATIN CAPITAL LETTER M WITH ACUTE\\
+\mystixmathfont{ḿ}&0x1e3f&LATIN SMALL LETTER M WITH ACUTE\\
+\mystixmathfont{Ṁ}&0x1e40&LATIN CAPITAL LETTER M WITH DOT ABOVE\\
+\mystixmathfont{ṁ}&0x1e41&LATIN SMALL LETTER M WITH DOT ABOVE\\
+\mystixmathfont{Ṃ}&0x1e42&LATIN CAPITAL LETTER M WITH DOT BELOW\\
+\mystixmathfont{ṃ}&0x1e43&LATIN SMALL LETTER M WITH DOT BELOW\\
+\mystixmathfont{Ṅ}&0x1e44&LATIN CAPITAL LETTER N WITH DOT ABOVE\\
+\mystixmathfont{ṅ}&0x1e45&LATIN SMALL LETTER N WITH DOT ABOVE\\
+\mystixmathfont{Ṇ}&0x1e46&LATIN CAPITAL LETTER N WITH DOT BELOW\\
+\mystixmathfont{ṇ}&0x1e47&LATIN SMALL LETTER N WITH DOT BELOW\\
+\mystixmathfont{Ṉ}&0x1e48&LATIN CAPITAL LETTER N WITH LINE BELOW\\
+\mystixmathfont{ṉ}&0x1e49&LATIN SMALL LETTER N WITH LINE BELOW\\
+\mystixmathfont{Ṋ}&0x1e4a&LATIN CAPITAL LETTER N WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{ṋ}&0x1e4b&LATIN SMALL LETTER N WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{Ṍ}&0x1e4c&LATIN CAPITAL LETTER O WITH TILDE AND ACUTE\\
+\mystixmathfont{ṍ}&0x1e4d&LATIN SMALL LETTER O WITH TILDE AND ACUTE\\
+\mystixmathfont{Ṏ}&0x1e4e&LATIN CAPITAL LETTER O WITH TILDE AND DIAERESIS\\
+\mystixmathfont{ṏ}&0x1e4f&LATIN SMALL LETTER O WITH TILDE AND DIAERESIS\\
+\mystixmathfont{Ṑ}&0x1e50&LATIN CAPITAL LETTER O WITH MACRON AND GRAVE\\
+\mystixmathfont{ṑ}&0x1e51&LATIN SMALL LETTER O WITH MACRON AND GRAVE\\
+\mystixmathfont{Ṓ}&0x1e52&LATIN CAPITAL LETTER O WITH MACRON AND ACUTE\\
+\mystixmathfont{ṓ}&0x1e53&LATIN SMALL LETTER O WITH MACRON AND ACUTE\\
+\mystixmathfont{Ṕ}&0x1e54&LATIN CAPITAL LETTER P WITH ACUTE\\
+\mystixmathfont{ṕ}&0x1e55&LATIN SMALL LETTER P WITH ACUTE\\
+\mystixmathfont{Ṗ}&0x1e56&LATIN CAPITAL LETTER P WITH DOT ABOVE\\
+\mystixmathfont{ṗ}&0x1e57&LATIN SMALL LETTER P WITH DOT ABOVE\\
+\mystixmathfont{Ṙ}&0x1e58&LATIN CAPITAL LETTER R WITH DOT ABOVE\\
+\mystixmathfont{ṙ}&0x1e59&LATIN SMALL LETTER R WITH DOT ABOVE\\
+\mystixmathfont{Ṛ}&0x1e5a&LATIN CAPITAL LETTER R WITH DOT BELOW\\
+\mystixmathfont{ṛ}&0x1e5b&LATIN SMALL LETTER R WITH DOT BELOW\\
+\mystixmathfont{Ṝ}&0x1e5c&LATIN CAPITAL LETTER R WITH DOT BELOW AND MACRON\\
+\mystixmathfont{ṝ}&0x1e5d&LATIN SMALL LETTER R WITH DOT BELOW AND MACRON\\
+\mystixmathfont{Ṟ}&0x1e5e&LATIN CAPITAL LETTER R WITH LINE BELOW\\
+\mystixmathfont{ṟ}&0x1e5f&LATIN SMALL LETTER R WITH LINE BELOW\\
+\mystixmathfont{Ṡ}&0x1e60&LATIN CAPITAL LETTER S WITH DOT ABOVE\\
+\mystixmathfont{ṡ}&0x1e61&LATIN SMALL LETTER S WITH DOT ABOVE\\
+\mystixmathfont{Ṣ}&0x1e62&LATIN CAPITAL LETTER S WITH DOT BELOW\\
+\mystixmathfont{ṣ}&0x1e63&LATIN SMALL LETTER S WITH DOT BELOW\\
+\mystixmathfont{Ṥ}&0x1e64&LATIN CAPITAL LETTER S WITH ACUTE AND DOT ABOVE\\
+\mystixmathfont{ṥ}&0x1e65&LATIN SMALL LETTER S WITH ACUTE AND DOT ABOVE\\
+\mystixmathfont{Ṧ}&0x1e66&LATIN CAPITAL LETTER S WITH CARON AND DOT ABOVE\\
+\mystixmathfont{ṧ}&0x1e67&LATIN SMALL LETTER S WITH CARON AND DOT ABOVE\\
+\mystixmathfont{Ṩ}&0x1e68&LATIN CAPITAL LETTER S WITH DOT BELOW AND DOT ABOVE\\
+\mystixmathfont{ṩ}&0x1e69&LATIN SMALL LETTER S WITH DOT BELOW AND DOT ABOVE\\
+\mystixmathfont{Ṫ}&0x1e6a&LATIN CAPITAL LETTER T WITH DOT ABOVE\\
+\mystixmathfont{ṫ}&0x1e6b&LATIN SMALL LETTER T WITH DOT ABOVE\\
+\mystixmathfont{Ṭ}&0x1e6c&LATIN CAPITAL LETTER T WITH DOT BELOW\\
+\mystixmathfont{ṭ}&0x1e6d&LATIN SMALL LETTER T WITH DOT BELOW\\
+\mystixmathfont{Ṯ}&0x1e6e&LATIN CAPITAL LETTER T WITH LINE BELOW\\
+\mystixmathfont{ṯ}&0x1e6f&LATIN SMALL LETTER T WITH LINE BELOW\\
+\mystixmathfont{Ṱ}&0x1e70&LATIN CAPITAL LETTER T WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{ṱ}&0x1e71&LATIN SMALL LETTER T WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{Ṳ}&0x1e72&LATIN CAPITAL LETTER U WITH DIAERESIS BELOW\\
+\mystixmathfont{ṳ}&0x1e73&LATIN SMALL LETTER U WITH DIAERESIS BELOW\\
+\mystixmathfont{Ṵ}&0x1e74&LATIN CAPITAL LETTER U WITH TILDE BELOW\\
+\mystixmathfont{ṵ}&0x1e75&LATIN SMALL LETTER U WITH TILDE BELOW\\
+\mystixmathfont{Ṷ}&0x1e76&LATIN CAPITAL LETTER U WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{ṷ}&0x1e77&LATIN SMALL LETTER U WITH CIRCUMFLEX BELOW\\
+\mystixmathfont{Ṹ}&0x1e78&LATIN CAPITAL LETTER U WITH TILDE AND ACUTE\\
+\mystixmathfont{ṹ}&0x1e79&LATIN SMALL LETTER U WITH TILDE AND ACUTE\\
+\mystixmathfont{Ṻ}&0x1e7a&LATIN CAPITAL LETTER U WITH MACRON AND DIAERESIS\\
+\mystixmathfont{ṻ}&0x1e7b&LATIN SMALL LETTER U WITH MACRON AND DIAERESIS\\
+\mystixmathfont{Ṽ}&0x1e7c&LATIN CAPITAL LETTER V WITH TILDE\\
+\mystixmathfont{ṽ}&0x1e7d&LATIN SMALL LETTER V WITH TILDE\\
+\mystixmathfont{Ṿ}&0x1e7e&LATIN CAPITAL LETTER V WITH DOT BELOW\\
+\mystixmathfont{ṿ}&0x1e7f&LATIN SMALL LETTER V WITH DOT BELOW\\
+\mystixmathfont{Ẁ}&0x1e80&LATIN CAPITAL LETTER W WITH GRAVE\\
+\mystixmathfont{ẁ}&0x1e81&LATIN SMALL LETTER W WITH GRAVE\\
+\mystixmathfont{Ẃ}&0x1e82&LATIN CAPITAL LETTER W WITH ACUTE\\
+\mystixmathfont{ẃ}&0x1e83&LATIN SMALL LETTER W WITH ACUTE\\
+\mystixmathfont{Ẅ}&0x1e84&LATIN CAPITAL LETTER W WITH DIAERESIS\\
+\mystixmathfont{ẅ}&0x1e85&LATIN SMALL LETTER W WITH DIAERESIS\\
+\mystixmathfont{Ẇ}&0x1e86&LATIN CAPITAL LETTER W WITH DOT ABOVE\\
+\mystixmathfont{ẇ}&0x1e87&LATIN SMALL LETTER W WITH DOT ABOVE\\
+\mystixmathfont{Ẉ}&0x1e88&LATIN CAPITAL LETTER W WITH DOT BELOW\\
+\mystixmathfont{ẉ}&0x1e89&LATIN SMALL LETTER W WITH DOT BELOW\\
+\mystixmathfont{Ẋ}&0x1e8a&LATIN CAPITAL LETTER X WITH DOT ABOVE\\
+\mystixmathfont{ẋ}&0x1e8b&LATIN SMALL LETTER X WITH DOT ABOVE\\
+\mystixmathfont{Ẍ}&0x1e8c&LATIN CAPITAL LETTER X WITH DIAERESIS\\
+\mystixmathfont{ẍ}&0x1e8d&LATIN SMALL LETTER X WITH DIAERESIS\\
+\mystixmathfont{Ẏ}&0x1e8e&LATIN CAPITAL LETTER Y WITH DOT ABOVE\\
+\mystixmathfont{ẏ}&0x1e8f&LATIN SMALL LETTER Y WITH DOT ABOVE\\
+\mystixmathfont{Ẑ}&0x1e90&LATIN CAPITAL LETTER Z WITH CIRCUMFLEX\\
+\mystixmathfont{ẑ}&0x1e91&LATIN SMALL LETTER Z WITH CIRCUMFLEX\\
+\mystixmathfont{Ẓ}&0x1e92&LATIN CAPITAL LETTER Z WITH DOT BELOW\\
+\mystixmathfont{ẓ}&0x1e93&LATIN SMALL LETTER Z WITH DOT BELOW\\
+\mystixmathfont{Ẕ}&0x1e94&LATIN CAPITAL LETTER Z WITH LINE BELOW\\
+\mystixmathfont{ẕ}&0x1e95&LATIN SMALL LETTER Z WITH LINE BELOW\\
+\mystixmathfont{ẖ}&0x1e96&LATIN SMALL LETTER H WITH LINE BELOW\\
+\mystixmathfont{ẗ}&0x1e97&LATIN SMALL LETTER T WITH DIAERESIS\\
+\mystixmathfont{ẘ}&0x1e98&LATIN SMALL LETTER W WITH RING ABOVE\\
+\mystixmathfont{ẙ}&0x1e99&LATIN SMALL LETTER Y WITH RING ABOVE\\
+\mystixmathfont{ẚ}&0x1e9a&LATIN SMALL LETTER A WITH RIGHT HALF RING\\
+\mystixmathfont{ẛ}&0x1e9b&LATIN SMALL LETTER LONG S WITH DOT ABOVE\\
+\mystixmathfont{ẜ}&0x1e9c&LATIN SMALL LETTER LONG S WITH DIAGONAL STROKE\\
+\mystixmathfont{ẝ}&0x1e9d&LATIN SMALL LETTER LONG S WITH HIGH STROKE\\
+\mystixmathfont{ẞ}&0x1e9e&LATIN CAPITAL LETTER SHARP S\\
+\mystixmathfont{ẟ}&0x1e9f&LATIN SMALL LETTER DELTA\\
+\mystixmathfont{‑}&0x2011&NON-BREAKING HYPHEN\\
+$‛$&0x201b&SINGLE HIGH-REVERSED-9 QUOTATION MARK\\
+$‟$&0x201f&DOUBLE HIGH-REVERSED-9 QUOTATION MARK\\
+$‥$&0x2025&TWO DOT LEADER\\
+$‸$&0x2038&CARET\\
+$‼$&0x203c&DOUBLE EXCLAMATION MARK\\
+$‾$&0x203e&OVERLINE\\
+$⁀$&0x2040&CHARACTER TIE\\
+$⁃$&0x2043&HYPHEN BULLET\\
+$⁇$&0x2047&DOUBLE QUESTION MARK\\
+$⁋$&0x204b&REVERSED PILCROW SIGN\\
+$⁌$&0x204c&BLACK LEFTWARDS BULLET\\
+$⁍$&0x204d&BLACK RIGHTWARDS BULLET\\
+$⁎$&0x204e&LOW ASTERISK\\
+$⁏$&0x204f&REVERSED SEMICOLON\\
+$⁐$&0x2050&CLOSE UP\\
+$⁑$&0x2051&TWO ASTERISKS ALIGNED VERTICALLY\\
+$⁰$&0x2070&SUPERSCRIPT ZERO\\
+$ⁱ$&0x2071&SUPERSCRIPT LATIN SMALL LETTER I\\
+$⁴$&0x2074&SUPERSCRIPT FOUR\\
+$⁵$&0x2075&SUPERSCRIPT FIVE\\
+$⁶$&0x2076&SUPERSCRIPT SIX\\
+$⁷$&0x2077&SUPERSCRIPT SEVEN\\
+$⁸$&0x2078&SUPERSCRIPT EIGHT\\
+$⁹$&0x2079&SUPERSCRIPT NINE\\
+$⁺$&0x207a&SUPERSCRIPT PLUS SIGN\\
+$⁻$&0x207b&SUPERSCRIPT MINUS\\
+$⁼$&0x207c&SUPERSCRIPT EQUALS SIGN\\
+$⁽$&0x207d&SUPERSCRIPT LEFT PARENTHESIS\\
+$⁾$&0x207e&SUPERSCRIPT RIGHT PARENTHESIS\\
+$ⁿ$&0x207f&SUPERSCRIPT LATIN SMALL LETTER N\\
+$₀$&0x2080&SUBSCRIPT ZERO\\
+$₁$&0x2081&SUBSCRIPT ONE\\
+$₂$&0x2082&SUBSCRIPT TWO\\
+$₃$&0x2083&SUBSCRIPT THREE\\
+$₄$&0x2084&SUBSCRIPT FOUR\\
+$₅$&0x2085&SUBSCRIPT FIVE\\
+$₆$&0x2086&SUBSCRIPT SIX\\
+$₇$&0x2087&SUBSCRIPT SEVEN\\
+$₈$&0x2088&SUBSCRIPT EIGHT\\
+$₉$&0x2089&SUBSCRIPT NINE\\
+$₊$&0x208a&SUBSCRIPT PLUS SIGN\\
+$₋$&0x208b&SUBSCRIPT MINUS\\
+$₌$&0x208c&SUBSCRIPT EQUALS SIGN\\
+$₍$&0x208d&SUBSCRIPT LEFT PARENTHESIS\\
+$₎$&0x208e&SUBSCRIPT RIGHT PARENTHESIS\\
+$₣$&0x20a3&FRENCH FRANC SIGN\\
+$₤$&0x20a4&LIRA SIGN\\
+$₧$&0x20a7&PESETA SIGN\\
+$₫$&0x20ab&DONG SIGN\\
+$₹$&0x20b9&INDIAN RUPEE SIGN\\
+$₺$&0x20ba&TURKISH LIRA SIGN\\
+$₽$&0x20bd&RUBLE SIGN\\
+$⃙$&0x20d9&COMBINING CLOCKWISE RING OVERLAY\\
+$⃚$&0x20da&COMBINING ANTICLOCKWISE RING OVERLAY\\
+$⃧$&0x20e7&COMBINING ANNUITY SYMBOL\\
+$℀$&0x2100&ACCOUNT OF\\
+$℁$&0x2101&ADDRESSED TO THE SUBJECT\\
+$℄$&0x2104&CENTRE LINE SYMBOL\\
+$℅$&0x2105&CARE OF\\
+$℆$&0x2106&CADA UNA\\
+$℈$&0x2108&SCRUPLE\\
+$ℊ$&0x210a&SCRIPT SMALL G\\
+$℔$&0x2114&L B BAR SYMBOL\\
+$℟$&0x211f&RESPONSE\\
+$℡$&0x2121&TELEPHONE SIGN\\
+$℣$&0x2123&VERSICLE\\
+$℥$&0x2125&OUNCE SIGN\\
+$℩$&0x2129&TURNED GREEK SMALL LETTER IOTA\\
+$ℯ$&0x212f&SCRIPT SMALL E\\
+$Ⅎ$&0x2132&TURNED CAPITAL F\\
+$ℴ$&0x2134&SCRIPT SMALL O\\
+\mystixmathfont{ℹ}&0x2139&INFORMATION SOURCE\\
+$℺$&0x213a&ROTATED CAPITAL Q\\
+$℻$&0x213b&FACSIMILE SIGN\\
+$⅁$&0x2141&TURNED SANS-SERIF CAPITAL G\\
+$⅂$&0x2142&TURNED SANS-SERIF CAPITAL L\\
+$⅃$&0x2143&REVERSED SANS-SERIF CAPITAL L\\
+$⅄$&0x2144&TURNED SANS-SERIF CAPITAL Y\\
+$⅊$&0x214a&PROPERTY LINE\\
+$⅋$&0x214b&TURNED AMPERSAND\\
+$⅌$&0x214c&PER SIGN\\
+$⅍$&0x214d&AKTIESELSKAB\\
+\mystixmathfont{ⅎ}&0x214e&TURNED SMALL F\\
+$⅏$&0x214f&SYMBOL FOR SAMARITAN SOURCE\\
+$⅓$&0x2153&VULGAR FRACTION ONE THIRD\\
+\\
+$⅔$&0x2154&VULGAR FRACTION TWO THIRDS\\
+\\
+$⅕$&0x2155&VULGAR FRACTION ONE FIFTH\\
+\\
+$⅖$&0x2156&VULGAR FRACTION TWO FIFTHS\\
+\\
+$⅗$&0x2157&VULGAR FRACTION THREE FIFTHS\\
+\\
+$⅘$&0x2158&VULGAR FRACTION FOUR FIFTHS\\
+\\
+$⅙$&0x2159&VULGAR FRACTION ONE SIXTH\\
+\\
+$⅚$&0x215a&VULGAR FRACTION FIVE SIXTHS\\
+\\
+$⅛$&0x215b&VULGAR FRACTION ONE EIGHTH\\
+\\
+$⅜$&0x215c&VULGAR FRACTION THREE EIGHTHS\\
+\\
+$⅝$&0x215d&VULGAR FRACTION FIVE EIGHTHS\\
+\\
+$⅞$&0x215e&VULGAR FRACTION SEVEN EIGHTHS\\
+\\
+$↜$&0x219c&LEFTWARDS WAVE ARROW\\
+$↝$&0x219d&RIGHTWARDS WAVE ARROW\\
+$↨$&0x21a8&UP DOWN ARROW WITH BASE\\
+$↯$&0x21af&DOWNWARDS ZIGZAG ARROW\\
+$↸$&0x21b8&NORTH WEST ARROW TO LONG BAR\\
+$↹$&0x21b9&LEFTWARDS ARROW TO BAR OVER RIGHTWARDS ARROW TO BAR\\
+$⇞$&0x21de&UPWARDS ARROW WITH DOUBLE STROKE\\
+$⇟$&0x21df&DOWNWARDS ARROW WITH DOUBLE STROKE\\
+$⇠$&0x21e0&LEFTWARDS DASHED ARROW\\
+$⇡$&0x21e1&UPWARDS DASHED ARROW\\
+$⇢$&0x21e2&RIGHTWARDS DASHED ARROW\\
+$⇣$&0x21e3&DOWNWARDS DASHED ARROW\\
+$⇤$&0x21e4&LEFTWARDS ARROW TO BAR\\
+$⇥$&0x21e5&RIGHTWARDS ARROW TO BAR\\
+$⇪$&0x21ea&UPWARDS WHITE ARROW FROM BAR\\
+$⇴$&0x21f4&RIGHT ARROW WITH SMALL CIRCLE\\
+$⇷$&0x21f7&LEFTWARDS ARROW WITH VERTICAL STROKE\\
+$⇸$&0x21f8&RIGHTWARDS ARROW WITH VERTICAL STROKE\\
+$⇹$&0x21f9&LEFT RIGHT ARROW WITH VERTICAL STROKE\\
+$⇺$&0x21fa&LEFTWARDS ARROW WITH DOUBLE VERTICAL STROKE\\
+$⇻$&0x21fb&RIGHTWARDS ARROW WITH DOUBLE VERTICAL STROKE\\
+$⇼$&0x21fc&LEFT RIGHT ARROW WITH DOUBLE VERTICAL STROKE\\
+$⇽$&0x21fd&LEFTWARDS OPEN-HEADED ARROW\\
+$⇾$&0x21fe&RIGHTWARDS OPEN-HEADED ARROW\\
+$⇿$&0x21ff&LEFT RIGHT OPEN-HEADED ARROW\\
+$∛$&0x221b&CUBE ROOT\\
+$∜$&0x221c&FOURTH ROOT\\
+$⊰$&0x22b0&PRECEDES UNDER RELATION\\
+$⊱$&0x22b1&SUCCEEDS UNDER RELATION\\
+$⋔$&0x22d4&PITCHFORK\\
+$⋲$&0x22f2&ELEMENT OF WITH LONG HORIZONTAL STROKE\\
+$⋳$&0x22f3&ELEMENT OF WITH VERTICAL BAR AT END OF HORIZONTAL STROKE\\
+$⋴$&0x22f4&SMALL ELEMENT OF WITH VERTICAL BAR AT END OF HORIZONTAL STROKE\\
+$⋵$&0x22f5&ELEMENT OF WITH DOT ABOVE\\
+$⋶$&0x22f6&ELEMENT OF WITH OVERBAR\\
+$⋷$&0x22f7&SMALL ELEMENT OF WITH OVERBAR\\
+$⋸$&0x22f8&ELEMENT OF WITH UNDERBAR\\
+$⋹$&0x22f9&ELEMENT OF WITH TWO HORIZONTAL STROKES\\
+$⋺$&0x22fa&CONTAINS WITH LONG HORIZONTAL STROKE\\
+$⋻$&0x22fb&CONTAINS WITH VERTICAL BAR AT END OF HORIZONTAL STROKE\\
+$⋼$&0x22fc&SMALL CONTAINS WITH VERTICAL BAR AT END OF HORIZONTAL STROKE\\
+$⋽$&0x22fd&CONTAINS WITH OVERBAR\\
+$⋾$&0x22fe&SMALL CONTAINS WITH OVERBAR\\
+$⋿$&0x22ff&Z NOTATION BAG MEMBERSHIP\\
+$⌁$&0x2301&ELECTRIC ARROW\\
+$⌂$&0x2302&HOUSE\\
+$⌃$&0x2303&UP ARROWHEAD\\
+$⌄$&0x2304&DOWN ARROWHEAD\\
+$⌇$&0x2307&WAVY LINE\\
+$⌌$&0x230c&BOTTOM RIGHT CROP\\
+$⌍$&0x230d&BOTTOM LEFT CROP\\
+$⌎$&0x230e&TOP RIGHT CROP\\
+$⌏$&0x230f&TOP LEFT CROP\\
+$⌑$&0x2311&SQUARE LOZENGE\\
+$⌒$&0x2312&ARC\\
+$⌓$&0x2313&SEGMENT\\
+$⌔$&0x2314&SECTOR\\
+$⌕$&0x2315&TELEPHONE RECORDER\\
+$⌖$&0x2316&POSITION INDICATOR\\
+$⌗$&0x2317&VIEWDATA SQUARE\\
+$⌘$&0x2318&PLACE OF INTEREST SIGN\\
+$⌚$&0x231a&WATCH\\
+$⌛$&0x231b&HOURGLASS\\
+$⌤$&0x2324&UP ARROWHEAD BETWEEN TWO HORIZONTAL BARS\\
+$⌥$&0x2325&OPTION KEY\\
+$⌦$&0x2326&ERASE TO THE RIGHT\\
+$⌧$&0x2327&X IN A RECTANGLE BOX\\
+$⌨$&0x2328&KEYBOARD\\
+$⌫$&0x232b&ERASE TO THE LEFT\\
+$⌬$&0x232c&BENZENE RING\\
+$⌭$&0x232d&CYLINDRICITY\\
+$⌮$&0x232e&ALL AROUND-PROFILE\\
+$⌯$&0x232f&SYMMETRY\\
+$⌰$&0x2330&TOTAL RUNOUT\\
+$⌱$&0x2331&DIMENSION ORIGIN\\
+$⌲$&0x2332&CONICAL TAPER\\
+$⌳$&0x2333&SLOPE\\
+$⌴$&0x2334&COUNTERBORE\\
+$⌵$&0x2335&COUNTERSINK\\
+$⌶$&0x2336&APL FUNCTIONAL SYMBOL I-BEAM\\
+$⌷$&0x2337&APL FUNCTIONAL SYMBOL SQUISH QUAD\\
+$⌸$&0x2338&APL FUNCTIONAL SYMBOL QUAD EQUAL\\
+$⌹$&0x2339&APL FUNCTIONAL SYMBOL QUAD DIVIDE\\
+$⌺$&0x233a&APL FUNCTIONAL SYMBOL QUAD DIAMOND\\
+$⌻$&0x233b&APL FUNCTIONAL SYMBOL QUAD JOT\\
+$⌼$&0x233c&APL FUNCTIONAL SYMBOL QUAD CIRCLE\\
+$⌽$&0x233d&APL FUNCTIONAL SYMBOL CIRCLE STILE\\
+$⌾$&0x233e&APL FUNCTIONAL SYMBOL CIRCLE JOT\\
+$⌿$&0x233f&APL FUNCTIONAL SYMBOL SLASH BAR\\
+$⍀$&0x2340&APL FUNCTIONAL SYMBOL BACKSLASH BAR\\
+$⍁$&0x2341&APL FUNCTIONAL SYMBOL QUAD SLASH\\
+$⍂$&0x2342&APL FUNCTIONAL SYMBOL QUAD BACKSLASH\\
+$⍃$&0x2343&APL FUNCTIONAL SYMBOL QUAD LESS-THAN\\
+$⍄$&0x2344&APL FUNCTIONAL SYMBOL QUAD GREATER-THAN\\
+$⍅$&0x2345&APL FUNCTIONAL SYMBOL LEFTWARDS VANE\\
+$⍆$&0x2346&APL FUNCTIONAL SYMBOL RIGHTWARDS VANE\\
+$⍇$&0x2347&APL FUNCTIONAL SYMBOL QUAD LEFTWARDS ARROW\\
+$⍈$&0x2348&APL FUNCTIONAL SYMBOL QUAD RIGHTWARDS ARROW\\
+$⍉$&0x2349&APL FUNCTIONAL SYMBOL CIRCLE BACKSLASH\\
+$⍊$&0x234a&APL FUNCTIONAL SYMBOL DOWN TACK UNDERBAR\\
+$⍋$&0x234b&APL FUNCTIONAL SYMBOL DELTA STILE\\
+$⍌$&0x234c&APL FUNCTIONAL SYMBOL QUAD DOWN CARET\\
+$⍍$&0x234d&APL FUNCTIONAL SYMBOL QUAD DELTA\\
+$⍎$&0x234e&APL FUNCTIONAL SYMBOL DOWN TACK JOT\\
+$⍏$&0x234f&APL FUNCTIONAL SYMBOL UPWARDS VANE\\
+$⍐$&0x2350&APL FUNCTIONAL SYMBOL QUAD UPWARDS ARROW\\
+$⍑$&0x2351&APL FUNCTIONAL SYMBOL UP TACK OVERBAR\\
+$⍒$&0x2352&APL FUNCTIONAL SYMBOL DEL STILE\\
+$⍓$&0x2353&APL FUNCTIONAL SYMBOL QUAD UP CARET\\
+$⍔$&0x2354&APL FUNCTIONAL SYMBOL QUAD DEL\\
+$⍕$&0x2355&APL FUNCTIONAL SYMBOL UP TACK JOT\\
+$⍖$&0x2356&APL FUNCTIONAL SYMBOL DOWNWARDS VANE\\
+$⍗$&0x2357&APL FUNCTIONAL SYMBOL QUAD DOWNWARDS ARROW\\
+$⍘$&0x2358&APL FUNCTIONAL SYMBOL QUOTE UNDERBAR\\
+$⍙$&0x2359&APL FUNCTIONAL SYMBOL DELTA UNDERBAR\\
+$⍚$&0x235a&APL FUNCTIONAL SYMBOL DIAMOND UNDERBAR\\
+$⍛$&0x235b&APL FUNCTIONAL SYMBOL JOT UNDERBAR\\
+$⍜$&0x235c&APL FUNCTIONAL SYMBOL CIRCLE UNDERBAR\\
+$⍝$&0x235d&APL FUNCTIONAL SYMBOL UP SHOE JOT\\
+$⍞$&0x235e&APL FUNCTIONAL SYMBOL QUOTE QUAD\\
+$⍟$&0x235f&APL FUNCTIONAL SYMBOL CIRCLE STAR\\
+$⍠$&0x2360&APL FUNCTIONAL SYMBOL QUAD COLON\\
+$⍡$&0x2361&APL FUNCTIONAL SYMBOL UP TACK DIAERESIS\\
+$⍢$&0x2362&APL FUNCTIONAL SYMBOL DEL DIAERESIS\\
+$⍣$&0x2363&APL FUNCTIONAL SYMBOL STAR DIAERESIS\\
+$⍤$&0x2364&APL FUNCTIONAL SYMBOL JOT DIAERESIS\\
+$⍥$&0x2365&APL FUNCTIONAL SYMBOL CIRCLE DIAERESIS\\
+$⍦$&0x2366&APL FUNCTIONAL SYMBOL DOWN SHOE STILE\\
+$⍧$&0x2367&APL FUNCTIONAL SYMBOL LEFT SHOE STILE\\
+$⍨$&0x2368&APL FUNCTIONAL SYMBOL TILDE DIAERESIS\\
+$⍩$&0x2369&APL FUNCTIONAL SYMBOL GREATER-THAN DIAERESIS\\
+$⍪$&0x236a&APL FUNCTIONAL SYMBOL COMMA BAR\\
+$⍫$&0x236b&APL FUNCTIONAL SYMBOL DEL TILDE\\
+$⍬$&0x236c&APL FUNCTIONAL SYMBOL ZILDE\\
+$⍭$&0x236d&APL FUNCTIONAL SYMBOL STILE TILDE\\
+$⍮$&0x236e&APL FUNCTIONAL SYMBOL SEMICOLON UNDERBAR\\
+$⍯$&0x236f&APL FUNCTIONAL SYMBOL QUAD NOT EQUAL\\
+$⍰$&0x2370&APL FUNCTIONAL SYMBOL QUAD QUESTION\\
+$⍱$&0x2371&APL FUNCTIONAL SYMBOL DOWN CARET TILDE\\
+$⍲$&0x2372&APL FUNCTIONAL SYMBOL UP CARET TILDE\\
+$⍳$&0x2373&APL FUNCTIONAL SYMBOL IOTA\\
+$⍴$&0x2374&APL FUNCTIONAL SYMBOL RHO\\
+$⍵$&0x2375&APL FUNCTIONAL SYMBOL OMEGA\\
+$⍶$&0x2376&APL FUNCTIONAL SYMBOL ALPHA UNDERBAR\\
+$⍷$&0x2377&APL FUNCTIONAL SYMBOL EPSILON UNDERBAR\\
+$⍸$&0x2378&APL FUNCTIONAL SYMBOL IOTA UNDERBAR\\
+$⍹$&0x2379&APL FUNCTIONAL SYMBOL OMEGA UNDERBAR\\
+$⍺$&0x237a&APL FUNCTIONAL SYMBOL ALPHA\\
+$⍻$&0x237b&NOT CHECK MARK\\
+$⍼$&0x237c&RIGHT ANGLE WITH DOWNWARDS ZIGZAG ARROW\\
+$⍽$&0x237d&SHOULDERED OPEN BOX\\
+$⍾$&0x237e&BELL SYMBOL\\
+$⍿$&0x237f&VERTICAL LINE WITH MIDDLE DOT\\
+$⎀$&0x2380&INSERTION SYMBOL\\
+$⎁$&0x2381&CONTINUOUS UNDERLINE SYMBOL\\
+$⎂$&0x2382&DISCONTINUOUS UNDERLINE SYMBOL\\
+$⎃$&0x2383&EMPHASIS SYMBOL\\
+$⎄$&0x2384&COMPOSITION SYMBOL\\
+$⎅$&0x2385&WHITE SQUARE WITH CENTRE VERTICAL LINE\\
+$⎆$&0x2386&ENTER SYMBOL\\
+$⎇$&0x2387&ALTERNATIVE KEY SYMBOL\\
+$⎈$&0x2388&HELM SYMBOL\\
+$⎉$&0x2389&CIRCLED HORIZONTAL BAR WITH NOTCH\\
+$⎊$&0x238a&CIRCLED TRIANGLE DOWN\\
+$⎋$&0x238b&BROKEN CIRCLE WITH NORTHWEST ARROW\\
+$⎌$&0x238c&UNDO SYMBOL\\
+$⎍$&0x238d&MONOSTABLE SYMBOL\\
+$⎎$&0x238e&HYSTERESIS SYMBOL\\
+$⎏$&0x238f&OPEN-CIRCUIT-OUTPUT H-TYPE SYMBOL\\
+$⎐$&0x2390&OPEN-CIRCUIT-OUTPUT L-TYPE SYMBOL\\
+$⎑$&0x2391&PASSIVE-PULL-DOWN-OUTPUT SYMBOL\\
+$⎒$&0x2392&PASSIVE-PULL-UP-OUTPUT SYMBOL\\
+$⎓$&0x2393&DIRECT CURRENT SYMBOL FORM TWO\\
+$⎔$&0x2394&SOFTWARE-FUNCTION SYMBOL\\
+$⎕$&0x2395&APL FUNCTIONAL SYMBOL QUAD\\
+$⎖$&0x2396&DECIMAL SEPARATOR KEY SYMBOL\\
+$⎗$&0x2397&PREVIOUS PAGE\\
+$⎘$&0x2398&NEXT PAGE\\
+$⎙$&0x2399&PRINT SCREEN SYMBOL\\
+$⎚$&0x239a&CLEAR SCREEN SYMBOL\\
+$⎮$&0x23ae&INTEGRAL EXTENSION\\
+$⎯$&0x23af&HORIZONTAL LINE EXTENSION\\
+$⎰$&0x23b0&UPPER LEFT OR LOWER RIGHT CURLY BRACKET SECTION\\
+$⎱$&0x23b1&UPPER RIGHT OR LOWER LEFT CURLY BRACKET SECTION\\
+$⎶$&0x23b6&BOTTOM SQUARE BRACKET OVER TOP SQUARE BRACKET\\
+$⎸$&0x23b8&LEFT VERTICAL BOX LINE\\
+$⎹$&0x23b9&RIGHT VERTICAL BOX LINE\\
+$⎺$&0x23ba&HORIZONTAL SCAN LINE-1\\
+$⎻$&0x23bb&HORIZONTAL SCAN LINE-3\\
+$⎼$&0x23bc&HORIZONTAL SCAN LINE-7\\
+$⎽$&0x23bd&HORIZONTAL SCAN LINE-9\\
+$⎾$&0x23be&DENTISTRY SYMBOL LIGHT VERTICAL AND TOP RIGHT\\
+$⎿$&0x23bf&DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM RIGHT\\
+$⏀$&0x23c0&DENTISTRY SYMBOL LIGHT VERTICAL WITH CIRCLE\\
+$⏁$&0x23c1&DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH CIRCLE\\
+$⏂$&0x23c2&DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH CIRCLE\\
+$⏃$&0x23c3&DENTISTRY SYMBOL LIGHT VERTICAL WITH TRIANGLE\\
+$⏄$&0x23c4&DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH TRIANGLE\\
+$⏅$&0x23c5&DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH TRIANGLE\\
+$⏆$&0x23c6&DENTISTRY SYMBOL LIGHT VERTICAL AND WAVE\\
+$⏇$&0x23c7&DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH WAVE\\
+$⏈$&0x23c8&DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH WAVE\\
+$⏉$&0x23c9&DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL\\
+$⏊$&0x23ca&DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL\\
+$⏋$&0x23cb&DENTISTRY SYMBOL LIGHT VERTICAL AND TOP LEFT\\
+$⏌$&0x23cc&DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM LEFT\\
+$⏍$&0x23cd&SQUARE FOOT\\
+$⏎$&0x23ce&RETURN SYMBOL\\
+$⏏$&0x23cf&EJECT SYMBOL\\
+$⏑$&0x23d1&METRICAL BREVE\\
+$⏒$&0x23d2&METRICAL LONG OVER SHORT\\
+$⏓$&0x23d3&METRICAL SHORT OVER LONG\\
+$⏔$&0x23d4&METRICAL LONG OVER TWO SHORTS\\
+$⏕$&0x23d5&METRICAL TWO SHORTS OVER LONG\\
+$⏖$&0x23d6&METRICAL TWO SHORTS JOINED\\
+$⏗$&0x23d7&METRICAL TRISEME\\
+$⏘$&0x23d8&METRICAL TETRASEME\\
+$⏙$&0x23d9&METRICAL PENTASEME\\
+$⏚$&0x23da&EARTH GROUND\\
+$⏛$&0x23db&FUSE\\
+$⏢$&0x23e2&WHITE TRAPEZIUM\\
+$⏣$&0x23e3&BENZENE RING WITH CIRCLE\\
+$⏤$&0x23e4&STRAIGHTNESS\\
+$⏥$&0x23e5&FLATNESS\\
+$⏦$&0x23e6&AC CURRENT\\
+$⏧$&0x23e7&ELECTRICAL INTERSECTION\\
+$⏨$&0x23e8&DECIMAL EXPONENT SYMBOL\\
+$⏩$&0x23e9&BLACK RIGHT-POINTING DOUBLE TRIANGLE\\
+$⏪$&0x23ea&BLACK LEFT-POINTING DOUBLE TRIANGLE\\
+$⏫$&0x23eb&BLACK UP-POINTING DOUBLE TRIANGLE\\
+$⏬$&0x23ec&BLACK DOWN-POINTING DOUBLE TRIANGLE\\
+$⏭$&0x23ed&BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR\\
+$⏮$&0x23ee&BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR\\
+$⏯$&0x23ef&BLACK RIGHT-POINTING TRIANGLE WITH DOUBLE VERTICAL BAR\\
+$⏰$&0x23f0&ALARM CLOCK\\
+$⏱$&0x23f1&STOPWATCH\\
+$⏲$&0x23f2&TIMER CLOCK\\
+$⏳$&0x23f3&HOURGLASS WITH FLOWING SAND\\
+$⏴$&0x23f4&BLACK MEDIUM LEFT-POINTING TRIANGLE\\
+$⏵$&0x23f5&BLACK MEDIUM RIGHT-POINTING TRIANGLE\\
+$⏶$&0x23f6&BLACK MEDIUM UP-POINTING TRIANGLE\\
+$⏷$&0x23f7&BLACK MEDIUM DOWN-POINTING TRIANGLE\\
+$⏸$&0x23f8&DOUBLE VERTICAL BAR\\
+$⏹$&0x23f9&BLACK SQUARE FOR STOP\\
+$⏺$&0x23fa&BLACK CIRCLE FOR RECORD\\
+$⏻$&0x23fb&POWER SYMBOL\\
+$⏼$&0x23fc&POWER ON-OFF SYMBOL\\
+$⏽$&0x23fd&POWER ON SYMBOL\\
+$⏾$&0x23fe&POWER SLEEP SYMBOL\\
+$⏿$&0x23ff&OBSERVER EYE SYMBOL\\
+$①$&0x2460&CIRCLED DIGIT ONE\\
+$②$&0x2461&CIRCLED DIGIT TWO\\
+$③$&0x2462&CIRCLED DIGIT THREE\\
+$④$&0x2463&CIRCLED DIGIT FOUR\\
+$⑤$&0x2464&CIRCLED DIGIT FIVE\\
+$⑥$&0x2465&CIRCLED DIGIT SIX\\
+$⑦$&0x2466&CIRCLED DIGIT SEVEN\\
+$⑧$&0x2467&CIRCLED DIGIT EIGHT\\
+$⑨$&0x2468&CIRCLED DIGIT NINE\\
+$⑩$&0x2469&CIRCLED NUMBER TEN\\
+$⑪$&0x246a&CIRCLED NUMBER ELEVEN\\
+$⑫$&0x246b&CIRCLED NUMBER TWELVE\\
+$⑬$&0x246c&CIRCLED NUMBER THIRTEEN\\
+$⑭$&0x246d&CIRCLED NUMBER FOURTEEN\\
+$⑮$&0x246e&CIRCLED NUMBER FIFTEEN\\
+$⑯$&0x246f&CIRCLED NUMBER SIXTEEN\\
+$⑰$&0x2470&CIRCLED NUMBER SEVENTEEN\\
+$⑱$&0x2471&CIRCLED NUMBER EIGHTEEN\\
+$⑲$&0x2472&CIRCLED NUMBER NINETEEN\\
+$⑳$&0x2473&CIRCLED NUMBER TWENTY\\
+$⑴$&0x2474&PARENTHESIZED DIGIT ONE\\
+$⑵$&0x2475&PARENTHESIZED DIGIT TWO\\
+$⑶$&0x2476&PARENTHESIZED DIGIT THREE\\
+$⑷$&0x2477&PARENTHESIZED DIGIT FOUR\\
+$⑸$&0x2478&PARENTHESIZED DIGIT FIVE\\
+$⑹$&0x2479&PARENTHESIZED DIGIT SIX\\
+$⑺$&0x247a&PARENTHESIZED DIGIT SEVEN\\
+$⑻$&0x247b&PARENTHESIZED DIGIT EIGHT\\
+$⑼$&0x247c&PARENTHESIZED DIGIT NINE\\
+$⑽$&0x247d&PARENTHESIZED NUMBER TEN\\
+$⑾$&0x247e&PARENTHESIZED NUMBER ELEVEN\\
+$⑿$&0x247f&PARENTHESIZED NUMBER TWELVE\\
+$⒀$&0x2480&PARENTHESIZED NUMBER THIRTEEN\\
+$⒁$&0x2481&PARENTHESIZED NUMBER FOURTEEN\\
+$⒂$&0x2482&PARENTHESIZED NUMBER FIFTEEN\\
+$⒃$&0x2483&PARENTHESIZED NUMBER SIXTEEN\\
+$⒄$&0x2484&PARENTHESIZED NUMBER SEVENTEEN\\
+$⒅$&0x2485&PARENTHESIZED NUMBER EIGHTEEN\\
+$⒆$&0x2486&PARENTHESIZED NUMBER NINETEEN\\
+$⒇$&0x2487&PARENTHESIZED NUMBER TWENTY\\
+$⒈$&0x2488&DIGIT ONE FULL STOP\\
+$⒉$&0x2489&DIGIT TWO FULL STOP\\
+$⒊$&0x248a&DIGIT THREE FULL STOP\\
+$⒋$&0x248b&DIGIT FOUR FULL STOP\\
+$⒌$&0x248c&DIGIT FIVE FULL STOP\\
+$⒍$&0x248d&DIGIT SIX FULL STOP\\
+$⒎$&0x248e&DIGIT SEVEN FULL STOP\\
+$⒏$&0x248f&DIGIT EIGHT FULL STOP\\
+$⒐$&0x2490&DIGIT NINE FULL STOP\\
+$⒑$&0x2491&NUMBER TEN FULL STOP\\
+$⒒$&0x2492&NUMBER ELEVEN FULL STOP\\
+$⒓$&0x2493&NUMBER TWELVE FULL STOP\\
+$⒔$&0x2494&NUMBER THIRTEEN FULL STOP\\
+$⒕$&0x2495&NUMBER FOURTEEN FULL STOP\\
+$⒖$&0x2496&NUMBER FIFTEEN FULL STOP\\
+$⒗$&0x2497&NUMBER SIXTEEN FULL STOP\\
+$⒘$&0x2498&NUMBER SEVENTEEN FULL STOP\\
+$⒙$&0x2499&NUMBER EIGHTEEN FULL STOP\\
+$⒚$&0x249a&NUMBER NINETEEN FULL STOP\\
+$⒛$&0x249b&NUMBER TWENTY FULL STOP\\
+$⒜$&0x249c&PARENTHESIZED LATIN SMALL LETTER A\\
+$⒝$&0x249d&PARENTHESIZED LATIN SMALL LETTER B\\
+$⒞$&0x249e&PARENTHESIZED LATIN SMALL LETTER C\\
+$⒟$&0x249f&PARENTHESIZED LATIN SMALL LETTER D\\
+$⒠$&0x24a0&PARENTHESIZED LATIN SMALL LETTER E\\
+$⒡$&0x24a1&PARENTHESIZED LATIN SMALL LETTER F\\
+$⒢$&0x24a2&PARENTHESIZED LATIN SMALL LETTER G\\
+$⒣$&0x24a3&PARENTHESIZED LATIN SMALL LETTER H\\
+$⒤$&0x24a4&PARENTHESIZED LATIN SMALL LETTER I\\
+$⒥$&0x24a5&PARENTHESIZED LATIN SMALL LETTER J\\
+$⒦$&0x24a6&PARENTHESIZED LATIN SMALL LETTER K\\
+$⒧$&0x24a7&PARENTHESIZED LATIN SMALL LETTER L\\
+$⒨$&0x24a8&PARENTHESIZED LATIN SMALL LETTER M\\
+$⒩$&0x24a9&PARENTHESIZED LATIN SMALL LETTER N\\
+$⒪$&0x24aa&PARENTHESIZED LATIN SMALL LETTER O\\
+$⒫$&0x24ab&PARENTHESIZED LATIN SMALL LETTER P\\
+$⒬$&0x24ac&PARENTHESIZED LATIN SMALL LETTER Q\\
+$⒭$&0x24ad&PARENTHESIZED LATIN SMALL LETTER R\\
+$⒮$&0x24ae&PARENTHESIZED LATIN SMALL LETTER S\\
+$⒯$&0x24af&PARENTHESIZED LATIN SMALL LETTER T\\
+$⒰$&0x24b0&PARENTHESIZED LATIN SMALL LETTER U\\
+$⒱$&0x24b1&PARENTHESIZED LATIN SMALL LETTER V\\
+$⒲$&0x24b2&PARENTHESIZED LATIN SMALL LETTER W\\
+$⒳$&0x24b3&PARENTHESIZED LATIN SMALL LETTER X\\
+$⒴$&0x24b4&PARENTHESIZED LATIN SMALL LETTER Y\\
+$⒵$&0x24b5&PARENTHESIZED LATIN SMALL LETTER Z\\
+$Ⓐ$&0x24b6&CIRCLED LATIN CAPITAL LETTER A\\
+$Ⓑ$&0x24b7&CIRCLED LATIN CAPITAL LETTER B\\
+$Ⓒ$&0x24b8&CIRCLED LATIN CAPITAL LETTER C\\
+$Ⓓ$&0x24b9&CIRCLED LATIN CAPITAL LETTER D\\
+$Ⓔ$&0x24ba&CIRCLED LATIN CAPITAL LETTER E\\
+$Ⓕ$&0x24bb&CIRCLED LATIN CAPITAL LETTER F\\
+$Ⓖ$&0x24bc&CIRCLED LATIN CAPITAL LETTER G\\
+$Ⓗ$&0x24bd&CIRCLED LATIN CAPITAL LETTER H\\
+$Ⓘ$&0x24be&CIRCLED LATIN CAPITAL LETTER I\\
+$Ⓙ$&0x24bf&CIRCLED LATIN CAPITAL LETTER J\\
+$Ⓚ$&0x24c0&CIRCLED LATIN CAPITAL LETTER K\\
+$Ⓛ$&0x24c1&CIRCLED LATIN CAPITAL LETTER L\\
+$Ⓜ$&0x24c2&CIRCLED LATIN CAPITAL LETTER M\\
+$Ⓝ$&0x24c3&CIRCLED LATIN CAPITAL LETTER N\\
+$Ⓞ$&0x24c4&CIRCLED LATIN CAPITAL LETTER O\\
+$Ⓟ$&0x24c5&CIRCLED LATIN CAPITAL LETTER P\\
+$Ⓠ$&0x24c6&CIRCLED LATIN CAPITAL LETTER Q\\
+$Ⓡ$&0x24c7&CIRCLED LATIN CAPITAL LETTER R\\
+$Ⓢ$&0x24c8&CIRCLED LATIN CAPITAL LETTER S\\
+$Ⓣ$&0x24c9&CIRCLED LATIN CAPITAL LETTER T\\
+$Ⓤ$&0x24ca&CIRCLED LATIN CAPITAL LETTER U\\
+$Ⓥ$&0x24cb&CIRCLED LATIN CAPITAL LETTER V\\
+$Ⓦ$&0x24cc&CIRCLED LATIN CAPITAL LETTER W\\
+$Ⓧ$&0x24cd&CIRCLED LATIN CAPITAL LETTER X\\
+$Ⓨ$&0x24ce&CIRCLED LATIN CAPITAL LETTER Y\\
+$Ⓩ$&0x24cf&CIRCLED LATIN CAPITAL LETTER Z\\
+$ⓐ$&0x24d0&CIRCLED LATIN SMALL LETTER A\\
+$ⓑ$&0x24d1&CIRCLED LATIN SMALL LETTER B\\
+$ⓒ$&0x24d2&CIRCLED LATIN SMALL LETTER C\\
+$ⓓ$&0x24d3&CIRCLED LATIN SMALL LETTER D\\
+$ⓔ$&0x24d4&CIRCLED LATIN SMALL LETTER E\\
+$ⓕ$&0x24d5&CIRCLED LATIN SMALL LETTER F\\
+$ⓖ$&0x24d6&CIRCLED LATIN SMALL LETTER G\\
+$ⓗ$&0x24d7&CIRCLED LATIN SMALL LETTER H\\
+$ⓘ$&0x24d8&CIRCLED LATIN SMALL LETTER I\\
+$ⓙ$&0x24d9&CIRCLED LATIN SMALL LETTER J\\
+$ⓚ$&0x24da&CIRCLED LATIN SMALL LETTER K\\
+$ⓛ$&0x24db&CIRCLED LATIN SMALL LETTER L\\
+$ⓜ$&0x24dc&CIRCLED LATIN SMALL LETTER M\\
+$ⓝ$&0x24dd&CIRCLED LATIN SMALL LETTER N\\
+$ⓞ$&0x24de&CIRCLED LATIN SMALL LETTER O\\
+$ⓟ$&0x24df&CIRCLED LATIN SMALL LETTER P\\
+$ⓠ$&0x24e0&CIRCLED LATIN SMALL LETTER Q\\
+$ⓡ$&0x24e1&CIRCLED LATIN SMALL LETTER R\\
+$ⓢ$&0x24e2&CIRCLED LATIN SMALL LETTER S\\
+$ⓣ$&0x24e3&CIRCLED LATIN SMALL LETTER T\\
+$ⓤ$&0x24e4&CIRCLED LATIN SMALL LETTER U\\
+$ⓥ$&0x24e5&CIRCLED LATIN SMALL LETTER V\\
+$ⓦ$&0x24e6&CIRCLED LATIN SMALL LETTER W\\
+$ⓧ$&0x24e7&CIRCLED LATIN SMALL LETTER X\\
+$ⓨ$&0x24e8&CIRCLED LATIN SMALL LETTER Y\\
+$ⓩ$&0x24e9&CIRCLED LATIN SMALL LETTER Z\\
+$⓪$&0x24ea&CIRCLED DIGIT ZERO\\
+$⓫$&0x24eb&NEGATIVE CIRCLED NUMBER ELEVEN\\
+$⓬$&0x24ec&NEGATIVE CIRCLED NUMBER TWELVE\\
+$⓭$&0x24ed&NEGATIVE CIRCLED NUMBER THIRTEEN\\
+$⓮$&0x24ee&NEGATIVE CIRCLED NUMBER FOURTEEN\\
+$⓯$&0x24ef&NEGATIVE CIRCLED NUMBER FIFTEEN\\
+$⓰$&0x24f0&NEGATIVE CIRCLED NUMBER SIXTEEN\\
+$⓱$&0x24f1&NEGATIVE CIRCLED NUMBER SEVENTEEN\\
+$⓲$&0x24f2&NEGATIVE CIRCLED NUMBER EIGHTEEN\\
+$⓳$&0x24f3&NEGATIVE CIRCLED NUMBER NINETEEN\\
+$⓴$&0x24f4&NEGATIVE CIRCLED NUMBER TWENTY\\
+$⓵$&0x24f5&DOUBLE CIRCLED DIGIT ONE\\
+$⓶$&0x24f6&DOUBLE CIRCLED DIGIT TWO\\
+$⓷$&0x24f7&DOUBLE CIRCLED DIGIT THREE\\
+$⓸$&0x24f8&DOUBLE CIRCLED DIGIT FOUR\\
+$⓹$&0x24f9&DOUBLE CIRCLED DIGIT FIVE\\
+$⓺$&0x24fa&DOUBLE CIRCLED DIGIT SIX\\
+$⓻$&0x24fb&DOUBLE CIRCLED DIGIT SEVEN\\
+$⓼$&0x24fc&DOUBLE CIRCLED DIGIT EIGHT\\
+$⓽$&0x24fd&DOUBLE CIRCLED DIGIT NINE\\
+$⓾$&0x24fe&DOUBLE CIRCLED NUMBER TEN\\
+$⓿$&0x24ff&NEGATIVE CIRCLED DIGIT ZERO\\
+$┆$&0x2506&BOX DRAWINGS LIGHT TRIPLE DASH VERTICAL\\
+$┈$&0x2508&BOX DRAWINGS LIGHT QUADRUPLE DASH HORIZONTAL\\
+$┊$&0x250a&BOX DRAWINGS LIGHT QUADRUPLE DASH VERTICAL\\
+$═$&0x2550&BOX DRAWINGS DOUBLE HORIZONTAL\\
+$║$&0x2551&BOX DRAWINGS DOUBLE VERTICAL\\
+$╒$&0x2552&BOX DRAWINGS DOWN SINGLE AND RIGHT DOUBLE\\
+$╓$&0x2553&BOX DRAWINGS DOWN DOUBLE AND RIGHT SINGLE\\
+$╔$&0x2554&BOX DRAWINGS DOUBLE DOWN AND RIGHT\\
+$╕$&0x2555&BOX DRAWINGS DOWN SINGLE AND LEFT DOUBLE\\
+$╖$&0x2556&BOX DRAWINGS DOWN DOUBLE AND LEFT SINGLE\\
+$╗$&0x2557&BOX DRAWINGS DOUBLE DOWN AND LEFT\\
+$╘$&0x2558&BOX DRAWINGS UP SINGLE AND RIGHT DOUBLE\\
+$╙$&0x2559&BOX DRAWINGS UP DOUBLE AND RIGHT SINGLE\\
+$╚$&0x255a&BOX DRAWINGS DOUBLE UP AND RIGHT\\
+$╛$&0x255b&BOX DRAWINGS UP SINGLE AND LEFT DOUBLE\\
+$╜$&0x255c&BOX DRAWINGS UP DOUBLE AND LEFT SINGLE\\
+$╝$&0x255d&BOX DRAWINGS DOUBLE UP AND LEFT\\
+$╞$&0x255e&BOX DRAWINGS VERTICAL SINGLE AND RIGHT DOUBLE\\
+$╟$&0x255f&BOX DRAWINGS VERTICAL DOUBLE AND RIGHT SINGLE\\
+$╠$&0x2560&BOX DRAWINGS DOUBLE VERTICAL AND RIGHT\\
+$╡$&0x2561&BOX DRAWINGS VERTICAL SINGLE AND LEFT DOUBLE\\
+$╢$&0x2562&BOX DRAWINGS VERTICAL DOUBLE AND LEFT SINGLE\\
+$╣$&0x2563&BOX DRAWINGS DOUBLE VERTICAL AND LEFT\\
+$╤$&0x2564&BOX DRAWINGS DOWN SINGLE AND HORIZONTAL DOUBLE\\
+$╥$&0x2565&BOX DRAWINGS DOWN DOUBLE AND HORIZONTAL SINGLE\\
+$╦$&0x2566&BOX DRAWINGS DOUBLE DOWN AND HORIZONTAL\\
+$╧$&0x2567&BOX DRAWINGS UP SINGLE AND HORIZONTAL DOUBLE\\
+$╨$&0x2568&BOX DRAWINGS UP DOUBLE AND HORIZONTAL SINGLE\\
+$╩$&0x2569&BOX DRAWINGS DOUBLE UP AND HORIZONTAL\\
+$╪$&0x256a&BOX DRAWINGS VERTICAL SINGLE AND HORIZONTAL DOUBLE\\
+$╫$&0x256b&BOX DRAWINGS VERTICAL DOUBLE AND HORIZONTAL SINGLE\\
+$╬$&0x256c&BOX DRAWINGS DOUBLE VERTICAL AND HORIZONTAL\\
+$╱$&0x2571&BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT\\
+$╲$&0x2572&BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT\\
+$▀$&0x2580&UPPER HALF BLOCK\\
+$▄$&0x2584&LOWER HALF BLOCK\\
+$▌$&0x258c&LEFT HALF BLOCK\\
+$▐$&0x2590&RIGHT HALF BLOCK\\
+$▢$&0x25a2&WHITE SQUARE WITH ROUNDED CORNERS\\
+$▣$&0x25a3&WHITE SQUARE CONTAINING BLACK SMALL SQUARE\\
+$▤$&0x25a4&SQUARE WITH HORIZONTAL FILL\\
+$▥$&0x25a5&SQUARE WITH VERTICAL FILL\\
+$▦$&0x25a6&SQUARE WITH ORTHOGONAL CROSSHATCH FILL\\
+$▧$&0x25a7&SQUARE WITH UPPER LEFT TO LOWER RIGHT FILL\\
+$▨$&0x25a8&SQUARE WITH UPPER RIGHT TO LOWER LEFT FILL\\
+$▩$&0x25a9&SQUARE WITH DIAGONAL CROSSHATCH FILL\\
+$▮$&0x25ae&BLACK VERTICAL RECTANGLE\\
+$▯$&0x25af&WHITE VERTICAL RECTANGLE\\
+$▰$&0x25b0&BLACK PARALLELOGRAM\\
+$▱$&0x25b1&WHITE PARALLELOGRAM\\
+$▴$&0x25b4&BLACK UP-POINTING SMALL TRIANGLE\\
+$▵$&0x25b5&WHITE UP-POINTING SMALL TRIANGLE\\
+$▸$&0x25b8&BLACK RIGHT-POINTING SMALL TRIANGLE\\
+$▹$&0x25b9&WHITE RIGHT-POINTING SMALL TRIANGLE\\
+$►$&0x25ba&BLACK RIGHT-POINTING POINTER\\
+$▻$&0x25bb&WHITE RIGHT-POINTING POINTER\\
+$▾$&0x25be&BLACK DOWN-POINTING SMALL TRIANGLE\\
+$▿$&0x25bf&WHITE DOWN-POINTING SMALL TRIANGLE\\
+$◂$&0x25c2&BLACK LEFT-POINTING SMALL TRIANGLE\\
+$◃$&0x25c3&WHITE LEFT-POINTING SMALL TRIANGLE\\
+$◄$&0x25c4&BLACK LEFT-POINTING POINTER\\
+$◅$&0x25c5&WHITE LEFT-POINTING POINTER\\
+$◆$&0x25c6&BLACK DIAMOND\\
+$◇$&0x25c7&WHITE DIAMOND\\
+$◈$&0x25c8&WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND\\
+$◉$&0x25c9&FISHEYE\\
+$◌$&0x25cc&DOTTED CIRCLE\\
+$◍$&0x25cd&CIRCLE WITH VERTICAL FILL\\
+$◎$&0x25ce&BULLSEYE\\
+$◐$&0x25d0&CIRCLE WITH LEFT HALF BLACK\\
+$◑$&0x25d1&CIRCLE WITH RIGHT HALF BLACK\\
+$◒$&0x25d2&CIRCLE WITH LOWER HALF BLACK\\
+$◓$&0x25d3&CIRCLE WITH UPPER HALF BLACK\\
+$◔$&0x25d4&CIRCLE WITH UPPER RIGHT QUADRANT BLACK\\
+$◕$&0x25d5&CIRCLE WITH ALL BUT UPPER LEFT QUADRANT BLACK\\
+$◖$&0x25d6&LEFT HALF BLACK CIRCLE\\
+$◗$&0x25d7&RIGHT HALF BLACK CIRCLE\\
+$◘$&0x25d8&INVERSE BULLET\\
+$◙$&0x25d9&INVERSE WHITE CIRCLE\\
+$◚$&0x25da&UPPER HALF INVERSE WHITE CIRCLE\\
+$◛$&0x25db&LOWER HALF INVERSE WHITE CIRCLE\\
+$◜$&0x25dc&UPPER LEFT QUADRANT CIRCULAR ARC\\
+$◝$&0x25dd&UPPER RIGHT QUADRANT CIRCULAR ARC\\
+$◞$&0x25de&LOWER RIGHT QUADRANT CIRCULAR ARC\\
+$◟$&0x25df&LOWER LEFT QUADRANT CIRCULAR ARC\\
+$◠$&0x25e0&UPPER HALF CIRCLE\\
+$◡$&0x25e1&LOWER HALF CIRCLE\\
+$◢$&0x25e2&BLACK LOWER RIGHT TRIANGLE\\
+$◣$&0x25e3&BLACK LOWER LEFT TRIANGLE\\
+$◤$&0x25e4&BLACK UPPER LEFT TRIANGLE\\
+$◥$&0x25e5&BLACK UPPER RIGHT TRIANGLE\\
+$◧$&0x25e7&SQUARE WITH LEFT HALF BLACK\\
+$◨$&0x25e8&SQUARE WITH RIGHT HALF BLACK\\
+$◩$&0x25e9&SQUARE WITH UPPER LEFT DIAGONAL HALF BLACK\\
+$◪$&0x25ea&SQUARE WITH LOWER RIGHT DIAGONAL HALF BLACK\\
+$◫$&0x25eb&WHITE SQUARE WITH VERTICAL BISECTING LINE\\
+$◬$&0x25ec&WHITE UP-POINTING TRIANGLE WITH DOT\\
+$◭$&0x25ed&UP-POINTING TRIANGLE WITH LEFT HALF BLACK\\
+$◮$&0x25ee&UP-POINTING TRIANGLE WITH RIGHT HALF BLACK\\
+$◰$&0x25f0&WHITE SQUARE WITH UPPER LEFT QUADRANT\\
+$◱$&0x25f1&WHITE SQUARE WITH LOWER LEFT QUADRANT\\
+$◲$&0x25f2&WHITE SQUARE WITH LOWER RIGHT QUADRANT\\
+$◳$&0x25f3&WHITE SQUARE WITH UPPER RIGHT QUADRANT\\
+$◴$&0x25f4&WHITE CIRCLE WITH UPPER LEFT QUADRANT\\
+$◵$&0x25f5&WHITE CIRCLE WITH LOWER LEFT QUADRANT\\
+$◶$&0x25f6&WHITE CIRCLE WITH LOWER RIGHT QUADRANT\\
+$◷$&0x25f7&WHITE CIRCLE WITH UPPER RIGHT QUADRANT\\
+$◸$&0x25f8&UPPER LEFT TRIANGLE\\
+$◹$&0x25f9&UPPER RIGHT TRIANGLE\\
+$◺$&0x25fa&LOWER LEFT TRIANGLE\\
+$◻$&0x25fb&WHITE MEDIUM SQUARE\\
+$◼$&0x25fc&BLACK MEDIUM SQUARE\\
+$◽$&0x25fd&WHITE MEDIUM SMALL SQUARE\\
+$◾$&0x25fe&BLACK MEDIUM SMALL SQUARE\\
+$◿$&0x25ff&LOWER RIGHT TRIANGLE\\
+$☀$&0x2600&BLACK SUN WITH RAYS\\
+$☁$&0x2601&CLOUD\\
+$☂$&0x2602&UMBRELLA\\
+$☃$&0x2603&SNOWMAN\\
+$☄$&0x2604&COMET\\
+$★$&0x2605&BLACK STAR\\
+$☆$&0x2606&WHITE STAR\\
+$☇$&0x2607&LIGHTNING\\
+$☈$&0x2608&THUNDERSTORM\\
+$☉$&0x2609&SUN\\
+$☊$&0x260a&ASCENDING NODE\\
+$☋$&0x260b&DESCENDING NODE\\
+$☌$&0x260c&CONJUNCTION\\
+$☍$&0x260d&OPPOSITION\\
+$☎$&0x260e&BLACK TELEPHONE\\
+$☏$&0x260f&WHITE TELEPHONE\\
+$☐$&0x2610&BALLOT BOX\\
+$☑$&0x2611&BALLOT BOX WITH CHECK\\
+$☒$&0x2612&BALLOT BOX WITH X\\
+$☓$&0x2613&SALTIRE\\
+$☔$&0x2614&UMBRELLA WITH RAIN DROPS\\
+$☕$&0x2615&HOT BEVERAGE\\
+$☖$&0x2616&WHITE SHOGI PIECE\\
+$☗$&0x2617&BLACK SHOGI PIECE\\
+$☘$&0x2618&SHAMROCK\\
+$☙$&0x2619&REVERSED ROTATED FLORAL HEART BULLET\\
+$☚$&0x261a&BLACK LEFT POINTING INDEX\\
+$☛$&0x261b&BLACK RIGHT POINTING INDEX\\
+$☜$&0x261c&WHITE LEFT POINTING INDEX\\
+$☝$&0x261d&WHITE UP POINTING INDEX\\
+$☞$&0x261e&WHITE RIGHT POINTING INDEX\\
+$☟$&0x261f&WHITE DOWN POINTING INDEX\\
+$☠$&0x2620&SKULL AND CROSSBONES\\
+$☡$&0x2621&CAUTION SIGN\\
+$☢$&0x2622&RADIOACTIVE SIGN\\
+$☣$&0x2623&BIOHAZARD SIGN\\
+$☤$&0x2624&CADUCEUS\\
+$☥$&0x2625&ANKH\\
+$☦$&0x2626&ORTHODOX CROSS\\
+$☧$&0x2627&CHI RHO\\
+$☨$&0x2628&CROSS OF LORRAINE\\
+$☩$&0x2629&CROSS OF JERUSALEM\\
+$☪$&0x262a&STAR AND CRESCENT\\
+$☫$&0x262b&FARSI SYMBOL\\
+$☬$&0x262c&ADI SHAKTI\\
+$☭$&0x262d&HAMMER AND SICKLE\\
+$☮$&0x262e&PEACE SYMBOL\\
+$☯$&0x262f&YIN YANG\\
+$☰$&0x2630&TRIGRAM FOR HEAVEN\\
+$☱$&0x2631&TRIGRAM FOR LAKE\\
+$☲$&0x2632&TRIGRAM FOR FIRE\\
+$☳$&0x2633&TRIGRAM FOR THUNDER\\
+$☴$&0x2634&TRIGRAM FOR WIND\\
+$☵$&0x2635&TRIGRAM FOR WATER\\
+$☶$&0x2636&TRIGRAM FOR MOUNTAIN\\
+$☷$&0x2637&TRIGRAM FOR EARTH\\
+$☸$&0x2638&WHEEL OF DHARMA\\
+$☹$&0x2639&WHITE FROWNING FACE\\
+$☺$&0x263a&WHITE SMILING FACE\\
+$☻$&0x263b&BLACK SMILING FACE\\
+$☼$&0x263c&WHITE SUN WITH RAYS\\
+$☽$&0x263d&FIRST QUARTER MOON\\
+$☾$&0x263e&LAST QUARTER MOON\\
+$☿$&0x263f&MERCURY\\
+$♀$&0x2640&FEMALE SIGN\\
+$♁$&0x2641&EARTH\\
+$♂$&0x2642&MALE SIGN\\
+$♃$&0x2643&JUPITER\\
+$♄$&0x2644&SATURN\\
+$♅$&0x2645&URANUS\\
+$♆$&0x2646&NEPTUNE\\
+$♇$&0x2647&PLUTO\\
+$♈$&0x2648&ARIES\\
+$♉$&0x2649&TAURUS\\
+$♊$&0x264a&GEMINI\\
+$♋$&0x264b&CANCER\\
+$♌$&0x264c&LEO\\
+$♍$&0x264d&VIRGO\\
+$♎$&0x264e&LIBRA\\
+$♏$&0x264f&SCORPIUS\\
+$♐$&0x2650&SAGITTARIUS\\
+$♑$&0x2651&CAPRICORN\\
+$♒$&0x2652&AQUARIUS\\
+$♓$&0x2653&PISCES\\
+$♔$&0x2654&WHITE CHESS KING\\
+$♕$&0x2655&WHITE CHESS QUEEN\\
+$♖$&0x2656&WHITE CHESS ROOK\\
+$♗$&0x2657&WHITE CHESS BISHOP\\
+$♘$&0x2658&WHITE CHESS KNIGHT\\
+$♙$&0x2659&WHITE CHESS PAWN\\
+$♚$&0x265a&BLACK CHESS KING\\
+$♛$&0x265b&BLACK CHESS QUEEN\\
+$♜$&0x265c&BLACK CHESS ROOK\\
+$♝$&0x265d&BLACK CHESS BISHOP\\
+$♞$&0x265e&BLACK CHESS KNIGHT\\
+$♟$&0x265f&BLACK CHESS PAWN\\
+$♨$&0x2668&HOT SPRINGS\\
+$♩$&0x2669&QUARTER NOTE\\
+$♫$&0x266b&BEAMED EIGHTH NOTES\\
+$♬$&0x266c&BEAMED SIXTEENTH NOTES\\
+$♰$&0x2670&WEST SYRIAC CROSS\\
+$♱$&0x2671&EAST SYRIAC CROSS\\
+$♲$&0x2672&UNIVERSAL RECYCLING SYMBOL\\
+$♳$&0x2673&RECYCLING SYMBOL FOR TYPE-1 PLASTICS\\
+$♴$&0x2674&RECYCLING SYMBOL FOR TYPE-2 PLASTICS\\
+$♵$&0x2675&RECYCLING SYMBOL FOR TYPE-3 PLASTICS\\
+$♶$&0x2676&RECYCLING SYMBOL FOR TYPE-4 PLASTICS\\
+$♷$&0x2677&RECYCLING SYMBOL FOR TYPE-5 PLASTICS\\
+$♸$&0x2678&RECYCLING SYMBOL FOR TYPE-6 PLASTICS\\
+$♹$&0x2679&RECYCLING SYMBOL FOR TYPE-7 PLASTICS\\
+$♺$&0x267a&RECYCLING SYMBOL FOR GENERIC MATERIALS\\
+$♻$&0x267b&BLACK UNIVERSAL RECYCLING SYMBOL\\
+$♼$&0x267c&RECYCLED PAPER SYMBOL\\
+$♽$&0x267d&PARTIALLY-RECYCLED PAPER SYMBOL\\
+$♾$&0x267e&PERMANENT PAPER SIGN\\
+$♿$&0x267f&WHEELCHAIR SYMBOL\\
+$⚀$&0x2680&DIE FACE-1\\
+$⚁$&0x2681&DIE FACE-2\\
+$⚂$&0x2682&DIE FACE-3\\
+$⚃$&0x2683&DIE FACE-4\\
+$⚄$&0x2684&DIE FACE-5\\
+$⚅$&0x2685&DIE FACE-6\\
+$⚆$&0x2686&WHITE CIRCLE WITH DOT RIGHT\\
+$⚇$&0x2687&WHITE CIRCLE WITH TWO DOTS\\
+$⚈$&0x2688&BLACK CIRCLE WITH WHITE DOT RIGHT\\
+$⚉$&0x2689&BLACK CIRCLE WITH TWO WHITE DOTS\\
+$⚊$&0x268a&MONOGRAM FOR YANG\\
+$⚋$&0x268b&MONOGRAM FOR YIN\\
+$⚌$&0x268c&DIGRAM FOR GREATER YANG\\
+$⚍$&0x268d&DIGRAM FOR LESSER YIN\\
+$⚎$&0x268e&DIGRAM FOR LESSER YANG\\
+$⚏$&0x268f&DIGRAM FOR GREATER YIN\\
+$⚐$&0x2690&WHITE FLAG\\
+$⚑$&0x2691&BLACK FLAG\\
+$⚒$&0x2692&HAMMER AND PICK\\
+$⚓$&0x2693&ANCHOR\\
+$⚔$&0x2694&CROSSED SWORDS\\
+$⚕$&0x2695&STAFF OF AESCULAPIUS\\
+$⚖$&0x2696&SCALES\\
+$⚗$&0x2697&ALEMBIC\\
+$⚘$&0x2698&FLOWER\\
+$⚙$&0x2699&GEAR\\
+$⚚$&0x269a&STAFF OF HERMES\\
+$⚛$&0x269b&ATOM SYMBOL\\
+$⚜$&0x269c&FLEUR-DE-LIS\\
+$⚝$&0x269d&OUTLINED WHITE STAR\\
+$⚞$&0x269e&THREE LINES CONVERGING RIGHT\\
+$⚟$&0x269f&THREE LINES CONVERGING LEFT\\
+$⚠$&0x26a0&WARNING SIGN\\
+$⚡$&0x26a1&HIGH VOLTAGE SIGN\\
+$⚢$&0x26a2&DOUBLED FEMALE SIGN\\
+$⚣$&0x26a3&DOUBLED MALE SIGN\\
+$⚤$&0x26a4&INTERLOCKED FEMALE AND MALE SIGN\\
+$⚥$&0x26a5&MALE AND FEMALE SIGN\\
+$⚦$&0x26a6&MALE WITH STROKE SIGN\\
+$⚧$&0x26a7&MALE WITH STROKE AND MALE AND FEMALE SIGN\\
+$⚨$&0x26a8&VERTICAL MALE WITH STROKE SIGN\\
+$⚩$&0x26a9&HORIZONTAL MALE WITH STROKE SIGN\\
+$⚪$&0x26aa&MEDIUM WHITE CIRCLE\\
+$⚫$&0x26ab&MEDIUM BLACK CIRCLE\\
+$⚬$&0x26ac&MEDIUM SMALL WHITE CIRCLE\\
+$⚯$&0x26af&UNMARRIED PARTNERSHIP SYMBOL\\
+$⚰$&0x26b0&COFFIN\\
+$⚱$&0x26b1&FUNERAL URN\\
+$⚲$&0x26b2&NEUTER\\
+$⚳$&0x26b3&CERES\\
+$⚴$&0x26b4&PALLAS\\
+$⚵$&0x26b5&JUNO\\
+$⚶$&0x26b6&VESTA\\
+$⚷$&0x26b7&CHIRON\\
+$⚸$&0x26b8&BLACK MOON LILITH\\
+$⚹$&0x26b9&SEXTILE\\
+$⚺$&0x26ba&SEMISEXTILE\\
+$⚻$&0x26bb&QUINCUNX\\
+$⚼$&0x26bc&SESQUIQUADRATE\\
+$⚽$&0x26bd&SOCCER BALL\\
+$⚾$&0x26be&BASEBALL\\
+$⚿$&0x26bf&SQUARED KEY\\
+$⛀$&0x26c0&WHITE DRAUGHTS MAN\\
+$⛁$&0x26c1&WHITE DRAUGHTS KING\\
+$⛂$&0x26c2&BLACK DRAUGHTS MAN\\
+$⛃$&0x26c3&BLACK DRAUGHTS KING\\
+$⛄$&0x26c4&SNOWMAN WITHOUT SNOW\\
+$⛅$&0x26c5&SUN BEHIND CLOUD\\
+$⛆$&0x26c6&RAIN\\
+$⛇$&0x26c7&BLACK SNOWMAN\\
+$⛈$&0x26c8&THUNDER CLOUD AND RAIN\\
+$⛉$&0x26c9&TURNED WHITE SHOGI PIECE\\
+$⛊$&0x26ca&TURNED BLACK SHOGI PIECE\\
+$⛋$&0x26cb&WHITE DIAMOND IN SQUARE\\
+$⛌$&0x26cc&CROSSING LANES\\
+$⛍$&0x26cd&DISABLED CAR\\
+$⛎$&0x26ce&OPHIUCHUS\\
+$⛏$&0x26cf&PICK\\
+$⛐$&0x26d0&CAR SLIDING\\
+$⛑$&0x26d1&HELMET WITH WHITE CROSS\\
+$⛒$&0x26d2&CIRCLED CROSSING LANES\\
+$⛓$&0x26d3&CHAINS\\
+$⛔$&0x26d4&NO ENTRY\\
+$⛕$&0x26d5&ALTERNATE ONE-WAY LEFT WAY TRAFFIC\\
+$⛖$&0x26d6&BLACK TWO-WAY LEFT WAY TRAFFIC\\
+$⛗$&0x26d7&WHITE TWO-WAY LEFT WAY TRAFFIC\\
+$⛘$&0x26d8&BLACK LEFT LANE MERGE\\
+$⛙$&0x26d9&WHITE LEFT LANE MERGE\\
+$⛚$&0x26da&DRIVE SLOW SIGN\\
+$⛛$&0x26db&HEAVY WHITE DOWN-POINTING TRIANGLE\\
+$⛜$&0x26dc&LEFT CLOSED ENTRY\\
+$⛝$&0x26dd&SQUARED SALTIRE\\
+$⛞$&0x26de&FALLING DIAGONAL IN WHITE CIRCLE IN BLACK SQUARE\\
+$⛟$&0x26df&BLACK TRUCK\\
+$⛠$&0x26e0&RESTRICTED LEFT ENTRY-1\\
+$⛡$&0x26e1&RESTRICTED LEFT ENTRY-2\\
+$⛢$&0x26e2&ASTRONOMICAL SYMBOL FOR URANUS\\
+$⛣$&0x26e3&HEAVY CIRCLE WITH STROKE AND TWO DOTS ABOVE\\
+$⛤$&0x26e4&PENTAGRAM\\
+$⛥$&0x26e5&RIGHT-HANDED INTERLACED PENTAGRAM\\
+$⛦$&0x26e6&LEFT-HANDED INTERLACED PENTAGRAM\\
+$⛧$&0x26e7&INVERTED PENTAGRAM\\
+$⛨$&0x26e8&BLACK CROSS ON SHIELD\\
+$⛩$&0x26e9&SHINTO SHRINE\\
+$⛪$&0x26ea&CHURCH\\
+$⛫$&0x26eb&CASTLE\\
+$⛬$&0x26ec&HISTORIC SITE\\
+$⛭$&0x26ed&GEAR WITHOUT HUB\\
+$⛮$&0x26ee&GEAR WITH HANDLES\\
+$⛯$&0x26ef&MAP SYMBOL FOR LIGHTHOUSE\\
+$⛰$&0x26f0&MOUNTAIN\\
+$⛱$&0x26f1&UMBRELLA ON GROUND\\
+$⛲$&0x26f2&FOUNTAIN\\
+$⛳$&0x26f3&FLAG IN HOLE\\
+$⛴$&0x26f4&FERRY\\
+$⛵$&0x26f5&SAILBOAT\\
+$⛶$&0x26f6&SQUARE FOUR CORNERS\\
+$⛷$&0x26f7&SKIER\\
+$⛸$&0x26f8&ICE SKATE\\
+$⛹$&0x26f9&PERSON WITH BALL\\
+$⛺$&0x26fa&TENT\\
+$⛻$&0x26fb&JAPANESE BANK SYMBOL\\
+$⛼$&0x26fc&HEADSTONE GRAVEYARD SYMBOL\\
+$⛽$&0x26fd&FUEL PUMP\\
+$⛾$&0x26fe&CUP ON BLACK SQUARE\\
+$⛿$&0x26ff&WHITE FLAG WITH HORIZONTAL MIDDLE BLACK STRIPE\\
+$✂$&0x2702&BLACK SCISSORS\\
+$✉$&0x2709&ENVELOPE\\
+$✪$&0x272a&CIRCLED WHITE STAR\\
+$✶$&0x2736&SIX POINTED BLACK STAR\\
+$✽$&0x273d&HEAVY TEARDROP-SPOKED ASTERISK\\
+$❲$&0x2772&LIGHT LEFT TORTOISE SHELL BRACKET ORNAMENT\\
+$❳$&0x2773&LIGHT RIGHT TORTOISE SHELL BRACKET ORNAMENT\\
+$❶$&0x2776&DINGBAT NEGATIVE CIRCLED DIGIT ONE\\
+$❷$&0x2777&DINGBAT NEGATIVE CIRCLED DIGIT TWO\\
+$❸$&0x2778&DINGBAT NEGATIVE CIRCLED DIGIT THREE\\
+$❹$&0x2779&DINGBAT NEGATIVE CIRCLED DIGIT FOUR\\
+$❺$&0x277a&DINGBAT NEGATIVE CIRCLED DIGIT FIVE\\
+$❻$&0x277b&DINGBAT NEGATIVE CIRCLED DIGIT SIX\\
+$❼$&0x277c&DINGBAT NEGATIVE CIRCLED DIGIT SEVEN\\
+$❽$&0x277d&DINGBAT NEGATIVE CIRCLED DIGIT EIGHT\\
+$❾$&0x277e&DINGBAT NEGATIVE CIRCLED DIGIT NINE\\
+$❿$&0x277f&DINGBAT NEGATIVE CIRCLED NUMBER TEN\\
+$➀$&0x2780&DINGBAT CIRCLED SANS-SERIF DIGIT ONE\\
+$➁$&0x2781&DINGBAT CIRCLED SANS-SERIF DIGIT TWO\\
+$➂$&0x2782&DINGBAT CIRCLED SANS-SERIF DIGIT THREE\\
+$➃$&0x2783&DINGBAT CIRCLED SANS-SERIF DIGIT FOUR\\
+$➄$&0x2784&DINGBAT CIRCLED SANS-SERIF DIGIT FIVE\\
+$➅$&0x2785&DINGBAT CIRCLED SANS-SERIF DIGIT SIX\\
+$➆$&0x2786&DINGBAT CIRCLED SANS-SERIF DIGIT SEVEN\\
+$➇$&0x2787&DINGBAT CIRCLED SANS-SERIF DIGIT EIGHT\\
+$➈$&0x2788&DINGBAT CIRCLED SANS-SERIF DIGIT NINE\\
+$➉$&0x2789&DINGBAT CIRCLED SANS-SERIF NUMBER TEN\\
+$➊$&0x278a&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT ONE\\
+$➋$&0x278b&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT TWO\\
+$➌$&0x278c&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT THREE\\
+$➍$&0x278d&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT FOUR\\
+$➎$&0x278e&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT FIVE\\
+$➏$&0x278f&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT SIX\\
+$➐$&0x2790&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT SEVEN\\
+$➑$&0x2791&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT EIGHT\\
+$➒$&0x2792&DINGBAT NEGATIVE CIRCLED SANS-SERIF DIGIT NINE\\
+$➓$&0x2793&DINGBAT NEGATIVE CIRCLED SANS-SERIF NUMBER TEN\\
+$➛$&0x279b&DRAFTING POINT RIGHTWARDS ARROW\\
+$⟀$&0x27c0&THREE DIMENSIONAL ANGLE\\
+$⟁$&0x27c1&WHITE TRIANGLE CONTAINING SMALL WHITE TRIANGLE\\
+$⟃$&0x27c3&OPEN SUBSET\\
+$⟄$&0x27c4&OPEN SUPERSET\\
+$⟅$&0x27c5&LEFT S-SHAPED BAG DELIMITER\\
+$⟆$&0x27c6&RIGHT S-SHAPED BAG DELIMITER\\
+$⟇$&0x27c7&OR WITH DOT INSIDE\\
+$⟈$&0x27c8&REVERSE SOLIDUS PRECEDING SUBSET\\
+$⟉$&0x27c9&SUPERSET PRECEDING SOLIDUS\\
+$⟋$&0x27cb&MATHEMATICAL RISING DIAGONAL\\
+$⟌$&0x27cc&LONG DIVISION\\
+$⟍$&0x27cd&MATHEMATICAL FALLING DIAGONAL\\
+$⟐$&0x27d0&WHITE DIAMOND WITH CENTRED DOT\\
+$⟑$&0x27d1&AND WITH DOT\\
+$⟒$&0x27d2&ELEMENT OF OPENING UPWARDS\\
+$⟓$&0x27d3&LOWER RIGHT CORNER WITH DOT\\
+$⟔$&0x27d4&UPPER LEFT CORNER WITH DOT\\
+$⟕$&0x27d5&LEFT OUTER JOIN\\
+$⟖$&0x27d6&RIGHT OUTER JOIN\\
+$⟗$&0x27d7&FULL OUTER JOIN\\
+$⟟$&0x27df&UP TACK WITH CIRCLE ABOVE\\
+$⟤$&0x27e4&WHITE SQUARE WITH LEFTWARDS TICK\\
+$⟥$&0x27e5&WHITE SQUARE WITH RIGHTWARDS TICK\\
+$⟬$&0x27ec&MATHEMATICAL LEFT WHITE TORTOISE SHELL BRACKET\\
+$⟭$&0x27ed&MATHEMATICAL RIGHT WHITE TORTOISE SHELL BRACKET\\
+$⟰$&0x27f0&UPWARDS QUADRUPLE ARROW\\
+$⟱$&0x27f1&DOWNWARDS QUADRUPLE ARROW\\
+$⟲$&0x27f2&ANTICLOCKWISE GAPPED CIRCLE ARROW\\
+$⟳$&0x27f3&CLOCKWISE GAPPED CIRCLE ARROW\\
+$⤀$&0x2900&RIGHTWARDS TWO-HEADED ARROW WITH VERTICAL STROKE\\
+$⤁$&0x2901&RIGHTWARDS TWO-HEADED ARROW WITH DOUBLE VERTICAL STROKE\\
+$⤂$&0x2902&LEFTWARDS DOUBLE ARROW WITH VERTICAL STROKE\\
+$⤃$&0x2903&RIGHTWARDS DOUBLE ARROW WITH VERTICAL STROKE\\
+$⤄$&0x2904&LEFT RIGHT DOUBLE ARROW WITH VERTICAL STROKE\\
+$⤅$&0x2905&RIGHTWARDS TWO-HEADED ARROW FROM BAR\\
+$⤈$&0x2908&DOWNWARDS ARROW WITH HORIZONTAL STROKE\\
+$⤉$&0x2909&UPWARDS ARROW WITH HORIZONTAL STROKE\\
+$⤊$&0x290a&UPWARDS TRIPLE ARROW\\
+$⤋$&0x290b&DOWNWARDS TRIPLE ARROW\\
+$⤌$&0x290c&LEFTWARDS DOUBLE DASH ARROW\\
+$⤍$&0x290d&RIGHTWARDS DOUBLE DASH ARROW\\
+$⤎$&0x290e&LEFTWARDS TRIPLE DASH ARROW\\
+$⤏$&0x290f&RIGHTWARDS TRIPLE DASH ARROW\\
+$⤐$&0x2910&RIGHTWARDS TWO-HEADED TRIPLE DASH ARROW\\
+$⤑$&0x2911&RIGHTWARDS ARROW WITH DOTTED STEM\\
+$⤒$&0x2912&UPWARDS ARROW TO BAR\\
+$⤓$&0x2913&DOWNWARDS ARROW TO BAR\\
+$⤔$&0x2914&RIGHTWARDS ARROW WITH TAIL WITH VERTICAL STROKE\\
+$⤕$&0x2915&RIGHTWARDS ARROW WITH TAIL WITH DOUBLE VERTICAL STROKE\\
+$⤖$&0x2916&RIGHTWARDS TWO-HEADED ARROW WITH TAIL\\
+$⤗$&0x2917&RIGHTWARDS TWO-HEADED ARROW WITH TAIL WITH VERTICAL STROKE\\
+$⤘$&0x2918&RIGHTWARDS TWO-HEADED ARROW WITH TAIL WITH DOUBLE VERTICAL STROKE\\
+$⤙$&0x2919&LEFTWARDS ARROW-TAIL\\
+$⤚$&0x291a&RIGHTWARDS ARROW-TAIL\\
+$⤛$&0x291b&LEFTWARDS DOUBLE ARROW-TAIL\\
+$⤜$&0x291c&RIGHTWARDS DOUBLE ARROW-TAIL\\
+$⤝$&0x291d&LEFTWARDS ARROW TO BLACK DIAMOND\\
+$⤞$&0x291e&RIGHTWARDS ARROW TO BLACK DIAMOND\\
+$⤟$&0x291f&LEFTWARDS ARROW FROM BAR TO BLACK DIAMOND\\
+$⤠$&0x2920&RIGHTWARDS ARROW FROM BAR TO BLACK DIAMOND\\
+$⤡$&0x2921&NORTH WEST AND SOUTH EAST ARROW\\
+$⤢$&0x2922&NORTH EAST AND SOUTH WEST ARROW\\
+$⤣$&0x2923&NORTH WEST ARROW WITH HOOK\\
+$⤤$&0x2924&NORTH EAST ARROW WITH HOOK\\
+$⤥$&0x2925&SOUTH EAST ARROW WITH HOOK\\
+$⤦$&0x2926&SOUTH WEST ARROW WITH HOOK\\
+$⤧$&0x2927&NORTH WEST ARROW AND NORTH EAST ARROW\\
+$⤨$&0x2928&NORTH EAST ARROW AND SOUTH EAST ARROW\\
+$⤩$&0x2929&SOUTH EAST ARROW AND SOUTH WEST ARROW\\
+$⤪$&0x292a&SOUTH WEST ARROW AND NORTH WEST ARROW\\
+$⤫$&0x292b&RISING DIAGONAL CROSSING FALLING DIAGONAL\\
+$⤬$&0x292c&FALLING DIAGONAL CROSSING RISING DIAGONAL\\
+$⤭$&0x292d&SOUTH EAST ARROW CROSSING NORTH EAST ARROW\\
+$⤮$&0x292e&NORTH EAST ARROW CROSSING SOUTH EAST ARROW\\
+$⤯$&0x292f&FALLING DIAGONAL CROSSING NORTH EAST ARROW\\
+$⤰$&0x2930&RISING DIAGONAL CROSSING SOUTH EAST ARROW\\
+$⤱$&0x2931&NORTH EAST ARROW CROSSING NORTH WEST ARROW\\
+$⤲$&0x2932&NORTH WEST ARROW CROSSING NORTH EAST ARROW\\
+$⤳$&0x2933&WAVE ARROW POINTING DIRECTLY RIGHT\\
+$⤴$&0x2934&ARROW POINTING RIGHTWARDS THEN CURVING UPWARDS\\
+$⤵$&0x2935&ARROW POINTING RIGHTWARDS THEN CURVING DOWNWARDS\\
+$⤶$&0x2936&ARROW POINTING DOWNWARDS THEN CURVING LEFTWARDS\\
+$⤷$&0x2937&ARROW POINTING DOWNWARDS THEN CURVING RIGHTWARDS\\
+$⤸$&0x2938&RIGHT-SIDE ARC CLOCKWISE ARROW\\
+$⤹$&0x2939&LEFT-SIDE ARC ANTICLOCKWISE ARROW\\
+$⤺$&0x293a&TOP ARC ANTICLOCKWISE ARROW\\
+$⤻$&0x293b&BOTTOM ARC ANTICLOCKWISE ARROW\\
+$⤼$&0x293c&TOP ARC CLOCKWISE ARROW WITH MINUS\\
+$⤽$&0x293d&TOP ARC ANTICLOCKWISE ARROW WITH PLUS\\
+$⤾$&0x293e&LOWER RIGHT SEMICIRCULAR CLOCKWISE ARROW\\
+$⤿$&0x293f&LOWER LEFT SEMICIRCULAR ANTICLOCKWISE ARROW\\
+$⥀$&0x2940&ANTICLOCKWISE CLOSED CIRCLE ARROW\\
+$⥁$&0x2941&CLOCKWISE CLOSED CIRCLE ARROW\\
+$⥂$&0x2942&RIGHTWARDS ARROW ABOVE SHORT LEFTWARDS ARROW\\
+$⥃$&0x2943&LEFTWARDS ARROW ABOVE SHORT RIGHTWARDS ARROW\\
+$⥄$&0x2944&SHORT RIGHTWARDS ARROW ABOVE LEFTWARDS ARROW\\
+$⥅$&0x2945&RIGHTWARDS ARROW WITH PLUS BELOW\\
+$⥆$&0x2946&LEFTWARDS ARROW WITH PLUS BELOW\\
+$⥇$&0x2947&RIGHTWARDS ARROW THROUGH X\\
+$⥈$&0x2948&LEFT RIGHT ARROW THROUGH SMALL CIRCLE\\
+$⥉$&0x2949&UPWARDS TWO-HEADED ARROW FROM SMALL CIRCLE\\
+$⥊$&0x294a&LEFT BARB UP RIGHT BARB DOWN HARPOON\\
+$⥋$&0x294b&LEFT BARB DOWN RIGHT BARB UP HARPOON\\
+$⥌$&0x294c&UP BARB RIGHT DOWN BARB LEFT HARPOON\\
+$⥍$&0x294d&UP BARB LEFT DOWN BARB RIGHT HARPOON\\
+$⥎$&0x294e&LEFT BARB UP RIGHT BARB UP HARPOON\\
+$⥏$&0x294f&UP BARB RIGHT DOWN BARB RIGHT HARPOON\\
+$⥐$&0x2950&LEFT BARB DOWN RIGHT BARB DOWN HARPOON\\
+$⥑$&0x2951&UP BARB LEFT DOWN BARB LEFT HARPOON\\
+$⥒$&0x2952&LEFTWARDS HARPOON WITH BARB UP TO BAR\\
+$⥓$&0x2953&RIGHTWARDS HARPOON WITH BARB UP TO BAR\\
+$⥔$&0x2954&UPWARDS HARPOON WITH BARB RIGHT TO BAR\\
+$⥕$&0x2955&DOWNWARDS HARPOON WITH BARB RIGHT TO BAR\\
+$⥖$&0x2956&LEFTWARDS HARPOON WITH BARB DOWN TO BAR\\
+$⥗$&0x2957&RIGHTWARDS HARPOON WITH BARB DOWN TO BAR\\
+$⥘$&0x2958&UPWARDS HARPOON WITH BARB LEFT TO BAR\\
+$⥙$&0x2959&DOWNWARDS HARPOON WITH BARB LEFT TO BAR\\
+$⥚$&0x295a&LEFTWARDS HARPOON WITH BARB UP FROM BAR\\
+$⥛$&0x295b&RIGHTWARDS HARPOON WITH BARB UP FROM BAR\\
+$⥜$&0x295c&UPWARDS HARPOON WITH BARB RIGHT FROM BAR\\
+$⥝$&0x295d&DOWNWARDS HARPOON WITH BARB RIGHT FROM BAR\\
+$⥞$&0x295e&LEFTWARDS HARPOON WITH BARB DOWN FROM BAR\\
+$⥟$&0x295f&RIGHTWARDS HARPOON WITH BARB DOWN FROM BAR\\
+$⥠$&0x2960&UPWARDS HARPOON WITH BARB LEFT FROM BAR\\
+$⥡$&0x2961&DOWNWARDS HARPOON WITH BARB LEFT FROM BAR\\
+$⥢$&0x2962&LEFTWARDS HARPOON WITH BARB UP ABOVE LEFTWARDS HARPOON WITH BARB DOWN\\
+$⥣$&0x2963&UPWARDS HARPOON WITH BARB LEFT BESIDE UPWARDS HARPOON WITH BARB RIGHT\\
+$⥤$&0x2964&RIGHTWARDS HARPOON WITH BARB UP ABOVE RIGHTWARDS HARPOON WITH BARB DOWN\\
+$⥥$&0x2965&DOWNWARDS HARPOON WITH BARB LEFT BESIDE DOWNWARDS HARPOON WITH BARB RIGHT\\
+$⥦$&0x2966&LEFTWARDS HARPOON WITH BARB UP ABOVE RIGHTWARDS HARPOON WITH BARB UP\\
+$⥧$&0x2967&LEFTWARDS HARPOON WITH BARB DOWN ABOVE RIGHTWARDS HARPOON WITH BARB DOWN\\
+$⥨$&0x2968&RIGHTWARDS HARPOON WITH BARB UP ABOVE LEFTWARDS HARPOON WITH BARB UP\\
+$⥩$&0x2969&RIGHTWARDS HARPOON WITH BARB DOWN ABOVE LEFTWARDS HARPOON WITH BARB DOWN\\
+$⥪$&0x296a&LEFTWARDS HARPOON WITH BARB UP ABOVE LONG DASH\\
+$⥫$&0x296b&LEFTWARDS HARPOON WITH BARB DOWN BELOW LONG DASH\\
+$⥬$&0x296c&RIGHTWARDS HARPOON WITH BARB UP ABOVE LONG DASH\\
+$⥭$&0x296d&RIGHTWARDS HARPOON WITH BARB DOWN BELOW LONG DASH\\
+$⥮$&0x296e&UPWARDS HARPOON WITH BARB LEFT BESIDE DOWNWARDS HARPOON WITH BARB RIGHT\\
+$⥯$&0x296f&DOWNWARDS HARPOON WITH BARB LEFT BESIDE UPWARDS HARPOON WITH BARB RIGHT\\
+$⥰$&0x2970&RIGHT DOUBLE ARROW WITH ROUNDED HEAD\\
+$⥱$&0x2971&EQUALS SIGN ABOVE RIGHTWARDS ARROW\\
+$⥲$&0x2972&TILDE OPERATOR ABOVE RIGHTWARDS ARROW\\
+$⥳$&0x2973&LEFTWARDS ARROW ABOVE TILDE OPERATOR\\
+$⥴$&0x2974&RIGHTWARDS ARROW ABOVE TILDE OPERATOR\\
+$⥵$&0x2975&RIGHTWARDS ARROW ABOVE ALMOST EQUAL TO\\
+$⥶$&0x2976&LESS-THAN ABOVE LEFTWARDS ARROW\\
+$⥷$&0x2977&LEFTWARDS ARROW THROUGH LESS-THAN\\
+$⥸$&0x2978&GREATER-THAN ABOVE RIGHTWARDS ARROW\\
+$⥹$&0x2979&SUBSET ABOVE RIGHTWARDS ARROW\\
+$⥺$&0x297a&LEFTWARDS ARROW THROUGH SUBSET\\
+$⥻$&0x297b&SUPERSET ABOVE LEFTWARDS ARROW\\
+$⥼$&0x297c&LEFT FISH TAIL\\
+$⥽$&0x297d&RIGHT FISH TAIL\\
+$⥾$&0x297e&UP FISH TAIL\\
+$⥿$&0x297f&DOWN FISH TAIL\\
+$⦀$&0x2980&TRIPLE VERTICAL BAR DELIMITER\\
+$⦁$&0x2981&Z NOTATION SPOT\\
+$⦂$&0x2982&Z NOTATION TYPE COLON\\
+$⦃$&0x2983&LEFT WHITE CURLY BRACKET\\
+$⦄$&0x2984&RIGHT WHITE CURLY BRACKET\\
+$⦅$&0x2985&LEFT WHITE PARENTHESIS\\
+$⦆$&0x2986&RIGHT WHITE PARENTHESIS\\
+$⦇$&0x2987&Z NOTATION LEFT IMAGE BRACKET\\
+$⦈$&0x2988&Z NOTATION RIGHT IMAGE BRACKET\\
+$⦉$&0x2989&Z NOTATION LEFT BINDING BRACKET\\
+$⦊$&0x298a&Z NOTATION RIGHT BINDING BRACKET\\
+$⦋$&0x298b&LEFT SQUARE BRACKET WITH UNDERBAR\\
+$⦌$&0x298c&RIGHT SQUARE BRACKET WITH UNDERBAR\\
+$⦍$&0x298d&LEFT SQUARE BRACKET WITH TICK IN TOP CORNER\\
+$⦎$&0x298e&RIGHT SQUARE BRACKET WITH TICK IN BOTTOM CORNER\\
+$⦏$&0x298f&LEFT SQUARE BRACKET WITH TICK IN BOTTOM CORNER\\
+$⦐$&0x2990&RIGHT SQUARE BRACKET WITH TICK IN TOP CORNER\\
+$⦑$&0x2991&LEFT ANGLE BRACKET WITH DOT\\
+$⦒$&0x2992&RIGHT ANGLE BRACKET WITH DOT\\
+$⦓$&0x2993&LEFT ARC LESS-THAN BRACKET\\
+$⦔$&0x2994&RIGHT ARC GREATER-THAN BRACKET\\
+$⦕$&0x2995&DOUBLE LEFT ARC GREATER-THAN BRACKET\\
+$⦖$&0x2996&DOUBLE RIGHT ARC LESS-THAN BRACKET\\
+$⦗$&0x2997&LEFT BLACK TORTOISE SHELL BRACKET\\
+$⦘$&0x2998&RIGHT BLACK TORTOISE SHELL BRACKET\\
+$⦙$&0x2999&DOTTED FENCE\\
+$⦚$&0x299a&VERTICAL ZIGZAG LINE\\
+$⦛$&0x299b&MEASURED ANGLE OPENING LEFT\\
+$⦜$&0x299c&RIGHT ANGLE VARIANT WITH SQUARE\\
+$⦝$&0x299d&MEASURED RIGHT ANGLE WITH DOT\\
+$⦞$&0x299e&ANGLE WITH S INSIDE\\
+$⦟$&0x299f&ACUTE ANGLE\\
+$⦠$&0x29a0&SPHERICAL ANGLE OPENING LEFT\\
+$⦡$&0x29a1&SPHERICAL ANGLE OPENING UP\\
+$⦢$&0x29a2&TURNED ANGLE\\
+$⦣$&0x29a3&REVERSED ANGLE\\
+$⦤$&0x29a4&ANGLE WITH UNDERBAR\\
+$⦥$&0x29a5&REVERSED ANGLE WITH UNDERBAR\\
+$⦦$&0x29a6&OBLIQUE ANGLE OPENING UP\\
+$⦧$&0x29a7&OBLIQUE ANGLE OPENING DOWN\\
+$⦨$&0x29a8&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING UP AND RIGHT\\
+$⦩$&0x29a9&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING UP AND LEFT\\
+$⦪$&0x29aa&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING DOWN AND RIGHT\\
+$⦫$&0x29ab&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING DOWN AND LEFT\\
+$⦬$&0x29ac&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING RIGHT AND UP\\
+$⦭$&0x29ad&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING LEFT AND UP\\
+$⦮$&0x29ae&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING RIGHT AND DOWN\\
+$⦯$&0x29af&MEASURED ANGLE WITH OPEN ARM ENDING IN ARROW POINTING LEFT AND DOWN\\
+$⦰$&0x29b0&REVERSED EMPTY SET\\
+$⦱$&0x29b1&EMPTY SET WITH OVERBAR\\
+$⦲$&0x29b2&EMPTY SET WITH SMALL CIRCLE ABOVE\\
+$⦳$&0x29b3&EMPTY SET WITH RIGHT ARROW ABOVE\\
+$⦴$&0x29b4&EMPTY SET WITH LEFT ARROW ABOVE\\
+$⦵$&0x29b5&CIRCLE WITH HORIZONTAL BAR\\
+$⦶$&0x29b6&CIRCLED VERTICAL BAR\\
+$⦷$&0x29b7&CIRCLED PARALLEL\\
+$⦸$&0x29b8&CIRCLED REVERSE SOLIDUS\\
+$⦹$&0x29b9&CIRCLED PERPENDICULAR\\
+$⦺$&0x29ba&CIRCLE DIVIDED BY HORIZONTAL BAR AND TOP HALF DIVIDED BY VERTICAL BAR\\
+$⦻$&0x29bb&CIRCLE WITH SUPERIMPOSED X\\
+$⦼$&0x29bc&CIRCLED ANTICLOCKWISE-ROTATED DIVISION SIGN\\
+$⦽$&0x29bd&UP ARROW THROUGH CIRCLE\\
+$⦾$&0x29be&CIRCLED WHITE BULLET\\
+$⦿$&0x29bf&CIRCLED BULLET\\
+$⧀$&0x29c0&CIRCLED LESS-THAN\\
+$⧁$&0x29c1&CIRCLED GREATER-THAN\\
+$⧂$&0x29c2&CIRCLE WITH SMALL CIRCLE TO THE RIGHT\\
+$⧃$&0x29c3&CIRCLE WITH TWO HORIZONTAL STROKES TO THE RIGHT\\
+$⧄$&0x29c4&SQUARED RISING DIAGONAL SLASH\\
+$⧅$&0x29c5&SQUARED FALLING DIAGONAL SLASH\\
+$⧆$&0x29c6&SQUARED ASTERISK\\
+$⧇$&0x29c7&SQUARED SMALL CIRCLE\\
+$⧈$&0x29c8&SQUARED SQUARE\\
+$⧉$&0x29c9&TWO JOINED SQUARES\\
+$⧊$&0x29ca&TRIANGLE WITH DOT ABOVE\\
+$⧋$&0x29cb&TRIANGLE WITH UNDERBAR\\
+$⧌$&0x29cc&S IN TRIANGLE\\
+$⧍$&0x29cd&TRIANGLE WITH SERIFS AT BOTTOM\\
+$⧎$&0x29ce&RIGHT TRIANGLE ABOVE LEFT TRIANGLE\\
+$⧏$&0x29cf&LEFT TRIANGLE BESIDE VERTICAL BAR\\
+$⧐$&0x29d0&VERTICAL BAR BESIDE RIGHT TRIANGLE\\
+$⧑$&0x29d1&BOWTIE WITH LEFT HALF BLACK\\
+$⧒$&0x29d2&BOWTIE WITH RIGHT HALF BLACK\\
+$⧓$&0x29d3&BLACK BOWTIE\\
+$⧔$&0x29d4&TIMES WITH LEFT HALF BLACK\\
+$⧕$&0x29d5&TIMES WITH RIGHT HALF BLACK\\
+$⧖$&0x29d6&WHITE HOURGLASS\\
+$⧗$&0x29d7&BLACK HOURGLASS\\
+$⧘$&0x29d8&LEFT WIGGLY FENCE\\
+$⧙$&0x29d9&RIGHT WIGGLY FENCE\\
+$⧚$&0x29da&LEFT DOUBLE WIGGLY FENCE\\
+$⧛$&0x29db&RIGHT DOUBLE WIGGLY FENCE\\
+$⧜$&0x29dc&INCOMPLETE INFINITY\\
+$⧝$&0x29dd&TIE OVER INFINITY\\
+$⧞$&0x29de&INFINITY NEGATED WITH VERTICAL BAR\\
+$⧟$&0x29df&DOUBLE-ENDED MULTIMAP\\
+$⧠$&0x29e0&SQUARE WITH CONTOURED OUTLINE\\
+$⧡$&0x29e1&INCREASES AS\\
+$⧢$&0x29e2&SHUFFLE PRODUCT\\
+$⧣$&0x29e3&EQUALS SIGN AND SLANTED PARALLEL\\
+$⧤$&0x29e4&EQUALS SIGN AND SLANTED PARALLEL WITH TILDE ABOVE\\
+$⧥$&0x29e5&IDENTICAL TO AND SLANTED PARALLEL\\
+$⧦$&0x29e6&GLEICH STARK\\
+$⧧$&0x29e7&THERMODYNAMIC\\
+$⧨$&0x29e8&DOWN-POINTING TRIANGLE WITH LEFT HALF BLACK\\
+$⧩$&0x29e9&DOWN-POINTING TRIANGLE WITH RIGHT HALF BLACK\\
+$⧪$&0x29ea&BLACK DIAMOND WITH DOWN ARROW\\
+$⧫$&0x29eb&BLACK LOZENGE\\
+$⧬$&0x29ec&WHITE CIRCLE WITH DOWN ARROW\\
+$⧭$&0x29ed&BLACK CIRCLE WITH DOWN ARROW\\
+$⧮$&0x29ee&ERROR-BARRED WHITE SQUARE\\
+$⧯$&0x29ef&ERROR-BARRED BLACK SQUARE\\
+$⧰$&0x29f0&ERROR-BARRED WHITE DIAMOND\\
+$⧱$&0x29f1&ERROR-BARRED BLACK DIAMOND\\
+$⧲$&0x29f2&ERROR-BARRED WHITE CIRCLE\\
+$⧳$&0x29f3&ERROR-BARRED BLACK CIRCLE\\
+$⧴$&0x29f4&RULE-DELAYED\\
+$⧵$&0x29f5&REVERSE SOLIDUS OPERATOR\\
+$⧶$&0x29f6&SOLIDUS WITH OVERBAR\\
+$⧷$&0x29f7&REVERSE SOLIDUS WITH HORIZONTAL STROKE\\
+$⧸$&0x29f8&BIG SOLIDUS\\
+$⧹$&0x29f9&BIG REVERSE SOLIDUS\\
+$⧺$&0x29fa&DOUBLE PLUS\\
+$⧻$&0x29fb&TRIPLE PLUS\\
+$⧼$&0x29fc&LEFT-POINTING CURVED ANGLE BRACKET\\
+$⧽$&0x29fd&RIGHT-POINTING CURVED ANGLE BRACKET\\
+$⧾$&0x29fe&TINY\\
+$⧿$&0x29ff&MINY\\
+$⨇$&0x2a07&TWO LOGICAL AND OPERATOR\\
+$⨈$&0x2a08&TWO LOGICAL OR OPERATOR\\
+$⨊$&0x2a0a&MODULO TWO SUM\\
+$⨋$&0x2a0b&SUMMATION WITH INTEGRAL\\
+$⨍$&0x2a0d&FINITE PART INTEGRAL\\
+$⨎$&0x2a0e&INTEGRAL WITH DOUBLE STROKE\\
+$⨏$&0x2a0f&INTEGRAL AVERAGE WITH SLASH\\
+$⨐$&0x2a10&CIRCULATION FUNCTION\\
+$⨒$&0x2a12&LINE INTEGRATION WITH RECTANGULAR PATH AROUND POLE\\
+$⨓$&0x2a13&LINE INTEGRATION WITH SEMICIRCULAR PATH AROUND POLE\\
+$⨔$&0x2a14&LINE INTEGRATION NOT INCLUDING THE POLE\\
+$⨕$&0x2a15&INTEGRAL AROUND A POINT OPERATOR\\
+$⨖$&0x2a16&QUATERNION INTEGRAL OPERATOR\\
+$⨗$&0x2a17&INTEGRAL WITH LEFTWARDS ARROW WITH HOOK\\
+$⨘$&0x2a18&INTEGRAL WITH TIMES SIGN\\
+$⨙$&0x2a19&INTEGRAL WITH INTERSECTION\\
+$⨚$&0x2a1a&INTEGRAL WITH UNION\\
+$⨛$&0x2a1b&INTEGRAL WITH OVERBAR\\
+$⨜$&0x2a1c&INTEGRAL WITH UNDERBAR\\
+$⨝$&0x2a1d&JOIN\\
+$⨞$&0x2a1e&LARGE LEFT TRIANGLE OPERATOR\\
+$⨟$&0x2a1f&Z NOTATION SCHEMA COMPOSITION\\
+$⨠$&0x2a20&Z NOTATION SCHEMA PIPING\\
+$⨡$&0x2a21&Z NOTATION SCHEMA PROJECTION\\
+$⨢$&0x2a22&PLUS SIGN WITH SMALL CIRCLE ABOVE\\
+$⨣$&0x2a23&PLUS SIGN WITH CIRCUMFLEX ACCENT ABOVE\\
+$⨤$&0x2a24&PLUS SIGN WITH TILDE ABOVE\\
+$⨥$&0x2a25&PLUS SIGN WITH DOT BELOW\\
+$⨦$&0x2a26&PLUS SIGN WITH TILDE BELOW\\
+$⨧$&0x2a27&PLUS SIGN WITH SUBSCRIPT TWO\\
+$⨨$&0x2a28&PLUS SIGN WITH BLACK TRIANGLE\\
+$⨩$&0x2a29&MINUS SIGN WITH COMMA ABOVE\\
+$⨪$&0x2a2a&MINUS SIGN WITH DOT BELOW\\
+$⨫$&0x2a2b&MINUS SIGN WITH FALLING DOTS\\
+$⨬$&0x2a2c&MINUS SIGN WITH RISING DOTS\\
+$⨭$&0x2a2d&PLUS SIGN IN LEFT HALF CIRCLE\\
+$⨮$&0x2a2e&PLUS SIGN IN RIGHT HALF CIRCLE\\
+$⨰$&0x2a30&MULTIPLICATION SIGN WITH DOT ABOVE\\
+$⨱$&0x2a31&MULTIPLICATION SIGN WITH UNDERBAR\\
+$⨲$&0x2a32&SEMIDIRECT PRODUCT WITH BOTTOM CLOSED\\
+$⨳$&0x2a33&SMASH PRODUCT\\
+$⨴$&0x2a34&MULTIPLICATION SIGN IN LEFT HALF CIRCLE\\
+$⨵$&0x2a35&MULTIPLICATION SIGN IN RIGHT HALF CIRCLE\\
+$⨶$&0x2a36&CIRCLED MULTIPLICATION SIGN WITH CIRCUMFLEX ACCENT\\
+$⨷$&0x2a37&MULTIPLICATION SIGN IN DOUBLE CIRCLE\\
+$⨸$&0x2a38&CIRCLED DIVISION SIGN\\
+$⨹$&0x2a39&PLUS SIGN IN TRIANGLE\\
+$⨺$&0x2a3a&MINUS SIGN IN TRIANGLE\\
+$⨻$&0x2a3b&MULTIPLICATION SIGN IN TRIANGLE\\
+$⨼$&0x2a3c&INTERIOR PRODUCT\\
+$⨽$&0x2a3d&RIGHTHAND INTERIOR PRODUCT\\
+$⨾$&0x2a3e&Z NOTATION RELATIONAL COMPOSITION\\
+$⩀$&0x2a40&INTERSECTION WITH DOT\\
+$⩁$&0x2a41&UNION WITH MINUS SIGN\\
+$⩂$&0x2a42&UNION WITH OVERBAR\\
+$⩃$&0x2a43&INTERSECTION WITH OVERBAR\\
+$⩄$&0x2a44&INTERSECTION WITH LOGICAL AND\\
+$⩅$&0x2a45&UNION WITH LOGICAL OR\\
+$⩆$&0x2a46&UNION ABOVE INTERSECTION\\
+\\
+$⩇$&0x2a47&INTERSECTION ABOVE UNION\\
+\\
+$⩈$&0x2a48&UNION ABOVE BAR ABOVE INTERSECTION\\
+\\
+$⩉$&0x2a49&INTERSECTION ABOVE BAR ABOVE UNION\\
+\\
+$⩊$&0x2a4a&UNION BESIDE AND JOINED WITH UNION\\
+\\
+$⩋$&0x2a4b&INTERSECTION BESIDE AND JOINED WITH INTERSECTION\\
+\\
+$⩌$&0x2a4c&CLOSED UNION WITH SERIFS\\
+$⩍$&0x2a4d&CLOSED INTERSECTION WITH SERIFS\\
+$⩎$&0x2a4e&DOUBLE SQUARE INTERSECTION\\
+$⩏$&0x2a4f&DOUBLE SQUARE UNION\\
+$⩐$&0x2a50&CLOSED UNION WITH SERIFS AND SMASH PRODUCT\\
+$⩑$&0x2a51&LOGICAL AND WITH DOT ABOVE\\
+$⩒$&0x2a52&LOGICAL OR WITH DOT ABOVE\\
+$⩓$&0x2a53&DOUBLE LOGICAL AND\\
+$⩔$&0x2a54&DOUBLE LOGICAL OR\\
+$⩕$&0x2a55&TWO INTERSECTING LOGICAL AND\\
+$⩖$&0x2a56&TWO INTERSECTING LOGICAL OR\\
+$⩗$&0x2a57&SLOPING LARGE OR\\
+$⩘$&0x2a58&SLOPING LARGE AND\\
+$⩙$&0x2a59&LOGICAL OR OVERLAPPING LOGICAL AND\\
+$⩚$&0x2a5a&LOGICAL AND WITH MIDDLE STEM\\
+$⩛$&0x2a5b&LOGICAL OR WITH MIDDLE STEM\\
+$⩜$&0x2a5c&LOGICAL AND WITH HORIZONTAL DASH\\
+$⩝$&0x2a5d&LOGICAL OR WITH HORIZONTAL DASH\\
+$⩞$&0x2a5e&LOGICAL AND WITH DOUBLE OVERBAR\\
+$⩟$&0x2a5f&LOGICAL AND WITH UNDERBAR\\
+$⩠$&0x2a60&LOGICAL AND WITH DOUBLE UNDERBAR\\
+$⩡$&0x2a61&SMALL VEE WITH UNDERBAR\\
+$⩢$&0x2a62&LOGICAL OR WITH DOUBLE OVERBAR\\
+$⩣$&0x2a63&LOGICAL OR WITH DOUBLE UNDERBAR\\
+$⩤$&0x2a64&Z NOTATION DOMAIN ANTIRESTRICTION\\
+$⩥$&0x2a65&Z NOTATION RANGE ANTIRESTRICTION\\
+$⩦$&0x2a66&EQUALS SIGN WITH DOT BELOW\\
+$⩧$&0x2a67&IDENTICAL WITH DOT ABOVE\\
+$⩨$&0x2a68&TRIPLE HORIZONTAL BAR WITH DOUBLE VERTICAL STROKE\\
+$⩩$&0x2a69&TRIPLE HORIZONTAL BAR WITH TRIPLE VERTICAL STROKE\\
+$⩪$&0x2a6a&TILDE OPERATOR WITH DOT ABOVE\\
+$⩫$&0x2a6b&TILDE OPERATOR WITH RISING DOTS\\
+$⩬$&0x2a6c&SIMILAR MINUS SIMILAR\\
+$⩭$&0x2a6d&CONGRUENT WITH DOT ABOVE\\
+$⩮$&0x2a6e&EQUALS WITH ASTERISK\\
+$⩯$&0x2a6f&ALMOST EQUAL TO WITH CIRCUMFLEX ACCENT\\
+$⩰$&0x2a70&APPROXIMATELY EQUAL OR EQUAL TO\\
+$⩱$&0x2a71&EQUALS SIGN ABOVE PLUS SIGN\\
+$⩲$&0x2a72&PLUS SIGN ABOVE EQUALS SIGN\\
+$⩳$&0x2a73&EQUALS SIGN ABOVE TILDE OPERATOR\\
+$⩴$&0x2a74&DOUBLE COLON EQUAL\\
+$⩵$&0x2a75&TWO CONSECUTIVE EQUALS SIGNS\\
+$⩶$&0x2a76&THREE CONSECUTIVE EQUALS SIGNS\\
+$⩷$&0x2a77&EQUALS SIGN WITH TWO DOTS ABOVE AND TWO DOTS BELOW\\
+$⩸$&0x2a78&EQUIVALENT WITH FOUR DOTS ABOVE\\
+$⩹$&0x2a79&LESS-THAN WITH CIRCLE INSIDE\\
+$⩺$&0x2a7a&GREATER-THAN WITH CIRCLE INSIDE\\
+$⩻$&0x2a7b&LESS-THAN WITH QUESTION MARK ABOVE\\
+$⩼$&0x2a7c&GREATER-THAN WITH QUESTION MARK ABOVE\\
+$⩿$&0x2a7f&LESS-THAN OR SLANTED EQUAL TO WITH DOT INSIDE\\
+$⪀$&0x2a80&GREATER-THAN OR SLANTED EQUAL TO WITH DOT INSIDE\\
+$⪁$&0x2a81&LESS-THAN OR SLANTED EQUAL TO WITH DOT ABOVE\\
+$⪂$&0x2a82&GREATER-THAN OR SLANTED EQUAL TO WITH DOT ABOVE\\
+$⪃$&0x2a83&LESS-THAN OR SLANTED EQUAL TO WITH DOT ABOVE RIGHT\\
+$⪄$&0x2a84&GREATER-THAN OR SLANTED EQUAL TO WITH DOT ABOVE LEFT\\
+$⪍$&0x2a8d&LESS-THAN ABOVE SIMILAR OR EQUAL\\
+$⪎$&0x2a8e&GREATER-THAN ABOVE SIMILAR OR EQUAL\\
+$⪏$&0x2a8f&LESS-THAN ABOVE SIMILAR ABOVE GREATER-THAN\\
+$⪐$&0x2a90&GREATER-THAN ABOVE SIMILAR ABOVE LESS-THAN\\
+$⪑$&0x2a91&LESS-THAN ABOVE GREATER-THAN ABOVE DOUBLE-LINE EQUAL\\
+$⪒$&0x2a92&GREATER-THAN ABOVE LESS-THAN ABOVE DOUBLE-LINE EQUAL\\
+$⪓$&0x2a93&LESS-THAN ABOVE SLANTED EQUAL ABOVE GREATER-THAN ABOVE SLANTED EQUAL\\
+$⪔$&0x2a94&GREATER-THAN ABOVE SLANTED EQUAL ABOVE LESS-THAN ABOVE SLANTED EQUAL\\
+$⪗$&0x2a97&SLANTED EQUAL TO OR LESS-THAN WITH DOT INSIDE\\
+$⪘$&0x2a98&SLANTED EQUAL TO OR GREATER-THAN WITH DOT INSIDE\\
+$⪙$&0x2a99&DOUBLE-LINE EQUAL TO OR LESS-THAN\\
+$⪚$&0x2a9a&DOUBLE-LINE EQUAL TO OR GREATER-THAN\\
+$⪛$&0x2a9b&DOUBLE-LINE SLANTED EQUAL TO OR LESS-THAN\\
+$⪜$&0x2a9c&DOUBLE-LINE SLANTED EQUAL TO OR GREATER-THAN\\
+$⪝$&0x2a9d&SIMILAR OR LESS-THAN\\
+$⪞$&0x2a9e&SIMILAR OR GREATER-THAN\\
+$⪟$&0x2a9f&SIMILAR ABOVE LESS-THAN ABOVE EQUALS SIGN\\
+$⪠$&0x2aa0&SIMILAR ABOVE GREATER-THAN ABOVE EQUALS SIGN\\
+$⪡$&0x2aa1&DOUBLE NESTED LESS-THAN\\
+$⪢$&0x2aa2&DOUBLE NESTED GREATER-THAN\\
+$⪣$&0x2aa3&DOUBLE NESTED LESS-THAN WITH UNDERBAR\\
+$⪤$&0x2aa4&GREATER-THAN OVERLAPPING LESS-THAN\\
+$⪥$&0x2aa5&GREATER-THAN BESIDE LESS-THAN\\
+$⪦$&0x2aa6&LESS-THAN CLOSED BY CURVE\\
+$⪧$&0x2aa7&GREATER-THAN CLOSED BY CURVE\\
+$⪨$&0x2aa8&LESS-THAN CLOSED BY CURVE ABOVE SLANTED EQUAL\\
+$⪩$&0x2aa9&GREATER-THAN CLOSED BY CURVE ABOVE SLANTED EQUAL\\
+$⪪$&0x2aaa&SMALLER THAN\\
+$⪫$&0x2aab&LARGER THAN\\
+$⪬$&0x2aac&SMALLER THAN OR EQUAL TO\\
+$⪭$&0x2aad&LARGER THAN OR EQUAL TO\\
+$⪮$&0x2aae&EQUALS SIGN WITH BUMPY ABOVE\\
+$⪱$&0x2ab1&PRECEDES ABOVE SINGLE-LINE NOT EQUAL TO\\
+$⪲$&0x2ab2&SUCCEEDS ABOVE SINGLE-LINE NOT EQUAL TO\\
+$⪳$&0x2ab3&PRECEDES ABOVE EQUALS SIGN\\
+$⪴$&0x2ab4&SUCCEEDS ABOVE EQUALS SIGN\\
+$⪵$&0x2ab5&PRECEDES ABOVE NOT EQUAL TO\\
+$⪶$&0x2ab6&SUCCEEDS ABOVE NOT EQUAL TO\\
+$⪷$&0x2ab7&PRECEDES ABOVE ALMOST EQUAL TO\\
+$⪸$&0x2ab8&SUCCEEDS ABOVE ALMOST EQUAL TO\\
+$⪹$&0x2ab9&PRECEDES ABOVE NOT ALMOST EQUAL TO\\
+$⪺$&0x2aba&SUCCEEDS ABOVE NOT ALMOST EQUAL TO\\
+$⪻$&0x2abb&DOUBLE PRECEDES\\
+$⪼$&0x2abc&DOUBLE SUCCEEDS\\
+$⪽$&0x2abd&SUBSET WITH DOT\\
+$⪾$&0x2abe&SUPERSET WITH DOT\\
+$⪿$&0x2abf&SUBSET WITH PLUS SIGN BELOW\\
+$⫀$&0x2ac0&SUPERSET WITH PLUS SIGN BELOW\\
+$⫁$&0x2ac1&SUBSET WITH MULTIPLICATION SIGN BELOW\\
+$⫂$&0x2ac2&SUPERSET WITH MULTIPLICATION SIGN BELOW\\
+$⫃$&0x2ac3&SUBSET OF OR EQUAL TO WITH DOT ABOVE\\
+$⫄$&0x2ac4&SUPERSET OF OR EQUAL TO WITH DOT ABOVE\\
+$⫅$&0x2ac5&SUBSET OF ABOVE EQUALS SIGN\\
+$⫆$&0x2ac6&SUPERSET OF ABOVE EQUALS SIGN\\
+$⫇$&0x2ac7&SUBSET OF ABOVE TILDE OPERATOR\\
+$⫈$&0x2ac8&SUPERSET OF ABOVE TILDE OPERATOR\\
+$⫉$&0x2ac9&SUBSET OF ABOVE ALMOST EQUAL TO\\
+$⫊$&0x2aca&SUPERSET OF ABOVE ALMOST EQUAL TO\\
+$⫋$&0x2acb&SUBSET OF ABOVE NOT EQUAL TO\\
+$⫌$&0x2acc&SUPERSET OF ABOVE NOT EQUAL TO\\
+$⫍$&0x2acd&SQUARE LEFT OPEN BOX OPERATOR\\
+$⫎$&0x2ace&SQUARE RIGHT OPEN BOX OPERATOR\\
+$⫏$&0x2acf&CLOSED SUBSET\\
+$⫐$&0x2ad0&CLOSED SUPERSET\\
+$⫑$&0x2ad1&CLOSED SUBSET OR EQUAL TO\\
+$⫒$&0x2ad2&CLOSED SUPERSET OR EQUAL TO\\
+$⫓$&0x2ad3&SUBSET ABOVE SUPERSET\\
+$⫔$&0x2ad4&SUPERSET ABOVE SUBSET\\
+$⫕$&0x2ad5&SUBSET ABOVE SUBSET\\
+$⫖$&0x2ad6&SUPERSET ABOVE SUPERSET\\
+$⫗$&0x2ad7&SUPERSET BESIDE SUBSET\\
+$⫘$&0x2ad8&SUPERSET BESIDE AND JOINED BY DASH WITH SUBSET\\
+$⫙$&0x2ad9&ELEMENT OF OPENING DOWNWARDS\\
+$⫚$&0x2ada&PITCHFORK WITH TEE TOP\\
+$⫛$&0x2adb&TRANSVERSAL INTERSECTION\\
+$⫝̸$&0x2adc&FORKING\\
+$⫝$&0x2add&NONFORKING\\
+$⫞$&0x2ade&SHORT LEFT TACK\\
+$⫟$&0x2adf&SHORT DOWN TACK\\
+$⫠$&0x2ae0&SHORT UP TACK\\
+$⫡$&0x2ae1&PERPENDICULAR WITH S\\
+$⫢$&0x2ae2&VERTICAL BAR TRIPLE RIGHT TURNSTILE\\
+$⫣$&0x2ae3&DOUBLE VERTICAL BAR LEFT TURNSTILE\\
+$⫤$&0x2ae4&VERTICAL BAR DOUBLE LEFT TURNSTILE\\
+$⫥$&0x2ae5&DOUBLE VERTICAL BAR DOUBLE LEFT TURNSTILE\\
+$⫦$&0x2ae6&LONG DASH FROM LEFT MEMBER OF DOUBLE VERTICAL\\
+$⫧$&0x2ae7&SHORT DOWN TACK WITH OVERBAR\\
+$⫨$&0x2ae8&SHORT UP TACK WITH UNDERBAR\\
+$⫩$&0x2ae9&SHORT UP TACK ABOVE SHORT DOWN TACK\\
+$⫪$&0x2aea&DOUBLE DOWN TACK\\
+$⫫$&0x2aeb&DOUBLE UP TACK\\
+$⫬$&0x2aec&DOUBLE STROKE NOT SIGN\\
+$⫭$&0x2aed&REVERSED DOUBLE STROKE NOT SIGN\\
+$⫮$&0x2aee&DOES NOT DIVIDE WITH REVERSED NEGATION SLASH\\
+$⫯$&0x2aef&VERTICAL LINE WITH CIRCLE ABOVE\\
+$⫰$&0x2af0&VERTICAL LINE WITH CIRCLE BELOW\\
+$⫱$&0x2af1&DOWN TACK WITH CIRCLE BELOW\\
+$⫲$&0x2af2&PARALLEL WITH HORIZONTAL STROKE\\
+$⫳$&0x2af3&PARALLEL WITH TILDE OPERATOR\\
+$⫴$&0x2af4&TRIPLE VERTICAL BAR BINARY RELATION\\
+$⫵$&0x2af5&TRIPLE VERTICAL BAR WITH HORIZONTAL STROKE\\
+$⫶$&0x2af6&TRIPLE COLON OPERATOR\\
+$⫷$&0x2af7&TRIPLE NESTED LESS-THAN\\
+$⫸$&0x2af8&TRIPLE NESTED GREATER-THAN\\
+$⫹$&0x2af9&DOUBLE-LINE SLANTED LESS-THAN OR EQUAL TO\\
+$⫺$&0x2afa&DOUBLE-LINE SLANTED GREATER-THAN OR EQUAL TO\\
+$⫻$&0x2afb&TRIPLE SOLIDUS BINARY RELATION\\
+$⫼$&0x2afc&LARGE TRIPLE VERTICAL BAR OPERATOR\\
+$⫽$&0x2afd&DOUBLE SOLIDUS OPERATOR\\
+$⫾$&0x2afe&WHITE VERTICAL BAR\\
+$⫿$&0x2aff&N-ARY WHITE VERTICAL BAR\\
+$⬒$&0x2b12&SQUARE WITH TOP HALF BLACK\\
+$⬓$&0x2b13&SQUARE WITH BOTTOM HALF BLACK\\
+$⬔$&0x2b14&SQUARE WITH UPPER RIGHT DIAGONAL HALF BLACK\\
+$⬕$&0x2b15&SQUARE WITH LOWER LEFT DIAGONAL HALF BLACK\\
+$⬖$&0x2b16&DIAMOND WITH LEFT HALF BLACK\\
+$⬗$&0x2b17&DIAMOND WITH RIGHT HALF BLACK\\
+$⬘$&0x2b18&DIAMOND WITH TOP HALF BLACK\\
+$⬙$&0x2b19&DIAMOND WITH BOTTOM HALF BLACK\\
+$⬛$&0x2b1b&BLACK LARGE SQUARE\\
+$⬜$&0x2b1c&WHITE LARGE SQUARE\\
+$⬝$&0x2b1d&BLACK VERY SMALL SQUARE\\
+$⬞$&0x2b1e&WHITE VERY SMALL SQUARE\\
+$⬟$&0x2b1f&BLACK PENTAGON\\
+$⬠$&0x2b20&WHITE PENTAGON\\
+$⬡$&0x2b21&WHITE HEXAGON\\
+$⬢$&0x2b22&BLACK HEXAGON\\
+$⬣$&0x2b23&HORIZONTAL BLACK HEXAGON\\
+$⬤$&0x2b24&BLACK LARGE CIRCLE\\
+$⬥$&0x2b25&BLACK MEDIUM DIAMOND\\
+$⬦$&0x2b26&WHITE MEDIUM DIAMOND\\
+$⬧$&0x2b27&BLACK MEDIUM LOZENGE\\
+$⬨$&0x2b28&WHITE MEDIUM LOZENGE\\
+$⬩$&0x2b29&BLACK SMALL DIAMOND\\
+$⬪$&0x2b2a&BLACK SMALL LOZENGE\\
+$⬫$&0x2b2b&WHITE SMALL LOZENGE\\
+$⬬$&0x2b2c&BLACK HORIZONTAL ELLIPSE\\
+$⬭$&0x2b2d&WHITE HORIZONTAL ELLIPSE\\
+$⬮$&0x2b2e&BLACK VERTICAL ELLIPSE\\
+$⬯$&0x2b2f&WHITE VERTICAL ELLIPSE\\
+$⬰$&0x2b30&LEFT ARROW WITH SMALL CIRCLE\\
+$⬲$&0x2b32&LEFT ARROW WITH CIRCLED PLUS\\
+$⬴$&0x2b34&LEFTWARDS TWO-HEADED ARROW WITH VERTICAL STROKE\\
+$⬵$&0x2b35&LEFTWARDS TWO-HEADED ARROW WITH DOUBLE VERTICAL STROKE\\
+$⬶$&0x2b36&LEFTWARDS TWO-HEADED ARROW FROM BAR\\
+$⬷$&0x2b37&LEFTWARDS TWO-HEADED TRIPLE DASH ARROW\\
+$⬸$&0x2b38&LEFTWARDS ARROW WITH DOTTED STEM\\
+$⬹$&0x2b39&LEFTWARDS ARROW WITH TAIL WITH VERTICAL STROKE\\
+$⬺$&0x2b3a&LEFTWARDS ARROW WITH TAIL WITH DOUBLE VERTICAL STROKE\\
+$⬻$&0x2b3b&LEFTWARDS TWO-HEADED ARROW WITH TAIL\\
+$⬼$&0x2b3c&LEFTWARDS TWO-HEADED ARROW WITH TAIL WITH VERTICAL STROKE\\
+$⬽$&0x2b3d&LEFTWARDS TWO-HEADED ARROW WITH TAIL WITH DOUBLE VERTICAL STROKE\\
+$⬾$&0x2b3e&LEFTWARDS ARROW THROUGH X\\
+$⬿$&0x2b3f&WAVE ARROW POINTING DIRECTLY LEFT\\
+$⭀$&0x2b40&EQUALS SIGN ABOVE LEFTWARDS ARROW\\
+$⭁$&0x2b41&REVERSE TILDE OPERATOR ABOVE LEFTWARDS ARROW\\
+$⭂$&0x2b42&LEFTWARDS ARROW ABOVE REVERSE ALMOST EQUAL TO\\
+$⭃$&0x2b43&RIGHTWARDS ARROW THROUGH GREATER-THAN\\
+$⭄$&0x2b44&RIGHTWARDS ARROW THROUGH SUPERSET\\
+$⭅$&0x2b45&LEFTWARDS QUADRUPLE ARROW\\
+$⭆$&0x2b46&RIGHTWARDS QUADRUPLE ARROW\\
+$⭇$&0x2b47&REVERSE TILDE OPERATOR ABOVE RIGHTWARDS ARROW\\
+$⭈$&0x2b48&RIGHTWARDS ARROW ABOVE REVERSE ALMOST EQUAL TO\\
+$⭉$&0x2b49&TILDE OPERATOR ABOVE LEFTWARDS ARROW\\
+$⭊$&0x2b4a&LEFTWARDS ARROW ABOVE ALMOST EQUAL TO\\
+$⭋$&0x2b4b&LEFTWARDS ARROW ABOVE REVERSE TILDE OPERATOR\\
+$⭌$&0x2b4c&RIGHTWARDS ARROW ABOVE REVERSE TILDE OPERATOR\\
+$⭐$&0x2b50&WHITE MEDIUM STAR\\
+$⭑$&0x2b51&BLACK SMALL STAR\\
+$⭒$&0x2b52&WHITE SMALL STAR\\
+$⭓$&0x2b53&BLACK RIGHT-POINTING PENTAGON\\
+$⭔$&0x2b54&WHITE RIGHT-POINTING PENTAGON\\
+$〒$&0x3012&POSTAL MARK\\
+$〰$&0x3030&WAVY DASH\\
+\mystixmathfont{の}&0x306e&HIRAGANA LETTER NO\\
+\mystixmathfont{ꜧ}&0xa727&LATIN SMALL LETTER HENG\\
+\mystixmathfont{Ꞓ}&0xa792&LATIN CAPITAL LETTER C WITH BAR\\
+$$&0xe000&*** has no name ***\\
+$$&0xe001&*** has no name ***\\
+$$&0xe002&*** has no name ***\\
+$$&0xe003&*** has no name ***\\
+$$&0xe004&*** has no name ***\\
+$$&0xe005&*** has no name ***\\
+$$&0xe00a&*** has no name ***\\
+$$&0xe00b&*** has no name ***\\
+$$&0xe00e&*** has no name ***\\
+$$&0xe00f&*** has no name ***\\
+$$&0xe010&*** has no name ***\\
+$$&0xe011&*** has no name ***\\
+$$&0xe016&*** has no name ***\\
+$$&0xe018&*** has no name ***\\
+$$&0xe01e&*** has no name ***\\
+$$&0xe023&*** has no name ***\\
+$$&0xe025&*** has no name ***\\
+$$&0xe026&*** has no name ***\\
+$$&0xe027&*** has no name ***\\
+$$&0xe028&*** has no name ***\\
+$$&0xe029&*** has no name ***\\
+$$&0xe02a&*** has no name ***\\
+$$&0xe02b&*** has no name ***\\
+$$&0xe02f&*** has no name ***\\
+$$&0xe035&*** has no name ***\\
+$$&0xe037&*** has no name ***\\
+$$&0xe038&*** has no name ***\\
+$$&0xe039&*** has no name ***\\
+$$&0xe03a&*** has no name ***\\
+$$&0xe03b&*** has no name ***\\
+$$&0xe03c&*** has no name ***\\
+$$&0xe03d&*** has no name ***\\
+$$&0xe040&*** has no name ***\\
+$$&0xe041&*** has no name ***\\
+$$&0xe042&*** has no name ***\\
+$$&0xe043&*** has no name ***\\
+$$&0xe044&*** has no name ***\\
+$$&0xe045&*** has no name ***\\
+$$&0xe046&*** has no name ***\\
+$$&0xe04b&*** has no name ***\\
+$$&0xe04c&*** has no name ***\\
+$$&0xe04d&*** has no name ***\\
+$$&0xe04e&*** has no name ***\\
+$$&0xe04f&*** has no name ***\\
+$$&0xe050&*** has no name ***\\
+$$&0xe051&*** has no name ***\\
+$$&0xe052&*** has no name ***\\
+$$&0xe053&*** has no name ***\\
+$$&0xe054&*** has no name ***\\
+$$&0xe055&*** has no name ***\\
+$$&0xe056&*** has no name ***\\
+$$&0xe057&*** has no name ***\\
+$$&0xe059&*** has no name ***\\
+$$&0xe05a&*** has no name ***\\
+$$&0xe05b&*** has no name ***\\
+$$&0xe05c&*** has no name ***\\
+$$&0xe05d&*** has no name ***\\
+$$&0xe05e&*** has no name ***\\
+\mystixmathfont{}&0xe060&*** has no name ***\\
+\mystixmathfont{}&0xe061&*** has no name ***\\
+\mystixmathfont{}&0xe062&*** has no name ***\\
+\mystixmathfont{}&0xe063&*** has no name ***\\
+\mystixmathfont{}&0xe064&*** has no name ***\\
+\mystixmathfont{}&0xe065&*** has no name ***\\
+\mystixmathfont{}&0xe066&*** has no name ***\\
+\mystixmathfont{}&0xe067&*** has no name ***\\
+$$&0xe068&*** has no name ***\\
+$$&0xe06b&*** has no name ***\\
+$$&0xe06c&*** has no name ***\\
+$$&0xe06d&*** has no name ***\\
+$$&0xe06e&*** has no name ***\\
+$$&0xe06f&*** has no name ***\\
+$$&0xe070&*** has no name ***\\
+$$&0xe075&*** has no name ***\\
+$$&0xe076&*** has no name ***\\
+$$&0xe077&*** has no name ***\\
+$$&0xe07c&*** has no name ***\\
+$$&0xe07d&*** has no name ***\\
+$$&0xe07e&*** has no name ***\\
+$$&0xe07f&*** has no name ***\\
+$$&0xe080&*** has no name ***\\
+$$&0xe081&*** has no name ***\\
+$$&0xe082&*** has no name ***\\
+$$&0xe083&*** has no name ***\\
+$$&0xe084&*** has no name ***\\
+$$&0xe085&*** has no name ***\\
+$$&0xe086&*** has no name ***\\
+$$&0xe087&*** has no name ***\\
+$$&0xe088&*** has no name ***\\
+$$&0xe089&*** has no name ***\\
+$$&0xe092&*** has no name ***\\
+$$&0xe093&*** has no name ***\\
+$$&0xe094&*** has no name ***\\
+$$&0xe095&*** has no name ***\\
+$$&0xe096&*** has no name ***\\
+$$&0xe097&*** has no name ***\\
+$$&0xe098&*** has no name ***\\
+$$&0xe099&*** has no name ***\\
+$$&0xe09a&*** has no name ***\\
+$$&0xe09b&*** has no name ***\\
+$$&0xe09f&*** has no name ***\\
+$$&0xe0a0&*** has no name ***\\
+$$&0xe0a1&*** has no name ***\\
+$$&0xe0a2&*** has no name ***\\
+$$&0xe0a4&*** has no name ***\\
+$$&0xe0a5&*** has no name ***\\
+$$&0xe0a6&*** has no name ***\\
+$$&0xe0a7&*** has no name ***\\
+$$&0xe0a8&*** has no name ***\\
+$$&0xe0a9&*** has no name ***\\
+$$&0xe0aa&*** has no name ***\\
+$$&0xe0ab&*** has no name ***\\
+$$&0xe0ac&*** has no name ***\\
+$$&0xe0ad&*** has no name ***\\
+$$&0xe0ae&*** has no name ***\\
+$$&0xe0af&*** has no name ***\\
+$$&0xe0b0&*** has no name ***\\
+$$&0xe0b1&*** has no name ***\\
+$$&0xe0b2&*** has no name ***\\
+$$&0xe0b3&*** has no name ***\\
+$$&0xe0b4&*** has no name ***\\
+$$&0xe0b5&*** has no name ***\\
+$$&0xe0b6&*** has no name ***\\
+$$&0xe0b7&*** has no name ***\\
+$$&0xe0b8&*** has no name ***\\
+$$&0xe0b9&*** has no name ***\\
+$$&0xe0bb&*** has no name ***\\
+$$&0xe0bc&*** has no name ***\\
+$$&0xe0bd&*** has no name ***\\
+$$&0xe0be&*** has no name ***\\
+$$&0xe0bf&*** has no name ***\\
+$$&0xe0c0&*** has no name ***\\
+$$&0xe0c1&*** has no name ***\\
+$$&0xe0c2&*** has no name ***\\
+$$&0xe0c3&*** has no name ***\\
+$$&0xe0c4&*** has no name ***\\
+$$&0xe0c5&*** has no name ***\\
+$$&0xe0c6&*** has no name ***\\
+$$&0xe0c7&*** has no name ***\\
+$$&0xe0c8&*** has no name ***\\
+$$&0xe0c9&*** has no name ***\\
+$$&0xe0ca&*** has no name ***\\
+$$&0xe0cb&*** has no name ***\\
+$$&0xe0cc&*** has no name ***\\
+$$&0xe0cd&*** has no name ***\\
+$$&0xe0ce&*** has no name ***\\
+$$&0xe0cf&*** has no name ***\\
+$$&0xe0d0&*** has no name ***\\
+$$&0xe0d1&*** has no name ***\\
+$$&0xe0d2&*** has no name ***\\
+$$&0xe0d3&*** has no name ***\\
+$$&0xe0d4&*** has no name ***\\
+$$&0xe0d5&*** has no name ***\\
+$$&0xe0d6&*** has no name ***\\
+$$&0xe0d7&*** has no name ***\\
+$$&0xe0d8&*** has no name ***\\
+$$&0xe0d9&*** has no name ***\\
+$$&0xe0da&*** has no name ***\\
+$$&0xe0db&*** has no name ***\\
+$$&0xe0dc&*** has no name ***\\
+$$&0xe0dd&*** has no name ***\\
+$$&0xe0de&*** has no name ***\\
+$$&0xe0df&*** has no name ***\\
+$$&0xe0e0&*** has no name ***\\
+$$&0xe0e1&*** has no name ***\\
+$$&0xe0e2&*** has no name ***\\
+$$&0xe0e3&*** has no name ***\\
+$$&0xe0e4&*** has no name ***\\
+$$&0xe0e5&*** has no name ***\\
+$$&0xe0e6&*** has no name ***\\
+$$&0xe0e7&*** has no name ***\\
+$$&0xe0e8&*** has no name ***\\
+$$&0xe0e9&*** has no name ***\\
+$$&0xe0ea&*** has no name ***\\
+$$&0xe0eb&*** has no name ***\\
+$$&0xe0ec&*** has no name ***\\
+$$&0xe0ed&*** has no name ***\\
+$$&0xe0ee&*** has no name ***\\
+$$&0xe0ef&*** has no name ***\\
+$$&0xe0f1&*** has no name ***\\
+$$&0xe0f2&*** has no name ***\\
+$$&0xe0f3&*** has no name ***\\
+$$&0xe0f4&*** has no name ***\\
+$$&0xe0f5&*** has no name ***\\
+$$&0xe0f6&*** has no name ***\\
+$$&0xe0f7&*** has no name ***\\
+$$&0xe0f8&*** has no name ***\\
+$$&0xe0f9&*** has no name ***\\
+$$&0xe0fa&*** has no name ***\\
+$$&0xe0fb&*** has no name ***\\
+$$&0xe0fc&*** has no name ***\\
+$$&0xe0fd&*** has no name ***\\
+$$&0xe0fe&*** has no name ***\\
+$$&0xe0ff&*** has no name ***\\
+$$&0xe100&*** has no name ***\\
+$$&0xe101&*** has no name ***\\
+$$&0xe102&*** has no name ***\\
+$$&0xe103&*** has no name ***\\
+$$&0xe104&*** has no name ***\\
+$$&0xe105&*** has no name ***\\
+$$&0xe106&*** has no name ***\\
+$$&0xe107&*** has no name ***\\
+$$&0xe108&*** has no name ***\\
+$$&0xe109&*** has no name ***\\
+$$&0xe10a&*** has no name ***\\
+$$&0xe10c&*** has no name ***\\
+$$&0xe10d&*** has no name ***\\
+$$&0xe110&*** has no name ***\\
+$$&0xe111&*** has no name ***\\
+$$&0xe112&*** has no name ***\\
+$$&0xe113&*** has no name ***\\
+$$&0xe114&*** has no name ***\\
+$$&0xe115&*** has no name ***\\
+$$&0xe116&*** has no name ***\\
+$$&0xe117&*** has no name ***\\
+$$&0xe118&*** has no name ***\\
+$$&0xe119&*** has no name ***\\
+$$&0xe11a&*** has no name ***\\
+$$&0xe11b&*** has no name ***\\
+$$&0xe11c&*** has no name ***\\
+$$&0xe11d&*** has no name ***\\
+$$&0xe11e&*** has no name ***\\
+$$&0xe11f&*** has no name ***\\
+$$&0xe120&*** has no name ***\\
+$$&0xe121&*** has no name ***\\
+$$&0xe122&*** has no name ***\\
+$$&0xe123&*** has no name ***\\
+$$&0xe124&*** has no name ***\\
+$$&0xe125&*** has no name ***\\
+$$&0xe126&*** has no name ***\\
+$$&0xe127&*** has no name ***\\
+$$&0xe128&*** has no name ***\\
+$$&0xe129&*** has no name ***\\
+$$&0xe12a&*** has no name ***\\
+$$&0xe12b&*** has no name ***\\
+$$&0xe12c&*** has no name ***\\
+$$&0xe12d&*** has no name ***\\
+$$&0xe12e&*** has no name ***\\
+$$&0xe12f&*** has no name ***\\
+$$&0xe130&*** has no name ***\\
+$$&0xe131&*** has no name ***\\
+$$&0xe132&*** has no name ***\\
+$$&0xe133&*** has no name ***\\
+$$&0xe13a&*** has no name ***\\
+$$&0xe13f&*** has no name ***\\
+$$&0xe14c&*** has no name ***\\
+$$&0xe14d&*** has no name ***\\
+$$&0xe14e&*** has no name ***\\
+$$&0xe14f&*** has no name ***\\
+$$&0xe150&*** has no name ***\\
+$$&0xe151&*** has no name ***\\
+$$&0xe152&*** has no name ***\\
+$$&0xe153&*** has no name ***\\
+$$&0xe154&*** has no name ***\\
+$$&0xe155&*** has no name ***\\
+$$&0xe156&*** has no name ***\\
+$$&0xe157&*** has no name ***\\
+$$&0xe158&*** has no name ***\\
+$$&0xe159&*** has no name ***\\
+$$&0xe15a&*** has no name ***\\
+$$&0xe15b&*** has no name ***\\
+$$&0xe15c&*** has no name ***\\
+$$&0xe15d&*** has no name ***\\
+$$&0xe15e&*** has no name ***\\
+$$&0xe15f&*** has no name ***\\
+$$&0xe160&*** has no name ***\\
+$$&0xe161&*** has no name ***\\
+$$&0xe162&*** has no name ***\\
+$$&0xe163&*** has no name ***\\
+$$&0xe164&*** has no name ***\\
+$$&0xe165&*** has no name ***\\
+$$&0xe166&*** has no name ***\\
+$$&0xe167&*** has no name ***\\
+$$&0xe168&*** has no name ***\\
+$$&0xe169&*** has no name ***\\
+$$&0xe16a&*** has no name ***\\
+$$&0xe16b&*** has no name ***\\
+$$&0xe16c&*** has no name ***\\
+$$&0xe16d&*** has no name ***\\
+$$&0xe16e&*** has no name ***\\
+$$&0xe16f&*** has no name ***\\
+$$&0xe170&*** has no name ***\\
+$$&0xe171&*** has no name ***\\
+$$&0xe172&*** has no name ***\\
+$$&0xe173&*** has no name ***\\
+$$&0xe174&*** has no name ***\\
+$$&0xe175&*** has no name ***\\
+$$&0xe176&*** has no name ***\\
+$$&0xe177&*** has no name ***\\
+$$&0xe178&*** has no name ***\\
+$$&0xe179&*** has no name ***\\
+$$&0xe17a&*** has no name ***\\
+$$&0xe17b&*** has no name ***\\
+$$&0xe17c&*** has no name ***\\
+$$&0xe17d&*** has no name ***\\
+$$&0xe17e&*** has no name ***\\
+$$&0xe17f&*** has no name ***\\
+$$&0xe180&*** has no name ***\\
+$$&0xe181&*** has no name ***\\
+$$&0xe182&*** has no name ***\\
+$$&0xe183&*** has no name ***\\
+$$&0xe184&*** has no name ***\\
+$$&0xe185&*** has no name ***\\
+$$&0xe186&*** has no name ***\\
+$$&0xe187&*** has no name ***\\
+$$&0xe188&*** has no name ***\\
+$$&0xe189&*** has no name ***\\
+$$&0xe18a&*** has no name ***\\
+$$&0xe18b&*** has no name ***\\
+$$&0xe18c&*** has no name ***\\
+$$&0xe18d&*** has no name ***\\
+$$&0xe18e&*** has no name ***\\
+$$&0xe18f&*** has no name ***\\
+$$&0xe190&*** has no name ***\\
+$$&0xe191&*** has no name ***\\
+$$&0xe192&*** has no name ***\\
+$$&0xe193&*** has no name ***\\
+$$&0xe194&*** has no name ***\\
+$$&0xe195&*** has no name ***\\
+$$&0xe196&*** has no name ***\\
+$$&0xe197&*** has no name ***\\
+$$&0xe198&*** has no name ***\\
+$$&0xe199&*** has no name ***\\
+$$&0xe19a&*** has no name ***\\
+$$&0xe19b&*** has no name ***\\
+$$&0xe19c&*** has no name ***\\
+$$&0xe19d&*** has no name ***\\
+$$&0xe19e&*** has no name ***\\
+$$&0xe19f&*** has no name ***\\
+$$&0xe1a0&*** has no name ***\\
+$$&0xe1a1&*** has no name ***\\
+$$&0xe1a2&*** has no name ***\\
+$$&0xe1a3&*** has no name ***\\
+$$&0xe1a4&*** has no name ***\\
+$$&0xe1a5&*** has no name ***\\
+$$&0xe1a6&*** has no name ***\\
+$$&0xe1a7&*** has no name ***\\
+$$&0xe1a8&*** has no name ***\\
+$$&0xe1a9&*** has no name ***\\
+$$&0xe1aa&*** has no name ***\\
+$$&0xe1ab&*** has no name ***\\
+$$&0xe1ac&*** has no name ***\\
+$$&0xe1ad&*** has no name ***\\
+$$&0xe1ae&*** has no name ***\\
+$$&0xe1af&*** has no name ***\\
+$$&0xe1b0&*** has no name ***\\
+$$&0xe1b1&*** has no name ***\\
+$$&0xe1b2&*** has no name ***\\
+$$&0xe1b3&*** has no name ***\\
+$$&0xe1b4&*** has no name ***\\
+$$&0xe1b5&*** has no name ***\\
+$$&0xe1b6&*** has no name ***\\
+$$&0xe1b7&*** has no name ***\\
+$$&0xe1b8&*** has no name ***\\
+$$&0xe1b9&*** has no name ***\\
+$$&0xe1ba&*** has no name ***\\
+$$&0xe1bb&*** has no name ***\\
+$$&0xe1be&*** has no name ***\\
+$$&0xe1bf&*** has no name ***\\
+$$&0xe1c0&*** has no name ***\\
+$$&0xe1c1&*** has no name ***\\
+$$&0xe1c2&*** has no name ***\\
+$$&0xe1c3&*** has no name ***\\
+$$&0xe1c4&*** has no name ***\\
+$$&0xe1c5&*** has no name ***\\
+$$&0xe1c6&*** has no name ***\\
+$$&0xe1c7&*** has no name ***\\
+$$&0xe1c8&*** has no name ***\\
+$$&0xe1c9&*** has no name ***\\
+$$&0xe1ca&*** has no name ***\\
+$$&0xe1cb&*** has no name ***\\
+$$&0xe1cc&*** has no name ***\\
+$$&0xe1cd&*** has no name ***\\
+$$&0xe1ce&*** has no name ***\\
+$$&0xe1cf&*** has no name ***\\
+$$&0xe1d0&*** has no name ***\\
+$$&0xe1d1&*** has no name ***\\
+$$&0xe1d2&*** has no name ***\\
+$$&0xe1d3&*** has no name ***\\
+$$&0xe1d4&*** has no name ***\\
+$$&0xe1d5&*** has no name ***\\
+$$&0xe1d6&*** has no name ***\\
+$$&0xe1d7&*** has no name ***\\
+$$&0xe1d8&*** has no name ***\\
+$$&0xe1d9&*** has no name ***\\
+$$&0xe1da&*** has no name ***\\
+$$&0xe1db&*** has no name ***\\
+$$&0xe1dc&*** has no name ***\\
+$$&0xe1dd&*** has no name ***\\
+$$&0xe1de&*** has no name ***\\
+$$&0xe1df&*** has no name ***\\
+$$&0xe1e0&*** has no name ***\\
+$$&0xe1e1&*** has no name ***\\
+$$&0xe1e2&*** has no name ***\\
+$$&0xe1e3&*** has no name ***\\
+$$&0xe1e4&*** has no name ***\\
+$$&0xe1e5&*** has no name ***\\
+$$&0xe1e6&*** has no name ***\\
+$$&0xe1e7&*** has no name ***\\
+$$&0xe1e8&*** has no name ***\\
+$$&0xe1e9&*** has no name ***\\
+$$&0xe1ea&*** has no name ***\\
+$$&0xe1eb&*** has no name ***\\
+$$&0xe1ec&*** has no name ***\\
+$$&0xe1ed&*** has no name ***\\
+$$&0xe1ee&*** has no name ***\\
+$$&0xe1ef&*** has no name ***\\
+$$&0xe1f0&*** has no name ***\\
+$$&0xe1f1&*** has no name ***\\
+$$&0xe1f2&*** has no name ***\\
+$$&0xe1f3&*** has no name ***\\
+$$&0xe1f4&*** has no name ***\\
+$$&0xe1f5&*** has no name ***\\
+$$&0xe1f6&*** has no name ***\\
+$$&0xe28c&*** has no name ***\\
+$$&0xe28d&*** has no name ***\\
+$$&0xe28e&*** has no name ***\\
+$$&0xe28f&*** has no name ***\\
+$$&0xe290&*** has no name ***\\
+$$&0xe291&*** has no name ***\\
+$$&0xe292&*** has no name ***\\
+$$&0xe293&*** has no name ***\\
+$$&0xe2fc&*** has no name ***\\
+$$&0xe2fe&*** has no name ***\\
+$$&0xe300&*** has no name ***\\
+$$&0xe302&*** has no name ***\\
+$$&0xe304&*** has no name ***\\
+$$&0xe306&*** has no name ***\\
+$$&0xe308&*** has no name ***\\
+$$&0xe30a&*** has no name ***\\
+$$&0xe30c&*** has no name ***\\
+$$&0xe30e&*** has no name ***\\
+$$&0xe310&*** has no name ***\\
+$$&0xe312&*** has no name ***\\
+$$&0xe314&*** has no name ***\\
+$$&0xe316&*** has no name ***\\
+$$&0xe318&*** has no name ***\\
+$$&0xe31a&*** has no name ***\\
+$$&0xe31c&*** has no name ***\\
+$$&0xe31e&*** has no name ***\\
+$$&0xe320&*** has no name ***\\
+$$&0xe322&*** has no name ***\\
+$$&0xe324&*** has no name ***\\
+$$&0xe326&*** has no name ***\\
+$$&0xe328&*** has no name ***\\
+$$&0xe32a&*** has no name ***\\
+$$&0xe364&*** has no name ***\\
+$$&0xe368&*** has no name ***\\
+$$&0xe36c&*** has no name ***\\
+$$&0xe370&*** has no name ***\\
+$$&0xe3c2&*** has no name ***\\
+$$&0xe3c3&*** has no name ***\\
+$$&0xe3c4&*** has no name ***\\
+$$&0xe3c7&*** has no name ***\\
+$$&0xe3c8&*** has no name ***\\
+$�$&0xfffd&REPLACEMENT CHARACTER\\
+\mystixmathfont{^^^^^^01d4b6}&0x1d4b6&MATHEMATICAL SCRIPT SMALL A\\
+\mystixmathfont{^^^^^^01d4b7}&0x1d4b7&MATHEMATICAL SCRIPT SMALL B\\
+\mystixmathfont{^^^^^^01d4b8}&0x1d4b8&MATHEMATICAL SCRIPT SMALL C\\
+\mystixmathfont{^^^^^^01d4b9}&0x1d4b9&MATHEMATICAL SCRIPT SMALL D\\
+\mystixmathfont{^^^^^^01d4bb}&0x1d4bb&MATHEMATICAL SCRIPT SMALL F\\
+\mystixmathfont{^^^^^^01d4bd}&0x1d4bd&MATHEMATICAL SCRIPT SMALL H\\
+\mystixmathfont{^^^^^^01d4be}&0x1d4be&MATHEMATICAL SCRIPT SMALL I\\
+\mystixmathfont{^^^^^^01d4bf}&0x1d4bf&MATHEMATICAL SCRIPT SMALL J\\
+\mystixmathfont{^^^^^^01d4c0}&0x1d4c0&MATHEMATICAL SCRIPT SMALL K\\
+\mystixmathfont{^^^^^^01d4c1}&0x1d4c1&MATHEMATICAL SCRIPT SMALL L\\
+\mystixmathfont{^^^^^^01d4c2}&0x1d4c2&MATHEMATICAL SCRIPT SMALL M\\
+\mystixmathfont{^^^^^^01d4c3}&0x1d4c3&MATHEMATICAL SCRIPT SMALL N\\
+\mystixmathfont{^^^^^^01d4c5}&0x1d4c5&MATHEMATICAL SCRIPT SMALL P\\
+\mystixmathfont{^^^^^^01d4c6}&0x1d4c6&MATHEMATICAL SCRIPT SMALL Q\\
+\mystixmathfont{^^^^^^01d4c7}&0x1d4c7&MATHEMATICAL SCRIPT SMALL R\\
+\mystixmathfont{^^^^^^01d4c8}&0x1d4c8&MATHEMATICAL SCRIPT SMALL S\\
+\mystixmathfont{^^^^^^01d4c9}&0x1d4c9&MATHEMATICAL SCRIPT SMALL T\\
+\mystixmathfont{^^^^^^01d4ca}&0x1d4ca&MATHEMATICAL SCRIPT SMALL U\\
+\mystixmathfont{^^^^^^01d4cb}&0x1d4cb&MATHEMATICAL SCRIPT SMALL V\\
+\mystixmathfont{^^^^^^01d4cc}&0x1d4cc&MATHEMATICAL SCRIPT SMALL W\\
+\mystixmathfont{^^^^^^01d4cd}&0x1d4cd&MATHEMATICAL SCRIPT SMALL X\\
+\mystixmathfont{^^^^^^01d4ce}&0x1d4ce&MATHEMATICAL SCRIPT SMALL Y\\
+\mystixmathfont{^^^^^^01d4cf}&0x1d4cf&MATHEMATICAL SCRIPT SMALL Z\\
+\mystixmathfont{^^^^^^01d4ea}&0x1d4ea&MATHEMATICAL BOLD SCRIPT SMALL A\\
+\mystixmathfont{^^^^^^01d4eb}&0x1d4eb&MATHEMATICAL BOLD SCRIPT SMALL B\\
+\mystixmathfont{^^^^^^01d4ec}&0x1d4ec&MATHEMATICAL BOLD SCRIPT SMALL C\\
+\mystixmathfont{^^^^^^01d4ed}&0x1d4ed&MATHEMATICAL BOLD SCRIPT SMALL D\\
+\mystixmathfont{^^^^^^01d4ee}&0x1d4ee&MATHEMATICAL BOLD SCRIPT SMALL E\\
+\mystixmathfont{^^^^^^01d4ef}&0x1d4ef&MATHEMATICAL BOLD SCRIPT SMALL F\\
+\mystixmathfont{^^^^^^01d4f0}&0x1d4f0&MATHEMATICAL BOLD SCRIPT SMALL G\\
+\mystixmathfont{^^^^^^01d4f1}&0x1d4f1&MATHEMATICAL BOLD SCRIPT SMALL H\\
+\mystixmathfont{^^^^^^01d4f2}&0x1d4f2&MATHEMATICAL BOLD SCRIPT SMALL I\\
+\mystixmathfont{^^^^^^01d4f3}&0x1d4f3&MATHEMATICAL BOLD SCRIPT SMALL J\\
+\mystixmathfont{^^^^^^01d4f4}&0x1d4f4&MATHEMATICAL BOLD SCRIPT SMALL K\\
+\mystixmathfont{^^^^^^01d4f5}&0x1d4f5&MATHEMATICAL BOLD SCRIPT SMALL L\\
+\mystixmathfont{^^^^^^01d4f6}&0x1d4f6&MATHEMATICAL BOLD SCRIPT SMALL M\\
+\mystixmathfont{^^^^^^01d4f7}&0x1d4f7&MATHEMATICAL BOLD SCRIPT SMALL N\\
+\mystixmathfont{^^^^^^01d4f8}&0x1d4f8&MATHEMATICAL BOLD SCRIPT SMALL O\\
+\mystixmathfont{^^^^^^01d4f9}&0x1d4f9&MATHEMATICAL BOLD SCRIPT SMALL P\\
+\mystixmathfont{^^^^^^01d4fa}&0x1d4fa&MATHEMATICAL BOLD SCRIPT SMALL Q\\
+\mystixmathfont{^^^^^^01d4fb}&0x1d4fb&MATHEMATICAL BOLD SCRIPT SMALL R\\
+\mystixmathfont{^^^^^^01d4fc}&0x1d4fc&MATHEMATICAL BOLD SCRIPT SMALL S\\
+\mystixmathfont{^^^^^^01d4fd}&0x1d4fd&MATHEMATICAL BOLD SCRIPT SMALL T\\
+\mystixmathfont{^^^^^^01d4fe}&0x1d4fe&MATHEMATICAL BOLD SCRIPT SMALL U\\
+\mystixmathfont{^^^^^^01d4ff}&0x1d4ff&MATHEMATICAL BOLD SCRIPT SMALL V\\
+\mystixmathfont{^^^^^^01d500}&0x1d500&MATHEMATICAL BOLD SCRIPT SMALL W\\
+\mystixmathfont{^^^^^^01d501}&0x1d501&MATHEMATICAL BOLD SCRIPT SMALL X\\
+\mystixmathfont{^^^^^^01d502}&0x1d502&MATHEMATICAL BOLD SCRIPT SMALL Y\\
+\mystixmathfont{^^^^^^01d503}&0x1d503&MATHEMATICAL BOLD SCRIPT SMALL Z\\
+\mystixmathfont{^^^^^^01d7ca}&0x1d7ca&MATHEMATICAL BOLD CAPITAL DIGAMMA\\
+\mystixmathfont{^^^^^^01d7cb}&0x1d7cb&MATHEMATICAL BOLD SMALL DIGAMMA\\
+\mystixmathfont{^^^^^^01eef0}&0x1eef0&ARABIC MATHEMATICAL OPERATOR MEEM WITH HAH WITH TATWEEL\\
+\mystixmathfont{^^^^^^01eef1}&0x1eef1&ARABIC MATHEMATICAL OPERATOR HAH WITH DAL\\
+\end{longtable}
+
+\end{document}

@@ -1,0 +1,484 @@
+\documentclass[12pt, twoside]{article}
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+
+%\RequirePackage{silence}
+%\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
+%\WarningFilter{latexfont}{Font shape}
+
+\newif\ifinswedish
+\inswedishfalse
+
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+\RequirePackage{etoolbox}
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+
+% include a variety of packages that are useful
+\input{lib/includes}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+
+\ifinswedish
+    \usepackage[english, main=swedish]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*]{babel}
+\fi
+    
+% Set up to use biblatex
+\newif\ifbiblatex
+\biblatextrue
+
+\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\section*{#1}%   skip \centering 
+}
+  
+    \addbibresource{references.bib}    
+\input{kth/kthcolors}
+
+
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+
+\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+%% In overleaf, if this file is in a folder and not the root
+%% using \makeglossaries will not work, as the Overleaf latexmk
+%% will not run the program to take the output.acn file and make the output.acr file
+%\makeglossaries
+% However, you can get TeX to do the work with the following:
+\makenoidxglossaries
+% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
+%% Potentially, one could set up a latexmkrc file in the folder
+
+\input{lib/acronyms}                %load the acronyms file
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+ 
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \LuaLaTeX logo
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+
+    \setmainfont{TeX Gyre Termes}
+    \setsansfont{TeX Gyre Heros}   %% Helvetica like font
+    \setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+    
+ %  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+ \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  %\newfontfamily\mystixtextfont{STIX Two Text}
+  
+    % To access the Stylistic Set 1 <ss01> such as ℋ
+    \newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+
+\newfontfamily\pageNumberFont{TeX Gyre Heros} %% set the font to use for page numbering
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSans-Regular,
+    BoldFont = NotoSans-Bold,
+    ItalicFont = NotoSans-Italic,
+    BoldItalicFont = NotoSans-BoldItalic
+    ]{NotoSansCustomA}
+    
+\begin{comment}
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+    ]{Noto Serif}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,
+    ]{DejaVu Sans}
+\end{comment}  
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\pageNumberFont\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\pageNumberFont\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\pageNumberFont\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{%
+\markboth{#1}{}}
+
+
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+
+\lstdefinestyle{latexExampleForAuthors}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    extendedchars=true,
+    inputencoding=utf8,
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea,
+      nationalsubjectcategories, todo, ifbiblatex, subsection}
+}
+
+\lstdefinestyle{latexExample}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    tabsize=2,
+    columns=flexible,
+}
+
+%
+% The commands below are to configure JSON listings
+% 
+% format for JSON listings
+\colorlet{punct}{red!60!black}
+\definecolor{delim}{RGB}{20,105,176}
+\definecolor{numb}{RGB}{106, 109, 32}
+\definecolor{string}{RGB}{0, 0, 0}
+
+\lstdefinelanguage{json}{
+    numbers=none,
+    numberstyle=\small,
+    frame=none,
+    rulecolor=\color{black},
+    showspaces=false,
+    showtabs=false,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+    breakatwhitespace=true,
+    basicstyle=\ttfamily\small,
+    extendedchars=false,
+    upquote=true,
+    morestring=[b]",
+    stringstyle=\color{string},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1}
+      {’}{{\char13}}1,
+}
+
+\lstdefinelanguage{XML}
+{
+  basicstyle=\ttfamily\color{blue}\bfseries\small,
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{blue},
+  keywordstyle=\color{cyan},
+  breaklines=true,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+  breakatwhitespace=true,
+  morekeywords={xmlns,version,type}% list your attributes here
+}
+\lstset{style=latexExample}
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{README and notes about the template for supervisors}
+
+\author{Gerald Q. Maguire Jr.}
+\date{July 2025}
+
+\begin{document}
+\glsresetall[]
+\maketitle
+\fancypagestyle{empty}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+
+This document describes the thesis template that I have developed for use at \gls{KTH} and provides some background about why it is the way that it is. This document provides some information for supervisors (and possibly for administrators) about the template and especially how it can be used with some programs to help make the thesis process easier for students, faculty, and administrators.
+
+\section{Introduction}
+\label{sec:IntroForSupervisors}
+
+Each year, there are hundreds of third-cycle theses written by students at KTH Royal Institute of Technology. These are one of the core elements of graduate education, and producing high-quality theses is of interest to the faculty, students, administration, \foreignlanguage{swedish}{\gls{UKÄ}}, and the public. The reasons for the work described in this document are \first I have been a supervisor for a number of third-cycle students and I want to help students by providing them a template to start with (avoiding the ``Blank paper'' barrier) and to help facilitate the thesis process, \Second the previous \LaTeX~template had been primarily developed to support first and second-cycle theses, and \third the \foreignlanguage{swedish}{\gls{GVS}} Communications unit introduced a new DOCX template.
+
+Since $\approx$2010, all KTH theses should have English and Swedish abstracts. Ideally, the thesis would also include keywords and titles in both English and Swedish. Moreover, this information is useful not only in the thesis itself but also in:
+\begin{enumerate}
+    \item The announcements and calendar events of thesis presentations or defenses. Moreover, thesis presentations and defenses are supposed to be public, so it would be useful and foster their visibility if it were easy to make such announcements (in both English and Swedish).
+    \item Both the metadata and the thesis itself thesis need to be entered into \foreignlanguage{swedish}{\gls{DiVA}}\footnote{There is a separate issue regarding whether the full-text is publicly available or not, but this is outside the scope of this document.}.
+    \item Both English and Swedish titles will be reported along with the decision of the grading committee in \foreignlanguage{swedish}{\gls{LADOK}}.
+\end{enumerate}
+
+Therefore, in my (former) roles as a first and second-cycle examiner, third-cycle supervisor, a member of the “\foreignlanguage{swedish}{språkkommittén (referensgruppen för språkfrågor})”\footnote{A faculty representative 2015-03-17 until 2022-03-31.}, and to foster the production of theses in both English and Swedish, I have written a DOCX and \LaTeX~templates for 1\textsuperscript{st} and 2\textsuperscript{nd} cycle degree projects (as well as this \LaTeX~template for third cycle theses). Additionally, I have written some software to: \first make it easier to announce presentations or defenses to make it easier for people to know about them so that they can attend, \Second make it easy to make a draft version of the covers, title page, and book information page\footnote{While US-AB will make the actual covers, title page, and book information page, it is useful for the author and supervisors to have a draft version of these pages to ensure that the material is correct before the thesis is printed.}, and \third facilitate entering the metadata and thesis into DiVA. There is also an experimental effort to insert the English and Swedish titles into LADOK\iflabelexists{sec:JSONtoLADOK}{(see \Cref{sec:JSONtoLADOK})}.
+
+The focus of this document will be on the \LaTeX\  template for this third-cycle \LaTeX{}~template. 
+Most readers will only be interested in the high-level overview given in \Cref{sec:AutomatingLaterSteps,sec:accuracyAndEconomics,sec:makeItSimpleFromTheStart,sec:AutomatingLaterSteps}.
+
+
+\section{Accuracy and Economics}
+\label{sec:accuracyAndEconomics}
+
+An earlier 1\textsuperscript{st} cycle thesis looked at the automation of entering a thesis and its metadata into DiVA and found that a large fraction of existing entries with manually entered metadata in DiVA had errors in them and also estimated that the total number of full-time equivalent (FTE) hours spent entering this data was several FTEs\cite{BesharatPour_and_Li_2019}. Note that the change to having only administrative staff enter the metadata has \textbf{not} eliminated the problem of errors in data entry.
+\begin{description}[labelwidth =\widthof{\textbf{Hypothesis}}, leftmargin = !]
+\item[Hypothesis] Incorporating the relevant data into the thesis document will facilitate both announcements and DiVA data entry.
+
+\item[Approach] Make this data readily available via the template and collect \& output it in a 
+“For DIVA” set of information at the end of the Portable Document Format (PDF) document and as a \fname{fordiva.json} file attached to the PDF. Additionally, try to minimize the need to manually enter information by taking information from a Canvas course room (if there is a relevant course room).
+\end{description}
+
+Given the hypothesis stated above, the overall flow is shown in \Cref{fig:LogicalOverviewOfWhatIsDone}. 
+\tikzset{
+    processBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, font=\sffamily, draw=black, fill=red!20},
+    destinationBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=green!10},
+    arrow/.style={thick,->,>=stealth}
+}
+
+\begin{figure}[!ht]
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}
+[align=left,node distance=2cm]
+
+
+\node (latexFile) [tape,tape bend top=none,draw,font=\sffamily] {\LaTeX file};
+\node (PDFfile) [tape,tape bend top=none,draw,font=\sffamily, above of=latexFile] {PDF file};
+\node (DOCXFile) [tape,tape bend top=none,draw,font=\sffamily, below of=latexFile] {DOCX file};
+
+\node (extractor) [processBox, right=1cm of latexFile] {Extractor};
+\node (jsonFile) [tape,tape bend top=none,draw,font=\sffamily, right=0.5cm of extractor] {JSON file};
+\node (start) [processBox, right=0.5cm of jsonFile] {JSON\_to\_calendar};
+
+\node (jsontoMODS) [processBox, below of=start] {JSON\_to\_MODS};
+\node (modsFile) [tape,tape bend top=none,draw,font=\sffamily, below of=jsontoMODS] {MODS file};
+\node (diva) [destinationBox, right=1cm of modsFile] {Import into DiVA};
+
+\node (calendarEvent) [destinationBox, right=1cm of start] {Canvas calendar event};
+\node (announcement) [destinationBox,  above of =calendarEvent] {Canvas announcement};
+\node (cortinaCalendarEvent) [destinationBox,  right=0.5cm of start, below of=calendarEvent] {KTH Cortina calendar event};
+\draw [arrow] (latexFile) --  (extractor.west);
+\draw [arrow] (PDFfile) --  (extractor.west);
+\draw [arrow] (DOCXFile) --  (extractor.west);
+\draw [arrow] (extractor) --  (jsonFile.west);
+\draw [arrow] (jsonFile) --  (start.west);
+\draw [arrow] (start.east) --  (announcement.west);
+\draw [arrow] (start.east) -- (calendarEvent);
+\draw [arrow] (start.east) -- (cortinaCalendarEvent.west);
+\draw [arrow] (jsonFile) --  (jsontoMODS.west);
+\draw [arrow] (jsontoMODS) --  (modsFile);
+\draw [arrow] (modsFile) --  (diva);
+\end{tikzpicture}
+}
+\caption{From PDF file, \LaTeX\;project, or DOCX file generate announcement, calendar entries, and a MODS file for import into DiVA}
+  \label{fig:LogicalOverviewOfWhatIsDone}
+\end{figure}
+\FloatBarrier
+
+\section{Make it simple from the start}
+\label{sec:makeItSimpleFromTheStart}
+
+\Needspace*{3\baselineskip}
+The key to the process shown in \Cref{fig:LogicalOverviewOfWhatIsDone} is collecting all of the necessary data in the thesis and organizing all of the data so that it is easy to extract (hence the limitations inherent to my templates). It is this information and its organization that makes the magic ``Extractor'' possible.
+
+For the purposes of this third-cycle \LaTeX\  template, the extractor is simple, as the information is attached as a fordiva.json file! Therefore, it only needs to be transformed to be used by all the downstream programs.
+
+This template supports only two types of degrees: \texttt{\textbackslash degreeName\{Doctorate\}} and \texttt{\textbackslash degreeName\{Licentiate\}} - that can be modified with\linebreak[4] \texttt{\textbackslash degreeModifier\{Philosophy\}} to produce the Philosophy variants of these degree names for use in the defense or presentation description on the title page.
+
+
+\section{Automating later steps}
+\label{sec:AutomatingLaterSteps}
+There are many different steps in the third-cycle degree process that can be facilitated by using the information from the student's thesis. An example of one of these is making an announcement for the student's oral presentation (described in \Cref{sec:makingAnAnnouncement}). Another example is facilitating entering the metadata about the thesis into DiVA (see \Cref{sec:facilitatingDiVAentry}). Ideally, it could also be used to facilitate the making of the cover, title page, and book information pages by US-AB, see \Cref{sec:makingACover}.
+
+\subsection{Making an announcement}
+\label{sec:makingAnAnnouncement}
+When the defense or presentation date, time, place, \ldots have been decided for the student's oral presentation or defense, then assuming that a student has submitted their thesis with the information in the “For DIVA” pages and that this information includes the information about the opponent(s) and presentation (\eg date, time, place, zoom link), the steps to make an announcement are:
+\begin{enumerate}
+    \item Extract the \fname{fordiva.json} file - transform it if necessary (\eg expanding acronyms) and
+    
+    \item Make the announcement using the JSON information.
+\end{enumerate}
+
+\begin{lstlisting}[language={bash}, caption={JSON\_to\_calendar.py for a transformed version of the fordiva.json file called oscar.json}, label=lst:jsonToCalenarforOscar1] 
+./JSON_to_calendar.py -c 11 --json oscar.json
+\end{lstlisting}
+The command line shown in \Cref{lst:jsonToCalenarforOscar1} will publish the announcement in \first Canvas course 11, \Second in the Canvas course’s calendar, and \third (eventually) in the KTH Calendar. To publish a KTH calendar event, the software supports the development version of the KTH Cortina API. However, this API is (to my knowledge) \textbf{not} yet in production and requires a KTH Cortina Access Key.
+
+\warningExpl{Note that the program should be revised to just publish to the KTH Calendar - for third-cycle theses}
+
+\subsection{Making a cover and applying it}
+\label{sec:makingACover}
+For third-cycle theses, US-AB will make the cover. However, for the convenience of the student and their supervisors, the cover is automatically made and updated as the student writes their thesis. The only items that may be missing from the real cover are the TRITA number and ISBN. Once these are added to the project, the template will output them.
+
+Within EECS, the Office of Student Affairs assigns the TRITA number when the thesis has been approved for printing and the student has received an ISBN. I am unsure of the process in other schools.
+
+\subsection{Make a MODS file to facilitate entering a thesis into DiVA}
+\label{sec:facilitatingDiVAentry}
+Assuming that a student has written a thesis with the information in the “For DIVA pages” that includes the information needed for the DIVA entry. The first step is to extract the \fname{fordiva.json} file. This file is then used to make a MODS file via the command shown in \Cref{lst:jsonToMODSforOscar}. Again, we assume the file \fname{oscar.json} is the transformed \fname{fordiva.json} file.
+\Needspace*{4\baselineskip}
+\begin{lstlisting}[language={bash}, caption={JSON\_to\_MODS.py for Oscar}, label=lst:jsonToMODSforOscar] 
+./JSON\_to\_MODS.py   --json oscar.json
+\end{lstlisting}
+
+\generalExpl{Note that in Spring 2026, KTH will move to the new Cora-based DIVA; hence, at that time it should be possible to use the Cora API to enter the metadata and thesis into DiVA.}
+\warningExpl{This a new program will need to be developed to do this.}
+
+
+\section{Can someone else use these programs?}
+The source code is at \url{https://github.com/gqmaguirejr/E-learning}. Get the programs from the github, then create a \fname{config.json} file to provide your Canvas access token and the URL of the Canvas instance you want to use, for details see \url{https://canvas.kth.se/courses/11/pages/making-a-config-dot-json-file-to-make-life-simpler}. The Canvas access token is only needed to get information from a Canvas course room. 
+
+To make an entry in the KTH Calendar requires a KTH Cortina access key (which you have to get from the IT unit). Making the MODS file does not require any specific permissions, as the program is run locally and the resulting MODS file is uploaded via the DiVA web interface.
+
+\section{\LaTeX{}~template in Overleaf}
+A \LaTeX~template in Overleaf is at \url{https://www.overleaf.com/read/wxtdfxmdfzxd#1501dcc}.
+
+Basic details about using the template are in  
+the \fname{README\_notes/README\_notes.tex} file.
+
+\section{Put information into \LaTeX~template to generate a draft or final thesis}
+\label{sec:putInformationIntoLatexTemplate}
+
+As noted earlier, the idea is to capture in the thesis itself all of the information needed for the title page, the cover pages, the announcement of the oral presentation, and for entering the metadata and final thesis in DiVA.
+
+For additional documentation about the template, please see the file \fname{README\_notes\_reduced.tex} and the other README files (based on your interests).
+
+Information that should be known at the start of the degree project is placed into a file named \fname{custom\_configuration.tex} – to make it easier to pre-configure a project for a student (as is described in the \fname{README\_3rd\_cycle\_author.tex} file).
+
+In the  \fname{custom\_configuration.tex} file, information about the author(s) of the thesis is entered via macros described in the \fname{README\_3rd\_cycle\_author.tex} file. A brief description of some of this metadata and why this metadata is included is given below:
+\begin{itemize}
+    \item One might question why have an e-mail address (when, under the current policy, the student will lose their e-mail address upon graduation)? One of the main reasons is so that the library (\ie \gls{KTHB}) can contact the student if needed.
+    
+    \item One might also wonder, why include the student’s \texttt{kthid} (\ie their internal to KTH ID). The main reason is that this identifier \textit{uniquely identifies} this author within KTH, so that all of their publications can be found in a DiVA search. Note that a number of KTH students have written or will go on to write papers related to their thesis, and a number of these publications are registered in DiVA\footnote{For a compilation thesis, all of the publications that have been published are supposed to be entered into DiVA before the thesis itself is entered.}. Without a unique identifier, it would not be possible to connect these different documents.
+    
+    \item The \texttt{authorsSchool} field should be the school where the student is employed, or if the student is employed outside of KTH, then it should be the school of their main supervisor.
+    
+    \item There is \texttt{programcode} – this is used to generate the degree information just above the other data on the title page and is also used to compute the “lead” for the calendar entry.
+
+    \item The template supports ORCID IDs for students, which is a persistent ID that is very useful when publishing, as this identifier enables publications to be coupled to an author \textit{despite} changes in name, affiliation, etc.
+
+    \item Information about the student's supervisors is also entered via macros, similar to those for the student. Currently, only the name of the opponent(s) is collected.
+
+    \item There are macros to collect the title and optionally a subtitle (at the start of the thesis draft, a working title should be known.
+
+    \item The alternative title and optional subtitle are also in this file, even though they might only be decided upon much later in the process. The main reasons for keeping them with the title (and possible subtitle) are coherence and consistency, as both are likely to be updated at the same time and they should in the end be consistent. 
+    
+    \item Finally, the \texttt{degreeName} and \texttt{subjectArea}, provide information that is used when generating the KTH cover and title page.
+\end{itemize}
+
+\warningExpl{In the current version of DiVA, it is not possible to get the information about the publications that have been included (although the web interface will show links to them). This is because the information shown comes from the individual publications that each have a field that indicates which thesis they were included in.}
+
+In contrast, information that is known later in the process is placed prior to \texttt{\textbackslash begin\{document\}} in the \fname{examplethesis.tex} file. This information includes keywords, presentation-related information, opponent(s), \etc.
+
+ 
+\ifinswedish
+\printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
+och förkortningar}]
+\else
+%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+\printnoidxglossaries
+\fi
+\clearpage
+
+% --- print the bibliography ---
+% Print the bibliography (and make it appear in the table of contents)
+
+% Specify the title of the references page
+% This will work for both BibLaTeX and BibTeX.
+% It works for BibTeX because the thesis format is basically that of a Report.
+\renewcommand{\bibname}{References}
+
+\ifbiblatex
+    %\typeout{Biblatex current language is \currentlang}
+
+    \printbibliography[heading=bibintoc, title={References}]
+\else
+   
+    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
+    \addcontentsline{toc}{chapter}{References}
+    \bibliography{references}
+\fi
+
+\end{document}

@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{luacode}
+
+\begin{luacode}
+function get_iso_time_with_ns()
+    -- 1. Request nanosecond precision from the system's date command.
+    local command = "date --iso-8601=ns"
+    
+    local handle = io.popen(command)
+    if not handle then return "Error: Could not execute date command." end
+    
+    local result = handle:read("*a")
+    handle:close()
+    
+    -- 2. Trim any trailing newlines from the result and return it.
+    return result:gsub("[\\n\\r]$", "")
+end
+
+function log_iso_time()
+    local iso_time = get_iso_time_with_ns()
+    tex.sprint("\\wlog{ISO Time (ns): " .. iso_time .. "}")
+end
+\end{luacode}
+
+\newcommand{\LogTime}{\directlua{log_iso_time()}}
+
+\begin{document}
+
+Logging the current time with nanosecond precision...
+
+\LogTime
+
+Check the log file for the correctly formatted ISO 8601 time.
+
+\end{document}

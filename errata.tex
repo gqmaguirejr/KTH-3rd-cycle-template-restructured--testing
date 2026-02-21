@@ -1,0 +1,776 @@
+%% A first attempt at a template for an Errata document
+%% G. Q. Maguire Jr. - initially written 2025-12-28
+%
+%% INSTRUCTIONS FOR USE:
+%% 1. Update custom_configuration.tex with your thesis information
+%% 2. Review all sections and delete those that do not apply to your thesis
+%% 3. Replace placeholder text (XXX, YYY, etc.) with your actual information
+%% 4. Before final printing, uncomment the 'final' option in \documentclass
+%%    to remove all colored explanation boxes
+%% 5. Do not forget to check the checklist at the end, and do not include the checklist in what you print or in DiVA! (enable the 'final' document class option)
+%
+% --- Configure the documentclass ---
+%% The template is designed to handle a thesis in English or Swedish
+%%
+\documentclass[
+English,                 % the language of the body of the document: English or Swedish
+biblatex,             % the bibliographic processor to use: biblatex or bibtex
+%nomenclature,           % add the option nomenclature
+%digitaloutput,          % optimize for digital output (this changes the color palette)
+%final,                   % turn off all of the todo notes
+]{kththesis}
+
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+\RequirePackage{comment}
+
+\RequirePackage{expl3}
+\RequirePackage{etoolbox}
+\RequirePackage[default-range=1-2]{lipsum}
+\PassOptionsToPackage{lang-warn=false}{datatool-base}
+
+\newif\ifinswedish
+\inswedishfalse
+
+\ifluatex
+% The following is to ensure that the PDF uses a recent version rather than the typical PDF 1-5
+%  This same version of PDF should be set as an option for hyperef
+
+\ExplSyntaxOn
+%pdf_version_gset:n{2.0}
+%\pdf_version_gset:n{1.5}
+
+%% Alternatively, if you have a LaTeX newer than June 2022, you can use the following. However, then you have to remove the pdfversion from hyperef. It also breaks hyperxmp. So perhaps it is too early to try using it!
+%\DocumentMetadata
+%{
+%% testphase = phase-I, % tagging without paragraph tagging
+% testphase = phase-II % tagging with paragraph tagging and other new stuff.
+%pdfversion = 2.0 % pdfversion must be set here.
+%}
+
+% Optionally, you can set the uncompress flag to make it easier to examine the PDF
+%\pdf_uncompress: % to check the pdf
+\ExplSyntaxOff
+\else
+\ExplSyntaxOn
+%\pdf_version_gset:n{2.0}
+\pdf_version_gset:n{1.6}
+\ExplSyntaxOff
+\fi
+
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+% include a variety of packages that are useful
+\input{lib/includes}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+
+\ifinswedish
+    \usepackage[main=swedish]{babel}
+\else
+    \usepackage[main=english, provide+=*]{babel}
+\fi
+
+\input{kth/kthcolors}
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+
+\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+
+\makeglossaries
+
+
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+  
+% define a left-aligned table cell that is ragged right
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \LuaLaTeX logo
+
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+% --- Load the warning filters  ---
+% For filtering out warnings that the user is not interested in
+%\input{lib/filter-warnings.tex}
+% ------------------------------------
+
+
+\usepackage[chapter]{minted} % to use minted for code listing, number within chapter
+
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+% Because backref is not compatible with biblatex
+\ifbiblatex
+    \usepackage{hyperref}
+\else
+    \usepackage[
+    backref=page,
+    pagebackref=false,
+
+    bookmarks=true,         % generate bookmarks in PDF files
+    bookmarksopen=false,    % Do not automatically open the bookmarks in the PDF reading program
+    pdfpagemode=UseNone,    % None, UseOutlines, UseThumbs, or FullScreen
+    destlabel,              % better naming of destinations
+    
+    ]{hyperref}
+%% Removed use of backref package as it is incompatible with using attachfile
+\fi
+\hypersetup{
+ plainpages=false,
+                        % PDF related options
+ unicode=true,          % Unicode encoded PDF strings
+ pdfencoding=auto,      % for unicode in 
+}
+\usepackage[all]{hypcap}	%% prevents an issue related to hyperref and caption linking
+
+
+
+\input{lib/includes-after-hyperref}
+
+
+\input{lib/acronyms}                %load the acronyms file
+
+% place holders for languages lacking .lbx files
+\input{lib/placeHolder_lbx_files}
+
+% insert the configuration information with author(s), supervisor(s), ...
+\input{custom_configuration}
+
+% the custom colors and the commands are defined in defines.tex    
+\hypersetup{
+	colorlinks  = true,
+	breaklinks  = true,
+	linkcolor   = \linkscolor,
+	urlcolor    = \urlscolor,
+	citecolor   = \refscolor,
+	anchorcolor = black
+}
+
+\ifnomenclature
+    % The following lines make the page numbers and equations hyperlinks in the Nomenclature list
+    \renewcommand*{\pagedeclaration}[1]{\unskip, \dotfill\hyperlink{page.#1}{page\nobreakspace#1}}
+    %   The following does not work correctly, as the name of the cross-reference is incorrect
+    %\renewcommand*{\eqdeclaration}[1]{, see equation\nobreakspace(\hyperlink{equation.#1}{#1})}
+
+    % You can also change the page heading for the nomenclature
+    \renewcommand{\nomname}{List of Symbols Used}
+
+    % You can even add customization text before the list
+    \renewcommand{\nompreamble}{The following symbols will be later used within the body of the thesis.}
+    \makenomenclature
+\fi % end ifnomenclature
+
+\ifbiblatex
+  % set up the bibliography style
+  %\usepackage[language=english,bibstyle=authoryear,citestyle=authoryear, maxbibnames=99]{biblatex}
+  
+    % Alternatively, you might use another style, such as IEEE and use citestyle=numeric-comp  to put multiple citations in a single pair of square brackets
+    % Note that the following explicitly uses biber as the backend
+    \ifinswedish
+    \usepackage[language=swedish,
+        style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
+        refsection=none,  %
+        refsegment=none,   %
+        backend=biber]{biblatex}
+    \else
+        \usepackage[language=english,
+        style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
+        refsection=none,  %
+        refsegment=none,   %
+        backend=biber]{biblatex}
+    \fi    
+
+
+    % Use the chapter* style for the heading of the bibliography
+    \defbibheading{bibliography}[\bibname]{%
+    \chapter*{#1}%   skip \centering 
+    }
+  
+    \addbibresource{references.bib}
+    %\DeclareLanguageMapping{norsk}{norwegian}
+
+    % print up to 99 of the authors' names in a \fullcite{}
+    % use with divider pages
+    \preto\fullcite{\AtNextCite{\defcounter{maxnames}{99}}}
+\else
+    % The line(s) below are for BibTeX
+    \bibliographystyle{bibstyle/myIEEEtran}
+    %\bibliographystyle{apalike}
+\fi
+
+\begin{document}
+%\selectlanguage{swedish}  %% for a thesis in Swedish
+\selectlanguage{english}    %% for a thesis in English
+
+% Turn off samity checks
+\AtEndDocument{}
+
+\thispagestyle{empty}
+\setcounter{page}{0}
+\pagestyle{empty}
+
+\ifinswedish\selectlanguage{swedish}\fi
+
+\makeatletter
+\begin{huge}
+  \begin{flushleft}
+    \noindent\FigtreeFont\fontseries{sb}\fontsize{26}{28}\selectfont Errata for 
+    \FigtreeFont\fontseries{sb}\fontsize{22}{24}\selectfont
+    \ifx\@thesisSeries\@empty %\relax
+        TRITA xxxx:yyy
+        \else
+        	\@thesisSeries\,\ifx\@thesisSeriesNumber\@empty\relax
+            \else
+            \@thesisSeriesNumber
+             \fi
+    \fi\\
+    \par
+  \end{flushleft}
+\end{huge}
+
+\begin{huge}
+  \begin{flushleft}
+    \noindent\FigtreeFont\fontseries{sb}\fontsize{24}{28}\selectfont \@title \par
+  \end{flushleft}
+\end{huge}
+
+\ifx\@subtitle\@empty\relax
+\else
+\begin{Large}
+  \vspace{20pt}
+  \begin{flushleft}
+    \noindent\FigtreeFont\fontseries{sb}\fontsize{16}{18}\selectfont \@subtitle \par
+  \end{flushleft}
+\end{Large}
+\fi
+
+
+\vspace{20pt}
+\begin{large}
+  \begin{flushleft}
+    \FigtreeFont\fontseries{sb}\fontsize{11.5}{13}\selectfont
+    \expandafter\MakeUppercase\expandafter\@authorsFirstname\space\expandafter\MakeUppercase\expandafter\@authorsLastname \par
+    \ifx\@secondAuthorsLastname\@empty\relax
+    \else\vspace{1ex}\expandafter\MakeUppercase\expandafter\@secondAuthorsFirstname\space\expandafter\MakeUppercase\expandafter\@secondAuthorsLastname \par
+    \fi
+  \end{flushleft}
+\end{large}
+\makeatother
+\vspace{20pt}
+\begin{large}
+\begin{flushleft}
+\FigtreeFont\fontseries{sb}\fontsize{9}{11}\selectfont 
+\today %%%% Note that if you need to specify another date for this document, then enter this data here. The value of \today is the date the document is formatted, and I have assumed you made it available on that date.
+%%%% If you have multiple versions of the document, then you might specify them as:
+%   Version 1.0 (2025-01-07): Initial errata
+%   Version 1.1 (2025-03-15): Added corrections for Figure 3.2
+\end{flushleft}
+\end{large}
+\vspace{32pt}
+% select the language going forward
+\ifinswedish
+\selectlanguage{swedish}
+\else
+\selectlanguage{english}
+\fi
+
+
+% --- Start of the document ---
+\glsresetall  % Any use of an acronym will be spelled out on first use
+
+\chapter*{Errata}
+\label{ch:Errata}
+\setcounter{page}{1}
+% Restore outputting running headings
+\fancyhead[RO]{\sffamily\small\nouppercase Errata\thinspace|\thinspace\thepage}
+\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\nouppercase Errata}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+% Adjust heading height and top margin size
+\setlength{\headheight}{14pt}
+\addtolength{\topmargin}{-2pt}.
+
+\selectlanguage{english}
+\pagestyle{fancy}
+\pagenumbering{arabic}
+
+\engExpl{While I have written text and examples in English, if your thesis is written in Swedish, you should probably write your \textit{errata} document in Swedish.}
+
+This document describes the errors and corrections for the thesis. Formally, a \textit{corrigendum} (or correction) usually refers to an author's error; while an \textit{erratum} usually refers to a production error, caused by the publisher. However, as the student provides a PDF file to US-AB for printing and gives their approval after checking the proof copy, any mistakes and related corrections are the student's responsibility; hence, the document containing all of these corrections will be referred to as an \textit{errata} document.
+
+The student should prepare an \textit{errata} document and present it \textbf{before} the thesis defense begins. Generally, the person chairing the defense will ask the student: ``Do you have any additions or corrections to make?'' This is your cue to indicate that you have a printed \textit{errata} document (generally, you have this document available next to copies of the thesis at the defense) or to orally present your \textit{errata}.
+Typically, for very minor corrections, this might be done orally, but ideally, you should still submit the \textit{errata} document to \gls{DiVA} so that it is available to those who might only access your thesis via \gls{DiVA} (\ie to provide an accurate record of what was defended). Formally, the printed thesis with the changes from your \textit{errata} is what you are defending at the defense.
+
+\generalExpl{The errata can concern the text in the thesis and even include the text in published papers. Each item in the \textit{errata} should identify where the correction should be applied and what the correction is. The identification can include a page number (or page range), section heading, figure/table/equation/$\ldots$, publication identifier, \etc. \textbf{The aim is that the reader should be able to identify exactly where the change should be made.}}
+
+\generalExpl{The corrections can range from spelling errors, missing letters, words, phrases, citations, ISBNs, DOIs, URLs, etc., to errors in the text, equations, tables, figures, listings, corrected citations, \etc. For example, there might have been a change in the name of the volume that a paper appeared in after the thesis was submitted for printing. Corrections to tables, figures, \etc may affect parts of the text, potentially invalidating some of the text. This invalidated text would be reproduced in a struck-out style (using the \LaTeX\ command
+\texttt{\textbackslash sout\{<text>\}}). This text is then followed by the text that should replace the struck-out text. For an example of such a change and corrected text, see page 2 of \url{https://kth.diva-portal.org/smash/get/diva2:1554753/FULLTEXT03.pdf}}
+
+\warningExpl{\textit{Errata} should correct errors, not improve or expand the content of the thesis. Students should not use \textit{errata} to add new research or substantially rewrite sections.
+}
+
+\engExpl{It may also be desirable to add sections to the \textit{errata} document, so that it is easy for the reader to know what part of the thesis the corrections are for; for example, by chapter or publication.}
+
+\generalExpl{Delete any sections of this document that are not relevant to your errata document.}
+
+Alternatively, consider using a table to present your errors and corrections, perhaps with a table format (such as shown in \Cref{tab:errata})
+\begin{table}[!ht]
+  \begin{center}
+    \caption{Errata}
+    \label{tab:errata}
+    \begin{tabular}{l|l|l} % <-- 
+      \textbf{Location} & \textbf{Error} & \textbf{Correction}\\
+      \hline
+      page 1 §1.2 & Figure 3.2 & Figure 3.3\\
+      page 2 §1.3 & [23] & [87]\\
+      page 16, Equation 4.2 & $x^2 + y^2$ & $x^2 + y^3$\\
+      page 32 reference [23] & missing DOI & \url{https://doi.org/10.1145/3676861}\\
+      $\ldots$
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\chapter*{Some examples}
+\generalExpl{Below are some of the common mistakes I have seen in third-cycle theses. They are \textbf{not} exhaustive; hence, you should tailor the text to suit \textit{your} needs.}
+
+\engExpl{Throughout these examples, placeholders are used as follows:}
+\begin{itemize}
+\item XXX, YYY, ZZZ represent placeholder text you should replace
+\item\relax [N] or [XX] represent placeholder numbers
+\item Page numbers like "page xx" should be replaced with actual page numbers
+\end{itemize}
+%% Note that the \relax above is necessary to prevent the \item using the argument in brackets following it to turn off the bullet.
+
+\section*{Page numbering related}
+\generalExpl{If you used a suitable template, you should not experience these problems.}
+\engExpl{You might need to use one of the following:}
+
+The preface pages are missing page numbers; they should have been numbered with lower-case Roman numerals.
+
+The preface pages have been numbered with upper-case Roman numerals; they should have been numbered with lower-case Roman numerals.
+
+The page numbering of the mainmatter should have started with page number "1", but started with page number "X".
+
+
+\section*{Degree and subject related}
+\engExpl{You might need to use one of the following:}
+%%%% Degree related
+The cover stated that the degree was ``Licentiate Thesis in YYY''; however, this was not the correct degree, but should be corrected to: ``Doctoral Thesis in YYY''.
+
+The cover stated that the degree was ``Doctoral Thesis in YYY''; however, this was not the correct degree, but should be corrected to: ``Licentiate Thesis in YYY''.
+
+%%%% Subject related
+The cover stated that the subject was ``Doctoral Thesis in XXX''; however, this is not a valid subject area at KTH. This should be corrected to: ``Doctoral Thesis in YYY''.
+
+%%%% Note that YYY must be one of:
+% Architecture
+% Biotechnology
+% Civil and Architectural Engineering
+% Computer Science
+% Electrical Engineering
+% Energy Technology and Systems
+% Vehicle and Maritime Engineering
+% Physics
+% Geodesy and Geoinformatics
+% Solid Mechanics
+% Industrial Economics and Management
+% Production Engineering
+% Information and Communication Technology
+% Chemical Science and Engineering
+% Art, Technology and Design
+% Mathematics
+% Mediated Communication
+% Planning and Decision Analysis
+% The Built Environment and Society: Management, Economics and Law
+% Engineering Materials Science
+% Engineering Mechanics
+% Theoretical Chemistry and Biology
+
+%%%%% or in Swedish:
+% Arkitektur
+% Bioteknologi
+% Byggvetenskap
+% Datalogi
+% Elektro- och systemteknik
+% Energiteknik och -system
+% Farkostteknik
+% Fysik
+% Geodesi och Geoinformatik
+% Hållfasthetslära
+% Industriell ekonomi och organisation
+% Industriell produktion
+% Informations- och kommunikationsteknik
+% Kemivetenskap
+% Konst, teknik och design
+% Matematik
+% Medierad kommunikation
+% Planering och beslutsanalys
+% Samhällsbyggnad: Management, ekonomi och juridik
+% Teknisk materialvetenskap
+% Teknisk Mekanik
+% Teoretisk kemi och biologi
+
+%%%% Name related
+\section*{Your name}
+\generalExpl{If you have publications authored under different names (or variants of your name), you should have noted this in your thesis.
+However, if you have \textbf{not} noted this in your thesis, you can do so in your \textit{errata}. Moreover, if your name or your professional name has changed since the printing of your thesis, then note this change in your \textit{errata}.}
+
+\engExpl{This led me to write for one student:}
+\begin{quote}
+    Your KTH profile page lists your name as 'XXX YYY ZZZ', but the thesis uses 'XXX YYY'. There is, of course, nothing wrong with this, but it is useful to be consistent in how you write your name if you are going to publish. I notice in Google Scholar that you have done this except for the XXXX paper "ZZZZZZ".
+\end{quote}
+
+\generalExpl{As usual, you want to minimize the surprises for your readers.}
+
+%%%% Abstract and keyword related
+\section*{Abstract and keyword related}
+\engExpl{The abstracts should be in unnumbered sections. If you have numbered them in error, you might note this in your \textit{errata}.}
+
+\generalExpl{Only the English and Swedish abstracts and keywords are required. However, you can add abstracts and keywords in additional languages if you need to (for example, if you are doing a joint degree) or wish to.}
+
+\engExpl{If you have forgotten to add one of the required abstracts and keywords in the thesis, you might need to add one or more of the following:}
+
+%%%%% Abstract related
+\subsection*{Abstract(s)}
+The XXX language abstract is missing. It should have been:
+\begin{blockquote}
+\lipsum
+\end{blockquote}
+
+%%%%% Keywords related
+\subsection*{Keywords(s)}
+% Missing keywords with the abstract in language XXX
+The missing keywords for the XXX abstract are:
+\begin{quote}
+KeywordA, KeywordB, KeywordC
+\end{quote}
+
+%%%%% Acronyms and abbreviations
+\section*{Acronyms and abbreviations related}
+\generalExpl{A common mistake is to not have a list of acronyms and abbreviations, or if you have one, to have missing acronyms or abbreviations.}
+%% Completely missing
+\subsection*{Missing list of acronyms and abbreviations}
+The thesis did not include a list of acronyms and abbreviations, but it should have.
+
+\generalExpl{Or}
+
+%% Partially missing
+\subsection*{Missing some acronyms and abbreviations}
+The thesis included a list of acronyms and abbreviations, but some entries are missing.
+
+The following acronyms and abbreviations should have been defined:
+\gls{GUI},
+\gls{HTML},
+\gls{ICT},
+\gls{IMRAD}, and
+\gls{ISP}.
+
+%% Output an Acronyms and abbreviations page
+\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+
+\clearpage
+
+%%%%% Nomenclature
+\section*{Nomenclature related}
+\generalExpl{In a thesis that uses a lot of nomenclature, a common mistake is not having a nomenclature list, or if you have one, having missing entries.}
+\generalExpl{The third-cycle thesis template contains a complete example of a nomenclature list.}
+
+%% Completely missing
+\subsection*{Missing list of nomenclature}
+The thesis did not include a list of nomenclature, but it should have.
+\engExpl{Perhaps you forgot to enable the nomenclature option. See the example of using nomenclature in \texttt{examplethesis.tex}.}
+
+%% Partially missing
+\subsection*{Missing some nomenclature}
+The thesis included a list of nomenclature, but some entries are missing.
+\engExpl{Add the missing nomenclature entries.}
+\begin{itemize}
+\item $\alpha$ -- significance level
+\item $\beta$ -- regression coefficient
+\item $\sigma$ -- standard deviation
+\end{itemize}
+
+
+
+%%%%% Font problems
+\section*{Font related}
+\generalExpl{When including figures that have been produced by external tools, you might encounter problems with the fonts used within the figure. For example, in one thesis, I noted:}
+\begin{quote}
+   On page 30, in Figure 5.2, the word that looks like 'Sample' is actually the characters '6DPSOH'. There would seem to be a different character set and mapping being used. Similarly, 'Tube source' is '7XEH6RXUFH'. Perhaps this comes from Adobe Illustrator using an odd font encoding. 
+\end{quote}
+
+\generalExpl{Always set the body text in a \textbf{serif} font, while setting the headings in a \textbf{sans serif} font}
+Some theses set the body of the thesis in a sans serif font, while the headings were set in a serif font. This is exactly the opposite of what should be the case, thus making long text passages \textbf{harder} to read.
+\engExpl{Keep your readers in mind.}
+
+\generalExpl{The PDF file may lack a ToUnicode CMAP mapping}
+For example, the Computer Modern Super (cm-super) collection includes Computer Modern Super Sans Serif (SFSS1000) and Computer Modern Super Bold Extended (SFBX1200). In a thesis, the PDF file lacked a ToUnicode
+CMAP mapping the encoding of the 'ﬀ' ligature; hence, a screen reader or a tool copying the text will see the string 'di!usion' rather than 
+'diﬀusion'.
+\engExpl{Some of your readers may use tools (such as screen readers and refreshable braille displays) to access your text. Additionally, some of your readers might not be human.}
+
+
+
+%%%%% Citations related
+\section*{Citations related}
+
+%%%%% Missing citations
+\generalExpl{If you should have cited something, but did not, then add this information in your \textit{errata}. For example, you might say:}
+\begin{quote}
+On page xx, MNIST should have a citation to the source\cite{lecun-mnisthandwrittendigit-2010}:
+\begin{footnotesize}
+\begin{verbatim}
+@article{lecun-mnisthandwrittendigit-2010,
+  author = {LeCun, Yann and Cortes, Corinna},
+  howpublished = {http://yann.lecun.com/exdb/mnist/},
+  title = {{MNIST} handwritten digit database},
+  url = {http://yann.lecun.com/exdb/mnist/},
+  year = 2010
+}
+\end{verbatim}
+\end{footnotesize}
+\end{quote}
+
+\generalExpl{Cite your sources so that your reader can find them. For example, for one thesis, I noted:}
+
+\begin{quote}
+When you talk about datasets (such as MNIST, CIFAR10, and CelebA) - you might want to cite a source for them so your reader can find them. [While lots of people in ML will know them, you might want to broaden your potential reader base.]
+\end{quote}
+
+%%%%% Spelling errors
+\section*{Spelling errors}
+\generalExpl{If you have spelling errors, you should point them out in your \textit{errata}. For example, saying:}
+\begin{quote}
+On page 6, 'perecption' should be 'perception'.
+
+In Table 1 on page 31, 'renumeration' should be 'remuneration'.
+\end{quote}
+
+\generalExpl{You might have consistently made an error, for example, you might say:}
+\begin{quote}
+All instances of 'N2O-pruged' should be 'N\mystixmathfont{₂}O-purged'.
+\end{quote}
+\engExpl{The above example shows both a misspelling and the use of the Unicode character Subscript Two (U+2082).}
+
+%%%%% Formatting errors
+\section*{Formatting errors}
+\generalExpl{You might have simple formatting errors, some might not even be visible to a sighted reader, but can cause problems for people using screen readers or computers reading your thesis. For example, for a thesis I noted:}
+\begin{quote}
+You have set temperatures with a superscript 'o', such as '100oC'. It would be better to use the Unicode '℃' or use '°C'.
+\end{quote}
+
+\generalExpl{You might have more extensive formatting errors. In this case, you should give the complete correct version as well as the information about what page the original is on.}
+
+\subsection*{Unreadable text in Figures/Tables}
+\generalExpl{If the text within embedded figures or tables is set in a font size that renders the printed thesis unreadable, then you should include a corrected version of the figure or table.}
+
+\subsection*{Tables/Figures Outside Margins}
+\generalExpl{If you have content, such as large tables or figures, that extends into the margin areas, then you should include a corrected version of the figure or table.}
+
+\generalExpl{Errors in running headers, do not need to be correct for each instance, but you could say:}
+\begin{quote}
+Although the list of references has a running heading 'CHAPTER REFERENCES', 'References' is not a chapter; hence, the running header should simply 'List of References'.
+\end{quote}
+
+As another example:
+\begin{quote}
+References start on page 45, but the running header of page 46 is "CHAPTER 3. SUMMARY OF RESULTS" and the running header on page 47 is "3.6. PAPER G". The running header should say "References".
+\end{quote}
+
+
+\generalExpl{You might have made systematic formatting errors, such as placing table headings below the tables (despite the fact that table headings are generally placed above the table due to the fact that tables can span multiple pages). You might note this in your \textit{errata}, but you do not need to change or note each of them.}
+
+%%%%% figures/images errors
+\section*{Figures/images errors}
+\subsection*{Missing figure numbers or captions}
+\generalExpl{Identify the figure or image (giving as complete a description as you can, including the page number) and provide the correct figure number and caption.}
+
+\subsection*{Incorrect figure references in text}
+\generalExpl{Identify where the correct cross-reference should be placed and what the cross-reference should be.}
+
+\subsection*{Figures appearing in wrong order or wrong chapter}
+\generalExpl{Identify the figures and describe where they should have been placed.}
+
+\subsection*{Low-resolution images that printed poorly}
+\generalExpl{Provide a new high-resolution version of the relevant image with figure number and caption.}
+\engExpl{Use tikz or other tools to make scalable images, such as scalable vector graphics (SVG) formatted images, will help you avoid this problem.}
+
+%%%%% Version/dating issues
+\section*{Version/dating issues}
+
+\subsection*{If papers were updated after thesis submission (e.g., preprints became published)}
+\generalExpl{Provide the updated references.}
+
+\subsection*{Changes in author affiliations mentioned in papers}
+\generalExpl{Provide the updates in the author affiliations.}
+
+\subsection*{Updated publication venues (conference proceedings → journal)}
+\engExpl{This also covers changes from `submitted for publication' to `accepted for publication'. }
+\generalExpl{Give the updated publication information.}
+
+%%%%% 
+\section*{Mathematical/Technical Errors}
+
+\subsection*{Errors in equations (beyond just formatting)}
+\generalExpl{Identify the equation and provide the corrected equation.}
+
+\subsection*{Incorrect algorithm descriptions}
+\generalExpl{Identify the algorithm description and provide the corrected description.}
+
+\subsection*{Wrong parameter values in experimental sections}
+\generalExpl{Identify where you have given (or forgotten to give) the parameter values and what the correct parameter values should be.}
+
+%%%%% Cross-reference errors
+\section*{Cross-reference errors}
+
+\subsection*{"See Chapter X" pointing to wrong chapter}
+\generalExpl{Identify the incorrect cross-reference and provide the correct cross-reference.}
+
+\subsection*{Table/Figure references showing "??" or wrong numbers}
+\generalExpl{Identify the incorrect cross-reference and provide the correct cross-reference.}
+
+\subsection*{Broken internal hyperlinks}
+\generalExpl{Identify the broken hyperlinks and provide the correct hyperlinks.}
+
+%%%%% Author contribution statements
+\section*{Author contribution statements}
+
+\subsection*{In multi-author papers, errors in describing who did what}
+\generalExpl{Identify the publication and provide an updated and correct statement of the author contributions.}
+
+
+\subsection*{Missing contribution statements}
+\generalExpl{Identify the publication and provide the missing author contribution statements.}
+
+%%%%% Ethical/Legal Issues
+\section*{Ethical/Legal Issues}
+
+\subsection*{Missing ethical approval statements (if required)}
+\generalExpl{If an ethical approval statement(s) is/are required, provide the missing ethical approval statement(s).}
+\engExpl{If you should have had an ethical approval, but did not have one --- you should have clearly stated this in the thesis, and if not stated there, then state this in your \textit{errata}.}
+
+\subsection*{Incomplete conflict of interest disclosures}
+\generalExpl{Provide the missing conflict of interest disclosures.}
+
+\subsection*{Missing data availability statements}
+\generalExpl{State where the data is available and how to access it. If there are restrictions on data availability, state what they are. If the data is only available for a specific period, state that period (for example, you might only have a ten-year period guaranteed by the repository).}
+
+
+%%%%% Reference errors
+\section*{Reference errors}
+\generalExpl{If you have part of a reference that is missing, provide the missing data or the complete reference. For example:}
+\begin{quote}
+Reference 47:
+
+	  [47] Yann LeCun, The MNIST database of handwritten digits, http:
+
+is missing the URL, it should be https://xxxxx
+\end{quote}
+
+\engExpl{The above example actually has more missing information, as the other author's name (Corinna Cortes) is also missing!}
+
+
+\Needspace*{18\baselineskip}
+%%%%% Ordering errors
+\section*{Ordering errors}
+\generalExpl{You might have a part of the preface pages placed out of order. You can simply note this in your \textit{errata}.}
+For example:
+\begin{quote}
+The "List of Abbreviations" appears in the thesis before "Contents"; however, this list should have been placed after the various "List of X" entries and before the main matter.
+\end{quote}
+Or:
+\begin{quote}
+The "Acknowledgments" section appears in the thesis just before the "Bibliography"; however, this should have been placed after the abstracts and before the table of contents.
+\end{quote}
+
+\engExpl{\textbf{Note:} I have placed the "Acknowledgments" in the above way to keep the material that has paragraphs of text together and before the preface pages that have lists with page numbers. This is a matter of consistency, not any standard.}
+
+
+
+%%%%% Content-Related Errors
+\section*{Content-Related Errors}
+\generalExpl{A variety of content-related errors that can occur. In all cases, you need to address them.}
+\subsection*{Inaccuracies in Data/Calculations}
+\generalExpl{Errors in numbers presented within tables or the labeling of figures and illustrations (e.g., incorrect units, mislabeled axes) that do not change the overall conclusion but must be factually correct and noted in the \textit{errata} if they are not.}
+
+\subsection*{Missing Permissions}
+\generalExpl{The necessary permissions for using copyrighted material should have been received before the thesis was printed. Should you detect a failure to include necessary permissions in the printed thesis, you should correct this and include the updated permission information in your \textit{errata}.}
+
+\subsection*{Omitted or Incorrect DOIs/URLs}
+\generalExpl{Missing Digital Object Identifiers (DOIs) or incorrect URLs in the reference list make it difficult for readers to access your sources. You should provide any such missing information in your \textit{errata} document.}
+
+
+% --- print the bibliography ---
+% Print the bibliography (and make it appear in the table of contents)
+
+% Specify the title of the references page
+% This will work for both BibLaTeX and BibTeX.
+% It works for BibTeX because the thesis format is basically that of a Report.
+\renewcommand{\bibname}{References}
+
+\ifbiblatex
+    %\typeout{Biblatex current language is \currentlang}
+    %%% \nocite{*} % to cite everything, even if not cited in the document
+    \printbibliography[heading=bibintoc, title={References}]
+\else
+   
+    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
+    \addcontentsline{toc}{chapter}{References}
+    \bibliography{references}
+\fi
+
+
+%% Condition the checklist on the same flag used by the todonotes
+\makeatletter
+\if@todonotes@isFinal\relax % Nothing to do - the 'final' option has been specified
+\else
+\clearpage
+%%% 2026-01-07, Claude Code suggested a simple checklist for the author before printing and submitting the errata document
+\section*{Checklist before submitting errata}
+\begin{itemize}
+\item[$\char"2610$] Does the first page of this document correctly identify my thesis? (For example: Did you check that the TRITA number is correct?)
+\item[$\char"2610$] Have I checked all page numbers in my references?
+\item[$\char"2610$] Have I verified all \glspl{DOI} and \glspl{URL} work correctly?
+\item[$\char"2610$] Have I spell-checked the entire document?
+\item[$\char"2610$] Are all figures and tables correctly numbered?
+\item[$\char"2610$] Have I checked all cross-references (Section X, Figure Y)?
+\item[$\char"2610$] Have I deleted all sections that do not apply to my thesis?
+\item[$\char"2610$] Have I deleted this checklist (from the version to be printed and to be put into DiVA)?
+\item[$\char"2610$] Have I put the \textit{errata} document into DiVA?
+\end{itemize}
+\fi
+\makeatother
+
+\end{document}

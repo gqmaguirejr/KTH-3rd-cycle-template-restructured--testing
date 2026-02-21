@@ -1,0 +1,425 @@
+%\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%\ProvidesPackage{kth-metadata}
+%    [2025/07/19 v0.1 Provides LaTeX code to go with the kth-metadata.lua code]
+
+% in kth/kth-metadata.sty
+
+% --- CRITICAL: Declare the file handle FIRST ---
+\newwrite\tempfile
+% -------------------------------------------
+
+% Corrected helper commands that call the functions via the module table
+
+\newcommand{\SetValue}[2]{\directlua{KTHMetadata.set_data({"#1"}, \luastring{\expanded{#2}})}}
+\newcommand{\SetNestedValue}[3]{\directlua{KTHMetadata.set_data({"#1", "#2"}, \luastring{\expanded{#3}})}}
+\newcommand{\SetDeepNestedValue}[4]{\directlua{KTHMetadata.set_data({"#1", "#2", "#3"}, \luastring{\expanded{#4}})}}
+
+
+
+
+% Correct the environments as well
+\NewEnviron{ThesisAbstract}[1]{%
+  \immediate\openout\tempfile=abstract.tmp
+  \immediate\write\tempfile{\unexpanded\expandafter{\BODY}}
+  \immediate\closeout\tempfile
+  \directlua{KTHMetadata.add_data_from_file("abstracts", "#1", "abstract.tmp")}%
+  \BODY
+}
+
+\NewEnviron{ThesisKeywords}[1]{%
+  \immediate\openout\tempfile=keywords.tmp
+  \immediate\write\tempfile{\expanded{\BODY}}
+  \immediate\closeout\tempfile
+  \directlua{KTHMetadata.add_data_from_file("keywords", "#1", "keywords.tmp")}%
+  \BODY
+}
+
+% And finally, correct the command that generates the JSON file
+\newcommand{\GenerateFordivaJSON}{\directlua{KTHMetadata.write_json_file()}}
+
+\makeatletter
+\newcommand{\divainfo}{%
+%% Put data into the Lua table
+\ifx\@authorsLastname\@empty%\relax
+     \else
+     \SetNestedValue{Author1}{Last name}{\@authorsLastname}
+     \ifx\@authorsFirstname\@empty%\relax
+     \else
+     \SetNestedValue{Author1}{First name}{\@authorsFirstname}
+     \fi
+     \ifx\@kthid\@empty%\relax
+     \else
+     \SetNestedValue{Author1}{Local User Id}{\@kthid}
+     \fi
+     \ifx\@orcid\@empty%\relax
+     \else
+     \SetNestedValue{Author1}{ORCiD}{\@orcid}
+     \fi
+     \ifx\@email\@empty%\relax
+     \else
+     \SetNestedValue{Author1}{E-mail}{\@email}
+     \fi
+     \ifx\@authorsSchool\@empty%\relax
+     \else
+     \SetDeepNestedValue{Author1}{organisation}{L1}{\@authorsSchool}
+        \ifx\@authorsDepartment\@empty%\relax
+        \else
+        \SetDeepNestedValue{Author1}{organisation}{L2}{\@authorsDepartment}
+        \fi
+    \fi
+\fi
+\ifx\@secondAuthorsLastname\@empty\relax
+\else
+    \SetNestedValue{Author2}{Last name}{\@secondAuthorsLastname}
+    \ifx\@secondAuthorsFirstname\@empty%\relax
+    \else
+        \SetNestedValue{Author2}{First name}{\@secondAuthorsLastname}
+    \fi
+    \ifx\@secondkthid\@empty%\relax
+    \else
+        \SetNestedValue{Author2}{Local User Id}{\@secondkthid}
+    \fi
+    \ifx\@secondorcid\@empty%\relax
+    \else
+        \SetNestedValue{Author2}{ORCiD}{\@secondorcid}
+    \fi
+    \ifx\@secondemail\@empty%\relax
+    \else
+        \SetNestedValue{Author2}{E-mail}{\@secondemail}
+    \fi
+    \ifx\@secondAuthorsSchool\@empty%\relax
+    \else
+        \SetDeepNestedValue{Author2}{organisation}{L1}{\@secondAuthorsSchool}
+        \ifx\@secondAuthorsDepartment\@empty%\relax
+        \else
+            \SetDeepNestedValue{Author2}{organisation}{L2}{\@secondAuthorsDepartment}
+        \fi
+    \fi
+\fi % end of conditional for secondAuthorsLastname
+
+%% Course-related information
+\ifx\@courseCycle\@empty%\relax
+    \else
+    \SetNestedValue{Course Info}{Cycle}{\@courseCycle}
+\fi
+\ifx\@courseCode\@empty%\relax
+    \else
+    \SetNestedValue{Course Info}{Course code}{\@courseCode}
+\fi
+\ifx\@courseCredits\@empty%\relax
+    \else
+    \SetNestedValue{Course Info}{Credits}{\@courseCredits}
+\fi
+
+%% Degree-related information
+\ifx\@degreeName\@empty%\relax
+    \else
+    \SetNestedValue{Degree1}{Degree}{\@degreeName}
+\fi
+\ifx\@degreeModifier\@empty%\relax
+    \else
+    \SetNestedValue{Degree1}{Degree modifier}{\@degreeModifier}
+    \fi
+\ifx\@subjectArea\@empty%\relax
+    \else
+    \SetNestedValue{Degree1}{subjectArea}{\@subjectArea}
+\fi
+\ifx\@educationSubjectcode\@empty%\relax
+    \else
+    \SetNestedValue{Degree1}{subjectcode}{\@educationSubjectcode}
+\fi
+
+% If there is a second program code, then add this element
+\ifx\@secondProgramcode\@empty%\relax
+    \else
+    \SetDeepNestedValue{Degree2}{Educational program}{programcode}{\@secondprgmcode}
+\fi
+\ifx\@secondDegreeName\@empty%\relax
+    \else
+    \SetDeepNestedValue{Degree2}{Educational program}{Degree}{\@secondDegreeName}
+\fi
+\ifx\@secondSubjectArea\@empty%\relax
+    \else
+    \SetDeepNestedValue{Degree2}{Educational program}{SubjectArea}{\@secondSubjectArea}
+\fi
+
+%% Title related information
+\ifx\@title\@empty%\relax
+    \else
+    \SetNestedValue{Title}{Main title}{\@title}
+    \ifx\@subtitle\@empty%\relax
+        \else
+        \SetNestedValue{Title}{Subtitle}{\@subtitle}
+    \fi
+    \ifinswedish
+        \SetNestedValue{Title}{Language}{swe}
+        \else
+        \SetNestedValue{Title}{Language}{eng}
+    \fi
+\fi
+\ifx\@alttitle\@empty%\relax
+    \else
+    \SetNestedValue{Alternative title}{Main title}{\@alttitle}
+    \ifx\@altsubtitle\@empty%\relax
+        \else
+        \SetNestedValue{Alternative title}{Subtitle}{\@altsubtitle}
+    \fi
+    \ifinswedish
+        \SetNestedValue{Alternative title}{Language}{eng}
+        \else
+        \SetNestedValue{Alternative title}{Language}{swe}
+    \fi
+\fi
+
+% To handle the optional plain text version of tiles and subtitles
+\ifx\@titleInPlainText\@empty%\relax
+    \else
+    \SetNestedValue{Title in plain text}{Main title}{\@titleInPlainText}
+    \ifx\@subtitleInPlainText\@empty%\relax
+        \else
+        \SetNestedValue{Title in plain text}{Subtitle}{\@subtitleInPlainText}
+    \fi
+    \ifinswedish
+        \SetNestedValue{Title in plain text}{Language}{swe}
+        \else
+        \SetNestedValue{Title in plain text}{Language}{eng}
+    \fi
+\fi
+\ifx\@alttitleInPlainText\@empty%\relax
+    \else
+    \SetNestedValue{Alternative title in plain text}{Main title}{\@alttitleInPlainText}
+    \ifx\@altsubtitleInPlainText\@empty%\relax
+        \else
+        \SetNestedValue{Alternative title in plain text}{Subtitle}{\@altsubtitleInPlainText}
+    \fi
+    \ifinswedish
+        \SetNestedValue{Alternative title in plain text}{Language}{eng}
+        \else
+        \SetNestedValue{Alternative title in plain text}{Language}{swe}
+    \fi
+\fi
+
+%% Supervisors
+\ifx\@supervisorAsLastname\@empty%\relax
+    \else
+    \SetNestedValue{Supervisor1}{Last name}{\@supervisorAsLastname}
+    \ifx\@supervisorAsFirstname\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor1}{First name}{\@supervisorAsFirstname}
+    \fi
+    \ifx\@supervisorAsKTHID\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor1}{Local User Id}{\@supervisorAsKTHID}
+    \fi
+    \ifx\@supervisorAsEmail\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor1}{E-mail}{\@supervisorAsEmail}
+    \fi
+    \ifx\@supervisorAsSchool\@empty%\relax
+     \else
+     \SetDeepNestedValue{Supervisor1}{organisation}{L1}{\@supervisorAsSchool}
+        \ifx\@supervisorAsDepartment\@empty%\relax
+        \else
+        \SetDeepNestedValue{Supervisor1}{organisation}{L2}{\@supervisorAsDepartment}
+        \fi
+    \fi
+    \ifx\@supervisorAsOrganization\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor1}{Other organisation}{\@supervisorAsOrganization}
+    \fi
+\fi %% End of SupervisorA
+
+\ifx\@supervisorBsLastname\@empty%\relax
+    \else
+    \SetNestedValue{Supervisor2}{Last name}{\@supervisorBsLastname}
+    \ifx\@supervisorBsFirstname\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor2}{First name}{\@supervisorBsFirstname}
+    \fi
+    \ifx\@supervisorBsKTHID\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor2}{Local User Id}{\@supervisorBsKTHID}
+    \fi
+    \ifx\@supervisorBsEmail\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor2}{E-mail}{\@supervisorBsEmail}
+    \fi
+    \ifx\@supervisorBsSchool\@empty%\relax
+     \else
+     \SetDeepNestedValue{Supervisor2}{organisation}{L1}{\@supervisorBsSchool}
+        \ifx\@supervisorBsDepartment\@empty%\relax
+        \else
+        \SetDeepNestedValue{Supervisor2}{organisation}{L2}{\@supervisorBsDepartment}
+        \fi
+    \fi
+    \ifx\@supervisorBsOrganization\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor2}{Other organisation}{\@supervisorBsOrganization}
+    \fi
+\fi %% End of SupervisorB
+
+\ifx\@supervisorCsLastname\@empty%\relax
+    \else
+    \SetNestedValue{Supervisor3}{Last name}{\@supervisorCsLastname}
+    \ifx\@supervisorCsFirstname\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor3}{First name}{\@supervisorCsFirstname}
+    \fi
+    \ifx\@supervisorCsKTHID\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor3}{Local User Id}{\@supervisorCsKTHID}
+    \fi
+    \ifx\@supervisorCsEmail\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor3}{E-mail}{\@supervisorCsEmail}
+    \fi
+    \ifx\@supervisorCsSchool\@empty%\relax
+     \else
+     \SetDeepNestedValue{Supervisor3}{organisation}{L1}{\@supervisorCsSchool}
+        \ifx\@supervisorCsDepartment\@empty%\relax
+        \else
+        \SetDeepNestedValue{Supervisor3}{organisation}{L2}{\@supervisorCsDepartment}
+        \fi
+    \fi
+    \ifx\@supervisorCsOrganization\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor3}{Other organisation}{\@supervisorCsOrganization}
+    \fi
+\fi %% End of SupervisorC
+
+\ifx\@supervisorDsLastname\@empty%\relax
+    \else
+    \SetNestedValue{Supervisor4}{Last name}{\@supervisorDsLastname}
+    \ifx\@supervisorDsFirstname\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor4}{First name}{\@supervisorDsFirstname}
+    \fi
+    \ifx\@supervisorDsKTHID\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor4}{Local User Id}{\@supervisorDsKTHID}
+    \fi
+    \ifx\@supervisorDsEmail\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor4}{E-mail}{\@supervisorDsEmail}
+    \fi
+    \ifx\@supervisorDsSchool\@empty%\relax
+     \else
+     \SetDeepNestedValue{Supervisor4}{organisation}{L1}{\@supervisorDsSchool}
+        \ifx\@supervisorDsDepartment\@empty%\relax
+        \else
+        \SetDeepNestedValue{Supervisor4}{organisation}{L2}{\@supervisorDsDepartment}
+        \fi
+    \fi
+    \ifx\@supervisorDsOrganization\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor4}{Other organisation}{\@supervisorDsOrganization}
+    \fi
+\fi %% End of SupervisorD
+
+\ifx\@supervisorEsLastname\@empty%\relax
+    \else
+    \SetNestedValue{Supervisor5}{Last name}{\@supervisorEsLastname}
+    \ifx\@supervisorEsFirstname\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor5}{First name}{\@supervisorEsFirstname}
+    \fi
+    \ifx\@supervisorEsKTHID\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor5}{Local User Id}{\@supervisorEsKTHID}
+    \fi
+    \ifx\@supervisorEsEmail\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor5}{E-mail}{\@supervisorEsEmail}
+    \fi
+    \ifx\@supervisorEsSchool\@empty%\relax
+     \else
+     \SetDeepNestedValue{Supervisor5}{organisation}{L1}{\@supervisorEsSchool}
+        \ifx\@supervisorEsDepartment\@empty%\relax
+        \else
+        \SetDeepNestedValue{Supervisor5}{organisation}{L2}{\@supervisorEsDepartment}
+        \fi
+    \fi
+    \ifx\@supervisorEsOrganization\@empty%\relax
+        \else
+        \SetNestedValue{Supervisor5}{Other organisation}{\@supervisorEsOrganization}
+    \fi
+\fi %% End of SupervisorE
+
+%% Cooperation
+
+
+\ifx\@hostcompany\@empty%\relax
+    \else
+    \SetNestedValue{Cooperation}{Partner name}{\@hostcompany}
+\fi
+\ifx\@hostorganization\@empty%\relax
+    \else
+    \SetNestedValue{Cooperation}{Host organization}{\@hostorganization}
+\fi
+
+\ifx\@nationalsubjectcategories\@empty%\relax
+    \else
+    \SetValue{National Subject Categories}{\@nationalsubjectcategories}
+\fi
+\ifx\@SDGs\@empty%\relax
+    \else
+    \SetValue{SDGs}{\@SDGs}
+\fi
+
+\SetNestedValue{Other information}{Year}{\the\year}
+\SetNestedValue{Other information}{Number of pages}{\getpagerefnumber{pg:lastPageofPreface}, \getpagerefnumber{pg:lastPageofMainmatter}}
+
+\ifx\@copyrightleft\@empty
+    \SetValue{Copyrightleft}{None}
+    \else
+    \SetValue{Copyrightleft}{\@copyrightleft}
+\fi
+
+\ifx\@thesisSeries\@empty\relax
+    \else
+    \SetNestedValue{Series}{Title of series}{\@thesisSeries}
+    \ifx\@thesisSeriesNumber\@empty\relax
+        \else
+        \SetNestedValue{Series}{No. in series}{\@thesisSeriesNumber}
+    \fi
+\fi
+
+\ifx\@thesisISBN\@empty\relax
+    \else
+    \SetValue{ISBN}{\@thesisISBN}
+\fi
+
+\ifx\@opponentsNames\@empty\relax
+    \else
+    \SetNestedValue{Opponents}{Name}{\@opponentsNames}
+\fi
+
+\ifx\@presentationDateAndTimeISO\@empty%\relax,
+    \else
+    \SetNestedValue{Presentation}{Date}{\@presentationDateAndTimeISO}
+    \ifx\@presentationLanguage\@empty%\relax,
+        \else
+        \SetNestedValue{Presentation}{Language}{\@presentationLanguage}
+    \fi
+    \ifx\@presentationRoom\@empty%
+        \else
+        \SetNestedValue{Presentation}{Room}{\@presentationRoom}
+    \fi
+    \ifx\@presentationAddress\@empty%\relax,
+        \else
+        \SetNestedValue{Presentation}{Address}{\@presentationAddress}
+    \fi
+    \ifx\@presentationCity\@empty%\relax,
+        \else
+        \SetNestedValue{Presentation}{City}{\@presentationCity}
+    \fi
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+% Generate the JSON file from all the captured data
+\GenerateFordivaJSON
+} %% end divainfo
+
+
+\makeatother

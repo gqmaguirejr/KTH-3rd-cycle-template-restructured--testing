@@ -1,0 +1,487 @@
+\documentclass[12pt, twoside]{article}
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifxetex}
+\RequirePackage{ifluatex}
+\newif\ifxeorlua
+\ifxetex\xeorluatrue\fi
+\ifluatex\xeorluatrue\fi
+
+\newif\ifinswedish
+\inswedishfalse
+
+\RequirePackage{etoolbox}
+\newtoggle{digitaloutput}
+\toggletrue{digitaloutput}
+\newtoggle{nomenclature}
+\togglefalse{nomenclature}
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\ifxeorlua
+\disablepackage{transparent}{}
+\fi
+
+
+% include a variety of packages that are useful
+\input{lib/includes}
+
+ \usepackage[swedish, main=english, provide+=*]{babel}
+ 
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+
+
+\begin{document}
+\title{National Subject Categories}
+\author{Gerald Q. Maguire Jr.}
+\date{July 2025}
+\maketitle
+
+These categories follow a definition by \foreignlanguage{swedish}{SCB} (nowadays known as \foreignlanguage{swedish}{Statistikmyndigheten} or in English: Statistics Sweden) and HSV (\foreignlanguage{swedish}{Högskoleverket} - nowadays known as  \foreignlanguage{swedish}{Universitetskanslersämbetet (UK-ämbetet)} and \foreignlanguage{swedish}{Universitets- och högskolerådet (UHR)} or in English: Swedish Higher Education Authority and Swedish Council for Higher Education).
+
+The information below is based on \url{https://www.scb.se/contentassets/3a12f556522d4bdc887c4838a37c7ec7/standard-for-svensk-indelning--av-forskningsamnen-2011-uppdaterad-aug-2016.pdf}\\
+and\\
+\url{https://www.scb.se/contentassets/10054f2ef27c437884e8cde0d38b9cc4/oversattningsnyckel-forskningsamnen.pdf}.
+
+% `Standard for Swedish classification of research topics (SSIF)''
+\begin{longtable}{p{0.85cm} L{6.0cm} L{6.0cm}} % <-- Alignments: 1st column left, 2nd middle, with vertical lines in between
+\caption{National subject categories and their codes}\label{tab:cycle3nationalsubject categories}\\
+      \textbf{Code}  & \textbf{Category (in English)} & \textbf{Category (in Swedish)} \\
+        \endfirsthead
+\multicolumn{3}{c}%
+{\tablename\ \thetable\ -- \textit{Continued from previous page}} \\
+    \textbf{Code}  & \textbf{Category (in English)} & \textbf{Category (in Swedish)} \\
+\hline
+\endhead
+\hline \\
+1& Natural sciences& \foreignlanguage{swedish}{Naturvetenskap}\\
+\hline \\
+101 & Mathematical sciences& \foreignlanguage{swedish}{Matematik}\\
+\hline \\
+10101 & Mathematical Analysis& \foreignlanguage{swedish}{Matematisk analys}\\
+10102 & Geometry& \foreignlanguage{swedish}{Geometri}\\
+10103 & Algebra and Logic& \foreignlanguage{swedish}{Algebra och logik}\\
+10104 & Discrete Mathematics& \foreignlanguage{swedish}{Diskret matematik}\\
+10105 & Computational Mathematics& \foreignlanguage{swedish}{Beräkningsmatematik}\\
+10106 & Probability Theory and Statistics& \foreignlanguage{swedish}{Sannolikhetsteori och statistik}\\
+10199 & Other Mathematics& \foreignlanguage{swedish}{Annan matematik}\\
+\hline \\
+102 & Computer and Information Sciences& \foreignlanguage{swedish}{Data- och informationsvetenskap (Datateknik)}\\
+\hline \\
+10201 & Computer Sciences& \foreignlanguage{swedish}{Datavetenskap (datalogi)}\\
+10202 & Information Systems& \foreignlanguage{swedish}{Systemvetenskap, informationssystem och informatik}\\
+10203 & Bioinformatics (Computational Biology)& \foreignlanguage{swedish}{Bioinformatik (beräkningsbiologi)}\\
+10204 & Human Computer Interaction& \foreignlanguage{swedish}{Människa-datorinteraktion (interaktionsdesign)}\\
+10205 & Software Engineering& \foreignlanguage{swedish}{Programvaruteknik}\\
+10206 & Computer Engineering& \foreignlanguage{swedish}{Datorteknik}\\
+10207 & Computer graphics and computer vision& \foreignlanguage{swedish}{Datorgrafik och datorseende}\\
+10208 & Natural Language Processing& \foreignlanguage{swedish}{Språkbehandling och datorlingvistik}\\
+10210 & Artificial Intelligence& \foreignlanguage{swedish}{Artificiell intelligens}\\
+10211 & Security, Privacy and Cryptography& \foreignlanguage{swedish}{Säkerhet, integritet och kryptologi}\\
+10212 & Algorithms& \foreignlanguage{swedish}{Algoritmer}\\
+10213 & Formal Methods& \foreignlanguage{swedish}{Formella metoder}\\
+10214 & Networked, Parallel and Distributed Computing& \foreignlanguage{swedish}{Nätverks-, parallell- och distribuerad beräkning}\\
+10299 & Other Computer and Information Science& \foreignlanguage{swedish}{Annan data- och informationsvetenskap}\\
+\hline \\
+103 & Physical Sciences& \foreignlanguage{swedish}{Fysik}\\
+\hline \\
+10301 & Subatomic Physics& \foreignlanguage{swedish}{Subatomär fysik}\\
+10302 & Atom and Molecular Physics and Optics& \foreignlanguage{swedish}{Atom- och molekylfysik och optik}\\
+10303 & Fusion, Plasma and Space Physics& \foreignlanguage{swedish}{Fusion, plasma och rymdfysik}\\
+10304 & Condensed Matter Physics& \foreignlanguage{swedish}{Den kondenserade materiens fysik}\\
+10305 & Astronomy, Astrophysics, and Cosmology& \foreignlanguage{swedish}{Astronomi, astrofysik och kosmologi}\\
+10307 & Biophysics& \foreignlanguage{swedish}{Biofysik}\\
+10308 & Statistical physics and complex systems& \foreignlanguage{swedish}{Statistisk fysik och komplexa system}\\
+10399 & Other Physics Topics& \foreignlanguage{swedish}{Annan fysik}\\
+\hline \\
+104 & Chemical Sciences& \foreignlanguage{swedish}{Kemi}\\
+\hline \\
+10401 & Analytical Chemistry& \foreignlanguage{swedish}{Analytisk kemi}\\
+10402 & Physical Chemistry& \foreignlanguage{swedish}{Fysikalisk kemi}\\
+10403 & Materials Chemistry& \foreignlanguage{swedish}{Materialkemi}\\
+10404 & Inorganic Chemistry& \foreignlanguage{swedish}{Oorganisk kemi}\\
+10405 & Organic Chemistry& \foreignlanguage{swedish}{Organisk kemi}\\
+10406 & Polymer Chemistry& \foreignlanguage{swedish}{Polymerkemi}\\
+10407 & Theoretical Chemistry& \foreignlanguage{swedish}{Teoretisk kemi}\\
+10408 & Biochemistry& \foreignlanguage{swedish}{Biokemi}\\
+10499 & Other Chemistry Topics& \foreignlanguage{swedish}{Annan kemi}\\
+\hline \\
+105 & Earth and Related Environmental Sciences& \foreignlanguage{swedish}{Geovetenskap och relaterad miljövetenskap}\\
+10501 & Climate Science& \foreignlanguage{swedish}{Klimatvetenskap}\\
+10502 & Environmental Sciences& \foreignlanguage{swedish}{Miljövetenskap}\\
+10503 & Multidisciplinary Geosciences& \foreignlanguage{swedish}{Multidisciplinär geovetenskap}\\
+10504 & Geology& \foreignlanguage{swedish}{Geologi}\\
+10505 & Geophysics& \foreignlanguage{swedish}{Geofysik}\\
+10506 & Geochemistry& \foreignlanguage{swedish}{Geokemi}\\
+10507 & Physical Geography& \foreignlanguage{swedish}{Naturgeografi}\\
+10508 & Meteorology and Atmospheric Sciences& \foreignlanguage{swedish}{Meteorologi och atmosfärsvetenskap}\\
+10509 & Oceanography, Hydrology and Water Resources& \foreignlanguage{swedish}{Oceanografi, hydrologi och vattenresurser}\\
+10510 & Palaeontology and Palaeoecology& \foreignlanguage{swedish}{Paleontologi och paleoekologi}\\
+10599 & Other Earth Sciences& \foreignlanguage{swedish}{Annan geovetenskap}\\
+\hline \\
+106 & Biological Sciences& \foreignlanguage{swedish}{Biologi}\\
+10601 & Structural Biology& \foreignlanguage{swedish}{Strukturbiologi}\\
+10604 & Cell Biology& \foreignlanguage{swedish}{Cellbiologi}\\
+10605 & Immunology& \foreignlanguage{swedish}{Immunologi}\\
+10606 & Microbiology& \foreignlanguage{swedish}{Mikrobiologi}\\
+10607 & Botany& \foreignlanguage{swedish}{Botanik}\\
+10608 & Zoology& \foreignlanguage{swedish}{Zoologi}\\
+10609 & Genetics and Genomics& \foreignlanguage{swedish}{Genetik och genomik}\\
+10610 & Bioinformatics and Computational Biology& \foreignlanguage{swedish}{Bioinformatik och beräkningsbiologi}\\
+10611 & Ecology& \foreignlanguage{swedish}{Ekologi}\\
+10612 & Biological Systematics& \foreignlanguage{swedish}{Biologisk systematik}\\
+10613 & Behavioural Sciences Biology& \foreignlanguage{swedish}{Etologi}\\
+10614 & Developmental Biology& \foreignlanguage{swedish}{Utvecklingsbiologi}\\
+10615 & Evolutionary Biology& \foreignlanguage{swedish}{Evolutionsbiologi}\\
+10616 & Molecular Biology& \foreignlanguage{swedish}{Molekylärbiologi}\\
+10699 & Other Biological Topics& \foreignlanguage{swedish}{Annan biologi}\\
+\hline \\
+107 & Other Natural Sciences& \foreignlanguage{swedish}{Annan naturvetenskap}\\
+\hline \\
+10799 & Other Natural Sciences& \foreignlanguage{swedish}{Annan naturvetenskap}\\
+\hline \\
+2 & Engineering and Technology& \foreignlanguage{swedish}{Teknik}\\
+\hline \\
+201 & Civil Engineering& \foreignlanguage{swedish}{Samhällsbyggnadsteknik}\\
+20101 & Architectural Engineering& \foreignlanguage{swedish}{Arkitekturteknik}\\
+20102 & Construction Management& \foreignlanguage{swedish}{Byggprocess och förvaltning}\\
+20103 & Building Technologies& \foreignlanguage{swedish}{Husbyggnad}\\
+20104 & Infrastructure Engineering& \foreignlanguage{swedish}{Infrastrukturteknik}\\
+20105 & Transport Systems and Logistics& \foreignlanguage{swedish}{Transportteknik och logistik}\\
+20106 & Geotechnical Engineering and Engineering Geology& \foreignlanguage{swedish}{Geoteknik och teknisk geologi}\\
+20107 & Water Engineering& \foreignlanguage{swedish}{Vattenteknik}\\
+20109 & Structural Engineering& \foreignlanguage{swedish}{Byggkonstruktion}\\
+20110 & Building materials& \foreignlanguage{swedish}{Byggnadsmaterial}\\
+20199 & Other Civil Engineering& \foreignlanguage{swedish}{Annan samhällsbyggnadsteknik}\\
+\hline \\
+202 & Electrical Engineering, Electronic Engineering, Information Engineering& \foreignlanguage{swedish}{Elektroteknik och elektronik}\\
+\hline \\
+20201 & Robotics and automation& \foreignlanguage{swedish}{Robotik och automation}\\
+20202 & Control Engineering& \foreignlanguage{swedish}{Reglerteknik}\\
+20203 & Communication Systems& \foreignlanguage{swedish}{Kommunikationssystem}\\
+20204 & Telecommunications& \foreignlanguage{swedish}{Telekommunikation}\\
+20205 & Signal Processing& \foreignlanguage{swedish}{Signalbehandling}\\
+20206 & Computer Systems& \foreignlanguage{swedish}{Datorsystem}\\
+20207 & Embedded Systems& \foreignlanguage{swedish}{Inbäddad systemteknik}\\
+20208 & Computer Vision and learning System& \foreignlanguage{swedish}{Datorseende och lärande system}\\
+20209 & Power Systems and Components& \foreignlanguage{swedish}{Elkraftsystem och -komponenter}\\
+20299 & Other Electrical Engineering, Electronic Engineering, Information Engineering& \foreignlanguage{swedish}{Annan elektroteknik och elektronik}\\
+\hline \\
+203 & Mechanical Engineering& \foreignlanguage{swedish}{Maskinteknik}\\
+20301 & Applied Mechanics& \foreignlanguage{swedish}{Teknisk mekanik}\\
+20302 & Vehicle and Aerospace Engineering& \foreignlanguage{swedish}{Farkost och rymdteknik}\\
+20304 & Energy Engineering& \foreignlanguage{swedish}{Energiteknik}\\
+20305 & Reliability and Maintenance& \foreignlanguage{swedish}{Tillförlitlighets- och kvalitetsteknik}\\
+20306 & Fluid Mechanics& \foreignlanguage{swedish}{Strömningsmekanik}\\
+20307 & Production Engineering, Human Work Science and Ergonomics& \foreignlanguage{swedish}{Produktionsteknik, arbetsvetenskap och ergonomi}\\
+20309 & Solid and Structural Mechanics& \foreignlanguage{swedish}{Solid- och strukturmekanik}\\
+20310 & Industrial engineering and management& \foreignlanguage{swedish}{Industriell ekonomi}\\
+20399 & Other Mechanical Engineering& \foreignlanguage{swedish}{Annan maskinteknik}\\
+\hline \\
+204 & Chemical Engineering& \foreignlanguage{swedish}{Kemiteknik}\\
+\hline \\
+20402 & Surface- and Corrosion Engineering& \foreignlanguage{swedish}{Yt- och korrosionsteknik}\\
+20403 & Polymer Technologies& \foreignlanguage{swedish}{Polymerteknologi}\\
+20405 & Catalytic Processes& \foreignlanguage{swedish}{Katalytiska processer}\\
+20406 & Separation Processes& \foreignlanguage{swedish}{Separationsprocesser}\\
+20407 & Circular Food Process Technologies& \foreignlanguage{swedish}{Livsmedelsprocessteknik}\\
+20499 & Other Chemical Engineering& \foreignlanguage{swedish}{Annan kemiteknik}\\
+\hline \\
+205 & Materials Engineering& \foreignlanguage{swedish}{Materialteknik}\\
+20501 & Ceramics and Powder Metallurgical Materials& \foreignlanguage{swedish}{Keramiska och pulvermetallurgiska material}\\
+20502 & Composite Science and Engineering& \foreignlanguage{swedish}{Kompositmaterial och kompositteknik}\\
+20503 & Paper, Pulp and Fiber Technology& \foreignlanguage{swedish}{Pappers-, massa- och fiberteknik}\\
+20504 & Textile, Rubber and Polymeric Materials& \foreignlanguage{swedish}{Textil-, gummi- och polymermaterial}\\
+20505 & Manufacturing, Surface and Joining Technology& \foreignlanguage{swedish}{Bearbetnings-, yt- och fogningsteknik}\\
+20506 & Metallurgy and Metallic Materials& \foreignlanguage{swedish}{Metallurgi och metalliska material}\\
+20599 & Other Materials Engineering& \foreignlanguage{swedish}{Annan materialteknik}\\
+\hline \\
+206 & Medical Engineering& \foreignlanguage{swedish}{Medicinteknik}\\
+\hline \\
+20601 & Medical Laboratory Technologies& \foreignlanguage{swedish}{Medicinsk laboratorieteknik}\\
+20602 & Medical Materials& \foreignlanguage{swedish}{Medicinsk materialteknik}\\
+20603 & Medical Imaging& \foreignlanguage{swedish}{Medicinsk bildvetenskap}\\
+20604 & Medical Instrumentation& \foreignlanguage{swedish}{Medicinsk instrumentering}\\
+20605 & Medical Modelling and Simulation& \foreignlanguage{swedish}{Medicinsk modellering och simulering}\\
+20606 & Medical Informatics Engineering& \foreignlanguage{swedish}{Medicinteknisk informatik}\\
+20699 & Other Medical Engineering& \foreignlanguage{swedish}{Annan medicinteknik}\\
+\hline \\
+207 & Environmental Engineering& \foreignlanguage{swedish}{Naturresursteknik}\\
+\hline \\
+20702 & Energy Systems& \foreignlanguage{swedish}{Energisystem}\\
+20703 & Earth Observation& \foreignlanguage{swedish}{Jordobservationsteknik}\\
+20704 & Mineral and Mine Engineering& \foreignlanguage{swedish}{Mineral- och gruvteknik}\\
+20705 & Marine Engineering& \foreignlanguage{swedish}{Marinteknik}\\
+20707 & Environmental Management& \foreignlanguage{swedish}{Miljöteknik och miljöledning}\\
+20799 & Other Environmental Engineering& \foreignlanguage{swedish}{Annan naturresursteknik}\\
+\hline \\
+208 & Environmental Biotechnology& \foreignlanguage{swedish}{Miljöbioteknik}\\
+\hline \\
+20801 & Bioremediation& \foreignlanguage{swedish}{Biosanering}\\
+20802 & Diagnostic Biotechnology& \foreignlanguage{swedish}{Diagnostisk bioteknologi}\\
+20803 & Water Treatment& \foreignlanguage{swedish}{Vattenbehandlingsbioteknik}\\
+20899 & Other Environmental Biotechnology& \foreignlanguage{swedish}{Annan miljöbioteknik}\\
+\hline \\
+209 & Industrial Biotechnology& \foreignlanguage{swedish}{Industriell bioteknik}\\
+\hline \\
+20901 & Bioprocess Technology& \foreignlanguage{swedish}{Bioprocessteknik}\\
+20902 & Biochemicals& \foreignlanguage{swedish}{Biokemikalier}\\
+20903 & Bio Materials& \foreignlanguage{swedish}{Biomaterial}\\
+20904 & Bioenergy& \foreignlanguage{swedish}{Bioenergi}\\
+20905 & Pharmaceutical and Medical Biotechnology& \foreignlanguage{swedish}{Läkemedel- och medicinsk processbioteknik}\\
+20906 & Biocatalysis and Enzyme Technology& \foreignlanguage{swedish}{Biokatalys och enzymteknik}\\
+20909 & Food Biotechnology& \foreignlanguage{swedish}{Livsmedelsbioteknik}\\
+20999 & Other Industrial Biotechnology& \foreignlanguage{swedish}{Annan industriell bioteknik}\\
+\hline \\
+210 & Nano-technology& \foreignlanguage{swedish}{Nanoteknik}\\
+21002 & Nanotechnology for Electronic Applications& \foreignlanguage{swedish}{Nanoteknisk elektronik}\\
+21003 & Nanotechnology for Material Science& \foreignlanguage{swedish}{Nanoteknisk materialvetenskap}\\
+21004 & Nanotechnology for Energy Applications& \foreignlanguage{swedish}{Nanotekniska energitillämpningar}\\
+21005 & Nanotechnology for/in Life Science and Medicine& \foreignlanguage{swedish}{Nanotekniska livsvetenskaper och medicin}\\
+21099 & Other Nanotechnology& \foreignlanguage{swedish}{Annan nanoteknik}\\
+\hline \\
+211 & Other Engineering and Technologies& \foreignlanguage{swedish}{Annan teknik}\\
+21199 & Other Engineering and Technologies& \foreignlanguage{swedish}{Annan teknik}\\
+\hline \\
+3 & Medical and Health Sciences& \foreignlanguage{swedish}{Medicin och hälsovetenskap}\\
+\hline \\
+301 & Basic Medicine& \foreignlanguage{swedish}{Medicinska och farmaceutiska grundvetenskaper}\\
+\hline \\
+30101 & Pharmaceutical Sciences& \foreignlanguage{swedish}{Farmaceutiska vetenskaper}\\
+30102 & Pharmacology and Toxicology& \foreignlanguage{swedish}{Farmakologi och toxikologi}\\
+30103 & Medicinal Chemistry& \foreignlanguage{swedish}{Läkemedelskemi}\\
+30104 & Social and Clinical Pharmacy& \foreignlanguage{swedish}{Samhällsfarmaci och klinisk farmaci}\\
+30105 & Neurosciences& \foreignlanguage{swedish}{Neurovetenskaper}\\
+30106 & Physiology and Anatomy& \foreignlanguage{swedish}{Fysiologi och anatomi}\\
+30107 & Medical Genetics and Genomics& \foreignlanguage{swedish}{Medicinsk genetik och genomik}\\
+30108 & Cell and Molecular Biology& \foreignlanguage{swedish}{Cell- och molekylärbiologi}\\
+30109 & Microbiology in the Medical Area& \foreignlanguage{swedish}{Mikrobiologi inom det medicinska området}\\
+30110 & Immunology in the Medical Area& \foreignlanguage{swedish}{Immunologi inom det medicinska området}\\
+30111 & Medical Life Sciences& \foreignlanguage{swedish}{Medicinska biovetenskaper}\\
+30112 & Basic Cancer Research& \foreignlanguage{swedish}{Basal cancerforskning}\\
+30113 & Medical Bioinformatics and Systems Biology& \foreignlanguage{swedish}{Medicinsk bioinformatik och systembiologi}\\
+30114 & Evolution and Developmental Genetics& \foreignlanguage{swedish}{Evolution och utvecklingsgenetik}\\
+30115 & Medical Epigenetics and Epigenomics& \foreignlanguage{swedish}{Medicinsk epigenetik och epigenomik}\\
+30116 & Epidemiology& \foreignlanguage{swedish}{Epidemiologi}\\
+30117 & Medical Informatics& \foreignlanguage{swedish}{Medicinsk informatik}\\
+30118 & Medical Biostatistics& \foreignlanguage{swedish}{Medicinsk biostatistik}\\
+30199 & Other Basic Medicine& \foreignlanguage{swedish}{Andra medicinska och farmaceutiska grundvetenskaper}\\
+\hline \\
+302 & Clinical Medicine& \foreignlanguage{swedish}{Klinisk medicin}\\
+30201 & Anesthesiology and Intensive Care& \foreignlanguage{swedish}{Anestesi och intensivvård}\\
+30202 & Hematology& \foreignlanguage{swedish}{Hematologi}\\
+30203 & Cancer and Oncology& \foreignlanguage{swedish}{Cancer och onkologi}\\
+30204 & Dermatology and Venereal Diseases& \foreignlanguage{swedish}{Dermatologi och venereologi}\\
+30205 & Endocrinology and Diabetes& \foreignlanguage{swedish}{Endokrinologi och diabetes}\\
+30206 & Cardiology and Cardiovascular Disease& \foreignlanguage{swedish}{Kardiologi och kardiovaskulära sjukdomar}\\
+30207 & Neurology& \foreignlanguage{swedish}{Neurologi}\\
+30208 & Radiology and Medical Imaging& \foreignlanguage{swedish}{Radiologi och bildbehandling}\\
+30209 & Infectious Medicine& \foreignlanguage{swedish}{Infektionsmedicin}\\
+30211 & Orthopaedics& \foreignlanguage{swedish}{Ortopedi}\\
+30212 & Surgery& \foreignlanguage{swedish}{Kirurgi}\\
+30213 & Gastroenterology and Hepatology& \foreignlanguage{swedish}{Gastroenterologi and hepatologi}\\
+30215 & Psychiatry& \foreignlanguage{swedish}{Psykiatri}\\
+30216 & Odontology& \foreignlanguage{swedish}{Odontologi}\\
+30217 & Ophthalmology& \foreignlanguage{swedish}{Oftalmologi}\\
+30218 & Oto-rhino-laryngology& \foreignlanguage{swedish}{Oto-rhino-laryngologi}\\
+30219 & Respiratory Medicine and Allergy& \foreignlanguage{swedish}{Lungmedicin och allergi}\\
+30220 & Gynaecology, Obstetrics and Reproductive Medicine& \foreignlanguage{swedish}{Gynekologi, obstetrik och reproduktionsmedicin}\\
+30221 & Pediatrics& \foreignlanguage{swedish}{Pediatrik}\\
+30222 & Geriatrics& \foreignlanguage{swedish}{Geriatrik}\\
+30223 & Clinical Laboratory Medicine& \foreignlanguage{swedish}{Klinisk laboratoriemedicin}\\
+30224 & General Medicine& \foreignlanguage{swedish}{Allmänmedicin}\\
+30225 & Rheumatology& \foreignlanguage{swedish}{Reumatologi}\\
+30226 & Autoimmunity and Inflammation& \foreignlanguage{swedish}{Autoimmunitet och inflamation}\\
+30227 & Internal Medicine& \foreignlanguage{swedish}{Internmedicin}\\
+30228 & Urology& \foreignlanguage{swedish}{Urologi}\\
+30229 & Nephrology& \foreignlanguage{swedish}{Njurmedicin}\\
+30230 & Childbirth and Maternity care& \foreignlanguage{swedish}{Förlossnings- och mödravård}\\
+30299 & Other Clinical Medicine& \foreignlanguage{swedish}{Annan klinisk medicin}\\
+\hline \\
+303 & Health Sciences& \foreignlanguage{swedish}{Hälsovetenskap}\\
+\hline \\
+30301 & Health Care Service and Management, Health Policy and Services and Health Economy& \foreignlanguage{swedish}{Hälso- och sjukvårdsorganisation, hälsopolitik och hälsoekonomi}\\
+30303 & Occupational Health and Environmental Health& \foreignlanguage{swedish}{Arbetsmedicin och miljömedicin}\\
+30304 & Nutrition and Dietetics& \foreignlanguage{swedish}{Näringslära och dietkunskap}\\
+30305 & Nursing& \foreignlanguage{swedish}{Omvårdnad}\\
+30306 & Occupational Therapy& \foreignlanguage{swedish}{Arbetsterapi}\\
+30307 & Physiotherapy& \foreignlanguage{swedish}{Fysioterapi}\\
+30308 & Sport and Fitness Sciences& \foreignlanguage{swedish}{Idrottsvetenskap och fitness}\\
+30309 & Drug Abuse and Addiction& \foreignlanguage{swedish}{Beroendelära och missbruk}\\
+30310 & Medical Ethics& \foreignlanguage{swedish}{Medicinsk etik}\\
+30311 & Public Health, Global Health and Social Medicine& \foreignlanguage{swedish}{Folkhälsovetenskap, global hälsa och socialmedicin}\\
+30312 & Palliative Medicine and Palliative Care& \foreignlanguage{swedish}{Palliativ medicin och palliativ vård}\\
+30313 & Oral Health& \foreignlanguage{swedish}{Oral hälsa}\\
+30314 & Rehabilitation Medicine& \foreignlanguage{swedish}{Rehabiliteringsmedicin}\\
+30399 & Other Health Sciences& \foreignlanguage{swedish}{Annan hälsovetenskap}\\
+\hline \\
+304 & Medical Biotechnology& \foreignlanguage{swedish}{Medicinsk bioteknologi}\\
+\hline \\
+30401 & Medical Biotechnology (Focus on Cell Biology (incl. Stem Cell Biology), Molecular Biology, Microbiology, Biochemistry or Biopharmacy)& \foreignlanguage{swedish}{Medicinsk bioteknologi (Inriktn. mot cellbiologi (inkl. stamcellsbiologi), molekylärbiologi, mikrobiologi, biokemi eller biofarmaci)}\\
+30402 & Biomedical Laboratory Science/Technology& \foreignlanguage{swedish}{Biomedicinsk laboratorievetenskap/teknologi}\\
+30403 & Biomaterials Science& \foreignlanguage{swedish}{Biomaterialvetenskap}\\
+30499 & Other Medical Biotechnology& \foreignlanguage{swedish}{Annan medicinsk bioteknologi}\\
+\hline \\
+305 & Other Medical and Health Sciences& \foreignlanguage{swedish}{Annan medicin och hälsovetenskap}\\
+\hline \\
+30501 & Forensic Science& \foreignlanguage{swedish}{Rättsmedicin}\\
+30502 & Gerontology, specialising in Medical and Health Sciences& \foreignlanguage{swedish}{Gerontologi, medicinsk/hälsovetenskaplig inriktning}\\
+30599 & Other Medical and Health Sciences not elsewhere specified& \foreignlanguage{swedish}{Övrig annan medicin och hälsovetenskap}\\
+\hline \\
+4 & Agricultural and Veterinary sciences& \foreignlanguage{swedish}{Lantbruksvetenskap och veterinärmedicin}\\
+\hline \\
+401 & Agriculture, Forestry and Fisheries& \foreignlanguage{swedish}{Jordbruk, skogsbruk och fiske}\\
+\hline \\
+40101 & Agricultural Science& \foreignlanguage{swedish}{Jordbruksvetenskap}\\
+40102 & Horticulture& \foreignlanguage{swedish}{Trädgårdsvetenskap/hortikultur}\\
+40103 & Food Science& \foreignlanguage{swedish}{Livsmedelsvetenskap}\\
+40104 & Forest Science& \foreignlanguage{swedish}{Skogsvetenskap}\\
+40105 & Wood Science& \foreignlanguage{swedish}{Trävetenskap}\\
+40106 & Soil Science& \foreignlanguage{swedish}{Markvetenskap}\\
+40107 & Fish and Aquacultural Science& \foreignlanguage{swedish}{Fisk- och akvakulturforskning}\\
+\hline \\\\
+402 & Animal and Dairy Science& \foreignlanguage{swedish}{Husdjursvetenskap}\\
+\hline \\
+40201 & Animal and Dairy Science& \foreignlanguage{swedish}{Husdjursvetenskap}\\
+\hline \\
+403 & Veterinary Science& \foreignlanguage{swedish}{Veterinärmedicin}\\
+\hline \\
+40301 & Medical Bioscience& \foreignlanguage{swedish}{Medicinsk biovetenskap}\\
+40302 & Pathobiology& \foreignlanguage{swedish}{Patobiologi}\\
+40303 & Clinical Science& \foreignlanguage{swedish}{Klinisk vetenskap}\\
+40399 & Other Veterinary Science& \foreignlanguage{swedish}{Annan veterinärmedicin}\\
+\hline \\
+404 & Agricultural Biotechnology& \foreignlanguage{swedish}{Bioteknologi med applikationer på växter och djur}\\
+\hline \\
+40401 & Plant Biotechnology& \foreignlanguage{swedish}{Växtbioteknologi}\\
+40402 & Genetics and Breeding in Agricultural Sciences& \foreignlanguage{swedish}{Genetik och förädling inom lantbruksvetenskap}\\
+\hline \\
+405 & Other Agricultural Sciences& \foreignlanguage{swedish}{Annan lantbruksvetenskap}\\
+40502 & Fish and Wildlife Management& \foreignlanguage{swedish}{Vilt- och fiskeförvaltning}\\
+40504 & Environmental Sciences and Nature Conservation& \foreignlanguage{swedish}{Miljö- och naturvårdsvetenskap}\\
+40505 & Landscape Architecture& \foreignlanguage{swedish}{Landskapsarkitektur}\\
+40506 & Agricultural Economics and Management and Rural development& \foreignlanguage{swedish}{Jordbruksekonomi och landsbygdsutveckling}\\
+40507 & Environmental Economics and Management& \foreignlanguage{swedish}{Miljöekonomi och förvaltning}\\
+40599 & Other Agricultural Sciences not elsewhere specified& \foreignlanguage{swedish}{Övrig annan lantbruksvetenskap}\\
+5 & Social Sciences& \foreignlanguage{swedish}{Samhällsvetenskap}\\
+\hline \\
+501 & Psychology& \foreignlanguage{swedish}{Psykologi}\\
+\hline \\
+50101 & Psychology (Excluding Applied Psychology)& \foreignlanguage{swedish}{Psykologi (Exklusive tillämpad psykologi)}\\
+50102 & Applied Psychology& \foreignlanguage{swedish}{Tillämpad psykologi}\\
+\hline \\
+502 & Economics and Business& \foreignlanguage{swedish}{Ekonomi och näringsliv}\\
+50201 & Economics& \foreignlanguage{swedish}{Nationalekonomi}\\
+50202 & Business Administration& \foreignlanguage{swedish}{Företagsekonomi}\\
+50203 & Economic History& \foreignlanguage{swedish}{Ekonomisk historia}\\
+\hline \\
+503 & Educational Sciences& \foreignlanguage{swedish}{Utbildningsvetenskap}\\
+\hline \\
+50301 & Pedagogy& \foreignlanguage{swedish}{Pedagogik}\\
+50302 & Didactics& \foreignlanguage{swedish}{Didaktik}\\
+50304 & Educational Work& \foreignlanguage{swedish}{Pedagogiskt arbete}\\
+50399 & Other Educational Sciences& \foreignlanguage{swedish}{Annan utbildningsvetenskaplig forskning}\\
+\hline \\
+504 & Sociology& \foreignlanguage{swedish}{Sociologi}\\
+50401 & Sociology (Excluding Social Work, Social Anthropology, Demography and Criminology)& \foreignlanguage{swedish}{Sociologi (Exklusive socialt arbete, socialantropologi, demografi och kriminologi)}\\
+50402 & Social Work& \foreignlanguage{swedish}{Socialt arbete}\\
+50404 & Social Anthropology& \foreignlanguage{swedish}{Socialantropologi}\\
+50405 & Demography& \foreignlanguage{swedish}{Demografi}\\
+50406 & Criminology& \foreignlanguage{swedish}{Kriminologi}\\
+\hline \\
+505 & Law& \foreignlanguage{swedish}{Juridik}\\
+50501 & Law& \foreignlanguage{swedish}{Juridik}\\
+50503 & Other Legal Research& \foreignlanguage{swedish}{Annan rättsvetenskaplig forskning}\\
+506 & Political Science& \foreignlanguage{swedish}{Statsvetenskap}\\
+50601 & Political Science (Excluding Peace and Conflict Studies)& \foreignlanguage{swedish}{Statsvetenskap (Exklusive freds- och konfliktforskning)}\\
+50604 & Peace and Conflict Studies& \foreignlanguage{swedish}{Freds- och konfliktforskning}\\
+507 & Social and Economic Geography& \foreignlanguage{swedish}{Social och ekonomisk geografi}\\
+50701 & Human Geography& \foreignlanguage{swedish}{Kulturgeografi}\\
+50702 & Economic Geography& \foreignlanguage{swedish}{Ekonomisk geografi}\\
+50703 & Other Geographic Studies& \foreignlanguage{swedish}{Andra geografiska studier}\\
+\hline \\
+508 & Media and Communications& \foreignlanguage{swedish}{Medie-, kommunikations-, och informationsvetenskaper}\\
+\hline \\
+50801 & Media and Communication Studies& \foreignlanguage{swedish}{Medie- och kommunikationsvetenskap}\\
+50804 & Information Systems, Social aspects& \foreignlanguage{swedish}{Systemvetenskap, informationssystem och informatik med samhällsvetenskaplig inriktning}\\
+50805 & Information Studies& \foreignlanguage{swedish}{Biblioteks-och informationsvetenskap}\\
+\hline \\
+509 & Other Social Sciences& \foreignlanguage{swedish}{Annan samhällsvetenskap}\\
+\hline \\
+50902 & Gender Studies& \foreignlanguage{swedish}{Genusstudier}\\
+50903 & Work Sciences& \foreignlanguage{swedish}{Arbetslivsstudier}\\
+50904 & International Migration and Ethnic Relations& \foreignlanguage{swedish}{Internationell migration och etniska relationer (IMER)}\\
+50905 & Public Administration Studies& \foreignlanguage{swedish}{Studier av offentlig förvaltning}\\
+50906 & Development Studies& \foreignlanguage{swedish}{Utvecklingsstudier}\\
+50907 & Statistics in Social Sciences& \foreignlanguage{swedish}{Statistik inom samhällsvetenskap}\\
+50908 & Health and Diet Studies in Social Sciences& \foreignlanguage{swedish}{Samhällsvetenskapliga hälso- och koststudier}\\
+50909 & Environmental Studies in Social Sciences& \foreignlanguage{swedish}{Miljövetenskapliga studier inom samhällsvetenskap}\\
+50910 & Child and Youth Studies& \foreignlanguage{swedish}{Barn- och ungdomsvetenskap}\\
+50911 & War, Crisis, and Security Studies& \foreignlanguage{swedish}{Krigs-, kris-, säkerhetsvetenskaper}\\
+50912 & Science and Technology Studies& \foreignlanguage{swedish}{Teknik och samhälle}\\
+50999 & Other Social Sciences not elsewhere specified& \foreignlanguage{swedish}{Övrig annan samhällsvetenskap}\\
+\hline \\
+6 & Humanities and the Arts& \foreignlanguage{swedish}{Humaniora och konst}\\
+\hline \\
+601 & History and Archaeology& \foreignlanguage{swedish}{Historia och arkeologi}\\
+\hline \\
+60101 & History& \foreignlanguage{swedish}{Historia}\\
+60102 & Technology and Environmental History& \foreignlanguage{swedish}{Teknik- och miljöhistoria}\\
+60103 & Archaeology& \foreignlanguage{swedish}{Arkeologi}\\
+60104 & History of Science and Ideas& \foreignlanguage{swedish}{Idé- och lärdomshistoria}\\
+60105 & Classical Archaeology and Ancient History& \foreignlanguage{swedish}{Antikvetenskap}\\
+\hline \\
+602 & Languages and Literature& \foreignlanguage{swedish}{Språk och litteratur}\\
+\hline \\
+60201 & Comparative Language Studies and Linguistics& \foreignlanguage{swedish}{Jämförande språkvetenskap och allmän lingvistik}\\
+60202 & Studies of Specific Languages& \foreignlanguage{swedish}{Studier av enskilda språk}\\
+60203 & General Literary studies& \foreignlanguage{swedish}{Litteraturvetenskap}\\
+60204 & Studies of Specific Literatures& \foreignlanguage{swedish}{Litteraturstudier}\\
+60205 & Philology& \foreignlanguage{swedish}{Filologi}\\
+60206 & Translation Studies& \foreignlanguage{swedish}{Översättningsvetenskap}\\
+60207 & Rhetoric& \foreignlanguage{swedish}{Retorik}\\
+\hline \\
+603 & Philosophy, Ethics and Religion& \foreignlanguage{swedish}{Filosofi, etik och religion}\\
+\hline \\
+60301 & Philosophy& \foreignlanguage{swedish}{Filosofi}\\
+60302 & Ethics& \foreignlanguage{swedish}{Etik}\\
+60303 & Religious Studies& \foreignlanguage{swedish}{Religionsvetenskap}\\
+60304 & History of Religions& \foreignlanguage{swedish}{Religionshistoria}\\
+60306 & Aesthetics& \foreignlanguage{swedish}{Estetik}\\
+\hline \\
+604 & Arts& \foreignlanguage{swedish}{Konst}\\
+\hline \\
+60407 & Art History& \foreignlanguage{swedish}{Konstvetenskap}\\
+60408 & Musicology& \foreignlanguage{swedish}{Musikvetenskap}\\
+60409 & Performing Art Studies& \foreignlanguage{swedish}{Teatervetenskap}\\
+60410 & Film Studies& \foreignlanguage{swedish}{Filmvetenskap}\\
+60411 & Visual Arts& \foreignlanguage{swedish}{Fri Konst}\\
+60412 & Music& \foreignlanguage{swedish}{Musik}\\
+60413 & Literary Composition& \foreignlanguage{swedish}{Litterär gestaltning}\\
+60414 & Performing Arts& \foreignlanguage{swedish}{Scenkonst}\\
+60415 & Architecture& \foreignlanguage{swedish}{Arkitektur}\\
+60416 & Design& \foreignlanguage{swedish}{Design}\\
+60417 & Film& \foreignlanguage{swedish}{Film}\\
+60418 & Crafts& \foreignlanguage{swedish}{Konsthantverk}\\
+60419 & Photography& \foreignlanguage{swedish}{Fotografi}\\
+\hline \\
+605 & Other Humanities& \foreignlanguage{swedish}{Annan humaniora och konst}\\
+\hline \\
+60502 & Cultural Studies& \foreignlanguage{swedish}{Kulturstudier}\\
+60503 & Ethnology& \foreignlanguage{swedish}{Etnologi}\\
+60504 & Interdisciplinary Studies in Humanities and Arts& \foreignlanguage{swedish}{Tvärdiciplinära studier i humaniora och konst}\\
+60599 & Other Humanities not elsewhere specified& \foreignlanguage{swedish}{Övrig annan humaniora}\\
+      \hline \\
+\end{longtable}
+
+\end{document}

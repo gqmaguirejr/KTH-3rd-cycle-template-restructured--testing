@@ -1,0 +1,749 @@
+%\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%\ProvidesPackage{kth-layout}
+%    [2025/07/19 v0.1 Provides template-specific layout needed for kththesis.cls]
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\pageNumberFont\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\pageNumberFont\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\pageNumberFont\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+
+% Add 5% extra linespacing
+\linespread{1.05}
+
+% Set the proper format for the headers
+% The general format of the command is:
+% \titleformat{command}[shape]{format}{label}{sep}{before-code}[after-code]
+% see https://www.texready.ir/docs/document_structure/document_sectioning
+
+%\titleformat{\chapter}[display]
+%  {\normalfont\sffamily\huge\bfseries}
+%  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\part}[display]%
+    {\FigtreeFont\fontsize{28}{30}\fontseries{md}\selectfont\filcenter}%
+    {Part~\Roman{part}}{2ex}{}
+\titlespacing{\part}{0.0cm}{178pt}{18pt}
+\assignpagestyle{\page}{empty}
+%\titlecontents{part}[0pt]{\vspace{1em}}{%
+%  {\FigtreeFont\fontsize{12}{14}\selectfont \thecontentslabel%
+%    \hspace*{1.5em}}}{}{}
+\renewcommand{\cftpartfont}{\FigtreeFont}
+\cftpagenumbersoff{part} % turn off page numbers for \part
+
+\titleformat{\chapter}%
+  {\sffamily\fontsize{24}{26}\fontseries{m}\selectfont}  % was \fontseries{md} \FigtreeFont
+  {\thechapter }{20pt}{}
+\titlespacing{\chapter}{-1.0cm}{178pt}{18pt}
+\titlespacing*{\chapter}{0.0cm}{178pt}{18pt}
+\renewcommand{\cftchapfont}{\FigtreeFont}
+\renewcommand{\cftchappagefont}{\FigtreeFont}
+
+%\titleformat{\section}
+%  {\normalfont\sffamily\Large\bfseries}
+%  {\thesection}{1em}{}
+\titleformat{\section}
+  {\FigtreeFont\fontsize{14}{16}\fontseries{sb}\selectfont}
+  {\thesection}{1em}{}
+\titlespacing{\section}{0cm}{12pt}{12pt}
+\renewcommand{\cftsecfont}{\FigtreeFont}
+\renewcommand{\cftsecpagefont}{\FigtreeFont}
+  
+%\titleformat{\subsection}
+%  {\normalfont\sffamily\large\bfseries}
+%  {\thesubsection}{1em}{}
+\titleformat{\subsection}
+  {\FigtreeFont\fontsize{12}{14}\fontseries{sb}\selectfont}
+  {\thesubsection}{1em}{}
+\titlespacing{\subsection}{0cm}{12pt}{10pt}
+\renewcommand{\cftsubsecfont}{\FigtreeFont}
+\renewcommand{\cftsubsecpagefont}{\FigtreeFont}
+  
+%\titleformat{\subsubsection}
+%  {\normalfont\sffamily\normalsize\bfseries}
+%  {\thesubsubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\FigtreeFont\fontsize{12}{14}\fontseries{sb}\fontshape{it}\selectfont}
+  {\thesubsubsection}{1em}{}
+\titlespacing{\subsubsection}{0cm}{12pt}{10pt}
+\renewcommand{\cftsubsubsecfont}{\FigtreeFont}
+\renewcommand{\cftsubsubsecpagefont}{\FigtreeFont}
+
+\titleformat{\paragraph}
+  {\FigtreeFont\fontsize{12}{14}\fontshape{it}\selectfont}
+  {\theparagraph}{1em}{\ul}
+\titlespacing{\paragraph}{0cm}{14pt}{4pt}
+\renewcommand{\cftparafont}{\FigtreeFont}
+\renewcommand{\cftparapagefont}{\FigtreeFont}
+
+% If Figtree had a small caps typeface, one could do:
+%\titleformat{\subparagraph}
+%  {\FigtreeFont\fontsize{12}{14}\fontshape{sc}\selectfont}
+%  {\thesubsubsection}{1em}{}
+\titlespacing{\subparagraph}{0cm}{12pt}{4pt}
+\titleformat{\paragraph}
+  {\FigtreeFont\fontsize{11}{13}\fontshape{it}\selectfont}
+  {\theparagraph}{1em}{\ul}
+\renewcommand{\cftsubparafont}{\FigtreeFont}
+\renewcommand{\cftsubparapagefont}{\FigtreeFont}
+
+% However, it does not have such a small caps, typeface
+%\titleformat{\subparagraph}
+%  {\FigtreeFont\fontsize{12}{14}\selectfont}
+%  {\thesubparagraph}{1em}{\MakeUppercase}
+
+
+% Alternatively, one could try small caps in another san-serif font
+\titleformat{\subparagraph}
+  {\sffamily\fontsize{12}{14}\fontshape{sc}\selectfont}
+  {\thesubparagraph}{1em}{}
+
+
+
+
+% This environment is to overcome the problem that babel changes the fomts and chapter heading formatting in language specific ways
+% The method used here is to simply set the heading without using a heading command.
+\renewenvironment{abstract}{%
+    %\typeout{kththesisChip \f@encoding\  \f@family\  \f@series\  \f@shape}%
+  \vspace*{178pt}% Space before the title - the ^is needed because \vspace is removed at page breaks
+  \noindent
+  \IfEqCase{\localename}{% \languagename
+    {hindi}   {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont  \abstractname}}%
+    {russian} {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    {ukrainian} {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    {greek}   {{\sffamily \fontsize{24}{26}\fontseries{m}\selectfont \abstractname}}%
+    {chinese-simplified} {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    {arabic}  {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    {centralkurdish}  {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    {hebrew}  {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    %{hebrew}  {{\hebrewfontsf \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    {japanese}  {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    % We have to use \NotoSansFont as Figtree is missing "ắ" and "ộ" from "Tóm tắt nội dung"
+    {vietnamese}  {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    {yiddish}  {{\sffamily \fontsize{24}{26}\fontseries{m}\fontshape{n}\selectfont \abstractname}}%
+    % Add other specific languages here if they don't use FigtreeFont
+  }[% Default case: If none of the above special languages match, use FigtreeFont.
+    % This covers: english, swedish, french, spanish, norwegian, german, italian, danish, dutch, estonian, finnish, icelandic, romanian, turkish, latin, latvian, hungarian
+    {\FigtreeFont \fontsize{24}{26}\fontseries{m}\selectfont \abstractname}%
+  ]%
+
+  \vspace{20pt}% Space after the title, before the abstract content begins
+  \normalsize\normalfont % Reset font size for the content of the abstract
+}{%
+  % No specific code needed after the abstract content ends, unless you have closing commands.
+  % The 'abstract' environment typically handles its own vertical spacing at the end.
+}
+
+\AfterEndEnvironment{abstract}{\phfnoteRestoreDefs{origcmds}}
+
+
+%% Add a macro to handle keywords header in the abstract
+\newcommand{\keywordHeading}[1]{\vspace{24pt}\noindent{\fontsize{12}{14}\fontseries{b}\selectfont {#1}}\par}
+
+%If you find the above to be as ugly as I do, you can redefine the macro as:
+%\newcommand{\keywordHeading}[1]{\subsection*{#1}}
+
+% Turn off autodot - although it might be used at the end of headings in Russian
+\newcommand{\autodot}{}
+
+\makeatletter
+
+% For information about the page layout see https://www.overleaf.com/learn/latex/Page_size_and_margins
+\newcommand{\kthcover}{
+% Note that the values have only been adjusted for A4 paper!
+\ifgfivepaper
+  \newgeometry{top=65mm,bottom=30mm,left=62mm,right=18mm}
+\else
+% check whether there is a cover illustration
+\ifx\@coverIllustration\@empty
+    % If there is no cover illustration, then keep a bottom margin
+   \newgeometry{top=232.34pt,bottom=70.9pt,left=70.9pt, right=70.9pt} % formerly {top=56mm,bottom=30mm,left=74pt, right=35mm}
+\else
+    % If there is a cover image, then set the bottom margin to 0.
+    % This allows you to have an image that goes basically to the bottom of the page,
+    % if you wish to do so.
+    \newgeometry{top=232.34pt,bottom=0pt,left=70.9pt, right=70.9pt}
+\fi
+\fi
+
+\thispagestyle{empty}
+
+
+
+\begin{textblock*}{106.16898110pt}(226.77pt, 35.4pt) % formerly 20pt, 40pt
+\includegraphics[width=106.16898110pt, height=118.9419140pt, keepaspectratio]{kth/KTH_logo_RGB_bla.png}
+\end{textblock*}
+%\vspace{160pt}
+\begin{center}
+  \ifinswedish
+  {\FigtreeFont\fontsize{12}{13}\selectfont 
+  \IfEqCase{\@degreeName}{%
+    {Doctorate}{Doktorsavhandling}%
+    {Licentiate}{Licentitatavhandling}%
+    {XXX}{\textcolor{red}{XXXavhandling}}%
+    }[\typeout{unknown degreeName}]%
+\ inom \@subjectArea\\
+  }
+
+  \else
+{\FigtreeFont\fontsize{10}{12}\selectfont
+  \IfEqCase{\@degreeName}{%
+    {Doctorate}{Doctoral Thesis}%
+    {Licentiate}{Licentiate Thesis}%
+    {XXX}{\textcolor{red}{XXX Thesis}}%
+    }[\typeout{unknown degreeName}]%
+\ in \@subjectArea\\
+}
+
+\fi
+\addvspace{16pt}
+{\FigtreeFont\fontseries{b}\fontsize{24}{30}\selectfont \@title\par }
+
+
+\ifx\@subtitle\@empty\relax
+\else
+\addvspace{12pt}
+    {\FigtreeFont\fontseries{sb}\fontsize{14}{18}\selectfont \@subtitle \par }
+\fi
+
+\addvspace{18pt}
+    {\FigtreeFont\fontseries{sb}\fontsize{12}{15}\selectfont
+    \expandafter\MakeUppercase\expandafter\@authorsFirstname\space\expandafter\MakeUppercase\expandafter\@authorsLastname \par
+    \ifx\@secondAuthorsLastname\@empty\relax
+    \else\addvspace{2pt}\expandafter\MakeUppercase\expandafter\@secondAuthorsFirstname\space\expandafter\MakeUppercase\expandafter\@secondAuthorsLastname \par
+    \fi
+    }
+    \addvspace{18pt}
+    {\FigtreeFont\fontseries{m}\fontsize{6.3}{8}\selectfont
+    KTH ROYAL INSTITUTE OF TECHNOLOGY\par
+    }
+\end{center}
+\zsaveposy{kthlinebottom} % Save Y-coordinate just after KTH line (bottom of its baseline box)
+\vfill % This will fill up remaining space *before* the fixed \vspace* and image
+       % This might not be what you want if you want the image to use up the space.
+       % Let's remove \vfill here and let the image height calculation do the work.
+
+\ifx\@coverIllustration\@empty\relax
+% If you want to add your own LaTeX-generated cover content: remove the \relax above
+% then add your own code here.
+\else
+    \newdimen\imageTopMargin\imageTopMargin=1cm
+    \newdimen\imageBottomMargin\imageBottomMargin=6mm
+    \newdimen\calculatedMaxHeight
+
+    \zifrefundefined{kthlinebottom}{%
+        % True: kthlinebottom is undefined (first run)
+        \calculatedMaxHeight=100mm % Fallback default max height
+        \typeout{LaTeX Warning: Label 'kthlinebottom' undefined. Using default image height. Rerun LaTeX.}
+    }{%
+        % False: kthlinebottom is defined (subsequent runs)
+        \calculatedMaxHeight=\dimexpr \zposy{kthlinebottom}sp - \imageTopMargin - \imageBottomMargin \relax
+        \ifdim\calculatedMaxHeight<10pt \calculatedMaxHeight=10pt \fi % Min sensible height
+    }%
+
+    \par\vspace*{\imageTopMargin}
+
+    \begin{center}
+    \IfFileExists{\@coverIllustration}{%
+        \noindent\includegraphics[
+            width=0.9\textwidth,
+            height=\calculatedMaxHeight,
+            keepaspectratio
+        ]{\@coverIllustration}%
+    }{}%
+    \end{center}
+\fi
+\restoregeometry
+\clearpage
+}
+
+\newcommand{\kthbackcover}{
+% Note that the values have only been adjusted for A4 paper!
+\ifgfivepaper
+  \newgeometry{top=65mm,bottom=30mm,left=62mm,right=18mm}
+\else
+  \newgeometry{top=65mm,bottom=30mm,left=74pt, right=35mm}
+\fi
+
+\thispagestyle{empty}
+\begin{textblock*}{510pt}(38.83pt, 30pt) % {block width} (coords) - formerly: {\paperheight - 90pt}
+\ifinswedish
+\noindent{\FigtreeFont\fontsize{8}{10}\selectfont Stockholm, Sverige \the\year{}}\\
+  \else
+\noindent{\FigtreeFont\fontsize{8}{10}\selectfont Stockholm, Sweden \the\year{}}\\
+  \fi
+\end{textblock*}
+
+% Generate the back cover with the TRITA number and the fixed graphical elements
+\begin{textblock*}{5cm}(38.83pt, {\paperheight - 101pt}) % {block width} (coords) 
+\noindent{\FigtreeFont\fontsize{10}{12}\selectfont 
+    \ifx\@thesisSeries\@empty %\relax
+        TRITA xxxx:yyy
+        \else
+        	\@thesisSeries\,\ifx\@thesisSeriesNumber\@empty\relax
+            \else
+            \@thesisSeriesNumber
+             \fi
+    \fi\\
+    \ifx\@thesisISBN\@empty\relax
+    \else
+    ISBN \@thesisISBN\\
+    \fi
+}
+\end{textblock*}
+
+\begin{textblock*}{5cm}(38.83pt, {\paperheight - 63pt}) % {block width} (coords)  - was 44pt
+\noindent{\FigtreeFont\fontsize{8}{9}\selectfont
+    \textcolor{kth-blue}{www.kth.se}
+}
+\end{textblock*}
+
+\restoregeometry
+\null\newpage
+}
+
+% Macro to dynamically generate the full degree name (language-dependent) when called
+% Uses \strcompareV as per your working code.
+\newcommand{\fullDegreeName}[1]{%
+\ifinswedish
+    \ifx\@degreeModifier\@empty%
+        \strcompareV{#1}{Doctorate}{teknologie doktorsexamen}{}%
+        \strcompareV{#1}{Licentiate}{teknologie licentiatexamen}{}%
+        \strcompareV{#1}{XXX}{teknologie XXXexamen}{}%
+    \else
+        \strcompareV{#1}{Doctorate}{filosofie doktorsexamen}{}%
+        \strcompareV{#1}{Doctorate}{filosofie licentiatexamen}{}%
+        \strcompareV{#1}{XXX}{filosofie XXXexamen}{}%
+    \fi
+\else % English
+    \ifx\@degreeModifier\@empty%
+        \strcompareV{#1}{Doctorate}{Doctor of Technology}{}%
+        \strcompareV{#1}{Licentiate}{Licentiate of Engineering}{}%
+        \strcompareV{#1}{XXX}{XXX of Engineering}{}%
+    \else
+        \strcompareV{#1}{Doctorate}{Doctor of Philosophy}{}%
+        \strcompareV{#1}{Licentiate}{Licentiate of Philosophy}{}%
+        \strcompareV{#1}{XXX}{XXX of Philosophy}{}%
+    \fi
+\fi
+}
+
+% Your custom datetime2 styles, confirmed working
+\DTMnewdatestyle{KTHEnglishDateFormat}{%
+    \renewcommand*{\DTMenglishfmtordsuffix}{\DTMenGBfmtordsuffix}%
+    \renewcommand*{\DTMdisplaydate}[4]{%
+    \DTMenglishweekdayname{##4} \DTMenglishordinal{##3} \DTMenglishmonthname{##2}  \number##1
+    }%
+}
+\DTMnewdatestyle{KTHSwedishDateFormat}{%
+    \renewcommand*{\DTMenglishfmtordsuffix}{\DTMenGBfmtordsuffix}%
+    \renewcommand*{\DTMdisplaydate}[4]{%
+    \DTMswedishweekdayname{##4} \DTMswedishordinal{##3} \DTMswedishmonthname{##2}  \number##1
+    }%
+}
+
+% Macro to save and prepare presentation date/time using datetime2, as you confirmed works
+\newcommand{\savePresentationDateTime}[1]{%
+    \StrBefore{#1}{ }[\dtmDatePart]%
+    \StrBehind{#1}{ }[\dtmTimePart]%
+    \StrBefore{\dtmDatePart}{-}[\dtmYear]%
+    \StrBehind{\dtmDatePart}{-}[\dtmMonthDay]%
+    \StrBefore{\dtmMonthDay}{-}[\dtmMonth]%
+    \StrBehind{\dtmMonthDay}{-}[\dtmDay]%
+    \StrBefore{\dtmTimePart}{:}[\dtmHour]%
+    \StrBehind{\dtmTimePart}{:}[\dtmMinute]%
+    \DTMsavedate{presentationDate}{{\dtmYear}-{\dtmMonth}-{\dtmDay}}%
+    \DTMsavetime{presentationTime}{{\dtmHour}:{\dtmMinute}:00}%
+}
+
+
+% Command to print out the standardized title page
+\renewcommand{\titlepage}{
+\ifgfivepaper
+  \newgeometry{top=65mm,bottom=30mm,left=62mm,right=18mm}
+\else
+  \newgeometry{top=65mm,bottom=30mm,left=74pt,right=35mm} % formerly left=50mm
+\fi
+
+\thispagestyle{empty}
+
+\ifinswedish\selectlanguage{swedish}\fi
+
+\begin{huge}
+  \begin{flushleft}
+    \noindent\FigtreeFont\fontseries{sb}\fontsize{24}{28}\selectfont \@title \par
+  \end{flushleft}
+\end{huge}
+
+\ifx\@subtitle\@empty\relax
+\else
+\begin{Large}
+  \vspace{20pt}
+  \begin{flushleft}
+    \noindent\FigtreeFont\fontseries{sb}\fontsize{16}{18}\selectfont \@subtitle \par
+  \end{flushleft}
+\end{Large}
+\fi
+
+
+\vspace{20pt}
+\begin{large}
+  \begin{flushleft}
+    \FigtreeFont\fontseries{sb}\fontsize{11.5}{13}\selectfont
+    \expandafter\MakeUppercase\expandafter\@authorsFirstname\space\expandafter\MakeUppercase\expandafter\@authorsLastname \par
+    \ifx\@secondAuthorsLastname\@empty\relax
+    \else\vspace{1ex}\expandafter\MakeUppercase\expandafter\@secondAuthorsFirstname\space\expandafter\MakeUppercase\expandafter\@secondAuthorsLastname \par
+    \fi
+  \end{flushleft}
+\end{large}
+\vspace{68pt}
+\savePresentationDateTime{\@presentationDateAndTimeISO}
+\begin{flushleft}
+{  \FigtreeFont\fontsize{8}{10}\selectfont
+\ifinswedish
+\DTMsetdatestyle{KTHSwedishDateFormat}
+\DTMsettimestyle{default}
+
+Akademisk avhandling som, med vederbörligt tillstånd från KTH Kungliga Tekniska Högskolan, framläggs för offentligt försvar för avläggande av \fullDegreeName{\@degreeName}\ den\  \DTMusedate{presentationDate}\ klockan\ \DTMusetime{presentationTime}\ i \@presentationRoom, \@presentationAddress.
+\else
+\DTMsetdatestyle{KTHEnglishDateFormat}
+\renewcommand*\DTMenglisham{\ a.m.}%
+\renewcommand*\DTMenglishpm{\ p.m.}%
+\DTMsettimestyle{englishampm}
+
+Academic Dissertation which, with due permission of the KTH Royal Institute of Technology, is submitted for public defence for the Degree of \fullDegreeName{\@degreeName}\ on\  \DTMusedate{presentationDate}\ at\ \DTMusetime{presentationTime}\ in \@presentationRoom, \@presentationAddress.%
+\fi
+}
+\end{flushleft}
+\vfill
+
+\begin{flushleft}
+{  \FigtreeFont\fontsize{8}{10}\selectfont
+\ifinswedish
+  \IfEqCase{\@degreeName}{%
+    {Doctorate}{Doktorsavhandling}%
+    {Licentiate}{Licentitatavhandling}%
+    {XXX}{\textcolor{red}{XXXavhandling}}%
+    }[\typeout{unknown degreeName}]%
+\ inom \@subjectArea\\
+  \else
+  \IfEqCase{\@degreeName}{%
+    {Doctorate}{Doctoral Thesis}%
+    {Licentiate}{Licentiate Thesis}%
+    {XXX}{\textcolor{red}{XXX Thesis}}%
+    }[\typeout{unknown degreeName}]%
+\ in \@subjectArea\\
+
+\fi
+  \ifinswedish
+    \ifx\@supervisorBsLastname\@empty
+    Handledare: \@supervisorAsFirstname\space\@supervisorAsLastname
+        \else
+    Handledare: \@supervisorAsFirstname\space\@supervisorAsLastname,  \@supervisorBsFirstname\space\@supervisorBsLastname
+        \fi
+    \ifx\@supervisorCsLastname\@empty
+    \else
+    , \@supervisorDsFirstname\space\@supervisorCsLastname
+    \fi
+    \ifx\@supervisorCsLastname\@empty
+    \else
+    , \@supervisorDsFirstname\space\@supervisorDsLastname
+    \fi
+    \ifx\@supervisorEsLastname\@empty
+    \else
+    , \@supervisorEsFirstname\space\@supervisorEsLastname
+    \fi
+    \par
+
+
+    \ifx\@alttitle\empty\relax\else Engelsk titel: %
+    \begin{otherlanguage}{english}\sffamily\@alttitle\end{otherlanguage} \fi
+    \ifx\@altsubtitle\@empty\relax
+    \else
+    English subtitle \begin{otherlanguage}{english}\sffamily\@altsubtitle\end{otherlanguage} \\
+    \fi
+  \else
+
+    \ifx\@supervisorBsLastname\@empty
+    Supervisor: \@supervisorAsFirstname\space\@supervisorAsLastname
+    \else
+    Supervisors: \@supervisorAsFirstname\space\@supervisorAsLastname,  \@supervisorBsFirstname\space\@supervisorBsLastname
+    \fi
+    \ifx\@supervisorCsLastname\@empty
+    \else
+    , \@supervisorCsFirstname\space\@supervisorCsLastname
+    \fi
+    \ifx\@supervisorDsLastname\@empty
+    \else
+    , \@supervisorDsFirstname\space\@supervisorDsLastname
+    \fi
+    \ifx\@supervisorEsLastname\@empty
+    \else
+    , \@supervisorEsFirstname\space\@supervisorEsLastname
+    \fi
+    \par
+    \ifx\@alttitle\empty\relax\else Swedish title: %
+        \begin{otherlanguage}{swedish}
+        \sffamily\@alttitle\end{otherlanguage}
+        \par \fi
+    \ifx\@altsubtitle\@empty\relax\else {\sffamily 
+    Swedish subtitle:} %
+        \begin{otherlanguage}{swedish}
+        \sffamily\@altsubtitle\end{otherlanguage} \par \fi
+  \fi
+  \ifinswedish
+Kungliga Tekniska högskolan (KTH)\par
+Stockholm, Sverige \the\year\par
+\else
+KTH Royal Institute of Technology\par
+Stockholm, Sweden \the\year\par
+\fi
+}
+\end{flushleft}
+\restoregeometry
+\clearpage
+}
+
+
+% Command to print out the standardized document information page
+\newcommand{\bookinfopage}{
+\ifgfivepaper
+  \newgeometry{top=140mm,bottom=30mm,left=12.25mm,right=35mm}
+\else
+  \newgeometry{top=544pt,bottom=30mm,left=74pt,right=35mm}
+\fi
+\thispagestyle{empty}
+\par\vspace*{\fill}
+\begin{flushleft}
+{  \FigtreeFont\fontsize{8}{10}\selectfont
+\copyright\enspace\the\year\quad\@authorsFirstname\space\@authorsLastname 
+  \ifx\@secondAuthorsLastname\@empty\relax
+  \else
+    \ifinswedish
+      \enspace och\enspace\@secondAuthorsFirstname\space\@secondAuthorsLastname
+    \else
+      \enspace and\enspace\@secondAuthorsFirstname\space\@secondAuthorsLastname
+    \fi
+  \fi
+    \\
+    \vspace{1ex}
+    \ifx\@coverIllustrationCredit\@empty\relax
+    \else
+    \ifinswedish
+    Omslagsillustration:\ 
+    \else
+    Cover illustration:\ 
+    \fi
+    \@coverIllustrationCredit\\
+    \vspace{1ex}
+    \fi
+    \ifx\@thesisSeries\@empty\relax
+    \else
+    \@thesisSeries
+        \ifx\@thesisSeriesNumber\@empty\relax
+        \else
+        \@thesisSeriesNumber\\
+        \fi
+    \fi
+    \ifx\@thesisISBN\@empty\relax
+    \else
+    ISBN \@thesisISBN\\
+    \fi
+    \vspace{1ex}
+    \ifx\@printedBy\@empty\relax
+    \else
+    \ifinswedish
+    Tryck:\ 
+    \else
+    Printed by:\ 
+    \fi
+    \@printedBy\\
+    \fi
+}
+\end{flushleft}
+\thesiscopyrightleft{copyright}
+% make the following code conditional upon the package hyperxmp being used
+\ltx@ifpackageloaded{hyperxmp}{
+% The following is only used to add the copyright notice to the metadata of the PDF file
+\newcommand{\mycopyright}{%
+   {{Copyright (c)}\ \the\year\ \@authorsFirstname\ \@authorsLastname %
+  \ifx\@secondAuthorsLastname\@empty\relax%
+  \else%
+    \ifinswedish%
+      \  och\ \@secondAuthorsFirstname\ \@secondAuthorsLastname%
+    \else%
+      \  and\ \@secondAuthorsFirstname\ \@secondAuthorsLastname%
+    \fi%
+  \fi%
+   }
+}
+\hypersetup{
+     pdfcopyright={\mycopyright} 
+}
+}{}% end of ifpackage conditional
+\restoregeometry
+\clearpage
+}
+
+% bookinfo page with CC license
+% CC BY (Attribution)
+% CC BY-NC (Attribution + Non-commercial)
+% CC BY-ND (Attribution + No derivatives)
+% CC BY-NC-ND (Attribution + Non-commercial + No derivatives)
+% CC BY-SA (Attribution + ShareAlike)
+% CC BY-NC-SA (Attribution + Non-commercial + ShareAlike)
+% CC0 (Zero)
+\newcommand{\bookinfopageCC}{
+\ifgfivepaper
+\newgeometry{top=130mm,bottom=30mm,left=12.25mm,right=35mm}
+\else
+\newgeometry{top=220mm,bottom=30mm,left=74pt,right=35mm}
+\fi
+\thispagestyle{empty}
+\begin{flushleft}
+  {  \FigtreeFont\fontsize{8}{10}\selectfont
+  \IfEqCase{\doclicense@modifier}{%
+    {by}{CC BY}%
+    {by-nc}{CC BY-NC}%
+    {by-nd}{CC BY-ND}%
+    {by-nc-nd}{CC BY-NC-ND}%
+    {by-sa}{CC BY-SA}%
+    {by-nc-sa}{CC BY-NC-SA}%
+    {zero}{CC0}%
+  }[\typeout{Creative Commons code  \doclicense@modifier not found}\copyright]
+  \enspace\the\year\quad\@authorsFirstname\space\@authorsLastname 
+  \ifx\@secondAuthorsLastname\@empty\relax
+  \else
+    \ifinswedish
+      \enspace och\enspace\@secondAuthorsFirstname\space\@secondAuthorsLastname
+    \else
+      \enspace and\enspace\@secondAuthorsFirstname\space\@secondAuthorsLastname
+    \fi
+    \\
+  \fi
+  \doclicenseThis
+    \vspace{1ex}
+    \ifx\@coverIllustrationCredit\@empty\relax
+    \else
+    \ifinswedish
+    Omslagsillustration:\ 
+    \else
+    Cover illustration:\ 
+    \fi
+    \@coverIllustrationCredit\\
+    \vspace{1ex}
+    \fi
+    \ifx\@thesisSeries\@empty\relax
+        \else
+        \@thesisSeries
+        \ifx\@thesisSeriesNumber\@empty\relax
+        \else
+            \@thesisSeriesNumber
+        \fi
+        \\
+    \fi
+    \ifx\@thesisISBN\@empty\relax
+    \else
+    ISBN \@thesisISBN\\
+    \fi
+    \vspace{1ex}
+    \ifx\@printedBy\@empty\relax
+    \else
+    \ifinswedish
+    Tryck:\ 
+    \else
+    Printed by:\ 
+    \fi
+    \@printedBy\\
+    \fi
+   } 
+\end{flushleft}
+\thesiscopyrightleft{\doclicense@modifier}
+% make the following code conditional upon the package hyperxmp being used
+
+\ltx@ifpackageloaded{hyperxmp}{
+\let\@myCC\@empty
+\ifdefstring{\doclicense@modifier}{by}{\def\@myCC{CC BY}}{}
+\ifdefstring{\doclicense@modifier}{by-nc}{\def\@myCC{CC BY-NC}}{}
+\ifdefstring{\doclicense@modifier}{by-nd}{\def\@myCC{CC BY-ND}}{}
+\ifdefstring{\doclicense@modifier}{by-nc-nd}{\def\@myCC{CC BY-NC-ND}}{}
+\ifdefstring{\doclicense@modifier}{by-sa}{\def\@myCC{CC BY-SA}}{}
+\ifdefstring{\doclicense@modifier}{by-nc-sa}{\def\@myCC{CC BY-NC-SA}}{}
+\ifdefstring{\doclicense@modifier}{zero}{\def\@myCC{CC0}}{}
+
+% The following is only used to add the copyright notice to the metadata of the PDF file
+\newcommand{\mycopyright}{%
+  {\@myCC\ \the\year\ \@authorsFirstname\ \@authorsLastname%
+  \ifx\@secondAuthorsLastname\@empty\relax%
+  \else%
+    \ifinswedish%
+      \  och\ \@secondAuthorsFirstname\ \@secondAuthorsLastname%
+    \else%
+      \ and\ \@secondAuthorsFirstname\ \@secondAuthorsLastname %
+    \fi%
+  \fi%
+   }
+}
+\hypersetup{
+     pdfcopyright={\mycopyright} 
+}
+}{}% end of ifpackage conditional
+\restoregeometry
+\clearpage
+}
+
+% If the doclicense package is installed, then use the \bookinfoCC when encountering a \bookinfo command
+\AtBeginDocument{\@ifpackageloaded{doclicense}
+  {%
+    \renewcommand{\bookinfopage}{\bookinfopageCC}
+  }
+  {\relax}
+}
+
+\newcommand{\acknowlegmentssignature}{
+ \ifx\@secondAuthorsLastname\@empty
+ \begin{flushleft}
+\@authorCityCountryDate\\
+    \@authorsFirstname\space\@authorsLastname
+ \end{flushleft}
+\else
+\begin{flushleft}
+\begin{tabular}{l l}
+\@authorCityCountryDate & \@secondAuthorCityCountryDate \\
+    \@authorsFirstname\space\@authorsLastname &
+    \@secondAuthorsFirstname\space\@secondAuthorsLastname \\
+%       \ifinswedish
+%       \enspace & \enspace\@secondAuthorsFirstname\space\@secondAuthorsLastname \\
+%       \else
+%       \enspace and\enspace\@secondAuthorsFirstname\space\@secondAuthorsLastname \\
+%       \fi
+\end{tabular}
+\end{flushleft}
+\fi
+
+\cleardoublepage
+}
+\makeatother
+
+\newcommand{\frontmatter}{
+  \pagenumbering{roman}
+  % when using backref with hyperref one cannot manually reset the page numbers, but needs to use different numbering schemes - see https://tex.stackexchange.com/questions/93889/why-does-backref-refer-to-wrong-page
+%  \setcounter{page}{1}
+}
+
+\newcommand{\mainmatter}{
+  \cleardoublepage
+  \pagenumbering{arabic}
+}

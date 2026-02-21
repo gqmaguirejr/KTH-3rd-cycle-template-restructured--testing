@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage{fontspec}
+\usepackage{luacode}
+
+\title{Generate Font Exclusion List from Pre-built Cache}
+\author{Gerald Q. Maguire Jr.}
+\date{August 2025}
+
+\begin{document}
+\maketitle
+This file assumes that you have just compiled listfonts.tex. It utilizes the fact that the previous compilation cached the fonts in the font cache. This program now check whether these cached fonts have the letters from 'a' to 'z', if not it adds them to an exclusion\_list that it outputs in generated\_exclusion\_list.lua. This file can now be edited to replace \texttt{\textbackslash n} with newlines. The results can be used in the listfonts.tex file.
+
+
+Why did this take two programs/documents?
+
+To check if the font contains the required characters, we need to look at the contents of the font file in the font cache. To get this font file in the font cache, we must use this font to attempt to set something, which will load the font. However, if we try to set a glyph that the font does not have, we get a low-level "missing glyph" error that Lua cannot catch with a protected call (pcall). Although the pcall can be used to wrap the generation of a string to print, this operation is successful. Unfortunately, the error occurs later when the mechanism to produce the output actually takes place.
+
+The two programs/documents could be merged if one would attempt to set a character in a font, then look at the cached font file to check if the required letters occur in it. A problem is that there is no character that is definitely in each font (although U+FFFD, i.e., the Replacement Character, is supposed to be in all well-formed fonts). So what character can be used? It seems that one can use a space, as this does not get rendered by the font, so the low-level error does not occur -- but the font has been loaded!
+
+\begin{luacode}
+    -- This helper function loads a .lua or .luc file
+    function load_lua_file(path_lua)
+        local path_luc = string.gsub(path_lua, "%.lua$", ".luc")
+        local chunk
+        
+        -- Prefer the compiled .luc file for speed
+        local f_luc = io.open(path_luc, "rb")
+        if f_luc then
+            local data = f_luc:read("*a")
+            f_luc:close()
+            chunk = load(data, 'b')
+        else
+            -- Fall back to the .lua source file
+            local f_lua = io.open(path_lua, "r")
+            if f_lua then
+                local data = f_lua:read("*a")
+                f_lua:close()
+                chunk = load(data, 't')
+            end
+        end
+
+        if chunk then
+            local success, result = pcall(chunk)
+            if success then return result end
+        end
+        return nil
+    end
+
+    -- This function correctly checks if a font is a text font by inspecting its cache file.
+    function is_text_font(basename)
+        -- 1. Convert the basename to lowercase to match the cache filesystem.
+        local lower_basename = string.lower(basename)
+        
+        -- 2. Construct the path to the font's cache file.
+        local cache_path = "./cache/luatex-cache/generic/fonts/otl/" .. file.replacesuffix(lower_basename, "lua")
+
+        -- 3. Load the font's data table directly from its cache file.
+        local fontdata = load_lua_file(cache_path)
+        
+        if not fontdata or not fontdata.descriptions then
+            return false -- Cache file is missing or corrupt, so we exclude it.
+        end
+
+        -- 4. A robust heuristic: a usable text font must contain the lowercase Latin alphabet.
+        for char_code = string.byte('a'), string.byte('z') do
+            if not fontdata.descriptions[char_code] then
+                return false -- A letter is missing, so it's a symbol/specialty font.
+            end
+        end
+
+        return true
+    end
+
+    -- The main function to generate the exclusion list
+    function generate_exclusion_list()
+        local myfonts = luaotfload.aux.read_font_index()
+        local exclusion_table = {}
+        local excluded_count = 0
+
+        for i, entry in ipairs(myfonts.mappings) do
+            local basename = entry.basename
+            -- A font is excluded if it is NOT a text font.
+            if not is_text_font(basename) then
+                exclusion_table[basename] = true
+                excluded_count = excluded_count + 1
+            end
+        end
+        
+        -- Build the final string for the output file
+        local output_lines = { "local exclusion_list = {" }
+        for basename, _ in pairs(exclusion_table) do
+             table.insert(output_lines, string.format('    ["%s"] = true,', basename))
+        end
+        table.insert(output_lines, "}")
+        
+        local exclusion_list_string = table.concat(output_lines, "\\n")
+
+        local outputFile = io.open("generated_exclusion_list.lua", "w")
+        if outputFile then
+            outputFile:write(exclusion_list_string)
+            outputFile:close()
+            tex.sprint("\\wlog{SUCCESS: Wrote " .. excluded_count .. " font names to generated_exclusion_list.lua}")
+        else
+            tex.sprint("\\wlog{ERROR: Could not write to output file.}")
+        end
+    end
+
+    generate_exclusion_list()
+\end{luacode}
+
+\section*{Process Complete}
+The process has finished. Please check your log file for the success message and the file `generated\_exclusion\_list.lua` for the result.
+
+\end{document}

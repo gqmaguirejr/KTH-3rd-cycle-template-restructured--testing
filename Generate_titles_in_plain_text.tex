@@ -1,0 +1,693 @@
+\documentclass{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{etoolbox}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{STIX Two Text}  % [Ligatures=NoCommon]
+\setmathfont{STIX Two Math}
+\setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
+
+\usepackage{luacode}
+\usepackage{comment}
+\usepackage{enumitem}
+\usepackage{metalogo}   % for \TeX and \LuaLaTeX logos
+
+% One does not need to include the special fonts, but rather just ignore the missing character error messages. If you don't want to ignore them, then add the relevant fonts and unicode character definitions.
+\begin{comment}
+\usepackage{babel}
+\babelprovide[import, onchar=ids fonts]{greek}
+\babelprovide[import, onchar=ids fonts]{chinese-simplified}
+\babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+\babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+\babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+\end{comment}
+
+\usepackage{amsmath} % Provides \text{...}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{newunicodechar}
+\usepackage{url}
+\usepackage{placeins} % to provide a float barrier
+\usepackage{hyperref} % to use \href{}{}
+\usepackage{cleveref} % mustbe loaded after hyperref
+
+\newfontfamily\mystixmathfont{STIX Two Math Regular}
+
+\newfontfamily\NoLigaturesFont{STIX Two Text}[Ligatures=NoCommon]
+
+\begin{luacode*}
+local debug_mode = true -- Set to false to disable logging
+
+local semantically_correct = false -- if true, use only semantically correct replacements; else use semantically incorrect but visually similar replacements
+
+local use_AsciiMath_subscripts_and_superscripts = true
+-- if true, use left and right parentheses, otherwise, use left and right brackets
+
+-- A global flag to track if the parser is currently inside a math environment.
+current_mode_math = false
+
+-- Mapping tables for superscript and subscript characters
+local superscript_map = {
+    -- digits
+    ['0'] = '⁰', ['1'] = '¹', ['2'] = '²', ['3'] = '³', ['4'] = '⁴', 
+    ['5'] = '⁵', ['6'] = '⁶', ['7'] = '⁷', ['8'] = '⁸', ['9'] = '⁹',
+    -- Punctuation & Operators
+    ['+'] = '⁺', ['-'] = '⁻', ['−'] = '⁻',
+    ['='] = '⁼', ['('] = '⁽', [')'] = '⁾',
+    -- high comma
+    
+    -- high period
+    ['.'] = '˙', -- Dot Above U+02D9
+
+    -- degree symbol
+    ['∘'] = '°', --turn U+2218 (Ring Operator) into U+B0 (Degree Sign) -- superscipt circ
+
+    -- Uppercase Latin
+
+    -- Lowercase Latin
+    ['i'] = 'ⁱ', --	U+2071 to U+2071 = Superscript Latin Small Letter I
+    ['\u{1D456}'] = 'ⁱ', --	U+1D456
+    
+    ['n'] = 'ⁿ', --	U+207F to U+207F = Superscript Latin Small Letter N
+    ['\u{1D45B}'] = 'ⁿ', --	U+1D45B
+    
+
+    -- This map can be expanded
+}
+
+-- The table with visually similar but semantically incorrect characters
+local unsafe_superscript_map = {
+    -- superscript infinity, NBSP with Combining Infinity (U+1AB2)
+    -- ['∞'] =  '\u{00A0}\u{1AB2}',
+    ['∞'] =  '\u{2009}\u{1AB2}', -- a thin space combined with Combining Infinity (U+1AB2)
+    
+    -- Uppercase Latin
+    ['A'] = 'ᴬ', --	U+1D2C to U+1D2C = Modifier Letter Capital A
+    ['\u{1D434}'] = 'ᴬ', --	U+1D434
+    ['B'] = 'ᴮ', --	U+1D2E to U+1D2E = Modifier Letter Capital B
+    ['\u{1D435}'] = 'ᴮ', --	U+1D435
+    -- C is missing
+    ['D'] = 'ᴰ', --	U+1D30 to U+1D30 = Modifier Letter Capital D
+    ['\u{1D437}'] = 'ᴰ', --	U+1D437
+    ['E'] = 'ᴱ', --	U+1D31 to U+1D31 = Modifier Letter Capital E
+    ['\u{1D438}'] = 'ᴱ', --	U+1D438
+    -- F is missing
+    ['G'] = 'ᴳ', --	U+1D33 to U+1D33 = Modifier Letter Capital G
+    ['\u{1D43A}'] = 'ᴳ', --	U+1D43A
+    ['H'] = 'ᴴ', --	U+1D34 to U+1D34 = Modifier Letter Capital H
+    ['\u{1D43B}'] = 'ᴴ', --	U+1D43B
+    ['I'] = 'ᴵ', --	U+1D35 to U+1D35 = Modifier Letter Capital I
+    ['\u{1D43C}'] = 'ᴵ', --	U+1D43C
+    ['J'] = 'ᴶ', --	U+1D36 to U+1D36 = Modifier Letter Capital J
+    ['\u{1D43D}'] = 'ᴶ', --	U+1D43D
+    ['K'] = 'ᴷ', --	U+1D37 to U+1D37 = Modifier Letter Capital K
+    ['\u{1D43E}'] = 'ᴷ', --	U+1D43E
+    ['L'] = 'ᴸ', --	U+1D38 to U+1D38 = Modifier Letter Capital L
+    ['\u{1D43F}'] = 'ᴸ', --	U+1D43F
+    ['M'] = 'ᴹ', --	U+1D39 to U+1D39 = Modifier Letter Capital M
+    ['\u{1D440}'] = 'ᴹ', --	U+1D440
+    ['N'] = 'ᴺ', --	U+1D3A to U+1D3A = Modifier Letter Capital N
+    ['\u{1D441}'] = 'ᴺ', --	U+1D441
+    ['O'] = 'ᴼ', --	U+1D3C to U+1D3C = Modifier Letter Capital O
+    ['\u{1D442}'] = 'ᴼ', --	U+1D442
+    ['P'] = 'ᴾ', --	U+1D3E to U+1D3E = Modifier Letter Capital P
+    ['\u{1D443}'] = 'ᴾ', --	U+1D443
+    -- Q is missing
+    ['R'] = 'ᴿ', --	U+1D3F to U+1D3F = Modifier Letter Capital R
+    ['\u{1D445}'] = 'ᴿ', --	U+1D445
+    -- S is missing
+    ['T'] = 'ᵀ', --	U+1D40 to U+1D40 = Modifier Letter Capital T
+    ['\u{1D447}'] = 'ᵀ', --	U+1D447
+    ['U'] = 'ᵁ', --	U+1D41 to U+1D41 = Modifier Letter Capital U
+    ['\u{1D448}'] = 'ᵁ', --	U+1D448
+    -- V is missing
+    ['W'] = 'ᵂ', --	U+1D42 to U+1D42 = Modifier Letter Capital W
+    ['\u{1D44A}'] = 'ᵂ', --	U+1D44A
+    -- X, Y, and Z are missing
+
+    -- Lowercase Latin
+    ['a'] = 'ᵃ', --	U+1D43 to U+1D43 = Modifier Letter Small A
+    ['\u{1D44E}'] = 'ᵃ', --	U+1D44E
+    ['b'] = 'ᵇ', --	U+1D47 to U+1D47 = Modifier Letter Small B
+    ['\u{1D44F}'] = 'ᵇ', --	U+1D44F
+    ['c'] = 'ᶜ', --	U+1D9C to U+1D9C = Modifier Letter Small C
+    ['\u{1D450}'] = 'ᶜ', --	U+1D450
+    ['d'] = 'ᵈ', --	U+1D48 to U+1D48 = Modifier Letter Small D
+    ['\u{1D451}'] = 'ᵈ', --	U+1D451
+    ['e'] = 'ᵉ', -- U+1D49 to U+1D49 = Modifier Letter Small E
+    ['\u{1D452}'] = 'ᵉ', --	U+1D452
+    ['f'] = 'ᶠ', --	U+1DA0 to U+1DA0 = Modifier Letter Small F
+    ['\u{1D453}'] = 'ᶠ', --	U+1D453
+    ['g'] = 'ᵍ', --	U+1D4D to U+1D4D = Modifier Letter Small G
+    ['\u{1D454}'] = 'ᵍ', --	U+1D454
+    ['h'] = 'ʰ', --	U+02B0 to U+02B0 = Modifier Letter Small H
+    ['\u{210E}'] = 'ʰ', --	U+210E
+    ['j'] = 'ʲ', --	U+02B2 to U+02B2 = Modifier Letter Small J
+    ['\u{1D457}'] = 'ʲ', --	U+1D457
+    ['k'] = 'ᵏ', --	U+1D4F to U+1D4F = Modifier Letter Small K
+    ['\u{1D458}'] = 'ᵏ', --	U+1D458
+    ['l'] = 'ˡ', --	U+02E1 to U+02E1 = Modifier Letter Small L
+    ['\u{1D459}'] = 'ˡ', --	U+1D459
+    ['m'] = 'ᵐ', --	U+1D50 to U+1D50 = Modifier Letter Small M
+    ['\u{1D45A}'] = 'ᵐ', --	U+1D45A
+    ['o'] = 'ᵒ', --	U+1D52 to U+1D52 = Modifier Letter Small O
+    ['\u{1D45C}'] = 'ᵒ', --	U+1D45C
+    ['p'] = 'ᵖ', --	U+1D56 to U+1D56 = Modifier Letter Small P
+    ['\u{1D45D}'] = 'ᵖ', --	U+1D45D
+    -- q is missing
+    ['r'] = 'ʳ', --	U+02B3 to U+02B3 = Modifier Letter Small R
+    ['\u{1D45F}'] = 'ʳ', --	U+1D45F
+    ['s'] = 'ˢ', --	U+02E2 to U+02E2 = Modifier Letter Small S
+    ['\u{1D460}'] = 'ˢ', --	U+1D460
+    ['t'] = 'ᵗ', --	U+1D57 to U+1D57 = Modifier Letter Small T
+    ['\u{1D461}'] = 'ᵗ', --	U+1D461
+    ['u'] = 'ᵘ', --	U+1D58 to U+1D58 = Modifier Letter Small U
+    ['\u{1D462}'] = 'ᵘ', --	U+1D462
+    ['v'] = 'ᵛ', --	U+1D5B to U+1D5B = Modifier Letter Small V
+    ['\u{1D463}'] = 'ᵛ', --	U+1D463
+    ['w'] = 'ʷ', --	U+02B7 to U+02B7 = Modifier Letter Small W
+    ['\u{1D464}'] = 'ʷ', --	U+1D464
+    ['x'] = 'ˣ', --	U+02E3 to U+02E3 = Modifier Letter Small X
+    ['\u{1D465}'] = 'ˣ', --	U+1D465
+    ['y'] = 'ʸ', --	U+02B8 to U+02B8 = Modifier Letter Small Y
+    ['\u{1D466}'] = 'ʸ', --	U+1D466
+    ['z'] = 'ᶻ', --	U+1DBB to U+1DBB = Modifier Letter Small Z
+    ['\u{1D467}'] = 'ᶻ', -- U+1D467
+
+    -- Greek
+    ['α'] = 'ᵅ', --	U+1D45 to U+1D45 = Modifier Letter Small Alpha
+    ['\u{1D6FC}'] = 'ᵅ', -- U+1D6FC
+    ['β'] = 'ᵝ', --	U+1D5D to U+1D5D = Modifier Letter Small Beta
+    -- ['\u{1D6FD}'] = 'ᵝ', --	U+1D6FD
+    ['γ'] = 'ᵞ', --	U+1D5E to U+1D5E = Modifier Letter Small Greek Gamma
+    -- ['\u{1D6FE}'] = 'ᵞ', --- U+1D6FE
+    ['δ'] = 'ᵟ', --	U+1D5F to U+1D5F = Modifier Letter Small Delta
+    -- ['\u{1D6FF}'] = 'ᵟ', -- U+1D6FF
+    ['φ'] = 'ᵠ', --	U+1D60 to U+1D60 = Modifier Letter Small Greek Phi
+    -- ['\u{1D711}'] = 'ᵠ', --	U+1D711
+    ['χ'] = 'ᵡ', --	U+1D61 to U+1D61 = Modifier Letter Small Chi
+    -- ['\u{1D712}'] = 'ᵡ', -- U+1D712
+    
+}
+
+local subscript_map = {
+    -- digits
+    ['0'] = '₀', ['1'] = '₁', ['2'] = '₂', ['3'] = '₃', ['4'] = '₄',
+    ['5'] = '₅', ['6'] = '₆', ['7'] = '₇', ['8'] = '₈', ['9'] = '₉',
+    -- Punctuation & Operators
+    ['+'] = '₊', ['-'] = '₋', ['−'] = '₋',
+    ['='] = '₌', ['('] = '₍', [')'] = '₎',
+
+    -- Lowercase Latin
+
+    ['a'] = 'ₐ', --	U+2090 to U+2090 = Latin Subscript Small Letter A
+    ['\u{1D44E}'] = 'ₐ', --	U+1D44E
+    -- 'b', 'c', and 'd' are mising
+    ['e'] = 'ₑ', --	U+2091 to U+2091 = Latin Subscript Small Letter E
+    ['\u{1D452}'] = 'ₑ', --	U+1D452
+    -- f, g missing
+    ['h'] = 'ₕ', --	U+2095 to U+2095 = Latin Subscript Small Letter H
+    ['\u{210E}'] = 'ₕ', --	U+210E
+    ['i'] = 'ᵢ', --	U+1D62 to U+1D62 = Latin Subscript Small Letter I
+    ['\u{1D456}'] = 'ᵢ', --	U+1D456
+    ['j'] = 'ⱼ', --	U+2C7C to U+2C7C = Latin Subscript Small Letter J
+    ['\u{1D457}'] = 'ⱼ', --	U+1D457
+    ['k'] = 'ₖ', --	U+2096 to U+2096 = Latin Subscript Small Letter K
+    ['\u{1D458}'] = 'ₖ', --	U+1D458
+    ['l'] = 'ₗ', --	U+2097 to U+2097 = Latin Subscript Small Letter L
+    ['\u{1D459}'] = 'ₗ', --	U+1D459
+    ['m'] = 'ₘ', --	U+2098 to U+2098 = Latin Subscript Small Letter M
+    ['\u{1D45A}'] = 'ₘ', --	U+1D45A
+    ['n'] = 'ₙ', --	U+2099 to U+2099 = Latin Subscript Small Letter N
+    ['\u{1D45B}'] = 'ₙ', --	U+1D45B
+    ['o'] = 'ₒ', --	U+2092 to U+2092 = Latin Subscript Small Letter O
+    ['\u{1D45C}'] = 'ₒ', --	U+1D45C
+    ['p'] = 'ₚ', --	U+209A to U+209A = Latin Subscript Small Letter P
+    ['\u{1D45D}'] = 'ₚ', --	U+1D45D
+    -- q missing
+    ['r'] = 'ᵣ', --	U+1D63 to U+1D63 = Latin Subscript Small Letter R
+    ['\u{1D45F}'] = 'ᵣ', --	U+1D45F
+    ['s'] = 'ₛ', --	U+209B to U+209B = Latin Subscript Small Letter S
+    ['\u{1D460}'] = 'ₛ', --	U+1D460
+    ['t'] = 'ₜ', --	U+209C to U+209C = Latin Subscript Small Letter T
+    ['\u{1D461}'] = 'ₜ', --	U+1D461
+    ['u'] = 'ᵤ', --	U+1D64 to U+1D64 = Latin Subscript Small Letter U
+    ['\u{1D462}'] = 'ᵤ', --	U+1D462
+    ['v'] = 'ᵥ', --	U+1D65 to U+1D65 = Latin Subscript Small Letter V
+    ['\u{1D463}'] = 'ᵥ', --	U+1D463
+    -- w missing
+    ['x'] = 'ₓ', --	U+2093 to U+2093 = Latin Subscript Small Letter X
+    ['\u{1D465}'] = 'ₓ', --	U+1D465
+    -- y and z missing
+
+
+    -- Greek
+    ['β'] = 'ᵦ', --	U+1D66 to U+1D66 = Greek Subscript Small Letter Beta
+    ['\u{1D6FD}'] = 'ᵦ', --	U+1D6FD
+    ['γ'] = 'ᵧ', --	U+1D67 to U+1D67 = Greek Subscript Small Letter Gamma
+    ['\u{1D6FE}'] = 'ᵧ', --	U+1D6FE
+    ['ρ'] = 'ᵨ', --	U+1D68 to U+1D68 = Greek Subscript Small Letter Rho
+    ['\u{1D70C}'] = 'ᵨ', --	U+1D70C
+    ['φ'] = 'ᵩ', --	U+1D69 to U+1D69 = Greek Subscript Small Letter Phi
+    ['\u{1D711}'] = 'ᵩ', --	U+1D711
+    ['χ'] = 'ᵪ', --	U+1D6A to U+1D6A = Greek Subscript Small Letter Chi
+    ['\u{1D712}'] = 'ᵪ', --	U+1D712
+    
+    -- This map can be expanded
+}
+
+local unsafe_subscript_map = {
+    -- low comma
+    [','] = '‚', -- Single Low-9 Quotation Mark (this is more reliable than NBSP with Combining Comma Below)
+    -- low period
+    -- ['.'] =  '⡀', -- Braille Pattern Dots-7 U+2840 (this is more reliable than NBSP with Combining Dot Below)
+
+    -- This map can be expanded
+}
+
+
+
+--- Merges the contents of the source table into the destination table.
+-- Modifies the destination table in-place.
+-- Overwrites keys in the destination if they also exist in the source.
+-- @param destination The table to merge into.
+-- @param source The table to pull key-value pairs from.
+function combine_tables(destination, source)
+  if not destination or not source then return end -- Safety check
+  for key, value in pairs(source) do
+    destination[key] = value
+  end
+end
+
+-- If you are willing to accept semantically incorrect but visually similar replacements for superscripts & subscripts
+if not semantically_correct then
+  combine_tables(superscript_map, unsafe_superscript_map)
+  combine_tables(subscript_map, unsafe_subscript_map)
+end
+
+function trim(s)
+  -- First, check if the input is actually a string.
+  if type(s) == "string" then
+    -- If it is, perform the trim operation.
+    return s:match("^%s*(.-)%s*$")
+  else
+    -- If it's not a string (e.g., it is nil),
+    -- return the original value without crashing.
+    return s
+  end
+end
+
+--- Escapes characters that are special to TeX's \wlog function.
+function escape_for_tex_log(s)
+  if not s then return "" end
+  s = s:gsub("\\", "\\textbackslash{}") -- Must be first!
+  s = s:gsub("%%", "\\%%")
+  s = s:gsub("&", "\\&")
+  s = s:gsub("#", "\\#")
+  s = s:gsub("_", "\\_")
+  s = s:gsub("%^", "\\^")
+  s = s:gsub("{", "\\{")
+  s = s:gsub("}", "\\}")
+  return s
+end
+
+-- Convert a font ID and character index to Unicode characters - inspired by Max Chernoff's post https://tex.stackexchange.com/a/751765/416865
+-- Note that this handles both ligatures and delimiters with various sizes
+function font_to_unicode(font_id, char)
+    local codes=nil
+
+    local f = font.getfont(font_id)
+    
+    -- U+F0000 is decimal 983040 in both STIX Two Math and Text; this is .notdef
+    local notdef = 983040
+    -- For OTF fonts in ./tex/luatex/luaotfload/luaotfload-notdef.lua, the function donotdef() adds .notdef glyphs after glyphs that have a zero width, height, and depth.
+    if f.unscaled ~= nil and f.unscaled.notdefcode ~= nil then
+        notdef = f.unscaled.notdefcode
+    end
+    if char == notdef then
+        if debug_mode then
+            if f.fontname then
+                tex.sprint("\\wlog{" .. "encountered ".. string.format("%X", notdef) ..
+                " in font_id=" .. font_id .. " with fontname=" .. f.fontname .. "}")
+            else
+                tex.sprint("\\wlog{" .. "encountered ".. string.format("%X", notdef) ..
+                " in font_id=" .. font_id .. "}")
+            end
+        end
+        return ''
+    end
+    if f.characters[char] ~= nil then
+        codes = (f.characters[char] or {}).unicode
+        if type(codes) == "table" then
+            return utf8.char(unpack(codes))
+        end
+        if type(codes) == "number" then
+            return utf8.char(codes)
+        end
+    end
+    return utf8.char(char)
+end
+
+
+function convert_to_plain_text(head, status, prefix, state)
+    local output_parts = {}
+    if not head then return "" end
+    prefix = prefix or ""
+    state = state or { last_delimiter_char = nil }
+
+    for n in node.traverse(head) do
+        local n_id = n.id
+        local n_type = node.type(n_id)
+        local n_subtype = n.subtype or "none"
+        local log_entry = "Node id=".. n_id .. ", type=" .. n_type .. ", subtype=" .. n_subtype
+
+        if n_id == node.id('math') then
+            -- log_entry = log_entry .. ", content=" .. n.content
+            if n.subtype == 0 then -- Begin math shift
+                current_mode_math = true
+                log_entry = log_entry .. " (Begin Math Mode)"
+            elseif n.subtype == 1 then -- End math shift
+                current_mode_math = false
+                log_entry = log_entry .. " (End Math Mode)"
+            end
+            
+        elseif n_id == node.id('glyph') then
+            local original_char = utf8.char(n.char)
+            log_entry = log_entry .. ", char=U+" .. string.format("%X", n.char) .. " " .. original_char
+
+            replacement_char = font_to_unicode(n.font, n.char)
+            local final_char = replacement_char -- or original_char
+            
+            if replacement_char ~= original_char  then log_entry = log_entry .. " => REPLACED with " .. final_char end
+            
+            local is_delimiter_part = (final_char == "|" or final_char == "‖") 
+            if is_delimiter_part then
+                if state.last_delimiter_char == final_char then
+                    log_entry = log_entry .. " -- SUPPRESSED " .. final_char
+                else
+                    table.insert(output_parts, final_char)
+                    state.last_delimiter_char = final_char
+                end
+            elseif final_char ~= '' then
+                table.insert(output_parts, final_char)
+                state.last_delimiter_char = nil
+            else
+                state.last_delimiter_char = nil
+            end
+            
+        elseif n_id == node.id('glue') then
+            -- CJK glyphs are set with zero-width glue between them to allow line justification
+            -- However, this is not needed when outputting Unicode
+            if n.width ~= nil and (n.width > 0 or n.stretch ~= 0 or n.shrink ~= 0) then
+                table.insert(output_parts, ' ')
+            end
+            
+        elseif n_id == node.id('kern') or n_id == node.id('discretionary') then
+            -- Spacing nodes do not reset the state
+        elseif n_id == node.id('hlist') or n_id == node.id('vlist') then
+            
+            -- --- 1. FRACTION HANDLING ---
+            if n.subtype == 19 then
+                local numerator, denominator = "", ""
+                local function find_inner_vlist(start_node)
+                    if not start_node then return nil end
+                    -- Non-recursive search of immediate children
+                    local p = start_node
+                    while p do
+                        if p.id == node.id("vlist") and p.subtype == 19 then return p end
+                        p = p.next
+                    end
+                    return nil
+                end
+                -- The search MUST start from n.head (the list of children)
+                local fraction_vlist = find_inner_vlist(n.head)
+                if fraction_vlist and fraction_vlist.head then
+                    local numerator_node = fraction_vlist.head
+                    numerator = convert_to_plain_text(numerator_node.head, status, prefix .. "  ", state)
+                    local last_node = numerator_node
+                    while last_node.next do last_node = last_node.next end
+                    if last_node ~= numerator_node then
+                        denominator = convert_to_plain_text(last_node.head, status, prefix .. "  ", state)
+                    end
+                end
+                table.insert(output_parts, "(" .. trim(numerator) .. ")/(" .. trim(denominator) .. ")")
+
+            -- --- 2. SCRIPT (SUPERSCRIPT/SUBSCRIPT) HANDLING ---
+            elseif n.subtype == 21 or n.subtype == 22 then
+                local script_content = convert_to_plain_text(n.head, status, prefix .. "  ", state)
+                local target_map = nil
+                if n.subtype == 21 then target_map = superscript_map end
+                if n.subtype == 22 then target_map = subscript_map end
+
+                if target_map then
+                    local converted_script = ""
+                    local all_chars_convertible = true
+                    for _, codepoint in utf8.codes(script_content) do
+                        local char = utf8.char(codepoint)
+                        local converted_char = target_map[char]
+                        if converted_char then
+                            converted_script = converted_script .. converted_char
+                        else
+                            all_chars_convertible = false; break
+                        end
+                    end
+                    if all_chars_convertible then
+                        table.insert(output_parts, converted_script)
+                    else
+                        -- If conversion fails, use linearized TeX-like notation
+                        if use_AsciiMath_subscripts_and_superscripts then
+                            if n.subtype == 21 then
+                                table.insert(output_parts, '^(' .. script_content .. ')')
+                            else
+                                table.insert(output_parts, '_(' .. script_content .. ')')
+                            end
+                        else
+                           if n.subtype == 21 then
+                                table.insert(output_parts, '^{' .. script_content .. '}')
+                            else
+                                table.insert(output_parts, '_{' .. script_content .. '}')
+                            end
+                        end
+                    end
+                else
+                    table.insert(output_parts, script_content)
+                end
+            
+            -- --- 3. GENERIC LIST HANDLING ---
+            else
+                table.insert(output_parts, convert_to_plain_text(n.head, status, prefix .. "  ", state))
+            end
+
+        elseif n_id == node.id('math_char') or n_id == node.id('math_variable') then
+            table.insert(output_parts, utf8.char(n.char))
+            state.last_delimiter_char = nil
+        else
+            if status then status.success = false end
+        end
+        
+        if debug_mode then
+            -- 1. Create a TeX-safe prefix by replacing spaces with \space commands.
+            local tex_prefix = prefix:gsub(" ", "\\space")
+            -- 2. Print the prefix, then the detokenized log message.
+            tex.sprint("\\wlog{" .. tex_prefix .. "\\detokenize{" .. escape_for_tex_log(log_entry) .. "}}")
+            
+        end
+    end
+    return table.concat(output_parts, "")
+end
+
+
+-- Global table to hold all extracted and generated data
+config_data = {}
+
+-- Called by TeX for each command (\title, \subtitle, etc.)
+-- It reads the content TeX has placed in \inspectionbox and stores the plain-text version.
+function store_and_convert_from_box(command_base)
+    -- A table to track the conversion status.
+    local conversion_status = { success = true }
+    
+    local box_head = tex.box.inspectionbox.head
+    if not box_head then return end
+    
+    local plain_text = convert_to_plain_text(box_head, conversion_status)
+
+    -- Some post-processing cleanup
+    -- Squeeze multiple spaces/tabs/etc. into a single space
+    plain_text = plain_text:gsub("%s+", " ")
+    -- Remove any space from the very beginning or end of the string
+    plain_text = trim(plain_text) 
+    
+    -- Store the generated plain text version in our global table.
+    if not config_data[command_base] then config_data[command_base] = {} end
+    config_data[command_base].plain_text = plain_text
+    if debug_mode then
+        tex.sprint("\\wlog{INFO: Generated plain text for " .. command_base .. "}")
+    end
+end
+
+
+function write_added_config_file()
+    local output_file = io.open("extra_plaintext.tex", "w")
+    if not output_file then return end
+
+    for _, command_base in ipairs({"title", "subtitle", "alttitle", "altsubtitle"}) do
+        local plain_text_cmd = command_base .. "InPlainText"
+        if config_data and config_data[command_base] and config_data[command_base].plain_text then
+            -- Write the new plain-text command on the next line
+            local new_line = "\\" .. plain_text_cmd .. "{" .. config_data[command_base].plain_text .. "}"
+            output_file:write(new_line, "\n")
+            tex.sprint("\\wlog{INFO: Writing new command " .. plain_text_cmd .. "}")
+        end
+    end
+    
+    output_file:close()
+    tex.sprint("\\wlog{SUCCESS: Plain text configuration file written to extra_plaintext.tex}")
+end
+\end{luacode*}
+
+% Define the TeX box
+\newbox\inspectionbox
+\input{./kth/kth-commands}
+
+% Ignore the processing of the program code, as it is not relevant to us
+\renewcommand{\programcode}[1]{}
+
+
+
+% Define a command to process a base command, to reduce the code later
+\makeatletter
+% #1 = command base name (e.g., "title")
+\newcommand{\processIfPlainTextIsMissing}[1]{%
+  % Check if the command (e.g., \@title) is non-empty
+  \expandafter\ifx\csname @#1\endcsname\@empty\else
+    % Check if the plain text version (e.g., \@titleInPlainText) is empty
+    \expandafter\ifx\csname @#1InPlainText\endcsname\@empty
+      % Use the ligature-free font
+      \global\setbox\inspectionbox=\hbox\expandafter{{\NoLigaturesFont \csname @#1\endcsname}}%
+      \directlua{store_and_convert_from_box('#1')}%
+    \fi
+  \fi
+}
+\makeatother
+
+
+%% Limit hyphenation
+\hyphenpenalty=9000
+\tolerance=5000
+
+\newunicodechar{^^^^211d}{\iffontchar\font`^^^^211d ^^^^211d\else{{\mystixmathfont ^^^^211d}}\fi} % DOUBLE-STRUCK CAPITAL R - ℝ
+\newunicodechar{α}{\iffontchar\font`α α\else{{\mystixmathfont α}}\fi} % Greek Small Letter Alpha
+\newunicodechar{β}{\iffontchar\font`β β\else{{\mystixmathfont β}}\fi} % Greek Small Letter Beta
+\newunicodechar{γ}{\iffontchar\font`γ γ\else{{\mystixmathfont γ}}\fi} % Greek Small Letter Gamma
+
+\title{Generating Titles in Plain Text}
+
+\author{Gerald Q. Maguire Jr.}
+\date{October 2025}
+
+\begin{document}
+
+\maketitle
+\section{Creating plain text}
+This document provides a tool to automatically convert complex \LaTeX{} titles and subtitles into the plain Unicode text in UTF-8 encoding required by many administrative systems, such as LADOK. It is designed to process the titles and subtitles found in your \texttt{custom\_configuration.tex} file. 
+\Cref{sec:diggingDeeper} digs just a little deeper.
+\Cref{sec:configuration} describes various flags that can be used to configure the behavior of this file. \Cref{sec:status} gives some comments about the status of this file. \Cref{sec:asumptions} states some assumptions made. 
+
+\textbf{NB} Plain text has no horizontal or vertical positioning - so all of the text is a linear sequence of UTF-8 encoded Unicode characters.
+
+\section{Process the custom\_configuration.tex file}
+\label{sec:customconfig}
+Compiling this document will process your
+\texttt{custom\_configuration.tex} file and produce a file named \texttt{extra\_plaintext.tex} containing plain text versions of the \mbox{titles} and subtitles (both main and alternate). (It is named this to avoid overwriting your existing custom\_configuration\_plaintext.tex file during the process.) Additionally, the plain text is set \textit{without} ligatures. 
+
+While Overleaf can display a UTF-8 file with characters outside of Unicode's Basic Multilingual Plane (BMP)\footnote{Unicode's BMP contains the first 65,536 unicode code points.} in a window, its editor does not have the ability to edit such characters. Moreover, you cannot cut and paste characters outside of the BMP into the Overleaf editing buffer. For further details, see \href{https://docs.overleaf.com/troubleshooting-and-support/file-encodings-and-line-endings}{Overleaf docs: File encodings and line endings}. Unfortunately, many mathematical symbols are in the Mathematical Alphanumeric Symbols, U+1D400 - U+1D7FF, block in the Supplementary Multilingual Plane (SMP).
+
+As a result, the workflow is:
+\begin{enumerate}
+    \item \textbf{Generate:} Compile your project to generate the initial \texttt{extra\_plaintext.tex} file. You can find this file in the ``Other logs and files'' view.
+    \item \textbf{Download:} Download the generated file to your computer.
+    \item \textbf{Edit and merge:} Edit it locally using an editor that fully supports UTF-8, such as Emacs, texworks, EmEditor, Notepad, Word, \ldots . You should merge the entries with those of any existing \texttt{custom\_configuration\_plaintext.tex} file in your project. Save your final, edited file as \texttt{custom\_configuration\_plaintext.tex}
+    \item \textbf{Upload:} Upload the \texttt{custom\_configuration\_plaintext.tex} file to your Overleaf project.
+\end{enumerate}
+
+\textbf{After uploading, you are done.} However, if you are interested in the technical details of the conversion process, please feel free to read on.
+
+\section{Digging slightly deeper}
+\label{sec:diggingDeeper}
+
+If \texttt{debug\_mode} is true, you will find in the log one or more entries of the form: ``INFO: Generated plain text for '' for each of the missing basenames, i.e., title, subtitle, alttitle, and/or altsubtitle.  There is quite a lot of debugging output written to the log file. This is very handy when trying to analyze why a given title (or subtitle) is not coming out as expected. 
+
+The reason that there is a block of \LaTeX{} code (below in the source code) is due to the fact that the \texttt{unicode-math} package has not been fully initialized until after the \texttt{\textbackslash begin\{document\}}. As a result, the \texttt{\textbackslash alpha} and other macros were not properly initialized. 
+
+\begingroup
+    % --- Create a local "plain text" font environment ---
+    \NoLigaturesFont % Set the text font to the ligature-free version
+    % Create your custom 'STMnoSTTY' version and define all its alphabets
+    \setmathfont{STIX Two Math}[RawFeature={-ssty}]
+    % ----------------------------------------------------
+\makeatletter
+% Temporarily redefine \title and \date to prevent them from
+% setting the document's metadata during this processing step.
+\let\@title\@empty
+\newcommand{\title}[1]{\def\@title{#1}}
+\makeatother
+% avoid outputting the date
+\newcommand{\date}[1]{}
+
+  % Input the file. This executes our processing macros, populating the Lua table.
+
+\input{custom_configuration.tex}
+
+% read in the plain text definitions, if they exist
+\IfFileExists{custom_configuration_plaintext.tex}{\input{custom_configuration_plaintext.tex}}{}
+
+% Process each of the base commands that we are interested in
+\processIfPlainTextIsMissing{title}
+\processIfPlainTextIsMissing{subtitle}
+\processIfPlainTextIsMissing{alttitle}
+\processIfPlainTextIsMissing{altsubtitle}
+\endgroup % End of the local group; \frac, \left, \right are now back to normal.
+% Also reverts to the SMR math font
+
+\directlua{write_added_config_file()}
+
+
+\section{Configuration}
+\label{sec:configuration}
+There is a Lua flag 
+\texttt{semantically\_correct}: if true, use only semantically correct replacements; else use \textit{semantically incorrect} but visually similar replacements. The default is \textbf{false}. \textbf{NB} There may be issues about accessibility of the resulting plain text.
+
+The issue is that Unicode does not have a complete set of letters as superscripts and subscripts, but rather, there are Unicode codepoints that look like the desired superscript or subscript. For example, U+1D2C is the Modifier Letter Capital A, and it was designed for phonetic markup. It is part of the Unicode block
+Phonetic Extensions, U+1D00 - U+1D7F. So while it \textit{looks like} a superscript capital A, it is not. Thus, a screen reader would not pronounce it as superscript A. Moreover, there is not always a visually similar glyph, so some superscripts and subscripts cannot be `faked'; instead, they will be rendered using \TeX{} or AsciiMath notation. This is controlled by the next flag.\par
+
+The Lua flag \texttt{use\_AsciiMath\_subscripts\_and\_superscripts}: if true, use left and right parentheses; otherwise, use left and right brackets. The default is true.\par
+
+The Lua flag
+\texttt{debug\_mode}: setting it to false will disable extensive logging. The default value is true.
+
+\section{Status}
+\label{sec:status}
+
+This project is a \textit{work in progress} and likely requires additional work to handle cases that have not yet been considered or tested. Constructive comments, corrections, and examples are welcome.
+
+Currently, there is support for a variety of Latin, Greek, and numeric superscripts and subscripts. A large variety of math symbols is supported. However, mathematical forms that require 2D layout (beyond simple superscripts and subscripts) are \textbf{not} supported. Variable-size delimiters and fixed-size delimiters are not supported; the code replaces the Private Use Area codepoints that \LuaLaTeX{} generates for the large versions of these delimiters with the simple delimiter glyph.
+
+It is not possible to represent different Stylistic Sets in plain text. Features like Stylistic Sets are a form of font-specific formatting, but plain text only stores the underlying Unicode character. Since a character like "Mathematical Script Capital A" uses the same codepoint (U+1D49C) regardless of which stylistic set is active, this formatting information is lost during conversion. Similarly, Variation Selectors and Character Variants are not supported.
+
+More details and testing are available at:  \url{https://www.overleaf.com/read/dfsjdqmcjmtp#0043d3}.
+
+\section{Assumptions}
+\label{sec:asumptions}
+I made a number of assumptions
+\begin{itemize}
+    \item The fonts a user uses when setting their thesis titles are a text font that maps characters to their Unicode codepoints and a math font that utilizes the same mappings as the STIX Two Math font. The code (by default) will use the STIX Two Text font for text and the STIX Two Math font for all mathematics.
+
+    \item the version of \LuaLaTeX{} used produces nodes that correspond to those of LuaHBTeX, Version 1.21.0 (TeX Live 2025)  (format=lualatex 2025.8.27). A different rendering engine may or may not work.
+
+    \item That systems that accept Unicode but do \textit{not} explicitly support markup will treat the \TeX{} or AsciiMath subscripts and superscripts as simply Unicode characters encoded in UTF-8, i.e., these systems will ignore the fact that this is actually a form of markup. This assumption was necessary because not all superscripts and subscripts can be represented as Unicode glyphs. Importantly, no second or higher level superscripts or subscripts are supported, so \TeX{} or AsciiMath encoding is used (based upon the configuration described in \Cref{sec:configuration}).
+\end{itemize}
+\end{document}

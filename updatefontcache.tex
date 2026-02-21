@@ -1,0 +1,28 @@
+\documentclass[examplethesis]{subfiles}
+
+% Redefine the sanity check command to do nothing for this file
+\let\kthPerformSanityCheck\relax
+
+\begin{document}
+\ifinswedish
+\selectlanguage{swedish}
+\chapter*{Uppdatera}
+\else
+\selectlanguage{english}
+\chapter*{Update}
+\fi
+
+% Now, just call the command directly.
+\ShowFontCache
+
+% Note update the font cache
+\UpdateFontCache
+
+% Now, just call the command directly.
+
+\ShowFontCache
+
+\section{Look at the project directory, i.e., '.'}
+\ShowDirectoryListing{.}
+
+\end{document}

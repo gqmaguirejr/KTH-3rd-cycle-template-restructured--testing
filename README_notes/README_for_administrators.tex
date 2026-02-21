@@ -1,0 +1,692 @@
+\documentclass[12pt, twoside]{article}
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+
+%\RequirePackage{silence}
+%\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
+%\WarningFilter{latexfont}{Font shape}
+
+\newif\ifinswedish
+\inswedishfalse
+
+\RequirePackage{etoolbox}
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+% include a variety of packages that are useful
+\input{lib/includes}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+
+
+\ifinswedish
+    \usepackage[english, main=swedish, bidi=basic]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+\fi
+
+
+% Set up to use biblatex
+\newif\ifbiblatex
+\biblatextrue
+
+\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\section*{#1}%   skip \centering 
+}
+  
+    \addbibresource{references.bib}    
+\input{kth/kthcolors}
+
+
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+
+\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+%% In overleaf, if this file is in a folder and not the root
+%% using \makeglossaries will not work, as the Overleaf latexmk
+%% will not run the program to take the output.acn file and make the output.acr file
+%\makeglossaries
+% However, you can get TeX to do the work with the following:
+\makenoidxglossaries
+% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
+%% Potentially, one could set up a latexmkrc file in the folder
+
+\input{lib/acronyms}                %load the acronyms file
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+ 
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \LuaLaTeX logo
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+
+    \babelfont{rm}{TeX Gyre Termes}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+  
+    %\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+    \babelfont{sf}{TeX Gyre Heros}
+    %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+    \babelfont{tt}{TeX Gyre Cursor}
+ \begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+ %  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+ \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=normal]
+  \setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \newfontfamily\mystixtextfont{STIX Two Text}
+  
+    % To access the Stylistic Set 1 <ss01> such as ℋ
+    \newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+    % use english as a fallback when in other languages
+    \babelprovide[import, onchar=ids fonts]{english}
+
+    
+  % for new KTH cover
+  % Load the Figtree font as it is used for the new KTH graphical profile
+  % 
+
+    \newfontfamily{\FigtreeFont}[Ligatures=TeX,
+        Path=./Figtree/static/,
+        Extension = .ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        BoldItalicFont=*-BoldItalic,
+        ItalicFont=*-Italic,
+        %FontFace={l}{n}{*-Light},
+        %FontFace={l}{it}{*-LightItalic},
+        FontFace={md}{n}{*-Medium},
+        FontFace={md}{it}{*-MediumItalic},
+        FontFace={sb}{n}{*-Semibold},
+        FontFace={sb}{it}{*-SemiBoldItalic},
+        %FontFace={k}{n}{*-Black},
+        %FontFace={k}{it}{*-BlackItalic},
+        %FontFace={eb}{n}{Font=*-ExtraBold},
+        %FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+        ]{Figtree}
+
+
+\newfontfamily\pageNumberFont{Figtree} %% set the font to use for page numbering
+
+\newfontfamily{\NotoEmojiFont}[Ligatures=TeX,
+    Path=./Noto_Emoji/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    FontFace={l}{n}{*-Light.ttf},
+    FontFace={md}{n}{*-Medium},
+    FontFace={sb}{n}{*-SemiBold},
+    ]{NotoEmoji}
+
+   % To set the abstract headings in Figtree we redefine the abstravt environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Polyglossia or Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the ssans erif font.
+   % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
+
+      \babelprovide[import, onchar=ids fonts]{greek}
+      \babelfont[greek]{rm}{Noto Serif}
+      \babelfont[greek]{sf}{Noto Sans}
+      \babelfont[greek]{tt}{Noto Mono}
+
+ 
+    % The Overleaf TeX Live includes these fonts, so there is little you have to do!
+    % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
+    %
+\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
+    ]{Noto Sans Mono CJK JP}
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+    ]{Noto Sans}
+    
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+    ]{Noto Serif}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,
+    ]{DejaVu Sans}
+
+
+ 
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\pageNumberFont\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\pageNumberFont\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\pageNumberFont\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{%
+\markboth{#1}{}}
+
+
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+
+
+\lstdefinestyle{latexExampleForAuthors}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    extendedchars=true,
+    inputencoding=utf8,
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea,
+      nationalsubjectcategories, todo, ifbiblatex, subsection}
+}
+
+\lstdefinestyle{latexExample}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    tabsize=2,
+    columns=flexible,
+}
+
+%
+% The commands below are to configure JSON listings
+% 
+% format for JSON listings
+\colorlet{punct}{red!60!black}
+\definecolor{delim}{RGB}{20,105,176}
+\definecolor{numb}{RGB}{106, 109, 32}
+\definecolor{string}{RGB}{0, 0, 0}
+
+\lstdefinelanguage{json}{
+    numbers=none,
+    numberstyle=\small,
+    frame=none,
+    rulecolor=\color{black},
+    showspaces=false,
+    showtabs=false,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+    breakatwhitespace=true,
+    basicstyle=\ttfamily\small,
+    extendedchars=false,
+    upquote=true,
+    morestring=[b]",
+    stringstyle=\color{string},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1}
+      {’}{{\char13}}1,
+}
+
+\lstdefinelanguage{XML}
+{
+  basicstyle=\ttfamily\color{blue}\bfseries\small,
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{blue},
+  keywordstyle=\color{cyan},
+  breaklines=true,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+  breakatwhitespace=true,
+  morekeywords={xmlns,version,type}% list your attributes here
+}
+\lstset{style=latexExample}
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{DiVA administrator's viewpoint}
+
+\author{Gerald Q. Maguire Jr.}
+\date{July 2025}
+
+\begin{document}
+\glsresetall[]
+\maketitle
+\fancypagestyle{empty}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+
+This document describes the implications of the thesis templates I have developed for use at \gls{KTH} from the viewpoint of a \gls{DiVA} administrator. Other documents provide the template,  information for authors, and information about why the template is the way that it is.
+
+This document provides information for \gls{DiVA} administrators about the template and how it can be used in conjunction with some scripts to \textbf{greatly} reduce the work needed to report a thesis into \gls{DiVA} and \gls{LADOK}, while improving the accuracy of these records. The aim is to avoid the need to cut-and-paste $\Rightarrow$ more fika time {\large $☺$}.
+
+\textbf{NB} In the case of third-cycle theses, the \textbf{student} has to enter the thesis and their included publications.
+
+\section[Introduction to the template]{Introduction to the template}
+
+The assumption is that a student is writing their thesis using my \LaTeX\ ~template\footnote{Or perhaps a \gls{DOCX} file that also produces a \fname{fordiva.json} file.}.  The key idea is to have the thesis include  \first the information needed for input into \gls{DiVA}, the TRITA list/database, and \gls{LADOK}, and \Second information that can be used by US-AB to produce the covers, title page, and book information page.
+
+The \gls{PDF} file produced has one or more pages at the end that are in a section with a heading of ``For DIVA'' or this same string with four euro symbols (\ie `€') before and after the string, with a space before and after the string. An example of the top of such a page is shown in \Cref{fig:topOfForDiva}, and the bottom is shown in \Cref{fig:bottomOfForDiva}. Note that in the bottom figure, we can see two push-pins, representing two attached files: \fname{fordiva.json} and \fname{acronyms.tex}. These attached files make it easier to automate adding the metadata to \gls{DiVA}\footnote{At a minimum, all of the data is now collected in one spot from which, in the worst case, one can cut-and-paste it into a single \gls{JSON} file.} Additionally, some scripts have been developed to mechanically extract this data, as will be described in \Cref{sec:gettingNecessaryData}.
+
+\tikzset{
+    processBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!20},
+    adminProcessBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=blue!20},
+    destinationBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=green!10},
+    arrow/.style={thick,->,>=stealth}
+}
+\begin{comment}
+\begin{figure}[!ht]
+\resizebox{1.1\textwidth}{!}{%
+\begin{tikzpicture}
+[align=left,node distance=2cm]
+
+
+
+\node (DOCXFile) [tape,tape bend top=none,draw,font=\sffamily] {DOCX using template};
+\node (latexFile) [tape,tape bend top=none,draw,font=\sffamily, right=0.5cm of DOCXFile] {\LaTeX project using template};
+
+
+
+
+\node (LaTeX) [processBox,  below=5cm of latexFile] {LaTeX compiler};
+\node (latexjsonFile) [tape,tape bend top=none,draw,font=\sffamily, below of=LaTeX] {fordiva.json};
+
+
+
+\node (extractDOCX) [processBox, below=8cm of DOCXFile] {extract\_custom\_DOCX\_properties};
+\node (PDFfile) [tape,tape bend top=none,draw,font=\sffamily, left=5cm of LaTeX] {PDF using template};
+\node (Word) [processBox,  above=3cm of PDFfile] {Word or similar};
+\node (extractor) [processBox, below=6cm of PDFfile] {extract\_pseudo\_JSON-from\_PDF};
+
+\node (cleanJSONfromLaTeX) [processBox, below=4cm of LaTeX] {cleanup\_pseudo\_JSON-from\_LaTeX};
+\node (jsonFile) [tape,tape bend top=none,draw,font=\sffamily, below=4cm of cleanJSONfromLaTeX] {JSON file};
+
+\node (assignTRITA) [adminProcessBox, below=3cm of jsonFile] {Assign TRITA number};
+\node (jsonFileWithTRITA) [tape,tape bend top=none,draw,font=\sffamily, below of=assignTRITA] {JSON file with TRITA};
+\node (jsontoMODS) [processBox, below of=jsonFileWithTRITA] {JSON\_to\_MODS};
+
+\node (acronymsfile) [tape,tape bend top=none,draw,font=\sffamily, right=4.5cm of cleanJSONfromLaTeX] {acronyms.tex};
+
+\node (TRITAlist) [destinationBox, right=1cm of assignTRITA] {TRITA list/database};
+
+\node (modsFileWithTRITA) [tape,tape bend top=none,draw,font=\sffamily, below of=jsontoMODS] {MODS file with TRITA};
+\node (makeApplyCover) [processBox, below of=modsFileWithTRITA] {Make and apply cover};
+\node (divameta) [destinationBox, right=1cm of modsFileWithTRITA] {Import MODS file into DiVA};
+\node (diva) [destinationBox, right=1cm of makeApplyCover] {Upload PDF into DiVA};
+
+
+\draw [red, dashed]   (PDFfile) to[out=-120,in=180] (makeApplyCover);
+\draw [red, dashed]   (Word) to[out=-90,in=90] (PDFfile);
+\draw [red, dashed]   (LaTeX) to[out=-180,in=90] (PDFfile);
+\draw [arrow] (DOCXFile) --  (extractDOCX.north);
+\draw [arrow] (extractDOCX) --  (jsonFile.north west);
+\draw [arrow] (latexFile.south) --  (LaTeX.north);
+\draw [arrow] (LaTeX) --  (latexjsonFile.north);
+\draw [arrow] (latexjsonFile) --  (cleanJSONfromLaTeX.north);
+\draw [arrow] (cleanJSONfromLaTeX.south) --  (jsonFile.north);
+\draw [red, dashed] (PDFfile) --  (extractor.north);
+\draw [arrow] (DOCXFile) --  (Word.north);
+\draw [arrow] (extractor.south) --  (jsonFile.west);
+\draw [arrow] (jsonFile) --  (assignTRITA);
+\draw [arrow] (jsontoMODS) --  (modsFileWithTRITA);
+\draw [arrow] (modsFileWithTRITA) --  (divameta);
+\draw [arrow] (assignTRITA) --  (jsonFileWithTRITA);
+\draw [arrow] (jsonFileWithTRITA) --  (jsontoMODS);
+\draw [arrow] (modsFileWithTRITA) --  (makeApplyCover);
+\draw [arrow] (makeApplyCover) --  (diva);
+\draw [arrow] (latexFile.south east) --  (acronymsfile.north);
+\draw [arrow] (acronymsfile.south east) to[out=-45,in=0]  (jsontoMODS.east);
+\draw [arrow] (TRITAlist) --  (assignTRITA.east);
+\draw [arrow] (assignTRITA) --  (TRITAlist.west);
+
+\end{tikzpicture}
+}
+\caption{Figure shows the flow of data relevant to DiVA administrators - the dashed red line shows the PDF, while the black lines show other types of data}
+  \label{fig:forDiVAAdmins}
+\end{figure}
+\end{comment}
+
+\begin{figure}[!ht]
+  \begin{center}
+    \includegraphics[width=0.65\textwidth]{README_notes/README-examiner-figures/top_of_new_for_diva_minted.png}
+  \end{center}
+  \caption{Top of the page of the For DiVA page}
+  \label{fig:topOfForDiva}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \includegraphics[width=0.99\textwidth]{README_notes/README-examiner-figures/bottom_of_new_for_diva_minted.png}
+  \end{center}
+  \caption{Bottom of the page of For DiVA page}
+  \label{fig:bottomOfForDiva}
+\end{figure}
+\FloatBarrier
+
+\section{Getting the necessary data}
+\label{sec:gettingNecessaryData}
+The collected data shown in \Cref{fig:topOfForDiva} is in a format called \glsfirst{JSON} and is described in \Cref{sec:json}. 
+When the author compiles their \LaTeX~project, as a side-effect, a \fname{fordiva.json} file is generated and attached to the \gls{PDF} file.
+This file can be extracted from a \gls{PDF} file that uses the template, as described in \Cref{sec:extractingJSONPDF}; then, given the information in \gls{JSON}, it is possible to generate a \gls{MODS} file that can be imported into \gls{DiVA}:
+
+
+\subsection {JSON}
+\label{sec:json}
+JSON is a standard way of representing structured data as text. An example of this text is shown in \Cref{lst:forDIVAtop}. This format is \first readily readable by both humans and computers and \Second is easy to edit, and \third is commonly supported by many programming languages. The basic element is of the form: \textit{label}: \textit{value}, where \textit{label} is a string and \textit{value} can be another string or a structure (an element inside curly braces). String values are within double quote marks (\ie \textquotedbl). A label of \textquotedbl First name\textquotedbl\  and the value \textquotedbl Fake A.\textquotedbl~is shown in line 6 of the listing below. This is part of a structure that gives a value for \textquotedbl Author1\textquotedbl~and this value is a structure with a list of elements for \textquotedbl Last name\textquotedbl, \textquotedbl First name\textquotedbl, \textquotedbl Local User Id\textquotedbl~(\ie the kthid), \textquotedbl E-mail\textquotedbl, and \textquotedbl organisation \textquotedbl. The organisation in turn can have multiple levels where the first level L1 is the school, L2 is a department, and L3 is a division. In a discussion with \gls{DiVA} administrators at \gls{KTH} on 2021-04-29, the consensus was that the organizational affiliation of students should be the school of the thesis examiner, since 1\textsuperscript{st} and 2\textsuperscript{nd} cycle students are in \textbf{programs of study} and not schools, department, \etc.
+
+\begin{lstlisting}[language=json, numbers=left,
+    stepnumber=1, escapechar=|, caption={Text version of the top of the For DIVA output (reformatted to bring out the structure and improve readability - line numbers are added just in the listing)}, label=lst:forDIVAtop]
+{
+  "Author1":{
+    "Local User Id":"u1XXXXXX",
+    "ORCiD":"xxxxx-xxxx-xxxx-xxxx",
+    "Last name":"Student",
+    "First name":"Fake A.",
+    "E-mail":"XXXXXXXXXXXX@kth.se",
+    "organisation":{
+      "L1":"*****School of XXX*****"
+    }
+  },
+  "Course Info":{
+    "Cycle":"3"
+  },
+  "Degree1":{
+    "Educational program":{
+      "programcode":"*****Unknown subject area*****",
+      "Degree":"XXX",
+      "subjectArea":"*****Unknown subject area*****"
+    }
+  },
+  "Title":{
+    "Subtitle":"A subtitle in the language of the thesis",
+    "Language":"eng",
+    "Main title":"This is the title in the language of the thesis"
+  },
+  "Alternative title":{
+    "Subtitle":"Detta är den svenska översättningen av undertiteln",
+    "Language":"swe",
+    "Main title":"Detta är den svenska översättningen av titeln"
+  },
+
+\end{lstlisting}
+
+
+\subsection{Given a PDF file that was made using the template}
+\label{sec:extractingJSONPDF}
+If you have a \gls{PDF} file made using the template, then one can extract the information using \first a tool that lets you save an attached file (such as Adobe Acrobat Pro) or \Second using
+a script, such as \texttt{extract\_pseudo\_JSON-from\_PDF.py}.
+
+Given such a \gls{PDF} file, to use a script:
+\begin{enumerate}
+    \item Save the \gls{PDF} file of the thesis, for example: \texttt{oscar.pdf}
+    \item Extract the “For DIVA” information as JSON, as shown in \Cref{lst:AdminextractPseudoJSONFromPDFforOscarFileToJSON}
+    
+    If acronyms are used in the abstracts and you want to expand them, you can add the “--acronyms acronyms.tex” argument to the extract command line and the script will process the acronyms from the acronyms.tex file (this means that you will also need this file\footnote{Note that if the student has used the glossaries package to use acronyms in the abstract(s) they also need to provide an \texttt{acronyms.tex} file, the template automatically attaches this file to the \gls{PDF} file.}. The output of the program is a JSON file (oscar.json).
+\end{enumerate}
+\Needspace*{3\baselineskip}
+\begin{lstlisting}[basicstyle=\footnotesize, language={bash}, caption={Commands to extract pseudo JSON from the PDF file for Oscar}, label=lst:AdminextractPseudoJSONFromPDFforOscarFileToJSON]    
+./extract_pseudo_JSON-from\_PDF.py --pdf oscar.pdf --json oscar.json
+\end{lstlisting}
+
+An alternative script is designed to process one or more \gls{PDF} files. 
+For each \gls{PDF} file in the input directory, it extracts the embedded files
+If the \texttt{output\_directory} is not given, it creates an \dname{output\_directory} in the \dname{input\_directory}.  Otherwise, it creates the \dname{output\_directory} if it does not already exist.
+In both cases, a target directory is created in the output directory based on the basename of the input file with `.pdf' removed and extended with `\_embeded\_files'.
+The program outputs each of the embedded files into the target directory. This script is invoked as shown in \Cref{lst:AdminextractFilesFromPDF}.
+\Needspace*{3\baselineskip}
+\begin{lstlisting}[basicstyle=\footnotesize, language={bash}, caption={Commands to extract embedded or attached from the PDF files}, label=lst:AdminextractFilesFromPDF]
+extract_embedded_files_from_PDF.py input_directory {output_directory]
+\end{lstlisting}
+
+
+
+\Needspace*{6\baselineskip}
+Given the \fname{fordiva.json} you can clean it up and transform it to make a \gls{MODS} file with the following commands shown in \Cref{lst:AdmincleanPseudoJSONandConvertToMODS}.
+\Needspace*{4\baselineskip}
+\begin{lstlisting}[basicstyle=\footnotesize, language={bash}, caption={Cleanup pseudo JSON produced by the \LaTeX~compiler and then make a MODS file},label=lst:AdmincleanPseudoJSONandConvertToMODS]
+./cleanup_pseudo_JSON-from_LaTeX.py --json fordiva.json --acronyms acronyms.tex
+./JSON_to_MODS.py --json fordiva-cleaned.json
+\end{lstlisting}
+
+Now all you have to do is rename the XML file (\texttt{modsXML.xml}) that was produced to \texttt{xxx.mods} and you are all set to upload the \gls{MODS} file into \gls{DiVA}!
+
+\subsection{TRITA}
+The Office of Student Affairs assigns the TRITA number.
+This requires the student to provide the information about their document that is needed so that a TRITA number can be assigned. Fortunately, this material is in the \fname{fordiva.json} file.
+
+An overview of the flow of data is shown in \Cref{fig:overallDataflow}. Note that a \gls{DiVA} administrator only needs to receive a \texttt{fordia.json} file from a student and then use this information to assign a TRITA number. The assigned TRITA number is communicated to the student.
+
+\generalExpl{Should the student submit just the \fname{fordiva.json} file or the \gls{PDF} file with the attached \fname{fordiva.json} file?}
+
+\begin{figure}[!ht]
+\resizebox{1\textwidth}{!}{%
+\begin{tikzpicture}
+[align=left,node distance=2cm]
+\node (latexFile) [tape,tape bend top=none,draw,font=\sffamily] {\LaTeX project using template};
+
+\node (LaTeX) [processBox,  below=1cm of latexFile] {LaTeX compiler};
+%\node (acronymsfile) [tape,tape bend top=none,draw,font=\sffamily, right=2cm of latexFile] {acronyms.tex};
+\node (latexjsonFile) [tape,tape bend top=none,draw,font=\sffamily, below of=LaTeX] {fordiva.json};
+
+\node (cleanJSONfromLaTeX) [processBox, below=1cm of latexjsonFile] {cleanup\_pseudo\_JSON-from\_LaTeX};
+
+\node (jsonFile) [tape,tape bend top=none,draw,font=\sffamily, below=4cm of cleanJSONfromLaTeX] {JSON file};
+
+\node (start) [processBox, right=0.5cm of jsonFile] {JSON\_to\_calendar};
+
+\node (assignTRITA) [adminProcessBox, below=3cm of jsonFile] {Assign TRITA number};
+\node (jsonFileWithTRITA) [tape,tape bend top=none,draw,font=\sffamily, below of=assignTRITA] {JSON file with TRITA};
+\node (GetISBN) [processBox, below=1cm of jsonFileWithTRITA] {Get ISBN};
+\node (jsonFileWithTRITAandISBN) [tape,tape bend top=none,draw,font=\sffamily, below=1cm of GetISBN] {JSON file with TRITA and ISBN};
+
+\node (jsontoMODS) [processBox, below of=jsonFileWithTRITAandISBN] {JSON\_to\_MODS};
+%\node (modsFile) [tape,tape bend top=none,draw,font=\sffamily, below of=jsontoMODS] {MODS file};
+
+\node (calendarEvent) [destinationBox, right=1cm of start] {Canvas calendar event};
+\node (announcement) [destinationBox,  above of =calendarEvent] {Canvas announcement};
+\node (cortinaCalendarEvent) [destinationBox,  right=0.5cm of start, below of=calendarEvent] {KTH Cortina calendar event};
+\node (TRITAlist) [adminProcessBox, right=1cm of assignTRITA, yshift=0.5cm] {TRITA list/database};
+
+\node (modsFileWithTRITA) [tape,tape bend top=none,draw,font=\sffamily, below of=jsontoMODS] {MODS file with TRITA and ISBN};
+\node (makeApplyCover) [processBox, below of=modsFileWithTRITA] {Get PDF from printer with covers};
+\node (divameta) [destinationBox, right=1cm of modsFileWithTRITA] {Import MODS file into DiVA};
+\node (diva) [destinationBox, right=1cm of makeApplyCover] {Upload PDF into DiVA};
+\node (acronymsfile) [tape,tape bend top=none,draw,font=\sffamily, left=5cm of cleanJSONfromLaTeX] {acronyms.tex};
+\node (TRITAnumber) [tape,tape bend top=none,draw,font=\sffamily,
+right=1cm of cortinaCalendarEvent] {TRITA number};
+
+\draw [-{Latex[length=3mm]}] (latexFile.south) --  (LaTeX.north);
+\draw [-{Latex[length=3mm]}] (LaTeX) --  (latexjsonFile.north);
+\draw [-{Latex[length=3mm]}] (latexjsonFile) --  (cleanJSONfromLaTeX.north);
+\draw [-{Latex[length=3mm]}] (cleanJSONfromLaTeX.south) --  (jsonFile.north);
+
+\draw [-{Latex[length=3mm]}] (jsonFile) --  (assignTRITA);
+\draw [-{Latex[length=3mm]}] (jsonFile) --  (start.west);
+\draw [-{Latex[length=3mm]}] (start.east) --  (announcement.west);
+\draw [-{Latex[length=3mm]}] (start.east) -- (calendarEvent);
+\draw [-{Latex[length=3mm]}] (start.east) -- (cortinaCalendarEvent.west);
+
+\draw [-{Latex[length=3mm]}] (jsontoMODS) --  (modsFileWithTRITA);
+
+\draw [-{Latex[length=3mm]}] (modsFileWithTRITA) --  (divameta);
+\draw [-{Latex[length=3mm]}] (assignTRITA) --  (jsonFileWithTRITA);
+
+
+
+\draw [-{Latex[length=3mm]}, red, dashed] (assignTRITA.south east) to[out=0,in=-90]   (TRITAnumber.south);
+\draw [-{Latex[length=3mm]}, red, dashed] (TRITAnumber.north) to[out=90,in=0]   (latexFile.north east);
+
+
+\draw [-{Latex[length=3mm]}] (jsonFileWithTRITAandISBN) --  (jsontoMODS);
+\draw [-{Latex[length=3mm]}] (modsFileWithTRITA) --  (makeApplyCover);
+\draw [-{Latex[length=3mm]}] (makeApplyCover) --  (diva);
+
+\draw [-{Latex[length=3mm]}] (latexFile.south west) --  (acronymsfile.north);
+\draw [-{Latex[length=3mm]}] (acronymsfile.south) to[out=-90,in=180]  (jsontoMODS.west);
+\draw [-{Latex[length=3mm]}] (TRITAlist.south west) --  (assignTRITA.east);
+\draw [-{Latex[length=3mm]}] (assignTRITA.north east) --  (TRITAlist.west);
+
+\draw [-{Latex[length=3mm]}] (jsonFileWithTRITA) --  (GetISBN);
+\draw [-{Latex[length=3mm]}] (GetISBN) --  (jsonFileWithTRITAandISBN);
+\draw [-{Latex[length=3mm]}, red, dashed] (GetISBN.west) to[out=180,in=180]   (latexFile.north west);
+\end{tikzpicture}
+}
+\caption[Overall data flow]{Overall data flow from a \LaTeX\ ~project using the templates. The \gls{DiVA} administrators' activities are illustrated with the blue boxes: Assign TRITA number and the TRITA list/database. The dashed red line shows the flow of the assigned TRITA back to the author to input into their \LaTeX\ -project, while the black lines show other types of data.}
+\label{fig:overallDataflow}
+\end{figure}
+\FloatBarrier
+
+\section[Inserting information into LADOK]{Inserting information into LADOK}
+\label{sec:JSONtoLADOKDiVAAdmis}
+As part of the effort to minimize the amount of cutting and pasting. I have made a program \texttt{JSON\_to\_ladok.py} that takes the extracted \gls{JSON} information and uses the information about the author(s) and the title and alternative title to insert this information into \gls{LADOK} for the module (\ie ``moment'' in Swedish) that requires a project title, \ie, '\foreignlanguage{swedish}{KravPaProjekttitel}' is True. \Cref{lst:usingExtractedJSONtoProduceLADOKentry1} shows an example of using this program to try to put the title and alternative title into \gls{LADOK}. Basically, the program logic should work, but I do \textbf{not} have the required permission to make entries of this sort of data for a degree project (\ie \foreignlanguage{swedish}{Rapporteringsrättighet saknas}).
+
+Note that this program uses the \texttt{ladok3} python library but extends it with some features that are not (yet) in the library. \textbf{It should be regarded as very much a work in progress.} However, it illustrates what could be done using the information in the \gls{JSON} file.
+\begin{lstlisting}[language={bash},
+    breaklines=true,
+    breakatwhitespace=true,          % sets if automatic breaks should only happen at whitespace
+    breakindent=0em,
+    caption={Using the extracted JSON to produce a LADOK entry for a student in the DA231X degree project course}, label=lst:usingExtractedJSONtoProduceLADOKentry1]
+./JSON_to_ladok.py --json xxx.json 
+...
+author={'Last name': 'xxx', 'First name': 'yyy', 'Local User Id': 'u1xxxx', 'E-mail': 'oxxx@kth.se', 'organisation': {'L1': 'School of Electrical Engineering and Computer Science '}}
+Canvas user_id=dddd
+integration_id=gggggg-gggg-gggg-gggg-ggggggg
+ladoK_course_info={'id': '6683207e-5a5d-11eb-9b32-eeb44fb14647', 'round_id': '8e15ae14-1d86-11ea-a622-3565135944de', 'education_id': '374ea085-73d8-11e8-afa7-8e408e694e54', 'instance_id': '8eee8da9-dd0a-11e8-bb7a-19f8cd1a470e', 'swe_name': 'Examensarbete i datalogi och datateknik, avancerad nivå', 'eng_name': 'Degree Project in Computer Science and Engineering, Second Cycle'}
+moment code=PRO1, requires title=False
+moment code=PRO2, requires title=False
+moment code=PRO3, requires title=True
+trying to store a passing grade for moment=PRO3
+Traceback (most recent call last):
+  File "./JSON_to_ladok.py", line 533, in <module>
+    sys.exit(main(sys.argv[1:]))
+  File "./JSON_to_ ladok.py", line 519, in main
+    status=save_result_degree_project3(ladok, integration_id, course_code, mom['Utbildningskod'], '2021-07-14', 'P', "PF", main_title, alternative_main_title)
+  File "./JSON_to_ ladok.py", line 374, in save_result_degree_project3
+    raise Exception("Couldn't register " + course_moment + "=" + grade_raw + " " + result_date_raw + ": " + r.json()["Meddelande"])
+Exception: Couldn't register PRO3=P 2021-07-14: Hinder mot skapa resultat påträffat: Rapporteringsrättighet saknas
+\end{lstlisting}
+
+\warningExpl{There is currently a transfer to \gls{LADOK} project within the group of developers at the IT unit who are working on E-learning - they have been working on an API for entering the title(s) and other information (just as they are making it possible to use a program to enter grades and dates for other courses).}
+
+\FloatBarrier
+
+
+\section{Final notes}
+\textbf{Best of success in using the scripts (programs)!} If there are questions, contact me at  \href{mailto:maguire@kth.se}{maguire@kth.se}
+.
+\ifinswedish
+\printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
+och förkortningar}]
+\else
+%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+\printnoidxglossaries
+\fi
+\clearpage
+
+% --- print the bibliography ---
+% Print the bibliography (and make it appear in the table of contents)
+
+% Specify the title of the references page
+% This will work for both BibLaTeX and BibTeX.
+% It works for BibTeX because the thesis format is basically that of a Report.
+\renewcommand{\bibname}{References}
+
+\ifbiblatex
+    %\typeout{Biblatex current language is \currentlang}
+
+    \printbibliography[heading=bibintoc, title={References}]
+\else
+   
+    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
+    \addcontentsline{toc}{chapter}{References}
+    \bibliography{references}
+\fi
+\end{document}

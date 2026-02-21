@@ -1,0 +1,506 @@
+%\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%\ProvidesPackage{kth-commands}
+%    [2025/07/19 v0.1 Provides template-specific commands needed for kththesis.cls]
+
+\makeatletter
+%% Macros from the package phfnote
+% \phfnoteSaveDefs{〈identifier〉}{〈list of macro names〉} saves the current definitions of the given list of macros under the identifier. The list of macros is specified as a comma-separated list of macro names. Note that there cannot be spaces after the commas in the list.
+
+\def\phfnoteSaveDefs#1#2{%
+  \csgdef{phfnote@restoredefs@#1}{}%
+  \def\@tmpa{#2}%
+  \@for\next:=\@tmpa\do{%
+    \global\csletcs{phfnote@restoredefs@#1@\next}{\next}%
+    \expandafter\xappto\csname phfnote@restoredefs@#1\endcsname{%
+      \noexpand\csletcs{\next}{phfnote@restoredefs@#1@\next}%
+    }%
+  }%
+}
+
+% \phfnoteRestoreDef{〈identifier〉} - restores the saved macros
+\def\phfnoteRestoreDefs#1{%
+  \ifcsname phfnote@restoredefs@#1\endcsname%
+    \csname phfnote@restoredefs@#1\endcsname%
+  \else%
+    \PackageError{kththesis}{\string\phfnoteRestoreDefs: no such
+      definitions stored (#1)}{}
+  \fi%
+}
+\makeatother
+
+%% To give warnings about the use of citations, we set a hook before the abstract and one after it
+%% The first hook saves the definition of \cite and sets up a warning while the second hook restores it (similarly for the other commands that should not be used in an abstract
+\BeforeBeginEnvironment{abstract}{\phfnoteSaveDefs{origcmds}{cite,ref,Cref,cref}%
+\renewcommand{\cite}[1]{{\NotoSansFont \textcolor{red}{⁉\uuline{cite}⁉}}\PackageWarning{kththesis}{attempt to use cite command in an abstract}}%
+\renewcommand{\ref}[1]{{\NotoSansFont \textcolor{red}{⁉\uuline{ref}⁉}}\PackageWarning{kththesis}{attempt to use ref command in an abstract}}%
+\renewcommand{\Cref}[1]{{\NotoSansFont \textcolor{red}{⁉\uuline{Cref}⁉}}\PackageWarning{kththesis}{attempt to use Cref command in an abstract}}%
+\renewcommand{\cref}[1]{{\NotoSansFont \textcolor{red}{⁉\uuline{cref}⁉}}\PackageWarning{kththesis}{attempt to use cref command in an abstract}}%
+}
+
+\makeatletter
+% Define commands for setting the user-definable parts of the title page
+
+\let\@subtitle\@empty
+\newcommand{\subtitle}[1]{\def\@subtitle{#1}}
+\let\@alttitle\@empty
+\newcommand{\alttitle}[1]{\def\@alttitle{#1}}
+\let\@altsubtitle\@empty
+\newcommand{\altsubtitle}[1]{\def\@altsubtitle{#1}}
+
+% enable the author to specify plain text titles and subtitles to handle the situation when the titles and subtitles cannot be translated to pure Unicode
+
+\let\@titleInPlainText\@empty
+\newcommand{\titleInPlainText}[1]{\def\@titleInPlainText{#1}}
+\let\@subtitleInPlainText\@empty
+\newcommand{\subtitleInPlainText}[1]{\def\@subtitleInPlainText{#1}}
+\let\@alttitleInPlainText\@empty
+\newcommand{\alttitleInPlainText}[1]{\def\@alttitleInPlainText{#1}}
+\let\@altsubtitleInPlainText\@empty
+\newcommand{\altsubtitleInPlainText}[1]{\def\@altsubtitleInPlainText{#1}}
+
+
+\let\@hostcompany\@empty
+\newcommand{\hostcompany}[1]{\def\@hostcompany{#1}}
+\let\@hostorganization\@empty
+\newcommand{\hostorganization}[1]{\def\@hostorganization{#1}}
+
+\let\@school\@empty
+\newcommand{\school}[1]{\def\@school{#1}}
+
+% First author's information
+\let\@authorsLastname\@empty
+\newcommand{\authorsLastname}[1]{\def\@authorsLastname{#1}}
+\let\@authorsFirstname\@empty
+\newcommand{\authorsFirstname}[1]{\def\@authorsFirstname{#1}}
+\let\@email\@empty
+\newcommand{\email}[1]{\def\@email{#1}}
+\let\@kthid\@empty
+\newcommand{\kthid}[1]{\def\@kthid{#1}}
+\let\@orcid\@empty
+\newcommand{\orcid}[1]{\def\@orcid{#1}}
+\let\@authorsSchool\@empty
+\newcommand{\authorsSchool}[1]{\def\@authorsSchool{#1}}
+\let\@authorsDepartment\@empty
+\newcommand{\authorsDepartment}[1]{\def\@authorsDepartment{#1}}
+% Information about the city and country for the acknowledgement
+\let\@authorCity\@empty
+\newcommand{\authorCity}[1]{\def\@authorCity{#1}}
+\let\@authorCountry\@empty
+\newcommand{\authorCountry}[1]{\def\@authorCountry{#1}}
+\let\@authorCityCountryDate\@empty
+% Define the command so that if a date is not specified it will not output the comma; it only outputs the comma if there is a date.
+\ExplSyntaxOn
+\cs_set_eq:NN  \IfEmptyTF  \tl_if_blank:nTF
+\ExplSyntaxOff
+\NewDocumentCommand{\authorCityCountryDate}{m}{
+\def\@authorCityCountryDate{\ifx\@authorCity\@empty%
+    Stockholm%
+    \else%
+    \ifx\@authorCountry\@empty%
+    \@authorCity%
+    \else%
+    \@authorCity, \@authorCountry%
+    \fi%
+    \fi%
+    \IfEmptyTF{#1}{}{, #1}%
+    }%
+}
+\authorCityCountryDate{\MONTH\enspace\the\year} % default month and year for the acknowledgement signature
+
+% Second author's information
+\let\@secondAuthorsLastname\@empty
+\newcommand{\secondAuthorsLastname}[1]{\def\@secondAuthorsLastname{#1}}
+\let\@secondAuthorsFirstname\@empty
+\newcommand{\secondAuthorsFirstname}[1]{\def\@secondAuthorsFirstname{#1}}
+\let\@secondemail\@empty
+\newcommand{\secondemail}[1]{\def\@secondemail{#1}}
+\let\@secondkthid\@empty
+\newcommand{\secondkthid}[1]{\def\@secondkthid{#1}}
+\let\@secondorcid\@empty
+\newcommand{\secondorcid}[1]{\def\@secondorcid{#1}}
+\let\@secondAuthorsSchool\@empty
+\newcommand{\secondAuthorsSchool}[1]{\def\@secondAuthorsSchool{#1}}
+\let\@secondAuthorsDepartment\@empty
+\newcommand{\secondAuthorsDepartment}[1]{\def\@secondAuthorsDepartment{#1}}
+% Information about the city and country for the acknowledgement
+\let\@secondAuthorCity\@empty
+\newcommand{\secondAuthorCity}[1]{\def\@secondAuthorCity{#1}}
+\let\@secondAuthorCountry\@empty
+\newcommand{\secondAuthorCountry}[1]{\def\@secondAuthorCountry{#1}}
+\let\@secondAuthorCityCountryDate\@empty
+% Define the command so if a date is not specified it will not output the comma; it only outputs the comma if there is a date.
+\NewDocumentCommand{\secondAuthorCityCountryDate}{m}{
+\def\@secondAuthorCityCountryDate{\ifx\@secondAuthorCity\@empty%
+    Stockholm%
+    \else%
+    \ifx\@secondAuthorCountry\@empty%
+    \@secondAuthorCity%
+    \else%
+    \@secondAuthorCity, \@secondAuthorCountry%
+    \fi%
+    \fi%
+    \IfEmptyTF{#1}{}{, #1}%%
+    }%
+}
+
+\let\@supervisorAsLastname\@empty
+\newcommand{\supervisorAsLastname}[1]{\def\@supervisorAsLastname{#1}}
+\let\@supervisorAsFirstname\@empty
+\newcommand{\supervisorAsFirstname}[1]{\def\@supervisorAsFirstname{#1}}
+\let\@supervisorAsEmail\@empty
+\newcommand{\supervisorAsEmail}[1]{\def\@supervisorAsEmail{#1}}
+\let\@supervisorAsKTHID\@empty
+\newcommand{\supervisorAsKTHID}[1]{\def\@supervisorAsKTHID{#1}}
+\let\@supervisorAsOrganization\@empty
+\newcommand{\supervisorAsOrganization}[1]{\def\@supervisorAsOrganization{#1}}
+\let\@supervisorAsSchool\@empty
+\newcommand{\supervisorAsSchool}[1]{\def\@supervisorAsSchool{#1}}
+\let\@supervisorAsDepartment\@empty
+\newcommand{\supervisorAsDepartment}[1]{\def\@supervisorAsDepartment{#1}}
+
+\let\@supervisorBsLastname\@empty
+\newcommand{\supervisorBsLastname}[1]{\def\@supervisorBsLastname{#1}}
+\let\@supervisorBsFirstname\@empty
+\newcommand{\supervisorBsFirstname}[1]{\def\@supervisorBsFirstname{#1}}
+\let\@supervisorBsEmail\@empty
+\newcommand{\supervisorBsEmail}[1]{\def\@supervisorBsEmail{#1}}
+\let\@supervisorBsKTHID\@empty
+\newcommand{\supervisorBsKTHID}[1]{\def\@supervisorBsKTHID{#1}}
+\let\@supervisorBsOrganization\@empty
+\newcommand{\supervisorBsOrganization}[1]{\def\@supervisorBsOrganization{#1}}
+\let\@supervisorBsSchool\@empty
+\newcommand{\supervisorBsSchool}[1]{\def\@supervisorBsSchool{#1}}
+\let\@supervisorBsDepartment\@empty
+\newcommand{\supervisorBsDepartment}[1]{\def\@supervisorBsDepartment{#1}}
+
+\let\@supervisorCsLastname\@empty
+\newcommand{\supervisorCsLastname}[1]{\def\@supervisorCsLastname{#1}}
+\let\@supervisorCsFirstname\@empty
+\newcommand{\supervisorCsFirstname}[1]{\def\@supervisorCsFirstname{#1}}
+\let\@supervisorCsEmail\@empty
+\newcommand{\supervisorCsEmail}[1]{\def\@supervisorCsEmail{#1}}
+\let\@supervisorCsKTHID\@empty
+\newcommand{\supervisorCsKTHID}[1]{\def\@supervisorCsKTHID{#1}}
+\let\@supervisorCsOrganization\@empty
+\newcommand{\supervisorCsOrganization}[1]{\def\@supervisorCsOrganization{#1}}
+\let\@supervisorCsSchool\@empty
+\newcommand{\supervisorCsSchool}[1]{\def\@supervisorCsSchool{#1}}
+\let\@supervisorCsDepartment\@empty
+\newcommand{\supervisorCsDepartment}[1]{\def\@supervisorCsDepartment{#1}}
+
+\let\@supervisorDsLastname\@empty
+\newcommand{\supervisorDsLastname}[1]{\def\@supervisorDsLastname{#1}}
+\let\@supervisorDsFirstname\@empty
+\newcommand{\supervisorDsFirstname}[1]{\def\@supervisorDsFirstname{#1}}
+\let\@supervisorDsEmail\@empty
+\newcommand{\supervisorDsEmail}[1]{\def\@supervisorDsEmail{#1}}
+\let\@supervisorDsKTHID\@empty
+\newcommand{\supervisorDsKTHID}[1]{\def\@supervisorDsKTHID{#1}}
+\let\@supervisorDsOrganization\@empty
+\newcommand{\supervisorDsOrganization}[1]{\def\@supervisorDsOrganization{#1}}
+\let\@supervisorDsSchool\@empty
+\newcommand{\supervisorDsSchool}[1]{\def\@supervisorDsSchool{#1}}
+\let\@supervisorDsDepartment\@empty
+\newcommand{\supervisorDsDepartment}[1]{\def\@supervisorDsDepartment{#1}}
+
+\let\@supervisorEsLastname\@empty
+\newcommand{\supervisorEsLastname}[1]{\def\@supervisorEsLastname{#1}}
+\let\@supervisorEsFirstname\@empty
+\newcommand{\supervisorEsFirstname}[1]{\def\@supervisorEsFirstname{#1}}
+\let\@supervisorEsEmail\@empty
+\newcommand{\supervisorEsEmail}[1]{\def\@supervisorEsEmail{#1}}
+\let\@supervisorEsKTHID\@empty
+\newcommand{\supervisorEsKTHID}[1]{\def\@supervisorEsKTHID{#1}}
+\let\@supervisorEsOrganization\@empty
+\newcommand{\supervisorEsOrganization}[1]{\def\@supervisorEsOrganization{#1}}
+\let\@supervisorEsSchool\@empty
+\newcommand{\supervisorEsSchool}[1]{\def\@supervisorEsSchool{#1}}
+\let\@supervisorEsDepartment\@empty
+\newcommand{\supervisorEsDepartment}[1]{\def\@supervisorEsDepartment{#1}}
+
+
+\let\@courseCycle\@empty
+\newcommand{\courseCycle}[1]{\def\@courseCycle{#1}}
+\let\@courseCode\@empty
+\newcommand{\courseCode}[1]{\def\@courseCode{#1}}
+\let\@courseCredits\@empty
+\newcommand{\courseCredits}[1]{\def\@courseCredits{#1}}
+
+\let\@degreeName\@empty
+\newcommand{\degreeName}[1]{\def\@degreeName{#1}}
+
+% To support Doctor of Philosophy and Licentiate of Philosophy degrees in addition to Tekn. Dr. and Tekn. Lic.
+\let\@degreeModifier\@empty
+\newcommand{\degreeModifier}[1]{\def\@degreeModifier{#1}}
+
+\let\@subjectArea\@empty
+\newcommand{\subjectArea}[1]{\def\@subjectArea{#1}}
+
+\let\@secondDegreeName\@empty
+\newcommand{\secondDegreeName}[1]{\def\@secondDegreeName{#1}}
+\let\@secondSubjectArea\@empty
+\newcommand{\secondSubjectArea}[1]{\def\@secondSubjectArea{#1}}
+
+% Data related to the oral presentation
+\let\@presentationDateAndTimeISO\@empty
+\newcommand{\presentationDateAndTimeISO}[1]{\def\@presentationDateAndTimeISO{#1}}
+\let\@presentationLanguage\@empty
+\newcommand{\presentationLanguage}[1]{\def\@presentationLanguage{#1}}
+\let\@presentationRoom\@empty
+\newcommand{\presentationRoom}[1]{\def\@presentationRoom{#1}}
+\let\@presentationAddress\@empty
+\newcommand{\presentationAddress}[1]{\def\@presentationAddress{#1}}
+\let\@presentationCity\@empty
+\newcommand{\presentationCity}[1]{\def\@presentationCity{#1}}
+
+\let\@opponentsNames\@empty
+\newcommand{\opponentsNames}[1]{\def\@opponentsNames{#1}}
+
+% Data for DIVA National Subject Cateories fields
+\let\@nationalsubjectcategories\@empty
+\newcommand{\nationalsubjectcategories}[1]{\def\@nationalsubjectcategories{#1}}
+
+% Data for UN's Sustainable Development Goals (SDGs)
+\let\@SDGs\@empty
+\newcommand{\SDGs}[1]{\def\@SDGs{#1}}
+
+% Keywords
+\let\@EnglishKeywords\@empty
+\newcommand{\EnglishKeywords}[1]{\def\@EnglishKeywords{#1}}
+
+\let\@SwedishKeywords\@empty
+\newcommand{\SwedishKeywords}[1]{\def\@SwedishKeywords{#1}}
+
+\ExplSyntaxOn
+\cs_new_eq:NN \strcompare \str_if_eq:nnTF
+
+%expand first argument before doing the comparison
+\cs_new_eq:NN \strcompareV \str_if_eq:VnTF
+\ExplSyntaxOff
+
+
+%% Changed to use expl3 strcompare rather than xstring's IfEqCase, since the later is not expandable
+%% The insight for this is from Enrico Gregorio - egreg's posing of 26 April 2016 at 
+%% https://tex.stackexchange.com/questions/306484/how-do-i-perform-an-expandable-string-comparison
+
+\newcommand{\InsertKeywords}[1]{
+\strcompare{#1}{english}{\@EnglishKeywords}{}%
+\strcompare{#1}{swedish}{\@SwedishKeywords}{}%
+}
+
+\let\@programcode\@empty
+\newcommand{\programcode}[1]{%
+\def\@programcode{#1}%
+\edef\@prgmcode{\programmecodeToString{#1}}}
+
+\let\@secondProgramcode\@empty
+\newcommand{\secondProgramcode}[1]{%
+\def\@secondProgramcode{#1}%
+\edef\@secondprgmcode{\programmecodeToString{#1}}}
+
+\let\@edprogram\@empty
+\newcommand{\edprogram}[1]{%
+\def\@edprogram{#1}}
+
+\let\@secondedProgram\@empty
+\newcommand{\secondedProgram}[1]{%
+\def\@secondedProgram{#1}}
+
+%% For dealing with the 3rd cycle education subjects
+\let\@educationSubjectcode\@empty
+\newcommand{\educationSubjectcode}[1]{%
+\def\@educationSubjectcode{#1}%
+}
+
+% to store the user's choice of copyright or copyleft
+\let\@copyrightleft\@empty
+% note that the command has to change the definition of \@copyrightleft globally, hence \gdef and not \def
+\newcommand{\thesiscopyrightleft}[1]{\gdef\@copyrightleft{#1}}
+
+
+% Get and store information about the series and the number within this series, i.e, TRITA numbers
+%"Series": \{
+%	"Title of series": "TRITA-ICT-EX",
+%	"No. in series": "2019:00"
+\let\@thesisSeries\@empty
+\let\@thesisSeriesNumber\@empty
+\newcommand{\trita}[2]{\def\@thesisSeries{#1}\def\@thesisSeriesNumber{#2}}
+
+\let\@thesisISBN\@empty
+\newcommand{\thesisISBN}[1]{\def\@thesisISBN{#1}}
+
+% for cover illustration
+\let\@coverIllustration\@empty
+\newcommand{\coverIllustration}[1]{\def\@coverIllustration{#1}}
+\let\@coverIllustrationCredit\@empty
+\newcommand{\coverIllustrationCredit}[1]{\def\@coverIllustrationCredit{#1}}
+
+\let\@printedBy\@empty
+\newcommand{\printedBy}[1]{\def\@printedBy{#1}}
+
+\let\@defenseDescription\@empty
+\newcommand{\defenseDescription}[1]{\def\@defenseDescription{#1}}
+\makeatother
+
+% Due to parsing problems with Overleaf's checking for balance of
+% start and ends of beginning and ending use of environments and
+% because babel and polyglossia & biblatex use different names for Norsk and German - this is _not_ automatically supported
+
+% --- Helper macros for language environment switching ---
+\ifluatex
+\makeatletter
+\newcommand{\babelpolyLangStart}[1]{%
+    \selectlanguage{#1}% Original definition
+    % Output the current values of the font variables to the log file
+    %\typeout{babelpolyLangStart #1 \f@encoding\  \f@family\  \f@series\  \f@shape}%
+}
+% Make @ a non-letter again
+\makeatother
+\else
+    \newcommand{\babelpolyLangStart}[1]{\selectlanguage{#1}}
+\fi
+
+\ifluatex
+\makeatletter
+    \newcommand{\babelpolyLangStop}[1]{%
+    %\typeout{babelpolyLangStop #1 \f@encoding\  \f@family\  \f@series\  \f@shape}%
+}
+% Make @ a non-letter again
+\makeatother
+
+\else
+    \newcommand{\babelpolyLangStop}[1]{}
+\fi
+
+\ExplSyntaxOn
+\NewDocumentCommand{\replaceBS}{mm}
+ {
+  \tl_set_eq:NN #2 #1
+  \tl_replace_all:NVn #2 \c_backslash_other_tl { ¢ }
+ }
+\tl_const:Nx \c_backslash_other_tl { \cs_to_str:N \\ }
+\cs_generate_variant:Nn \tl_replace_all:Nnn { NV }
+\ExplSyntaxOff
+
+\makeatother
+
+
+% set up dividerContent to have smaller margins for the content on Divider pages
+\def\dividerContent#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\enddividerContent=\endlist 
+
+% Define some functions to make it easier to open, close, and write to the file if it is open, while generating errors if the file is not open
+\newcommand{\FileOpen}[2]{%
+% arg 1 is a filehandle as a string
+% arg 2 is a filename
+    \expandafter\newwrite\csname#1\endcsname%
+    \expandafter\immediate\expandafter\openout\csname#1\endcsname #2%
+}
+
+\newcommand{\FileClose}[1]{%
+% arg 1 is a filehandle as a string
+    \expandafter\immediate\expandafter\closeout\csname#1\endcsname%
+    \expandafter\let\csname#1\endcsname\undefined % Mark the handle as undefined after closing
+}
+
+
+\newcommand{\WriteIfFileOpen}[2]{%
+% arg 1 is a filehandle
+% arg 2 is content to be written to a file
+  \expandafter\ifcsname\string#1\endcsname
+    % The control sequence for the file handle exists
+    \immediate\write\csname #1\endcsname{#2}%
+  \else
+    % The control sequence for the file handle is not defined
+    \PackageWarning{kththesis}{File handle '#1' is not defined (or closed).}%
+  \fi
+}
+
+
+% for dealing with the List of publications
+% Note that ragged right has been used to avoid hyphenation issues in the titles
+% uses functionality of enumitem package
+\newlist{ListOfPapers}{enumerate}{1}
+\setlist[ListOfPapers]{
+    leftmargin=*,
+    label={Paper \Alph*},
+    ref={Paper \Alph*},
+    resume=listOFPapers,
+    itemsep=0em,
+    first=\raggedright
+  }
+
+\newlist{ListOfPosters}{enumerate}{1}
+\setlist[ListOfPosters]{
+    leftmargin=*,
+    label={Poster \Alph*},
+    ref={Poster \Alph*},
+    resume=ListOfPosters,
+    itemsep=0em,
+    first=\raggedright
+  }
+
+\newlist{ListOfPatents}{enumerate}{1}
+\setlist[ListOfPatents]{
+    leftmargin=*,
+    label={Patent \Alph*},
+    ref={Patent \Alph*},
+    resume=ListOfPatents,
+    itemsep=0em,
+    first=\raggedright
+  }
+
+\newlist{ListOfPatentApplications}{enumerate}{1}
+\setlist[ListOfPatentApplications]{
+    leftmargin=*,
+    label={Patent Application \Alph*},
+    ref={Patent Application \Alph*},
+    resume=ListOfPatentApplications,
+    itemsep=0em,
+    first=\raggedright
+  }
+
+\newlist{ListOfReports}{enumerate}{1}
+\setlist[ListOfReports]{
+    leftmargin=*,
+    label={Report \Alph*},
+    ref={Report \Alph*},
+    resume=ListOfReports,
+    itemsep=0em,
+    first=\raggedright
+  }
+
+\newlist{ListOfArtifacts}{enumerate}{1}
+\setlist[ListOfArtifacts]{
+    leftmargin=*,
+    label={Artifact \Alph*},
+    ref={Artifact \Alph*},
+    resume=ListOfArtifacts,
+    itemsep=0em,
+    first=\raggedright
+  }
+
+\newlist{ListOfDatasets}{enumerate}{1}
+\setlist[ListOfDatasets]{
+    leftmargin=*,
+    label={Dataset \Alph*},
+    ref={Dataset \Alph*},
+    resume=ListOfDatasets,
+    itemsep=0em,
+    first=\raggedright
+  }
+
+%%% Potential future lists that might be added:
+% ListOfExhibitions
+% ListOfDesigns
+% ListOfPerformances
+% ListOfCompositions
+% Although each of these might be treated as an artifact, some fields might have this as a distinct category - hence, they might warrant being separate lists.
+
+
+% to define a command\B to bold font entries in a table
+% based on https://tex.stackexchange.com/questions/469559/bold-entries-in-table-with-s-column-type
+\usepackage{etoolbox}
+\renewcommand{\bfseries}{\fontseries{b}\selectfont}
+\robustify\bfseries
+\newrobustcmd{\B}{\bfseries}

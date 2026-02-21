@@ -1,0 +1,69 @@
+\newcommand{\schoolAcronym}[1]{%
+  \ifinswedish
+    \strcompare{#1}{ABE}{Skolan för Arkitektur och samhällsbyggnad}{}%
+    \strcompare{#1}{ITM}{Skolan för Industriell teknik och management}{}%
+    \strcompare{#1}{SCI}{Skolan för Teknikvetenskap}{}%
+    \strcompare{#1}{CBH}{Skolan för Kemi, bioteknologi och hälsa}{}%
+    \strcompare{#1}{EECS}{Skolan för Elektroteknik och datavetenskap}{}%
+    \strcompare{#1}{XXX}{*****Skolan för XXX*****}{}% Fake school for use in template
+  \else
+    \strcompare{#1}{ABE}{School of Architecture and the Built Environment}{}%
+    \strcompare{#1}{ITM}{School of Industrial Engineering and Management}{}%
+    \strcompare{#1}{SCI}{School of Engineering Sciences}{}%
+    \strcompare{#1}{CBH}{School of Engineering Sciences in Chemistry, Biotechnology and Health}{}%
+    \strcompare{#1}{EECS}{School of Electrical Engineering and Computer Science}{}%
+    \strcompare{#1}{XXX}{*****School of XXX*****}{}% Fake school for use in template
+  \fi
+}
+
+\newcommand{\programmecodeToString}[1]{%
+  \ifinswedish
+     \strcompare{#1}{KTHARK}{Arkitektur}{}%
+     \strcompare{#1}{KTHBIO}{Bioteknologi}{}%
+     \strcompare{#1}{KTHBYV}{Byggvetenskap}{}%
+     \strcompare{#1}{KTHDAT}{Datalogi}{}%
+     \strcompare{#1}{KTHEST}{Elektro- och systemteknik}{}%
+     \strcompare{#1}{KTHEGI}{Energiteknik och -system}{}%
+     \strcompare{#1}{KTHFTK}{Farkostteknik}{}%
+     \strcompare{#1}{KTHFYS}{Fysik}{}%
+     \strcompare{#1}{KTHGEO}{Geodesi och Geoinformatik}{}%
+     \strcompare{#1}{KTHHFL}{Hållfasthetslära}{}%
+     \strcompare{#1}{KTHIEO}{Industriell ekonomi och organisation}{}%
+     \strcompare{#1}{KTHIIP}{Industriell produktion}{}%
+     \strcompare{#1}{KTHIKT}{Informations- och kommunikationsteknik}{}%
+     \strcompare{#1}{KTHKEV}{Kemivetenskap}{}%
+     \strcompare{#1}{KTHKON}{Konst, teknik och design}{}%
+     \strcompare{#1}{KTHMAT}{Matematik}{}%
+     \strcompare{#1}{KTHKOM}{Medierad kommunikation}{}%
+     \strcompare{#1}{KTHPBA}{Planering och beslutsanalys}{}%
+     \strcompare{#1}{KTHSHB}{Samhällsbyggnad: Management, ekonomi och juridik}{}%
+     \strcompare{#1}{KTHTMV}{Teknisk materialvetenskap}{}%
+     \strcompare{#1} {KTHMEK}{Teknisk Mekanik}{}%
+     \strcompare{#1}{KTHTKB}{Teoretisk kemi och biologi}{}%
+     \strcompare{#1}{KTHXXX}{*****Okänt ämneområde*****}{}% % Fake program for use in template
+  \else
+     \strcompare{#1}{KTHARK}{Architecture}{}%
+     \strcompare{#1}{KTHBIO}{Biotechnology}{}%
+     \strcompare{#1}{KTHBYV}{Civil and Architectural Engineering}{}%
+     \strcompare{#1}{KTHDAT}{Computer Science}{}%
+     \strcompare{#1}{KTHEST}{Electrical Engineering}{}%
+     \strcompare{#1}{KTHEGI}{Energy Technology and Systems}{}%
+     \strcompare{#1}{KTHFTK}{Vehicle and Maritime Engineering}{}%
+     \strcompare{#1}{KTHFYS}{Physics}{}%
+     \strcompare{#1}{KTHGEO}{Geodesy and Geoinformatics}{}%
+     \strcompare{#1}{KTHHFL}{Solid Mechanics}{}%
+     \strcompare{#1}{KTHIEO}{Industrial Economics and Management}{}%
+     \strcompare{#1}{KTHIIP}{Production Engineering}{}%
+     \strcompare{#1}{KTHIKT}{Information and Communication Technology}{}%
+     \strcompare{#1}{KTHKEV}{Chemical Science and Engineering}{}%
+     \strcompare{#1}{KTHKON}{Art, Technology and Design}{}%
+     \strcompare{#1}{KTHMAT}{Mathematics}{}%
+     \strcompare{#1}{KTHKOM}{Mediated Communication}{}%
+     \strcompare{#1}{KTHPBA}{Planning and Decision Analysis}{}%
+     \strcompare{#1}{KTHSHB}{The Built Environment and Society: Management, Economics and Law}{}%
+     \strcompare{#1}{KTHTMV}{Engineering Materials Science}{}%
+     \strcompare{#1}{KTHMEK}{Engineering Mechanics}{}%
+     \strcompare{#1}{KTHTKB}{Theoretical Chemistry and Biology}{}%
+     \strcompare{#1}{KTHXXX}{*****Unknown subject area*****}{}% % Fake program for use in template
+  \fi
+}

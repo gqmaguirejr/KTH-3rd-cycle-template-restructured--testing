@@ -1,0 +1,901 @@
+\documentclass[12pt, twoside]{article}
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+
+% --- Load the warning filters  ---
+% For filtering out warnings that the user is not interested in
+\input{../lib/filter-warnings.tex}
+% ---
+
+\newif\ifinswedish
+\inswedishfalse
+
+\RequirePackage{etoolbox}
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+% include a variety of packages that are useful
+\input{lib/includes}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+%\usepackage{minted} % to use minuted for code listing, number within chapter
+
+\ifinswedish
+    \usepackage[english, main=swedish, bidi=basic]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+\fi
+
+% Set up to use biblatex
+\newif\ifbiblatex
+\biblatextrue
+\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\section*{#1}%   skip \centering 
+}
+  
+    \addbibresource{references.bib}    
+\input{kth/kthcolors}
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+
+\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+%% In overleaf, if this file is in a folder and not the root
+%% using \makeglossaries will not work, as the Overleaf latexmk
+%% will not run the program to take the output.acn file and make the output.acr file
+%\makeglossaries
+% However, you can get TeX to do the work with the following:
+\makenoidxglossaries
+% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
+%% Potentially, one could set up a latexmkrc file in the folder
+
+\input{lib/acronyms}                %load the acronyms file
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+ 
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \LuaLaTeX logo
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+
+    \babelfont{rm}{TeX Gyre Termes}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+  
+    %\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+    \babelfont{sf}{TeX Gyre Heros}
+    %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+    \babelfont{tt}{TeX Gyre Cursor}
+ \begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+ %  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+ \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=normal]
+  \setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \newfontfamily\mystixtextfont{STIX Two Text}
+  
+    % To access the Stylistic Set 1 <ss01> such as ℋ
+    \newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+    % use english as a fallback when in other languages
+    \babelprovide[import, onchar=ids fonts]{english}
+
+    
+  % for new KTH cover
+  % Load the Figtree font as it is used for the new KTH graphical profile
+  % 
+
+    \newfontfamily{\FigtreeFont}[Ligatures=TeX,
+        Path=./Figtree/static/,
+        Extension = .ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        BoldItalicFont=*-BoldItalic,
+        ItalicFont=*-Italic,
+        FontFace={l}{n}{*-Light},
+        FontFace={l}{it}{*-LightItalic},
+        FontFace={md}{n}{*-Medium},
+        FontFace={md}{it}{*-MediumItalic},
+        FontFace={sb}{n}{*-Semibold},
+        FontFace={sb}{it}{*-SemiBoldItalic},
+        FontFace={k}{n}{*-Black},
+        FontFace={k}{it}{*-BlackItalic},
+        FontFace={eb}{n}{Font=*-ExtraBold},
+        FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+        ]{Figtree}
+
+
+\newfontfamily\pageNumberFont{Figtree} %% set the font to use for page numbering
+
+\newfontfamily{\NotoEmojiFont}[Ligatures=TeX,
+    Path=./Noto_Emoji/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    FontFace={l}{n}{*-Light.ttf},
+    FontFace={md}{n}{*-Medium},
+    FontFace={sb}{n}{*-SemiBold},
+    ]{NotoEmoji}
+
+   % To set the abstract headings in Figtree we redefine the abstravt environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Polyglossia or Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the ssans erif font.
+   % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
+
+      \babelprovide[import, onchar=ids fonts]{greek}
+      \babelfont[greek]{rm}{Noto Serif}
+      \babelfont[greek]{sf}{Noto Sans}
+      \babelfont[greek]{tt}{Noto Mono}
+
+  
+    \babelprovide[import, onchar=ids fonts]{hindi}
+    \babelfont[hindi]{rm}{Noto Serif Devanagari}
+    \babelfont[hindi]{sf}{Noto Sans Devanagari}
+    \babelfont[hindi]{tt}{Noto Sans Devanagari} % Noto Mono does not have the glyphs
+
+    \babelprovide[import, onchar=ids fonts]{russian}
+    \babelfont[russian]{rm}{Noto Serif}
+    \babelfont[russian]{sf}{Noto Sans}
+    \babelfont[russian]{tt}{Noto Mono}
+
+    \babelprovide[import, onchar=ids fonts]{chinese-simplified}
+    \babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+    \babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+    \babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+    
+    \babelfont[chinese-traditional]{rm}{Noto Serif CJK TC}
+    \babelfont[chinese-traditional]{sf}{Noto Sans CJK TC}
+    \babelfont[chinese-traditional]{tt}{Noto Sans Mono CJK TC}
+  
+    \babelprovide[import, onchar=ids fonts]{japanese}
+    \babelfont[japanese]{rm}{Noto Serif CJK JP}
+    \babelfont[japanese]{sf}{Noto Sans CJK JP}
+    \babelfont[japanese]{tt}{Noto Sans Mono CJK JP}
+  
+  % If you are going to use Arabic
+
+    \babelprovide[import, onchar=ids fonts]{arabic}
+    \babelfont[arabic]{rm}{Noto Naskh Arabic}
+    \babelfont[arabic]{sf}{Noto Sans Arabic}
+    \babelfont[arabic]{tt}{Noto Sans Arabic}
+    % If one really needs a monospaced font, one might try Kawkab Mono
+    % However, it seems that it is a work in progress - see https://makkuk.com/kawkab-mono/ and https://github.com/aiaf/kawkab-mono/tree/master
+
+    \babelprovide[import, onchar=ids fonts]{centralkurdish}
+    \babelfont[centralkurdish]{rm}{Noto Naskh Arabic}
+    \babelfont[centralkurdish]{sf}{Noto Sans Arabic}
+    \babelfont[centralkurdish]{tt}{Noto Sans Arabic}
+
+      
+  % If you are going to use Hebrew
+    \babelprovide[import, onchar=ids fonts]{hebrew}
+    \babelfont[hebrew]{rm}{Noto Serif Hebrew}
+    \babelfont[hebrew]{sf}{Noto Sans Hebrew}
+    \babelfont[hebrew]{tt}{Noto Sans Hebrew}
+
+    \babelprovide[import, onchar=ids fonts]{vietnamese}
+    \babelfont[vietnamese]{rm}{Noto Serif}
+    \babelfont[vietnamese]{sf}{Noto Sans}
+    \babelfont[vietnamese]{tt}{Noto Mono}
+  
+    % The Overleaf TeX Live includes these fonts, so there is little you have to do!
+    % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
+    %
+\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
+    ]{Noto Sans Mono CJK JP}
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+    ]{Noto Sans}
+    
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+    ]{Noto Serif}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,
+    ]{DejaVu Sans}
+
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\pageNumberFont\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\pageNumberFont\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\pageNumberFont\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+
+
+\lstdefinestyle{latexExampleForAuthors}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    extendedchars=true,
+    inputencoding=utf8,
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea,
+      nationalsubjectcategories, todo, ifbiblatex, subsection}
+}
+
+\lstdefinestyle{latexExample}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    tabsize=2,
+    columns=flexible,
+}
+\lstset{style=latexExample}
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{README and notes about the template}
+
+\author{Gerald Q. Maguire Jr.}
+\date{July 2025}
+
+\begin{document}
+\glsresetall[]
+\maketitle
+\fancypagestyle{empty}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+This document describes some of the \LaTeX\  thesis templates that I have developed for use at \gls{KTH} and provides some background about why they have the form that they do. It is important to note that these templates are \textbf{not prescriptive}, as not every thesis will have all the parts a given template shows. However, if there is something that you decide to leave out, you should make a conscious decision to do so, and you should consider the impact this may have on your thesis being approved\footnote{By your examiner or your grading committee}.
+
+\cleardoublepage
+% Include Table of Contents (TOC) ---
+\fancypagestyle{plain}{}
+\renewcommand{\sectionmark}[1]{ \markboth{#1}{}}
+\tableofcontents
+\markboth{\contentsname}{}
+\cleardoublepage
+ 
+\section{Introduction}
+This template evolved (radically) from an earlier \LaTeX\ thesis template that was widely used at \gls{KTH}. The start of this evolution was a DOCX template I developed over many years for use with students for whom I was the examiner and/or supervisor. The suggested structure and contents of the thesis reflect my experience as an examiner for more than 600 degree projects and the experience I have had as a teacher and examiner for the course \textit{II2202 Research Methodology and Scientific Writing}. The template also reflects my interest as a member of KTH's Language Committee in facilitating the parallel use of English and Swedish at \gls{KTH}, as well as supporting other languages. The latter aspect
+reflects my experience with double-degree students, who often need to have at least the abstract of their thesis in their home university's language(s). The thesis template also reflects my experience in entering the metadata for hundreds of theses into \gls{DiVA} and announcing a very large number of degree project seminars (with a large fraction of them having abstracts and keywords in both English and Swedish).
+
+\Needspace*{16\baselineskip}
+Several major thoughts have influenced the design of my templates:
+\begin{enumerate}[leftmargin=*, label=\textbf{Thought \arabic*}, ref={Thought \arabic*}]
+    \item \label{thought:helpStudent} The template should help every student produce a high-quality thesis. The template should also help an undergraduate student be successful in their degree project and should help a graduate student be successful in their presentation or defense.
+    
+    \item \label{thought:process} The template should help support all of the (relevant) phases of the degree project process or the third-cycle thesis process.
+    
+    \item \label{thought:reducingDataEntry} Redundant data entry should be minimized to increase consistency.
+    
+    \item \label{thought:volume} There are several thousand theses written each year at \gls{KTH}. Theses are the second most common type of publication at \gls{KTH}.
+    
+    \item \label{thought:inDiVA} Every approved undergraduate thesis and all third cycle theses will have at least its metadata entered into \gls{DiVA}. \gls{DiVA} features multi-language support for title, subtitle, abstract, and keywords.
+\end{enumerate}
+
+\Cref{sec:expectedUsers} describes several different groups of users and how the template is relevant to them.
+
+\section{Motivation}
+\warningExpl{This section should be skipped, unless you really care about my motivation. In summary: There are a lot of theses at KTH each year, hence a lot of metadata to be entered. Additionally, there are people who use the metadata. Unfortunately, there are a lot of errors in the data. Therefore, in keeping with \ref{thought:reducingDataEntry}, the data should be entered once and then mechanically replicated as needed.}
+Several thousand first-cycle and second-cycle theses are written each year by \gls{KTH} students. For these, every approved thesis will be entered into \gls{DiVA}\footnote{Independent of whether the full text is made available via \gls{DiVA}}.  Additionally, hundreds of third-cycle theses are written each year by \gls{KTH} students. Every third-cycle thesis that is to be defended\footnote{In this document, the licentiate seminars will also be included under the term \emph{defense}; although more formally it is a seminar.} will be entered into \gls{DiVA}.
+
+After having entered several hundred theses into \gls{DiVA} myself, I realized the large amount of time needed to enter the metadata and upload each thesis\footnote{A DiVA administrator for ABE estimated that it took \textasciitilde 30 minutes per thesis.}. Much of this work involved either typing a lot of text or cutting and pasting text from the PDF of the thesis. Even worse was that some of these theses had been produced by print drivers that used special encodings of the glyphs and some drivers used composition to handle the characters 'å', 'ä', and 'ö'. These problem cases required even more time to enter the metadata. Additionally, some abstracts have equations that need to be turned into the appropriate HTML for \gls{DiVA}. In a first-cycle thesis, two students estimated that it took nearly three full-time equivalents of employees to enter all of the undergraduate theses at \gls{KTH}\,\cite{BesharatPour_and_Li_2019}.
+
+\Needspace*{13\baselineskip}
+In addition to the time taken to process each thesis, there was another problem: there were errors in the entered data. These errors include both errors of omission and errors when the data entered does not match the data in the thesis. Examples of errors of omission include not entering into \gls{DiVA} alternate titles (and subtitles), abstracts, and keywords in additional languages -- despite the fact that this content was in the thesis. The data entry errors (particularly from cut and paste) lead to thousands of titles and abstracts being incorrect. Worse is that in many cases, the title(s) in \gls{DiVA} and the title(s) in \gls{LADOK} did not match. Some of the errors were quite small, such as a small number of missing spaces, but other errors were much larger. These larger errors ranged from abstracts where a large fraction of the words were merged together\footnote{Perhaps due to the fact that PDF does not output 'space' characters but rather positions glyphs on the page at some coordinates.} to incorrect or missing characters (especially in equations). Part of the problem is that people are going to make mistakes, while another part of the problem is due to the tools that people were using.
+
+As I am very lazy, but willing to work hard to be lazy, I generally try to automate tasks that are likely to be done again and again. Additionally, I have found that one way to avoid problems is to only enter data once -- then let tools replicate it as needed. For example, consider the title of a thesis in some language X. How many times is this title going to be used? Typically, this title will appear on the cover, on the title page, in the announcement for the presentation or defense, in the title field in the \gls{DiVA} metadata, and in a title entry in \gls{LADOK}. Now consider what happens when this is scaled up by a factor of more than \qty{3000} per year. What do you expect the error rate to be?
+
+Raymond R. Panko of the Shidler College of Business at the University of Hawai`i has studied human error rates, especially with regard to data entry in spreadsheets. He states that  ``base error rates (BERs), which are long-term average error rates quantified as the number of errors per 100 actions. BERs obviously depend on complexity. For simple but nontrivial cognitive actions such as writing, calculating, and writing program statements, BERs are usually in the range of 1\% to 5\%.''\cite{Panko2015}. He also states that ``Rushing, inexperience, code complexity, stress, and other factors can exacerbate error rates. However,
+as Figure 2 illustrates, reducing exacerbaters does not eliminate errors. There usually is a floor beyond which error reduction is minimal.''
+
+So even at a 2\% error rate, there are going to be hundreds of errors just in the tiles. Consider that commonly there is an alternative title (in another language), one or more abstracts (each of which can be a hundred or more words long), keywords, author names, \ldots -- the total number of errors is large\footnote{For one school, I found that the total error rate when considering both \gls{DiVA} and \gls{LADOK} was $\approx$10\%.}. I learned that in some cases, the differences in titles were \textbf{intentional} -- as the person entering the title(s) into \gls{LADOK} wanted the students to look ``less stupid'' - as the title(s) are printed on the student's diploma.
+
+\generalExpl{It is important to note that I have made \textbf{no} attempt to correlate errors with \textit{who} entered the data. Moreover, much of the evidence (at least with respect to the \gls{DiVA} entries) has been lost, as I have sent a very large number of corrections to \gls{KTHB}.}
+
+Another factor that motivated me was that not only was I concerned with putting data into \gls{DiVA} and \gls{LADOK}, but \textit{I have used data from both of these systems}. For example, one of the uses of data from \gls{LADOK} was to see if I could match theses up between \gls{LADOK} and \gls{DiVA}. Because of accidental or intentional differences, it is difficult to match the theses up; moreover, there is not field in \gls{LADOK} to record a references to the \gls{DiVA} identifier. An example of one of the uses of data from \gls{DiVA} was to collect vocabulary terms and to collect paired keywords in English and Swedish. Another use of data from \gls{DiVA} was to understand what languages had been used in titles, subtitles, keywords, and abstracts. In some cases, the language of the content as indicated in \gls{DiVA} did not match the language of the content!
+
+\Needspace*{4\baselineskip}
+As a result, collecting the data necessary for \gls{DiVA}\footnote{Also, to a lesser extent, for \gls{LADOK}. I say to a lesser extent, as the possibility to automatically insert the titles in \gls{LADOK} had not been taken into production when I retired -- despite my demonstration of how it could be done and a IT developer having introduced it into a test system.} and repeatedly making use of this data was a major driving force in the design of my \LaTeX\  templates. This data is also useful for many phases of an undergraduate degree project, and also useful for third-cycle theses defenses, such as announcing the oral presentation or defense.
+
+\section{Deliminations}
+
+I was told by one of my colleagues in applied mathematics that theses in this area generally do not follow the \gls{IMRAD} structure. Instead, the main body typically follows the Definition-Theorem-Proof pattern.
+
+Also, as noted in a footnote, in the \fname{README\_3rd\_cycle\_author.tex}: While the template includes support for textual \& image artifacts and references to other types of artifacts, I have not fully considered additional types of media, such as video, audio, physical artifacts, $\ldots$, and artistic output.  I apologize in advance that the template might not suit a student in a doctoral program, such as: Architecture, ``Art, Technology and Design''; and others.  A practice-based thesis or thesis by project frequently features creative work (\ie the praxis) with a written document (\ie the exegesis). Constructive suggestions as to how the template can be improved are welcome.
+
+Some parts of the template are conditional based on the value of a switch: \texttt{\textbackslash ifinswedish}. The idea is to easily have a single template that supports theses written in English or Swedish. However, in many places, the conditional has not been used but could be. Examples of this include the Swedish names for chapters and sections. Generally, this information is in a note after the English chapter or section name. More complete implementation of the use of this condition remains as future work.
+
+The template does not actually support the G5 paper format. In particular, the \gls{KTH} cover (produced with \texttt{\textbackslash kthcover)} and back cover (produced with \texttt{\textbackslash kthbackcover)}) have only been adapted for A4 paper.
+\warningExpl{Support for G5 paper remains as (potential) future work. However, it is unlikely to be done, as this paper size basically results from the printing service trimming A4 pages - as opposed to directly producing G5 pages.}
+
+To support Doctor of Philosophy and Licentiate of Philosophy degrees in addition to Tekn. Dr. and Tekn. Lic. in the defense description on the title page, I have added a \texttt{\textbackslash degreeModifier\{Philosophy\}} macro. This is used when processing \texttt{\textbackslash fullDegreeName}. Hopefully, this correctly formulates the defense description on the title page.
+
+\section{Structure of the files for the template}
+\Cref{tab:file_structure} shows the structure of the files for the template. These files are generally taken from an existing Overleaf project or a ZIP file.
+
+One hope is that by automatically extracting information from various sources, this information is more likely to be \textit{correct} and \textit{consistent} (supporting \ref{thought:reducingDataEntry}). This approach has been used to design two of the files used for the template. These files are:
+\begin{enumerate}
+    \item The file \fname{custom\_configuration.tex} contains macros and values for configuring a project. These values are generally expected to be known at the start of the project, \eg author(s), supervisor(s). course cycle, program code, degree name, subject area, \etc. or adjusted later in the project.\footnote{While this file can be manually edited, it was originally designed with the idea that much of its contents could be generated by a program that I have written that extracts data from a Canvas course used in conjunction with degree projects. One of the goals of using such a program is to extract data automatically from data sources, such as Canvas, the \gls{KTH} profile \gls{API}, and \gls{KOPPS}
+    -- thus avoiding the need for anyone to manual enter much of this data. The macros for defining this information are described in the file \fname{README\_3rd\_cycle\_author.tex}.}
+
+    \item The file \fname{lib/schools\_and\_programs\_3rd\_cycle.ins} contains the English and Swedish names of schools and programs\footnote{A program extracted this information from KOPPS. However, KOPPS was shut down in June 2025; hence, a new program will be needed, or the file will need to be manually updated. In addition, the file was manually augmented with fake entries to be used as examples in the template.}. This information provides a consistent mapping from school code and program code to their English or Swedish expansions.
+\end{enumerate}
+
+We will assume that these files have been generated by someone. Later, we will examine who this someone might be for each of these files.
+
+\subsection{Essential directories}
+A number of directories contain information that is necessary when processing your document.
+\begin{itemize}
+    \item \Cref{tab:file_structure_kth} shows the structure of files  under \dname{kth}. These files are KTH specific files that process the \texttt{documentclass} options, set up the fonts, define the layout, deal with the metadata, \etc. These files are included by the kththesis.cls class file to realize the template. 
+    
+    \item \Cref{tab:file_structure_lib} shows the structure of files  under \dname{lib}. These files are used by \LaTeX\ when processing the document. 
+
+    \item The directories \dname{Figtree} and \dname{Noto\_Emoji} contain font information for fonts that are not already available in Overleaf projects. They also provide some examples of how you can add additional fonts, should you need to, and how to finely control these fonts.
+
+    \item The \dname{unicode\_blocks} directory contains files that establish a mapping between unicode code points to codepoints in specific fonts. Depending upon what languages you are writing in and what symbols you are using, you can include the necessary files via \texttt{lib/defines.tex}. Note that some of these files are rather complete, while others only have some entries. Thus, you may need to add entries to some of them for your specific thesis.
+    
+    If you are only using characters associated with a given language when writing your abstract, you do not need to include the related unicode block, as babel will utilize the relevant fonts when processing these abstracts.
+
+    \warningExpl{It is likely that at some point many of the files in the \dname{unicode\_blocks} directory will be removed since babel's font mechanism obviates the need for them.}
+\end{itemize}
+\begin{table}[!ht]
+    \caption{Structure of files for the template}
+    \label{tab:file_structure}
+    \begin{tabular}{L{7cm}<{\footnotesize} L{6.5cm}<{\footnotesize}}
+%\textbf{Top level} & \textbf{2\textsuperscript{nd} level} & \textbf{Description} \\
+\hline
+\dname{Additional\_Abstracts} & \textbf{directory containing abstracts in various languages} \\
+\hline
+\dname{bibstyle} & \textbf{directory containing files related to the style of the bibliography} \\
+\hline
+\dname{Figtree}& \textbf{directory containing Figtree font files} \\
+\hline
+\dname{figures} & \textbf{directory containing files for figures in the \fname{examplethesis.tex}} \\
+\hline
+\dname{Included\_publications} & \textbf{directory containing included publications} \\
+\hline
+\dname{kth} & \textbf{directory containing KTH specific files}  \\
+\hline
+\dname{lib} & \textbf{directory containing various library files}  \\
+\hline
+\dname{Noto\_Emjoi}& \textbf{directory containing Noto Emoji font files} \\
+\hline
+\dname{README\_notes} & \textbf{directory containing README files for various purposes and some useful files}  \\
+\hline
+\dname{unicode\_blocks} & \textbf{directory containing files to map unicode code points to codepoints in specific fonts}  \\
+\hline
+\fname{custom\_configuration.tex} & macros and values for configuring a project\\
+\fname{examplethesis.tex} & an example of the thesis itself \\
+\fname{Figtree.fontspec} & Figtree fontspec specifies the files to be used \\
+\fname{hyperxmp.sty} & a modified hyperxmp package to store XMP information in the PDF file \\
+\fname{kththesis.cls} & the kththesis class file \\
+\fname{Quick\_Start\_Guide.tex} & a 2 page quick start guide\\
+\fname{README\_3rd\_cycle\_author.tex} & notes for third-cycle authors\\
+\fname{references.bib} & references that may be cited in the thesis \\
+\end{tabular}
+\end{table}
+\FloatBarrier
+\clearpage
+The directory and files shown in \Cref{tab:file_structure_for_performance} are optional but highly useful for\linebreak[4] improving Overleaf's performance. \fname{Saving\_and\_restoring\_font\_cache.tex} explains how these files and the \dname{saved\_font\_cache} directory are used.
+\begin{table}[!ht]
+    \caption{Structure of files for the template}
+    \label{tab:file_structure_for_performance}
+    \begin{tabular}{L{7cm}<{\footnotesize} L{6.5cm}<{\footnotesize}}
+\hline
+\dname{saved\_font\_cache}  & a directory to save fonts, so that they can quickly be restored to the working font cache\\
+\fname{restore\_font\_cache.tex} & compile this document to prefill cache with saved fonts\\
+\fname{Saving\_and\_restoring\_font\_cache.tex} & Guide to how to save and restore fonts\\
+\fname{warmup.tex} & compile this document to warmup the font cache (\ie load the fonts used in \fname{example.tex}) and save them to a working directory\\
+\end{tabular}
+\end{table}
+
+\clearpage
+\FloatBarrier
+\begin{table}[!ht]
+    \caption{Structure of files for the template under kth}
+    \label{tab:file_structure_kth}
+    \begin{tabular}{L{7.5cm}<{\footnotesize} L{6cm}}
+\hline
+\fname{dkjson.lua} & a Lua module to write JSON files\\
+\fname{KTH\_logo\_RGB\_bla.png} & the \gls{KTH} logo for use on the cover \\
+\fname{kth-commands.tex} & a collection of commands that are defined for the template \\
+\fname{kth-fonts.tex} & set up the fonts for the template \\
+\fname{kth-layout.tex} & the layout specific parts of the template \\
+\fname{kth-metadata.tex} & \LaTeX{} related to the metadata \\
+\fname{kth-metadata.lua} & Lua code related to the metadata \\
+\fname{kth-options.tex} & define all of the different options \\
+\fname{packages.tex} & the package for the template itself \\
+\fname{kth-seanity-checks.tex} & sanity checking code \\
+\fname{kthcolors.tex} & defines a number of colors from the \gls{KTH} palette \\
+\fname{schools\_and\_programs\_3rd\_cycle} & English and Swedish names of schools and the programs \\
+\end{tabular}
+\end{table}
+\FloatBarrier
+
+\clearpage
+\begin{table}[!ht]
+    \caption{Structure of files for the template under lib}
+    \label{tab:file_structure_lib}
+    \begin{tabular}{L{7.5cm}<{\footnotesize} L{6cm}}
+\hline
+\fname{acronyms.tex} & a place to define the acronyms that will or might be used \\
+\fname{defines.tex} & some generally useful defines \\
+\fname{filter-warnings.tex} & a place to put filters for silencing warnings \\
+\fname{includes-after-hyperref.tex} & a special include file for packages that have to be included \textbf{after} the hyperref package \\
+\fname{includes.tex} & a centralized place to include packages that might be useful \\
+\fname{pdf\_related\_includes.tex} & includes to be able to add the title and other information to the PDF file \\
+\fname{placeHolder\_lbx\_files.tex} & a file to provide placeholders (stubs) via a series of \texttt{filecontents} environments for use with biblatex for various languages, when one has not loaded the actual biblatex \fname{.lbx} files\\
+\end{tabular}
+\end{table}
+\FloatBarrier
+
+\subsection{Optional directories}
+Some directories are strictly optional depending upon whether you have one or more abstracts in addition to the English and Swedish abstracts and whether you are using bibtex or biblatex.
+\begin{itemize}
+    \item The \dname{Additional\_Abstracts} directory contains skeleton abstracts in a number of languages. Feel free to utilize those that you wish and add a new language if you want or need to.
+
+    \item \Cref{tab:file_structure_bibstyle} shows the one file, a bibtex style file (\fname{bst}) file. This directory is \textit{only} necessary if you are using \texttt{bibtex}. If so, you may need to replace it with a suitable \fname{bst} file for your thesis. The file that is there is based on the IEEE Transactions style but augmented to include \glspl{ISBN}, \glspl{DOI}, and \glspl{URL}.
+\end{itemize}
+\begin{table}[!ht]
+    \caption{Structure of files for the template under bibstyle}
+    \label{tab:file_structure_bibstyle}
+    \begin{tabular}{L{7.5cm}<{\footnotesize} L{6cm}}
+\hline
+\fname{myIEEEtran.bst} & a bibtex style file  \\
+\end{tabular}
+\end{table}
+\FloatBarrier
+
+\subsection{Informational directory}
+
+\Cref{tab:file_structure_readme_notes} shows the structure of files under \dname{README\_notes}. The files are purely to provide information to different target audiences and are \textit{unnecesary} when processing your document. Most of these are standalone documents or files to be included when making these documents (such as \fname{characters\_used\_reduced.tex} and
+\fname{characters\_used\_reduced.tex}).
+
+%\clearpage
+\begin{table}[!ht]
+    \caption[Files for the template under README\_notes]{Files for the template under README\_notes directory. The \fname{.tex} extension has been elided.}
+    \label{tab:file_structure_readme_notes}
+    \begin{tabular}{L{7.5cm}<{\footnotesize} L{5.5cm}}
+\hline
+\fname{characters\_used\_reduced} & a shorter table of the characters that have been used in theses\\
+\fname{characters\_used\_reduced} & a long table of the characters that have previously been used in theses\\
+\fname{National\_Subject\_Categories} & a table of the National Subject Categories and their codes \\
+\fname{README\_for\_3rd\_cycle\_version} & note about the template relative to the AW-template \\
+\fname{README\_for\_administrators} & a README targeted at administrators \\
+\fname{README\_notes\_reduced} & these notes \\
+\fname{README\_programmer\_notes} & notes for a programmer or maintainer of the template\\
+\fname{README\_supervisor\_notes} & a README targeted at supervisors \\
+\end{tabular}
+\end{table}
+%\FloatBarrier
+
+\subsection{Directory for a compilation thesis}
+Additionally, for a compilation thesis, there is a folder \dname{Included\_publications} that contains \fname{.bib} files and \fname{.pdf} files for each of the included publications. There should be a pair of files: one a \fname{.bib} file and the other a file containing the publication to be included as \fname{.pdf}, \fname{.png}, \ldots\,,\ .
+See the section ``Including publications'' in  \fname{README\_3rd\_cycle\_author.tex}.
+
+\Needspace*{7\baselineskip}
+\section{Expected users and their differences}
+\label{sec:expectedUsers}
+This template is relevant to several different sets of users:
+\begin{enumerate}[leftmargin=*,label=\textbf{Users \arabic*}, ref={Users \arabic*}]
+    \item \label{users:authors} Author(s) should see \Cref{sec:furtherInfoForAuthors}.
+    
+    \item \label{users:others} Those working together with the author(s) during the degree project or thesis process (see \Cref{sec:examinerAdvisorsOpponent}).
+    
+    \item \label{users:admins} Administrative staff working with the document after it has been approved for printing (see \Cref{sec:adminSteps}).
+    
+    \item \label{users:readers} The (hopefully) many (human) readers of the final document (see \Cref{sec:readers}).
+    
+    \item \label{users:searchEngines} The (hopefully) many computers reading the metadata and the full text of the final document (see \Cref{sec:searchEngines}).
+    
+    \item \label{users:maintainer} Those who are maintaining or updating this template (see \Cref{sec:maintainer}).
+\end{enumerate}
+
+Each of these different sets of users has different needs and perspectives. The following sections describe these needs and perspectives.
+
+\section{Further information for authors(s)}
+\label{sec:furtherInfoForAuthors}
+
+Authors will primarily be focused on learning (just) enough to effectively use the template to write their thesis. Authors will primarily want to read:
+\begin{enumerate}
+    \item \fname{Quick\_Start\_Guide.tex}, 
+    \item \fname{README\_3rd\_cycle\_author.tex},
+    \item this file (\ie \fname{README\_notes\_reduced.tex}), and
+    \item the notes in the \fname{examplethesis.tex} files.
+\end{enumerate}
+
+\section[Those working in parallel with the authors(s)]{Those working in parallel with the authors(s)}
+\label{sec:examinerAdvisorsOpponent}
+Those working together with the author(s) during the project include supervisors and may include the opponent(s). Potentially, this might also include the internal reviewer, who could be invited to an Overleaf project to both read and comment on the manuscript using comments and change tracking.
+
+\subsection{Supervisor}
+\label{sec:supervisorMacros}
+If a project is done in industry, there is generally an industrial supervisor in addition to the academic supervisors\footnote{Note that there is expected to be at least \textbf{two} supervisors (as there is a legal requirement for this).}. Although many students might have two academic supervisors, an industrial supervisor and/or another academic supervisor. The template supports up to five supervisors. The choice of up to five reflects my experience and observation of prior theses in \gls{DiVA}; along with a recent request by a student to have four supervisors. The supervisors are enumerated as A, B, C, D, and E. For each of these, replace the "X" in the following macros:
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash supervisorXsLastname\{\}}] the last name of the supervisor
+\item [\texttt{\textbackslash supervisorXsFirstname\{\}}] the first name of the supervisor
+\item [\texttt{\textbackslash supervisorXsEmail\{\}}] e-mail address of the supervisor
+\end{description}
+
+If the supervisor is from within \gls{KTH}, then add their KTHID, School, and Department info:
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash supervisorXsKTHID\{\}}] the supervisor's kthid 
+\item [\texttt{\textbackslash supervisorXsSchool\{\}}] the school of the supervisor
+\item [\texttt{\textbackslash supervisorXsDepartment\{\}}] the department of the supervisor
+\end{description}
+
+If the supervisor is from outside of \gls{KTH}, then add their organization with:
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash supervisorXsOrganization\{\}}] the supervisor's organization
+\end{description}
+
+\subsection{Creating the custom\_configuration.tex file}
+\label{sec:customisedConfigFile}
+I assume that someone (such as the main supervisor or the student) will generate the file: \fname{custom\_configuration.tex}. This assumption is based upon the fact that these two people know who the student is, who the supervisors are, what program the student is in, \ldots\,. Third-cycle students should simply edit the \fname{custom\_configuration.tex} file in this Overleaf project.
+
+Ideally, this file should be generated automatically by a computer program so that each student gets a customized template automatically \footnote{Assuming that a Canvas course room exists for the third-cycle students, this file could be generated automatically. For first- and second-cycle students who are in a Canvas course room for a degree project, a command line program (\texttt{create\_customized\_JSON\_file.py}) can be used. 
+Subsequently, a separate program (\texttt{customize\_LaTeX\_project.py}) takes this \gls{JSON} data and creates the appropriate \LaTeX\  commands and inserts this information into the file and then inserts this file into a ZIP file, either replacing or augmenting the \fname{custom\_configuration.tex} within this ZIP file (if one exists). There is an option for this second program \texttt{--initialize} that causes the program to simply replace the file rather than appending the new information to the end of the file.
+
+The above programs are available from \url{https://github.com/gqmaguirejr/E-learning}. The README file for this GitHub contains information about how to run the programs, their options, and gives examples.}
+
+\subsection{Opponent(s) and oral presentation/defense}
+\label{sec:opponentMacros}
+The macros related to the opponent and oral presentation are in the file \linebreak[4] \fname{custom\_configuration.tex}.
+
+The macro for the opponent(s) is: 
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash opponentsNames\{\}}] the names (in normal name order) of the opponent or opponents
+\end{description}
+When there are multiple opponents, separate their names with '\textbackslash \&'; for example, A. B. Normal \textbackslash \& A. X. E. Normalè.
+
+\generalExpl{This should probably be expanded to include organization information for the opponent(s). This could be used when generating the announcement or calendar event and when entering metadata about the opponent(s) in \gls{DiVA}.}
+
+\Needspace*{20\baselineskip}
+For the oral presentation, the following macros are filled in once the defense has been scheduled:
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash presentationDateAndTimeISO\{\}}}]
+\item [\texttt{\textbackslash presentationDateAndTimeISO\{\}}] date and time of the presentation is ISO format, for example: 2022-03-15 13:00
+\item [\texttt{\textbackslash presentationLanguage\{\}}] three letter abbreviation for the language of the presentation according to three letter ISO 639-2 Code – specifically the "B" (bibliographic) variant of these codes (note that this is the same language code used in \gls{DiVA}), generally eng or swe
+\item [\texttt{\textbackslash presentationRoom\{\}}] a room name and/or\hspace*{\fill}\linebreak[4] ``via Zoom https://kth-se.zoom.us/j/ddddddddddd''
+\item [\texttt{\textbackslash presentationAddress\{\}}] location of the room, for example: Isafjordsgatan 22 (Kistagången 16)
+\item [\texttt{\textbackslash presentationCity\{\}}] city where the presentation occurs, generally: Stockholm
+\end{description}
+
+
+\section{Administrative steps}
+\label{sec:adminSteps}
+
+Once the internal reviewer approves a thesis to go forward to a defense, the author needs to perform a number of administrative steps:
+\begin{enumerate}
+    \item Request and add the assigned TRITA number to your thesis.
+    
+    The TRITA number is assigned by the student affairs office from an annual series of numbers. \Cref{sec:addingTriTANumberToPorject}) describes what a TRITA number is and where it appears. The student must request the TRITA number and \gls{ISBN} \textit{before} the thesis is printed, so that both numbers will appear in the printed thesis. Both will appear on the book information page and the TRITA number will also appear on the back cover of the thesis. See the instructions at \url{https://kth.diva-portal.org/dream/info.jsf}.
+
+    \item Request an \gls{ISBN} - see \href{https://www.kth.se/en/biblioteket/publicera-analysera/vagledning-for-publicering/bestall-isbn-1.854778}{Create an ISBN number}. 
+    Note that this form now requires the TRITA series and number, as well \first, as whether it is for a Doctoral/licentiate thesis or Report, \Second Title of publication, and \third first authors: (a) Last name, (b) first name, (c) KTH id, and (d) e-mail address.
+    
+    As all the required information is in the \fname{fordiva.json} file, the program \texttt{request-ISBN-with-JSON.py} at \url{https://github.com/gqmaguirejr/E-learning} can be used to automate the process of making a request for an ISBN. The program generates a \fname{assigned-ISBN.tex} file containing the assigned ISBN. This file can be uploaded to the project and will automatically be used.
+    
+    \item The author will also have to arrange for the printing of the thesis by US-AB. See the instructions at \href{https://www.kth.se/en/student/studier/examensarbete/avhandlingarochexamensarbeten/trycka-avhandlingar-1.900190}{Printing Thesis}.
+    
+    \item The author has to enter the medatadata and thesis into \gls{DiVA}. See \Cref{sec:enteringMetaData}.
+    
+    \item Additionally, if the thesis is a compilation thesis, the author has to make sure that all of the publications (including manuscripts) that are in the ``List of Publications'' have a record in \gls{DiVA}. The \gls{DiVA} entry for the thesis will have cross references to these publications. You might find the \fname{citedtags.bib} file attached to the PDF file to be helpful in this.
+
+    The Jupyter notebook \fname{citations-to-DiVA-Notebook-20250811-all.ipynb} takes the \fname{citedtags.bib} and \fname{fordiva.json} files and looks up DiVA IDs for these publications. The author can use this information to \first know which already have DiVA entries and which do not, and \Second have the DiVA IDs to use when entering the metadata for the thesis. Hopefully, this should facilitate entering the thesis into \gls{DiVA}. In the future, a program utilizing the Cora-based DiVA API could automatically do all of this and then enter the thesis metadata and upload the PDF.
+\end{enumerate}
+
+Fortunately, the template collects metadata that you will need, hence making the administrative steps easier for you (and others). 
+
+\subsection{Using the collected metadata}
+\Cref{{fig:overallDataflowForAuthor}} shows the overall flow of data used in the process of getting a TRITA number assigned, adding this TRITA number to your \LaTeX\ project, creating a \gls{MODS} file for import into \gls{DiVA}, and uploading your thesis into \gls{DiVA}. 
+
+Note that a \gls{DiVA} administrator only needs to receive a \fname{fordiva.json} file from a student and then can use this information to assign a TRITA number. The assigned TRITA number is communicated to the student.
+
+Once the student has the TRITA number and \gls{ISBN}, they should add this to their thesis as described in \Cref{sec:addingTriTANumberToPorject}.
+
+\tikzset{
+    processBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!20},
+    adminProcessBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=blue!20},
+    destinationBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=green!10},
+    arrow/.style={thick,->,>=stealth}
+}
+
+\begin{figure}[!ht]
+\resizebox{1\textwidth}{!}{%
+\begin{tikzpicture}
+[align=left,node distance=2cm]
+\node (latexFile) [tape,tape bend top=none,draw,font=\sffamily] {\LaTeX project using template};
+
+\node (LaTeX) [processBox,  below=1cm of latexFile] {LaTeX compiler};
+%\node (acronymsfile) [tape,tape bend top=none,draw,font=\sffamily, right=2cm of latexFile] {acronyms.tex};
+\node (latexjsonFile) [tape,tape bend top=none,draw,font=\sffamily, below of=LaTeX] {fordiva.json};
+
+\node (cleanJSONfromLaTeX) [processBox, below=1cm of latexjsonFile] {cleanup\_pseudo\_JSON-from\_LaTeX};
+
+\node (jsonFile) [tape,tape bend top=none,draw,font=\sffamily, below=4cm of cleanJSONfromLaTeX] {JSON file};
+
+\node (start) [processBox, right=0.5cm of jsonFile] {JSON\_to\_calendar};
+
+\node (assignTRITA) [adminProcessBox, below=3cm of jsonFile] {Assign TRITA number};
+\node (jsonFileWithTRITA) [tape,tape bend top=none,draw,font=\sffamily, below of=assignTRITA] {JSON file with TRITA};
+\node (GetISBN) [processBox, below=1cm of jsonFileWithTRITA] {Get ISBN};
+\node (jsonFileWithTRITAandISBN) [tape,tape bend top=none,draw,font=\sffamily, below=1cm of GetISBN] {JSON file with TRITA and ISBN};
+
+\node (jsontoMODS) [processBox, below of=jsonFileWithTRITAandISBN] {JSON\_to\_MODS};
+%\node (modsFile) [tape,tape bend top=none,draw,font=\sffamily, below of=jsontoMODS] {MODS file};
+
+\node (calendarEvent) [destinationBox, right=1cm of start] {Canvas calendar event};
+\node (announcement) [destinationBox,  above of =calendarEvent] {Canvas announcement};
+\node (cortinaCalendarEvent) [destinationBox,  right=0.5cm of start, below of=calendarEvent] {KTH Cortina calendar event};
+\node (TRITAlist) [adminProcessBox, right=1cm of assignTRITA, yshift=0.5cm] {TRITA list/database};
+
+\node (modsFileWithTRITA) [tape,tape bend top=none,draw,font=\sffamily, below of=jsontoMODS] {MODS file with TRITA and ISBN};
+\node (makeApplyCover) [processBox, below of=modsFileWithTRITA] {Get PDF from printer with covers};
+\node (divameta) [destinationBox, right=1cm of modsFileWithTRITA] {Import MODS file into DiVA};
+\node (diva) [destinationBox, right=1cm of makeApplyCover] {Upload PDF into DiVA};
+\node (acronymsfile) [tape,tape bend top=none,draw,font=\sffamily, left=5cm of cleanJSONfromLaTeX] {acronyms.tex};
+\node (TRITAnumber) [tape,tape bend top=none,draw,font=\sffamily,
+right=1cm of cortinaCalendarEvent] {TRITA number};
+
+\draw [-{Latex[length=3mm]}] (latexFile.south) --  (LaTeX.north);
+\draw [-{Latex[length=3mm]}] (LaTeX) --  (latexjsonFile.north);
+\draw [-{Latex[length=3mm]}] (latexjsonFile) --  (cleanJSONfromLaTeX.north);
+\draw [-{Latex[length=3mm]}] (cleanJSONfromLaTeX.south) --  (jsonFile.north);
+
+\draw [-{Latex[length=3mm]}] (jsonFile) --  (assignTRITA);
+\draw [-{Latex[length=3mm]}] (jsonFile) --  (start.west);
+\draw [-{Latex[length=3mm]}] (start.east) --  (announcement.west);
+\draw [-{Latex[length=3mm]}] (start.east) -- (calendarEvent);
+\draw [-{Latex[length=3mm]}] (start.east) -- (cortinaCalendarEvent.west);
+
+\draw [-{Latex[length=3mm]}] (jsontoMODS) --  (modsFileWithTRITA);
+
+\draw [-{Latex[length=3mm]}] (modsFileWithTRITA) --  (divameta);
+\draw [-{Latex[length=3mm]}] (assignTRITA) --  (jsonFileWithTRITA);
+
+
+
+\draw [-{Latex[length=3mm]}, red, dashed] (assignTRITA.south east) to[out=0,in=-90]   (TRITAnumber.south);
+\draw [-{Latex[length=3mm]}, red, dashed] (TRITAnumber.north) to[out=90,in=0]   (latexFile.north east);
+
+
+\draw [-{Latex[length=3mm]}] (jsonFileWithTRITAandISBN) --  (jsontoMODS);
+\draw [-{Latex[length=3mm]}] (modsFileWithTRITA) --  (makeApplyCover);
+\draw [-{Latex[length=3mm]}] (makeApplyCover) --  (diva);
+
+\draw [-{Latex[length=3mm]}] (latexFile.south west) --  (acronymsfile.north);
+\draw [-{Latex[length=3mm]}] (acronymsfile.south) to[out=-90,in=180]  (jsontoMODS.west);
+\draw [-{Latex[length=3mm]}] (TRITAlist.south west) --  (assignTRITA.east);
+\draw [-{Latex[length=3mm]}] (assignTRITA.north east) --  (TRITAlist.west);
+
+\draw [-{Latex[length=3mm]}] (jsonFileWithTRITA) --  (GetISBN);
+\draw [-{Latex[length=3mm]}] (GetISBN) --  (jsonFileWithTRITAandISBN);
+\draw [-{Latex[length=3mm]}, red, dashed] (GetISBN.west) to[out=180,in=180]   (latexFile.north west);
+\end{tikzpicture}
+}
+\caption[Overall data flow]{Overall data flow from a \LaTeX\ ~project using the templates. The \gls{DiVA} administrators' activities are illustrated with the blue boxes: Assign TRITA number and the TRITA list/database. The dashed red line shows the flow of the assigned TRITA number or \gls{ISBN} back to the author to input into their \LaTeX\ -project, while the black lines show other types of data.}
+\label{fig:overallDataflowForAuthor}
+\end{figure}
+
+
+\FloatBarrier
+\Needspace*{7\baselineskip}
+\subsection{What is a TRITA number and why does each thesis need one?}
+\label{sec:addingTriTANumberToPorject}
+TRITA stands for Transactions for the Royal Institute of Technology, with the letter "A" appended to it. The definition is given in the 1971 report, ``\foreignlanguage{swedish}{Mall för publikationsserier vid Kungl. Tekniska högskolan i Stockholm}'', TRITA-LIB-1001, \url{http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-127656}.
+
+The format for TRITA numbers for third-cycle theses is TRITA-$\langle$school acronym$\rangle$-XXX-YYYY:nnnn, where DLT for ABE, FOU for CBH \& SCI, and AVL for EECS \& ITM; and 
+nnnn is a sequential number starting from 1 each year with the numbers assigned in chronological order to theses\footnote{according to one of KTH's archivists}. Note that the list of assigned TRITA numbers is archived each year\footnote{It seems that this archiving is done twice a year.}. The year, YYYY, is based on the year that the thesis was \emph{published}.
+
+The TRITA number value can be set with a macro that takes two arguments: series and year:number as shown below\footnote{The number `00' has been used in the example, as this number will \textbf{never} occur in a valid TRITA number.}:
+\begin{lstlisting}
+% for entering the TRITA number
+\trita{TRITA-EECS-AVL}{2025:00}  
+\end{lstlisting}
+
+\generalExpl{Ideally, there should be a means to automatically get a TRITA number -- similar to how one can get an \gls{ISBN}.}
+
+\subsection{Entering the metadata into DiVA}
+\label{sec:enteringMetaData}
+If a thesis has used this template, the ``For DIVA'' page contains the metadata for \gls{DiVA} and the student could cut and paste this data into \gls{DiVA}. Alternatively, this metadata can be extracted with a program from the PDF file to produce a \gls{JSON} file that can subsequently be used to create a \gls{MODS} file for import into \gls{DiVA}. The \LaTeX\  compiler produced a file called \fname{fordiva.json} that contains the metadata and attaches this file to the thesis (to facilitate it being available).
+
+Programs that can be used to extract data and to take a \gls{JSON} file and create a \gls{MODS} file are available from \url{https://github.com/gqmaguirejr/E-learning}.
+
+Note that the import of the \gls{MODS} file does \textbf{not import the collaboration data}, even though this is in the file. This is a limitation of the \gls{DiVA} import function. Therefore, this information has to be manually entered along with uploading of the PDF file itself.
+
+As mentioned earlier, there is also a \texttt{citedtags.bib} file that can be helpful when entering the included publications into \gls{DiVA}.
+
+\generalExpl{With the new Cora-based \gls{DiVA} system (expected in Spring 2026), it should be possible to avoid making a \gls{MODS} file and instead use the Cora \gls{API} to directly insert the metadata and thesis into \gls{DiVA}.}
+
+
+\subsection{Make the MODS file}
+\label{sec:makingMODSfile}
+If you save the \texttt{fordiva.json} file locally, then you can clean it up / transform it and make a \gls{MODS} file with the following commands:
+\Needspace*{4\baselineskip}
+\begin{lstlisting}[basicstyle=\footnotesize, language={bash}, caption={Cleanup pseudo JSON produced by the \LaTeX~compiler and then make a MODS file},label=lst:AdmincleanPseudoJSONandConvertToMODSAuthor]
+./cleanup_pseudo_JSON-from_LaTeX.py --json fordiva.json --acronyms acronyms.tex
+./JSON_to_MODS.py --json fordiva-cleaned.json
+\end{lstlisting}
+
+\noindent Now all you have to do is rename the XML file (\texttt{modsXML.xml}) that was produced to \texttt{xxx.mods} and you are all set to upload the \gls{MODS} file into \gls{DiVA}!
+
+To find the \fname{fordiva.json} file in the \LaTeX project in Overleaf, look for the “Other logs and files” button shown at the bottom of the log output window. After clicking this button, you will see a list of logs and other files, and can now download them. Alternatively, you can get it from the PDF file, as described in \Cref{sec:enteringMetaData}.
+
+Note that if the student has used the glossaries package to use acronyms in the abstract(s) they also need to provide an \texttt{acronyms.tex} file to the script.
+
+\subsection{Other uses of the JSON file}
+Not only is the JSON data useful with respect to \gls{DiVA} and \gls{LADOK}, but it can also be used for other purposes. For example, as shown in \Cref{fig:overallDataflowForAuthor}, a supervisor or other person can use it for announcing the student's oral presentation or defense via a Canvas course room and calendar and potentially in the KTH Cortina Calendar.
+\clearpage
+
+\section{(Human) Readers of the thesis}
+\label{sec:readers}
+Some theses have very few downloads from \gls{DiVA}, while some have had hundreds of thousands of downloads. Therefore, you should remember that you have a wide range of (potential) human readers of your thesis. These readers include other students looking for information related to their own thesis or because they are interested in the future work that you have suggested, as potential topics for their own projects. Additionally, researchers who are looking at your results may find your thesis relevant to them. In many cases, companies will look at theses for ideas about what the state of the art is - in several cases, theses have been important as ``prior art'' and this invalidated patents that had been issued when the patent was submitted after the thesis became public (hence it pays to have theses publicly available as soon as possible). Other human readers are the \foreignlanguage{swedish}{\gls{UKÄ}} review teams that examine the degree programs offered at \gls{KTH}. Finally, as \gls{KTH} is a public agency, it is important that the general public know what is done at \gls{KTH}\footnote{This is an important part of the Swedish \foreignlanguage{swedish}{Offentlighetsprincipen}.}.
+
+
+\subsection{Machines reading the metadata or full text of the thesis}
+\label{sec:searchEngines}
+The file \fname{pdf\_related\_includes.tex} contains \LaTeX\ code that stores the title, author(s), and keyword information into the PDF document in such a way that if you ask for the properties of the PDF file you will get this data\footnote{This does not work correct in Microsoft's Edge: it gives the wrong paper size, does not show the author(s), keywords, and PDF version. Okular shows only some of the data. In contrast, Adobe Acrobat shows all of the basic document properties and enables you to view ``Additional metadata''.}. This information makes it easier for machines to get this information from the PDF file.
+
+The thesis also uses features of Adobe's Extensible Metadata Platform (XMP) and the \texttt{hyperxmp} package to embed data into the thesis. This data cen be accessed by programs without parsing the PDF. \iflabelexists{sec:addingMetadataToPDFfile}{For further information see \ref{sec:addingMetadataToPDFfile}.}
+
+Additionally, many search engines (such as Google's search engine) mine \gls{DiVA} for the metadata and if the full text of the thesis is published via \gls{DiVA} then they also process the full text of the thesis. The result is that search engines can find the content in these theses.  This is likely to increase the probability that someone will download your thesis if they think it is relevant to them -- increasing the number of your human readers (see \Cref{sec:readers}). It also increases the probability that someone might find your work worth citing in their own publications.
+
+\Needspace*{6\baselineskip}
+To facilitate machines reading your thesis, you should \textbf{not} print your thesis as an image (\ie with each page being a bitmapped image of the page). This will \textit{not} necessarily keep machines from reading your content, as they will typically apply optical character recognition (OCR) to the file. Additionally, doing so would make your thesis content much harder for humans who use screen readers and other accessibility technology to help them access material.
+
+\subsection{Template author and maintainers}
+\label{sec:maintainer}
+
+\gls{KTH} periodically changes the cover design for theses, introduces new programs of study, eliminates programs of study, reorganizes administratively,
+and faculty move between schools, departments, and divisions. It can be expected that this template will need to evolve with these changes.
+
+For example, if there is a change in schools or programs, then there needs to be changes made to the file \texttt{schools\_and\_programs\_3rd\_cycle.ins}. While the current file was extracted from \gls{KOPPS}, the program that does this will need to be replaced because further development of \gls{KOPPS} has been terminated by KTH's central IT unit which plans to transition all of this information to \gls{LADOK}.
+
+As another example, on 13 December 2021, there was a change in the \gls{KTH} cover for 1\textsuperscript{st} and 2\textsuperscript{nd} theses, and the cover generator web service was shutdown. The initial draft version of the cover used a proprietary font (TheSans B4 SemiLight and TheSans B6 SemiBold). The version that was publicly introduced uses another proprietary font (Arial) and officially only existed as a DOCX file for a thesis in Swedish. The result is that I had to make my own version in \LaTeX\  to try to emulate the DOCX cover. This led to a lot of effort, but one can get a reasonable cover with the correct font. There was another change in covers introduced on 2024-06-05. Once again, a new \LaTeX{} cover needed to be generated, along with a set of DOCX files that provide pull-down menus for configuring the cover. Recently, a new thesis template ``\foreignlanguage{swedish}{Avhandlingsmall Word}'' from
+\url{https://www.kth.se/student/studier/examensarbete/avhandlingarochexamensarbeten/mall-for-avhandling-1.458236} was introduced. Unfortunately, this template did not provide a specification of the covers, title page, or book information page -- since the authors of this new template simply assumed that US-AB would make these.
+
+\Needspace*{7\baselineskip}
+\section{While writing}
+The thesis template contains lots of examples, notes, and comments. One method to provide additional information is the use of \texttt{\textbackslash todo}. Several different types of \texttt{todo} notes have been used in the thesis. These are described in \Cref{sec:todonotes}.
+
+\Needspace*{8\baselineskip}
+\subsection{Conventions for todo notes}
+\label{sec:todonotes}
+
+The example thesis text includes extensive comments, directions, and warnings. These follow the form shown below:
+\begin{lstlisting}
+\generalExpl{Comments/directions/... in English}
+\sweExpl{Text på svenska}
+\engExpl{English descriptions about formatting}
+\warningExpl{warning}  
+\end{lstlisting}
+and appear as:
+\generalExpl{Comments/directions/... in English}
+\sweExpl{Text på svenska}
+\engExpl{English descriptions about formatting}
+\warningExpl{Warning}
+
+Each of the above is a macro, so as usual in \LaTeX\ you can redefine it - even defining it to produce nothing! Several previous students have placed these \hbox{re-definitions} in their \fname{custom\_configuration.tex} file.
+
+\subsection{Removing README\_notes}
+As the various README notes are targeted at different readers, you may or not want to see them.
+I would suggest keeping the README files around (at least for a little while) as a source of examples of how to do things. Despite having spent a very large number of hours working on the template and drafts of students' theses, I find some of the README files very helpful as a reminder of how to do things.
+
+At some point, you will no longer want this README information. You can remove the individual files or even remove the \dname{README\_notes} directory.
+
+\subsection{Removing unused fonts}
+This version of the template has some font information, in the form of Opentype Font files (with the extension ``.otf'') and TrueType font files (with the extension ``.ttf''). If you are not using these fonts (and no longer using any of the README files), then you can delete these font files.
+\warningExpl{Note that the Figtree font is needed to make the covers, titlepage, and some preface pages. It is also used for all of the headings! So you should \textbf{not} delete this font.}
+\clearpage
+
+\ifinswedish
+\printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
+och förkortningar}]
+\else
+%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+\printnoidxglossaries
+\fi
+\clearpage
+
+% --- print the bibliography ---
+% Print the bibliography (and make it appear in the table of contents)
+
+% Specify the title of the references page
+% This will work for both BibLaTeX and BibTeX.
+% It works for BibTeX because the thesis format is basically that of a Report.
+\renewcommand{\bibname}{References}
+
+\ifbiblatex
+    %\typeout{Biblatex current language is \currentlang}
+
+    \printbibliography[heading=bibintoc, title={References}]
+\else
+   
+    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
+    \addcontentsline{toc}{chapter}{References}
+    \bibliography{references}
+\fi
+
+\end{document}
+

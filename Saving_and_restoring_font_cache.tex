@@ -1,0 +1,88 @@
+\documentclass[A4, twoside]{article}
+\RequirePackage{comment}
+\usepackage[obeyFinal]{todonotes}
+\usepackage{enumitem}  
+
+\newif\ifinswedish
+\inswedishfalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+% KTH color palette for use in thesis
+\input{kth/kthcolors}
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+\usepackage{metalogo}   % for \XeLaTeX and \LuaLaTeX logos
+\usepackage{fancyhdr}
+\fancyhead{}
+\fancyfoot{}
+
+\fancyhead[RO]{\sffamily\small\nouppercase\leftmark\thinspace|\thinspace\thepage}
+\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\nouppercase\leftmark}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\setlength{\headheight}{18pt}
+
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{Saving and restoring the font cache}
+
+\author{Gerald Q. Maguire Jr.}
+\date{July 2025}
+
+\begin{document}
+\thispagestyle{empty}
+\maketitle
+\markboth{Saving and restoring the font cache}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+One of the problems when using \LuaLaTeX{] in Overleaf is timeouts. This occurs because Overleaf has a wall clock time limit. Unfortuantely, when using \LuaLaTeX{] and \texttt{babel} with the many fonts used in the template this can lead to timeouts while the font cache is being built for the set of fonts used in the document.
+
+The solution to this comes in several steps:
+\begin{enumerate}[leftmargin=*, label=\textbf{Step \arabic*}, ref=Step \arabic*]
+    \item  \label{x:s1} Generate, save, and upload the font files
+    \begin{itemize}
+    \item  Compile \fname{warmup.tex} first; this will load all of the fonts specified in the \fname{examplethesis.tex}, as warmup.tex is a subfile that inherits the main document's preamble, hence it loads all the same fonts. Additionally, due to the command \texttt{\textbackslash MySaveFontCache}, \fname{warmup.tex} will also save the font files into a folder (\fname{saved\_font\_cache}) in the same folder as output.log, etc.
+    \item Download all of the ``Other logs and files'' into a file, such as \fname{/tmp/output.zip}.
+    \item Make a temporary directory, such as \dname{/tmp/c4}, then change to this directory and unzip the \fname{/tmp/output.zip} file.
+    \item Go to the directory \dname{/tmp/c4/saved\_font\_cache} and delete all of the files with the \fname{lua} extension [these are the raw Lua font files].
+    \item In your Overleaf project, upload the folder \dname{/tmp/c4/saved\_font\_cache} into the top-level of your project
+\end{itemize}
+\item  \label{x:s2} Restoring the save font files - simply compile the \fname{restore\_font\_cache.tex} file - this will copy the saved font cache files into the working font cache
+\end{enumerate}
+
+Now, it you have problems with timeouts due to font cache rebuild taking a long time, you only need to do the the last of the above steps.
+
+\section*{How much time do you save using the saved fonts?}
+In my experiments when using all of the enabled fonts in the template, it took about 109 seconds of wall clock time to create the font cache from scratch. When using the saved files it took $\approx$7 seconds to restore them. This is at the cost of storing the saved fonts.
+
+\section*{Why do you have to download and then upload the saved files?}
+In my experiments, I found that trying to save the files directly into a folder at the project's top level resulted in these files being cleared when the cache was cleared, a new web session was started, or after being idle for some period of time. In contrast, the uploaded files persist across all of these events.
+
+\section**{What is the difference between lua and luc files?}
+
+The file extention \fname{lua} is an uncompiled Lua file, while the file extension \fname{luc} represents a compile lua file. The compiled files is about 66\% of the size of the corresponding Lua file. However, for some of the very large \fname{lua} files (such as the Noto CJK font families where the uncompiled size is more than 10 MB) the reduction can be as much as 56\%.
+
+\section*{Why upload only the luc files?}
+If there is a \fname{luc file} in the font cache, the program \texttt{luaotfload} will skip loading the \fname{lua} file. Thus saving both time and space. However, any missing fonts that you are now using will be processed and a \fname{lua} file created and then compiled to create a \fname{luc} file.
+
+\section*{What if you change the set of fonts you are using?}
+As noted above, any new fonts you use will be loaded via \texttt{luaotfload} and you will have to wait for them to be processed and compiled.
+
+Therefore, if you make a major change in the fonts you are using, simply repeat \ref{x:s1} and \ref{x:s2} again.
+
+\end{document}

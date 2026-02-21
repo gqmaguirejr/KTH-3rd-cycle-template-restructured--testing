@@ -1,0 +1,201 @@
+\makeatletter
+\newcommand{\DeclareLatinAbbrev}[2]{%
+  \DeclareRobustCommand{#1}{%
+  \@ifnextchar\cite{\textit{#2.\,}}{%  if next is a \cite then insert a period and a thin space
+    \@ifnextchar{.}{\textit{#2}}{%
+      \@ifnextchar{,}{\textit{#2.}}{%
+        \@ifnextchar{!}{\textit{#2.}}{%
+          \@ifnextchar{?}{\textit{#2.}}{%
+            \@ifnextchar{)}{\textit{#2.}}{%
+              {\textit{#2.,\ }}}}}}}}}%
+}
+\makeatother
+\DeclareLatinAbbrev{\eg}{e.g}
+\DeclareLatinAbbrev{\Eg}{E.g}
+\DeclareLatinAbbrev{\ie}{i.e}
+\DeclareLatinAbbrev{\Ie}{I.e}
+\DeclareLatinAbbrev{\etc}{etc}
+\DeclareLatinAbbrev{\etal}{et~al}
+
+
+\def\first {(\textit{i})\xspace}
+\def\Second{(\textit{ii})\xspace}
+\def\third {(\textit{iii})\xspace}
+\def\fourth{(\textit{iv})\xspace}
+\def\fifth {(\textit{v})\xspace}
+\def\sixth {(\textit{vi})\xspace}
+\def\seventh{(\textit{vii})\xspace}
+\def\eighth{(\textit{viii})\xspace}
+
+
+%%% custom definitions
+%% Coloring the links!
+\newcommand\myshade{75} % Usage: red!\myshade!black
+
+\definecolor{ForestGreen} {RGB}{34,  139,  34}
+\definecolor{HeraldRed2}   {rgb}{0.81, 0.12, 0.15}
+
+\newcommand{\refscolor} {blue}
+\newcommand{\linkscolor}{HeraldRed2}
+\newcommand{\urlscolor} {ForestGreen}
+
+%% Some definitions of used colors
+%\definecolor{darkblue}{rgb}{0.0,0.0,0.3} %% define a color called darkblue
+%\definecolor{darkred}{rgb}{0.4,0.0,0.0}
+%\definecolor{red}{rgb}{0.7,0.0,0.0}
+%\definecolor{lightgrey}{rgb}{0.8,0.8,0.8} 
+%\definecolor{grey}{rgb}{0.6,0.6,0.6}
+%\definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
+%\definecolor{aqua}{rgb}{0.0, 1.0, 1.0}
+
+% For runin headings
+\newcommand{\smartparagraph}[1]{\vspace{.05in}\noindent\textbf{#1}}
+
+%% Table of Contents (ToC) depth 
+\setcounter{secnumdepth}{5} % how many sectioning levels to assign numbers to
+\setcounter{tocdepth}{4}    % how many sectioning levels to show in ToC
+
+%% Limit hyphenation
+\hyphenpenalty=9000
+\tolerance=5000
+% Reduce hyphenation as much as possible:
+%\hyphenpenalty=15000
+%\tolerance=1000
+
+% For notes by the authors to themselves
+\newcommand*{\todoinline}[1]{\textcolor{red}{TODO: #1}}
+
+%\DeclareUnicodeCharacter{2003}{\quad}
+
+% Use grouping for numbers that are 4 or more digits long
+\sisetup{group-minimum-digits=4}
+
+
+% for access to some characters
+
+\RequirePackage{newunicodechar}
+\begin{comment}
+    
+
+%% Note that some of the following \input commands are commented out
+%% As they are not used in this template.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Latin Extended-B, U+0180 - U+024F
+%\input{unicode_blocks/U+0180-U+024F-Latin Extended-B}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Spacing Modifier Letters, U+02B0 - U+02FF
+\input{unicode_blocks/U+02B0-U+02FF-Spacing Modifier Letters}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% IPA Extensions, U+0250 - U+02AF
+\input{unicode_blocks/U+0250-U+02AF-IPA Extensions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Combining Diacritical Marks, U+0300 - U+036F
+\input{unicode_blocks/U+0300-U+036F-Combining Diacritical Marks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Greek and Coptic, U+0370 - U+03FF
+\input{unicode_blocks/U+0370-U+03FF-Greek and Coptic}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cyrillic, U+0400 - U+04FF
+\input{unicode_blocks/U+0400-U+04FF-Cyrillic}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cyrillic Supplement, U+0500 - U+052F
+\input{unicode_blocks/U+0500-U+052F-Cyrillic Supplement}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% U+0530-U+058F-Armenian
+\input{unicode_blocks/U+0530-U+058F-Armenian}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hebrew, U+0590 - U+05FF
+\input{unicode_blocks/U+0590-U+05FF-Hebrew}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Arabic, U+0600 - U+06FF
+%\input{unicode_blocks/U+0600-U+06FF-Arabic}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Devanagari, U+0900 - U+097F
+%\input{unicode_blocks/U+0900-U+097F-Devanagari}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Phonetic Extensions, U+1D00 - U+1D7F
+\input{unicode_blocks/U+1D00-U+1D7F-Phonetic Extensions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Latin Extended Additional, U+1E00 - U+1EFF
+\input{unicode_blocks/U+1E00-U+1EFF-Latin Extended Additional}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% General Punctuation, U+2000 - U+206F
+\input{unicode_blocks/U+2000-U+206F-General Punctuation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Superscripts and Subscripts, U+2070 - U+209F
+\input{unicode_blocks/U+2070-U+209F-Superscripts and Subscripts}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Currency Symbols, U+20A0 - U+20CF
+\input{unicode_blocks/U+20A0-U+20CF-Currency Symbols}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Letterlike Symbols, U+2100 - U+214F
+\input{unicode_blocks/U+2100-U+214F-Letterlike Symbols}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Number Forms, U+2150 - U+218F
+\input{unicode_blocks/U+2150-U+218F-Number Forms}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Arrows, U+2190 - U+21FF
+\input{unicode_blocks/U+2190-U+21FF-Arrows}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mathematical Operators, U+2200 - U+22FF
+\input{unicode_blocks/U+2200-U+22FF-Mathematical Operators}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Miscellaneous Technical, U+2300 - U+23FF
+\input{unicode_blocks/U+2300-U+23FF-Miscellaneous Technical}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Enclosed Alphanumerics, U+2460 - U+24FF
+\input{unicode_blocks/U+2460-U+24FF-Enclosed Alphanumerics}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Box Drawing, U+2500 - U+257F
+\input{unicode_blocks/U+2500-U+257F-Box Drawing}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Geometric Shapes, U+25A0 - U+25FF
+\input{unicode_blocks/U+25A0-U+25FF-Geometric Shapes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Miscellaneous Symbols, U+2600 - U+26FF
+\input{unicode_blocks/U+2600-U+26FF-Miscellaneous Symbols}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dingbats, U+2700 - U+27BF
+\input{unicode_blocks/U+2700-U+27BF-Dingbats}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Miscellaneous Mathematical Symbols-A, U+27C0 - U+27EF
+\input{unicode_blocks/U+27C0-U+27EF-Miscellaneous Mathematical Symbols-A}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Supplemental Mathematical Operators, U+2A00 - U+2AFF
+\input{unicode_blocks/U+2A00-U+2AFF-Supplemental Mathematical Operators}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Latin Extended-C, U+2C60 - U+2C7F
+\input{unicode_blocks/U+2C60-U+2C7F-Latin Extended-C}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Supplemental Punctuation, U+2E00 - U+2E7F
+\input{unicode_blocks/U+2E00-U+2E7F-Supplemental Punctuation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CJK Symbols and Punctuation, U+3000 - U+303F
+\input{unicode_blocks/U+3000-U+303F-CJK Symbols and Punctuation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hiragana, U+3040 - U+309F
+\input{unicode_blocks/U+3040-U+309F-Hiragana}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Katakana, U+30A0 - U+30FF
+\input{unicode_blocks/U+30A0-U+30FF-Katakana}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CJK Unified Ideographs, U+4E00 - U+9FFF
+\input{unicode_blocks/U+4E00-U+9FFF-CJK Unified Ideographs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Latin Extended-D, U+A720 - U+A7FF
+\input{unicode_blocks/U+A720-U+A7FF-Latin Extended-D}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Arabic Presentation Forms-B, U+FE70 - U+FEFF
+\input{unicode_blocks/U+FE70-U+FEFF-Arabic Presentation Forms-B}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Halfwidth and Fullwidth Forms, U+FF00 - U+FFEF
+\input{unicode_blocks/U+FF00-U+FFEF-Halfwidth and Fullwidth Forms}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Specials, U+FFF0 - U+FFFF
+\input{unicode_blocks/U+FFF0-U+FFFF-Specials}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mathematical Alphanumeric Symbols, U+1D400 - U+1D7FF
+\input{unicode_blocks/U+1D400-U+1D7FF-Mathematical Alphanumeric Symbols}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{comment}
+

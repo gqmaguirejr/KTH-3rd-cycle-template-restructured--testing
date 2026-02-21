@@ -1,0 +1,469 @@
+%\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%\ProvidesPackage{kth-fonts}
+%    [2025/07/19 v0.1 Provides template-specific fonts needed for kththesis.cls]
+
+% --- Create master flags for font groups ---
+\newif\ifusenotoserif
+\newif\ifusenotosans
+\newif\ifusenotomono
+
+\newif\ifusenotonaskharabic
+\newif\ifusenotosansarabic
+
+\defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+% If bidirectional printing is needed, enable bidi
+\ifenabledbidi
+    \ifinswedish
+        \usepackage[english, main=swedish, provide+=*, bidi=basic]{babel}
+    \else
+        \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+    \fi
+\else
+    \ifinswedish
+        \usepackage[english, main=swedish, provide+=*]{babel}
+    \else
+        \usepackage[swedish, main=english, provide+=*]{babel}
+    \fi
+\fi
+
+%% Set up the default serif font
+%\babelfont{rm}{TeX Gyre Termes}
+%\DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+%\DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+%\DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+\babelfont{rm}[
+  Path = /usr/local/texlive/2024/texmf-dist/fonts/opentype/public/tex-gyre/,  % Specify the directory
+  Extension = .otf,             % Specify the file extension
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic
+]{texgyretermes} % Use the base filename here
+
+
+%% Set up the default sans serif font
+%\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+%\babelfont{sf}{TeX Gyre Heros}
+\babelfont{sf}[
+  Path = /usr/local/texlive/2024/texmf-dist/fonts/opentype/public/tex-gyre/,  % Specify the directory
+  Extension = .otf,             % Specify the file extension
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic
+]{texgyreheros}
+
+%\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+%\babelfont{tt}{TeX Gyre Cursor}
+\babelfont{tt}[
+  Path = /usr/local/texlive/2024/texmf-dist/fonts/opentype/public/tex-gyre/,  % Specify the directory
+  Extension = .otf,             % Specify the file extension
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic
+]{texgyrecursor}
+\begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+%% set up math font
+%  \setmathfont{TeX Gyre Termes Math} %% a math font
+\usepackage{mathtools}
+\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+% The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+%\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+\setmathfont{STIX Two Math}[version=normal]
+%\setmathfont{TeX Gyre Pagella Math}[version=normal]
+%\setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+%\newfontfamily\mystixmathfont{STIX Two Math}
+\newfontfamily\mystixmathfont{stixtwomath}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+%\DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+%\DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+%\newfontfamily\mystixtextfont{STIX Two Text}
+\newfontfamily\mystixtextfont{stixtwotext}
+
+% use english as a fallback when in other languages
+\babelprovide[import, onchar=ids fonts]{english}
+
+    
+  % for new KTH cover
+  % Load the Figtree font as it is used for the new KTH graphical profile
+  % 
+
+\newfontfamily{\FigtreeFont}[Ligatures=TeX,
+        Path=./Figtree/static/,
+        Extension = .ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        BoldItalicFont=*-BoldItalic,
+        ItalicFont=*-Italic,
+        %FontFace={l}{n}{*-Light},
+        %FontFace={l}{it}{*-LightItalic},
+        FontFace={md}{n}{*-Medium},
+        FontFace={md}{it}{*-MediumItalic},
+        FontFace={sb}{n}{*-Semibold},
+        FontFace={sb}{it}{*-SemiBoldItalic},
+        %FontFace={k}{n}{*-Black},
+        %FontFace={k}{it}{*-BlackItalic},
+        %FontFace={eb}{n}{Font=*-ExtraBold},
+        %FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+        ]{Figtree}
+
+
+\newfontfamily\pageNumberFont{Figtree} %% set the font to use for page numbering
+
+\newfontfamily{\NotoEmojiFont}[Ligatures=TeX,
+    Path=./Noto_Emoji/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    %FontFace={l}{n}{*-Light.ttf},
+    FontFace={md}{n}{*-Medium},
+    FontFace={sb}{n}{*-SemiBold},
+    ]{NotoEmoji}
+
+   % To set the abstract headings in Figtree we redefine the abstravt environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the ssans erif font.
+   % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
+
+\ifenabledgreekfont
+    \usenotoseriftrue\usenotosanstrue\usenotomonotrue
+\fi
+\ifenabledcyrillicfont
+    \usenotoseriftrue\usenotosanstrue\usenotomonotrue
+\fi
+\ifenabledvietnamesefont
+    \usenotoseriftrue\usenotosanstrue\usenotomonotrue
+\fi
+
+
+\ifusenotoserif
+    \babelprovide[import, onchar=ids fonts]{greek}
+    \babelprovide[import, onchar=ids fonts]{russian}
+    \babelprovide[import, onchar=ids fonts]{ukrainian}
+    \babelprovide[import, onchar=ids fonts]{vietnamese}
+    %\babelfont[greek, russian, ukrainian, vietnamese]{rm}{Noto Serif}
+    % --- Load Noto Serif manually to ensure correct width (avoiding the semicondensed versions) ---
+    \babelfont[greek, russian, vietnamese]{rm}[
+    % Assuming the fonts are in a place TeX can find them,
+    Path = /usr/local/texlive/2024/texmf-dist/fonts/truetype/google/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSerif-Regular,
+    BoldFont = NotoSerif-Bold,
+    ItalicFont = NotoSerif-Italic,
+    BoldItalicFont = NotoSerif-BoldItalic
+]{notoserif} % Use a custom internal name     
+\fi
+\ifusenotosans
+    %\babelfont[greek, russian, ukrainian, vietnamese]{sf}{Noto Sans}
+    % --- Load Noto Sans manually to ensure correct width ---
+\babelfont[greek, russian, vietnamese]{sf}[
+    Path = /usr/local/texlive/2024/texmf-dist/fonts/truetype/google/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSans-Regular,
+    BoldFont = NotoSans-Bold,
+    ItalicFont = NotoSans-Italic,
+    BoldItalicFont = NotoSans-BoldItalic
+]{notosans}
+\fi
+\ifusenotomono
+    \babelfont[greek, russian, ukrainian, vietnamese]{tt}[
+    Path=/usr/share/fonts/truetype/noto/,
+     Extension = .ttf,
+    UprightFont = NotoMono-Regular,
+    ]{notomono}
+\fi
+
+\ifenableddevanagarifont
+\babelprovide[import, onchar=ids fonts]{hindi}
+%\babelfont[hindi]{rm}{Noto Serif Devanagari}
+%\babelfont[hindi]{sf}{Noto Sans Devanagari}
+%\babelfont[hindi]{tt}{Noto Sans Devanagari} % Noto Mono does not have the glyphs
+\babelfont[hindi]{rm}«
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = *-Regular,
+    BoldFont = *-Bold,
+    ItalicFont = *-Italic,
+    BoldItalicFont = *-BoldItalic
+]{notoserifdevanagari}
+\babelfont[hindi]{sf}[
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = *-Regular,
+    BoldFont = *-Bold,
+    ItalicFont = *-Italic,
+    BoldItalicFont = *-BoldItalic
+]{notosansdevanagari}
+\babelfont[hindi]{tt}[
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = *-Regular,
+    BoldFont = *-Bold,
+    ItalicFont = *-Italic,
+    BoldItalicFont = *-BoldItalic
+]{notosansdevanagari} 
+\fi
+
+\ifenabledchinesesimplifiedfont
+\babelprovide[import, onchar=ids fonts]{chinese-simplified}
+%\babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+%\babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+%\babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+\babelfont[chinese-simplified]{rm}[
+    Path=/usr/share/fonts/opentype/noto/,
+    Extension = .ttc,
+    UprightFont = NotoSerifCJK-Regular,
+    BoldFont = NotoSerifCJK-Bold,
+]{notoserifcjksc}
+\babelfont[chinese-simplified]{sf}[
+    Path=/usr/share/fonts/opentype/noto/,
+    Extension = .ttc,
+    UprightFont = NotoSansCJK-Regular,
+    BoldFont = NotoSansCJK-Bold,
+]{notosanscjksc}
+\babelfont[chinese-simplified]{tt}[
+    Path=/usr/share/fonts/opentype/noto/,
+    Extension = .ttc,
+    UprightFont = NotoSansCJK-Regular,
+    BoldFont = NotoSansCJK-Bold,
+]{notosansmonocjkhk}
+\fi
+
+\begin{comment}  
+\babelfont[chinese-traditional]{rm}{Noto Serif CJK TC}
+\babelfont[chinese-traditional]{sf}{Noto Sans CJK TC}
+\babelfont[chinese-traditional]{tt}{Noto Sans Mono CJK TC}
+\end{comment} 
+
+\ifenabledjapanesefont
+\babelprovide[import, onchar=ids fonts]{japanese}
+%\babelfont[japanese]{rm}{Noto Serif CJK JP}
+%\babelfont[japanese]{sf}{Noto Sans CJK JP}
+%\babelfont[japanese]{tt}{Noto Sans Mono CJK JP}
+\babelfont[japanese]{rm}[
+    Path=/usr/share/fonts/opentype/noto/,
+    Extension = .ttc,
+    UprightFont = NotoSerifCJK-Regular,
+    BoldFont = NotoSerifCJK-Bold,
+]{notoserifcjkjp}
+\babelfont[japanese]{sf}[
+    Path=/usr/share/fonts/opentype/noto/,
+    Extension = .ttc,
+    UprightFont = NotoSansCJK-Regular,
+    BoldFont = NotoSansCJK-Bold,
+]{notosanscjkjp}
+\babelfont[japanese]{tt}[
+    Path=/usr/share/fonts/opentype/noto/,
+    Extension = .ttc,
+    UprightFont = NotoSansCJK-Regular,
+    BoldFont = NotoSansCJK-Bold,
+]{notosansmonocjkjp}
+\fi
+  
+  % If you are going to use Arabic
+\ifenabledarabicfont
+    \usenotonaskharabictrue
+    \usenotosansarabictrue
+\fi
+\ifusenotonaskharabic
+    \babelprovide[import, onchar=ids fonts]{arabic}
+    \babelprovide[import, onchar=ids fonts]{centralkurdish}
+    %\babelfont[arabic, centralkurdish]{rm}{Noto Naskh Arabic}
+    \babelfont[arabic, centralkurdish]{rm}[
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSansArabic-Regular,
+    BoldFont = NotoSansArabic-Bold,    
+    ]{notonaskharabic}
+\fi
+\ifusenotosansarabic
+    %\babelfont[arabic, centralkurdish]{sf}{Noto Sans Arabic}
+    \babelfont[arabic, centralkurdish]{sf}[
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = NotoNaskhArabic-Regular,
+    BoldFont = NotoNaskhArabic-Bold, 
+    ]{notonaskharabic}
+    %\babelfont[arabic, centralkurdish]{tt}{Noto Sans Arabic}
+    \babelfont[arabic, centralkurdish]{tt}[
+        Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = NotoNaskhArabic-Regular,
+    BoldFont = NotoNaskhArabic-Bold, 
+    ]{notonaskharabic}
+\fi
+    % If one really needs a monospaced font, one might try Kawkab Mono
+    % However, it seems that it is a work in progress - see https://makkuk.com/kawkab-mono/ and https://github.com/aiaf/kawkab-mono/tree/master
+
+%\babelprovide[import, onchar=ids fonts]{centralkurdish}
+%\babelfont[centralkurdish]{rm}{Noto Naskh Arabic}
+%\babelfont[centralkurdish]{sf}{Noto Sans Arabic}
+%\babelfont[centralkurdish]{tt}{Noto Sans Arabic}
+
+      
+  % If you are going to use Hebrew or Yiddish
+\ifenabledhebrewfont
+\babelprovide[import, onchar=ids fonts]{hebrew}
+\babelprovide[import, onchar=ids fonts]{yiddish}
+%\babelfont[hebrew, yiddish]{rm}{Noto Serif Hebrew}
+%\babelfont[hebrew, yiddish]{sf}{Noto Sans Hebrew}
+%\babelfont[hebrew, yiddish]{tt}{Noto Sans Hebrew}
+\babelfont[hebrew, yiddish]{rm}[
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSerifHebrew-Regular,
+    BoldFont = NotoSerifHebrew-Bold, 
+]{notoserifhebrew}
+\babelfont[hebrew, yiddish]{sf}[
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSansHebrew-Regular,
+    BoldFont = NotoSansHebrew-Bold, 
+]{notosanshebrew}
+\babelfont[hebrew, yiddish]{tt}[
+    Path=/usr/share/fonts/truetype/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSansHebrew-Regular,
+    BoldFont = NotoSansHebrew-Bold, 
+]{notosanshebrew}
+\fi
+
+%\babelprovide[import, onchar=ids fonts]{vietnamese}
+%\babelfont[vietnamese]{rm}{Noto Serif}
+%\babelfont[vietnamese]{sf}{Noto Sans}
+%\babelfont[vietnamese]{tt}{Noto Mono}
+  
+    % The Overleaf TeX Live includes these fonts, so there is little you have to do!
+    % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
+    %
+%\newfontfamily{\NotoSansJPFont}[Ligatures=TeX]{Noto Sans Mono CJK JP Regular}
+\newfontfamily{\NotoSansJPFont}[Ligatures=TeX]{notosansmonocjkjp}
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+    Path = /usr/local/texlive/2024/texmf-dist/fonts/truetype/google/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSans-Regular,
+    BoldFont = NotoSans-Bold,
+    ItalicFont = NotoSans-Italic,
+    BoldItalicFont = NotoSans-BoldItalic
+    ]{NotoSansCustomA}
+    
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+    Path = /usr/local/texlive/2024/texmf-dist/fonts/truetype/google/noto/,
+    Extension = .ttf,
+    UprightFont = NotoSerif-Regular,
+    BoldFont = NotoSerif-Bold,
+    ItalicFont = NotoSerif-Italic,
+    BoldItalicFont = NotoSerif-BoldItalic
+    ]{NotoSerifCustomA}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX]{DejaVu Sans}
+
+% Large expl3 block - for deal with missing characters in Hebrew fonts for Arabic numbers and ASCII punctuation
+\makeatletter  % enable @ so we can get value of \f@family
+\ExplSyntaxOn
+\tl_new:N \l_kththesis_family_name_tl
+\tl_new:N \l_kththesis_rmdefault_tl
+\tl_new:N \l_kththesis_sfdefault_tl
+\tl_new:N \l_kththesis_ttdefault_tl
+\bool_new:N \l_kththesis_char_processed
+\int_new:N \l_kththesis_char_code_int
+\int_new:N \l_kththesis_hebrew_start_int % Declare the integer variable
+\int_new:N \l_kththesis_hebrew_end_int
+
+
+% --- Helper Expl3 Macro to Dynamically Select Fallback Font (for \newunicodechar) ---
+% #1 = The Unicode character to output (e.g., "0", ":", "א")
+\newcommand{\__kththesis_select_dynamic_fallback_font:n}[1]{%
+    \bool_gset_false:N \l_kththesis_char_processed
+    
+    \int_set:Nn \l_kththesis_char_code_int { \numexpr`#1\relax }
+    %\typeout{~~~~--~~kththesis_select_dynamic_fallback_font~\tl_use:N #1~\int_use:N \l_kththesis_char_code_int}
+    % Get the current language name
+    \tl_set:Nx \l_tmpb_tl { \languagename } 
+
+    % Get the current font's family name and strip the (number) suffix
+    \tl_set:Nx \l_kththesis_family_name_tl \f@family
+    \regex_replace_once:nnN { \A ( .* ) \( \d+ \) \Z } { \1 } \l_kththesis_family_name_tl % Remove (number)
+    %\typeout{~--~Final~stripped~l_fontspec_family_tl:~\tl_use:N \l_kththesis_family_name_tl}
+ 
+    % for \rmdefault
+    \tl_set:Nx \l_kththesis_rmdefault_tl \rmdefault
+    \regex_replace_once:nnN { \A ( .* ) \( \d+ \) \Z } { \1 } \l_kththesis_rmdefault_tl % Remove (number)
+    %\typeout{~--~Final~stripped~rmdefault:~\tl_use:N \l_kththesis_rmdefault_tl}
+    
+    % for \sfdefault
+    \tl_set:Nx \l_kththesis_sfdefault_tl  \sfdefault
+    \regex_replace_once:nnN { \A ( .* ) \( \d+ \) \Z } { \1 } \l_kththesis_sfdefault_tl % Remove (number)
+    %\typeout{~--~Final~stripped~sfdefault:~\tl_use:N \l_kththesis_sfdefault_tl}
+
+    % for \ttdefault
+    \tl_set:Nx \l_kththesis_ttdefault_tl   \ttdefault
+    \regex_replace_once:nnN { \A ( .* ) \( \d+ \) \Z } { \1 } \l_kththesis_ttdefault_tl % Remove (number)
+    %\typeout{~--~Final~stripped~ttdefault:~\tl_use:N \l_kththesis_ttdefault_tl}
+
+    % Based on the current language and stripped font family, select fallback font
+    \str_case:VnF \l_tmpb_tl % Check current language
+    {
+        {hebrew} { % If the language is Hebrew, prioritize Hebrew fallback fonts for characters.
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_rmdefault_tl}{ \hebrewfontFallback #1 }{}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_sfdefault_tl}{ \hebrewfontsfFallback #1 }{}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_ttdefault_tl}{ \hebrewfontsfFallback #1}{} % Fallback to sans  as there is no Noto Mono for Hebrew 
+                \bool_gset_true:N \l_kththesis_char_processed
+                }
+        % Add other language-specific fallback logic here if needed (e.g., for Arabic numbers/symbols if needed)
+    }
+    { % Default case for all other languages (Latin, Cyrillic, Greek, etc.)
+      % Use the general Latin/Cyrillic fallback fonts.
+      % Compare the current character with the Hebrew block range
+      %\typeout{~~~~--~Check~ if~character~is~IN~range~\tl_use:N #1}
+      % Set the range of values
+      \int_set:Nn \l_kththesis_hebrew_start_int { "0590 } % U+0590 
+      \int_decr:N \l_kththesis_hebrew_start_int
+      \int_set:Nn \l_kththesis_hebrew_end_int { "05FF }   % U+05FF
+      \int_incr:N \l_kththesis_hebrew_end_int
+            % \bool_lazy_and:nTF checks if (#1 > min-1) AND (#1 < max+1)
+            \bool_lazy_and:nnT
+                { \int_compare_p:nNn { \l_kththesis_char_code_int } > { \l_kththesis_hebrew_start_int  } }
+                { \int_compare_p:nNn { \l_kththesis_char_code_int } < { \l_kththesis_hebrew_end_int  } }
+            { % True branch: Item is within range replace it
+                %\typeout{~~~~--~Character~is~IN~range~\tl_use:N #1}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_rmdefault_tl}{ \hebrewfontFallback #1 }{}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_sfdefault_tl}{ \hebrewfontsfFallback #1 }{}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_ttdefault_tl}{ \hebrewfontsfFallback #1}{} % Fallback to sans as there is no Noto Mono for Hebrew 
+                \bool_gset_true:N \l_kththesis_char_processed
+            }
+        % Set the range of values Alphabetic Presentation Forms
+        \int_set:Nn \l_kththesis_start_int { "FB00 } % U+FB00
+        \int_decr:N \l_kththesis_start_int
+        \int_set:Nn \l_kththesis_end_int { "FB4F }   % U+FB4F
+        \int_incr:N \l_kththesis_end_int
+            % \bool_lazy_and:nTF checks if (#1 > min-1) AND (#1 < max+1)
+            \bool_lazy_and:nnT
+                { \int_compare_p:nNn { \l_kththesis_char_code_int } > { \l_kththesis_start_int  } }
+                { \int_compare_p:nNn { \l_kththesis_char_code_int } < { \l_kththesis_end_int  } }
+            { % True branch: Item is within range replace it
+                %\typeout{~~~~--~Character~is~IN~range~\tl_use:N #1}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_rmdefault_tl}{ \hebrewfontFallback #1 }{}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_sfdefault_tl}{ \hebrewfontsfFallback #1 }{}
+                \str_if_eq:VVTF {\l_kththesis_family_name_tl}{\l_kththesis_ttdefault_tl}{ \hebrewfontsfFallback #1}{} % Fallback to sans as there is no Noto Mono for Hebrew 
+                \bool_gset_true:N \l_kththesis_char_processed
+            }
+
+
+    }
+}
+\ExplSyntaxOff % Deactivate expl3 syntax
+\makeatother

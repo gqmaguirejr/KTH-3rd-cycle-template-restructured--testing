@@ -1,0 +1,33 @@
+% luaotfload-tool-find-font.tex
+\documentclass[examplethesis]{subfiles}
+
+% Redefine the sanity check command to do nothing for this file
+\let\kthPerformSanityCheck\relax
+
+\begin{document}
+\ifinswedish
+\selectlanguage{swedish}
+\chapter*{Kör luaotfload-tool för att hitta teckensnittet}
+\else
+\selectlanguage{english}
+\chapter*{Run luaotfload-tool to find font}
+\fi
+
+% Now, just call the command directly.
+\ShowFontCache
+
+% Run the tool
+\FindFontViaTool{Noto Sans}
+
+
+% Use another method to look for the font
+\FindFont{Noto Sans}
+
+% Now, just call the command directly.
+
+\ShowFontCache
+
+\section{Look at the project directory, i.e., '.'}
+\ShowDirectoryListing{.}
+
+\end{document}

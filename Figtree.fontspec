@@ -1,0 +1,20 @@
+\defaultfontfeatures[Figtree]
+{
+    Path=./Figtree/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    BoldItalicFont=*-BoldItalic,
+    ItalicFont=*-Italic,
+    %FontFace={l}{n}{*-Light},
+    %FontFace={l}{it}{*-LightItalic},
+    FontFace={md}{n}{*-Medium},
+    FontFace={md}{it}{*-MediumItalic},
+    FontFace={sb}{n}{*-Semibold},
+    FontFace={sb}{it}{*-SemiBoldItalic},
+    %FontFace={k}{n}{*-Black},
+    %FontFace={k}{it}{*-BlackItalic},
+    %FontFace={eb}{n}{Font=*-ExtraBold},
+    %FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+% <any other desired options>
+}

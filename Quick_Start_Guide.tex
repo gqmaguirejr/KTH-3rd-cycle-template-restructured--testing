@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{Quick Start Guide}
+\author{Gerald Q. Maguire Jr.}
+\date{July 2025}
+
+\begin{document}
+
+\maketitle
+
+\section*{Four steps to start}
+The four most important steps are:
+\begin{enumerate}
+    \item Copy the Overleaf project to your own project and include your name in this new project's name (use the "Menu$\rightarrow$Actions$\rightarrow$ Copy project" -  see Figure~\ref{fig:SettngsMenu});
+    \item Fill out \texttt{custom\_configuration.tex} file - with information about yourself, your supervisors, and your working title;
+    \item  The \texttt{examplethesis.tex} file is your main thesis file. You will replace the example content within it with your own writing. I suggest you start by entering your draft abstract and configuring the \texttt{documentclass} with your choice of language, bibliographic management tool, whether you want to include papers, \ldots ; and 
+    \item Use the Overleaf "Menu" to change the settings of "Main document" to \texttt{examplethesis.tex} and choose your Compiler (you \textbf{must} select\linebreak[4]LuaLaTeX) (see Figure~\ref{fig:SettngsMenu}). Next, click the "Recompile" button. Now you have the example thesis with covers, title page, abstracts, and other preface pages, along with the body, example appendices, and examples of included papers (if you chose the \texttt{includepublications} option).
+\end{enumerate}
+    
+\begin{figure}[!ht]
+\begin{center}
+    \includegraphics[width=0.45\textwidth]{figures/Selecting_LuaLaTeX.png}
+  \caption{Settings menu}
+  \label{fig:SettngsMenu}
+\end{center}
+\end{figure}
+
+\section*{Tips for Writing and Navigating the Template}
+A quick way to start writing the text in your document is to go to the table of contents in Overleaf and click on a chapter or section - this will utilize a hyperlink to go to that part of the PDF file. Next, click on the left-going arrow near the top of the border between the LaTeX on the left and the PDF on the right; this will take you (close) to the correct place in the source file where you can start to modify the content and write.
+
+Feel free to use \texttt{\textbackslash begin\{comment\}} and \texttt{\textbackslash end\{comment\}} to comment out regions of the body that you are not interested in\footnote{The comment package is one of the first packages in the \texttt{kththesis.cls} file, so you can use these two commands - almost everywhere.}.
+
+As you write, you will notice "todo" notes in the template. They follow the following conventions:
+\begin{verbatim}
+\generalExpl{Comments/directions/... in English}
+\sweExpl{Text på svenska}
+\engExpl{English descriptions about formatting}
+\warningExpl{warnings}
+\end{verbatim}
+
+If you do not want to see any of these notes, you can, of course, redefine the above macros to output nothing. If you do not want to see any notes, then add the option \textbf{final} to the \texttt{\textbackslash documentclass} options.
+
+\section*{Further documentation}
+As an author, you might want to start with the document \texttt{README\_3rd\_cycle\_author}. It provides further details on how to carry out the initial steps.
+
+\section*{Timeouts}
+If you have just started a new session (or started working after a long idle time) you may experience a timeout. This commonly happens because the fonts that you are (or were) using are no longer in the font cache. If you think this is the case, then add an "early" \texttt{\textbackslash end\{document\}} early in your document and compile again. Once the fonts are cached, you can comment out this early end document. For a better solution, see the document \fname{Saving\_and\_restoring\_font\_cache.tex}.
+\end{document}
+
