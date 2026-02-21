@@ -883,8 +883,8 @@
     "title": "Coherent File Distribution Protocol",
     "year": "1991",
     "pubtype": "article",
-    "status": "unprocessed",
-    "label": null,
+    "status": "included",
+    "label": "paper:A",
     "bib_key": "ioannidis_coherent_1991",
     "in_bib": true,
     "pdf_downloaded": false
