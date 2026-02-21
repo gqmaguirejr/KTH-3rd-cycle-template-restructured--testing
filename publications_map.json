@@ -673,8 +673,8 @@
     "title": "Authenticatable graphical bar codes",
     "year": "2000",
     "pubtype": "patent",
-    "status": "unprocessed",
-    "label": null,
+    "status": "included",
+    "label": "patent:A",
     "bib_key": "US7107453B2",
     "in_bib": true,
     "pdf_downloaded": false
@@ -744,7 +744,7 @@
     "year": "1975",
     "pubtype": "article",
     "status": "unprocessed",
-    "label": null,
+    "label": "paper:F",
     "bib_key": null,
     "in_bib": false,
     "pdf_downloaded": false
@@ -1113,8 +1113,8 @@
     "title": "Do Small-Mass Neutrinos Participate in Gauge Transformations?",
     "year": "2016",
     "pubtype": "article",
-    "status": "unprocessed",
-    "label": null,
+    "status": "included",
+    "label": "paper:D",
     "bib_key": "kim_small-mass_2016",
     "in_bib": true,
     "pdf_downloaded": false
@@ -1403,8 +1403,8 @@
     "title": "FMM-Head: Enhancing Autoencoder-Based ECG Anomaly Detection with Prior Knowledge",
     "year": "2025",
     "pubtype": "conferencePaper",
-    "status": "unprocessed",
-    "label": null,
+    "status": "included",
+    "label": "paper:E",
     "bib_key": "verardo2023fmmheadenhancingautoencoderbasedecg",
     "in_bib": true,
     "pdf_downloaded": false
@@ -1973,8 +1973,8 @@
     "title": "Make the Most out of Last Level Cache in Intel Processors",
     "year": "2019",
     "pubtype": "conferencePaper",
-    "status": "unprocessed",
-    "label": null,
+    "status": "included",
+    "label": "paper:C",
     "bib_key": "farshin_make_2019",
     "in_bib": true,
     "pdf_downloaded": false
@@ -2243,8 +2243,8 @@
     "title": "PacketMill",
     "year": "2021",
     "pubtype": "conferencePaper",
-    "status": "unprocessed",
-    "label": null,
+    "status": "included",
+    "label": "artifact:A",
     "bib_key": "10.1145/3445814.3446724",
     "in_bib": true,
     "pdf_downloaded": false
