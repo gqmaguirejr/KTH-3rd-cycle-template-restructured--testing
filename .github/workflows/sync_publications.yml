@@ -1,0 +1,42 @@
+name: Sync DiVA Publications
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'references.bib'
+      - 'custom_configuration.tex'
+      - 'publications_map.json'
+
+permissions:
+  contents: write
+
+jobs:
+  process-publications:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install bibtexparser thefuzz python-Levenshtein pymods requests pandas
+
+      - name: Run Discovery
+        run: python3 -u scripts/DiVA_discovery.py
+
+      - name: Run Generator
+        run: python3 -u scripts/DiVA_generator.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add publications_map.json lib/publications_generated.tex
+          # This ensures we don't fail if nothing changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Sync DiVA publications" && git push)
