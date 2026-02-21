@@ -1036,6 +1036,7 @@ och förkortningar}]
     \warningExpl{The use of math mode in the title of Paper E will generate a warning "Font shape `U/stmry/m/n' in size <5.5> not available" - since scaling the 11pt math font for the superscripts and subscripts leads to 5.5pt letters - for which LaTeX substitutes 5pt letters. Both for this font scaling issue and to improve readability (see, for example, the fictitious title of Report A), I would think that the publication titles should be set in a font larger than 11pt.}
     % alternatively use \small as the size - this may be suitable if you have titles that contain characters not in Figtree
     {\FigtreeFont\fontsize{11}{13}\fontshape{n}\selectfont
+% Check if there was an automatically generated list of publications file.
 \IfFileExists{lib/publications\_generated}{
       \input{lib/publications_generated}
 }{
