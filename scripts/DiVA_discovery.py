@@ -141,6 +141,8 @@ def sync_discovery():
 
 # --- Robust Cross-referencing with .bib ---
         found_in_bib = False
+
+        norm_diva_title = normalize_text(pub_map[diva_id].get('title', ''))
         diva_doi = normalize_text(pub_map[diva_id].get('doi', '')) # Ensure DOI is captured in discovery
 
         for entry in bib_entries:
