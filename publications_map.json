@@ -205,8 +205,8 @@
     "pubtype": "article",
     "status": "included",
     "label": "paper:B",
-    "bib_key": null,
-    "in_bib": false,
+    "bib_key": "maguire_jr_new_2014",
+    "in_bib": true,
     "pdf_downloaded": false
   },
   "diva2:335178": {
@@ -2245,8 +2245,8 @@
     "pubtype": "conferencePaper",
     "status": "unprocessed",
     "label": null,
-    "bib_key": null,
-    "in_bib": false,
+    "bib_key": "10.1145/3445814.3446724",
+    "in_bib": true,
     "pdf_downloaded": false
   },
   "diva2:463341": {
@@ -2685,8 +2685,8 @@
     "pubtype": "conferencePaper",
     "status": "unprocessed",
     "label": null,
-    "bib_key": null,
-    "in_bib": false,
+    "bib_key": "roozbeh_resource_2013",
+    "in_bib": true,
     "pdf_downloaded": false
   },
   "diva2:461071": {
