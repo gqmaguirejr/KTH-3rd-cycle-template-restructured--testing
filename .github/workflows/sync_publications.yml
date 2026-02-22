@@ -1,18 +1,16 @@
-name: Sync DiVA Publications
+name: Sync Publications
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual run of Discovery
   push:
     paths:
-      - 'references.bib'
-      - 'custom_configuration.tex'
-      - 'publications_map.json'
+      - 'publications_map.json' # Runs Generator on any change to the map
 
 permissions:
   contents: write
 
 jobs:
-  process-publications:
+  run-scripts:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -27,16 +25,18 @@ jobs:
         run: |
           pip install bibtexparser thefuzz python-Levenshtein pymods requests pandas
 
+      # 1. Run Discovery ONLY if triggered manually (workflow_dispatch)
       - name: Run Discovery
+        if: github.event_name == 'workflow_dispatch'
         run: python3 -u scripts/DiVA_discovery.py
 
+      # 2. Run Generator if Discovery ran OR if mapping file was pushed
       - name: Run Generator
         run: python3 -u scripts/DiVA_generator.py
 
-      - name: Commit and Push changes
+      - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add publications_map.json lib/publications_generated.tex
-          # This ensures we don't fail if nothing changed
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Sync DiVA publications" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Sync publication list" && git push)
