@@ -21,14 +21,21 @@ ENV_MAP = {
 }
 
 def get_valid_bib_keys(bib_file):
-    """Returns a set of all entry IDs present in the .bib file."""
+    """Returns a set of all entry IDs present in the .bib file, including patents."""
     if not os.path.exists(bib_file):
         print(f"Warning: {bib_file} not found.")
         return set()
     try:
         with open(bib_file, 'r', encoding='utf-8') as f:
-            bib_database = bibtexparser.load(f)
-            return {entry['ID'] for entry in bib_database.entries}
+            # We use the MiddleOut parser logic or ensure we capture all entries
+            parser = bibtexparser.bparser.BibTexParser(common_strings=True)
+            # This ensures custom types like @patent are included
+            parser.ignore_nonstandard_types = False 
+            bib_database = bibtexparser.load(f, parser=parser)
+            
+            keys = {entry['ID'] for entry in bib_database.entries}
+            print(f"Found {len(keys)} valid keys in {bib_file}")
+            return keys
     except Exception as e:
         print(f"Error parsing .bib file: {e}")
         return set()
