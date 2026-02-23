@@ -1,0 +1,213 @@
+%% Information for inside title page and for the front cover
+\date{\today}           % set the date to today - can be used in rare cases,
+                        % if another date is needed on the title page
+
+\title{This is the title in the language of the thesis}
+\subtitle{A subtitle in the language of the thesis}
+
+% give the alternative title - i.e., if the thesis is in English, then give a Swedish title
+\alttitle{Detta är den svenska översättningen av titeln}
+\altsubtitle{Detta är den svenska översättningen av undertiteln}
+% alternative, if the thesis is in Swedish, then give an English title
+%\alttitle{This is the English translation of the title}
+%\altsubtitle{This is the English translation of the subtitle}
+
+% If your titles and subtitles cannot be translated to pure Unicode, then you should define plain text versions with the following commands in a file named custom_configuration_plaintext.tex
+% Placing these definitions into another file enables them to have multibyte Unicode UTF-8 characters that you cannot edit via the Overleaf editor; hence, you may need to edit them in a local editor and upload the file to your project.
+%\titleInPlainText{This is the title in the language of the thesis}
+%\subtitleInPlainText{A subtitle in the language of the thesis}
+
+% give the alternative title
+%\alttitleInPlainText{Detta är den svenska översättningen av titeln}
+%\altsubtitleInPlainText{Detta är den svenska översättningen av undertiteln}
+
+% --- Details of the degree you are applying for ---
+\courseCycle{3}
+
+% Education subject codes are listed in lib/school_subjects_3rdcycle.ins
+\educationSubjectcode{KTHXXX} % stores your education subject code for later use
+
+% Use the default subject for your educational code or manually specify it
+\subjectArea{\educationcodeToString{KTHXXX}}
+% looks up the English or Swedish name of your subject
+
+
+\degreeName{XXX}
+%\degreeName{Doctorate}
+%\degreeName{Licentiate}
+
+% To support Doctor of Philosophy and Licentiate of Philosophy degrees in addition to Tekn. Dr. and Tekn. Lic. - Uncomment the following line.
+\degreeModifier{Philosophy}
+
+% --- Author Information ---
+\authorsLastname{Student}
+\authorsFirstname{Fake A.}
+\email{XXXXXXXXXXXX@kth.se}
+\kthid{u1XXXXXX}               % This is on your ID card
+\orcid{xxxxx-xxxx-xxxx-xxxx}   % Please ensure this is your official, registered ORCID iD
+\authorsSchool{\schoolAcronym{XXX}}
+%If the student is not in Stockholm, Sweden, add that information here
+% This information will be used when generating the acknowledgements signature.
+%\authorCity{A City}
+%\authorCountry{A Country}
+% pass into \authorCityCountryDate{} the month and year for the acknowledgment
+% If there is a second author and place, the month, and year are the same, then specify the month and year for the first author:
+\authorCityCountryDate{\MONTH\enspace\the\year}
+% if there is a second author and the place is different, then say:
+%\authorCityCountryDate{}
+
+%%% If your work was done at a company or an external organization
+%\hostcompany{Företaget AB} % If the work was done at a host company
+%\hostorganization{XXXNationalLab}   % if there was a host organization
+
+
+% --- Supervisor Information ---
+\supervisorAsLastname{Supervisor}
+\supervisorAsFirstname{A. Busy}
+\supervisorAsEmail{XXXXXXXXXXXX@kth.se}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+\supervisorAsKTHID{u1XXXXXX}
+\supervisorAsSchool{\schoolAcronym{XXX}}
+\supervisorAsDepartment{XXX}
+% other for a supervisor outside of KTH add their organization info
+%\supervisorAsOrganization{Timbuktu University, Department of Pseudoscience}
+
+%If there is a second supervisor add them here:
+\supervisorBsLastname{Supervisor}
+\supervisorBsFirstname{Another Busy}
+\supervisorBsEmail{XXXXXXXXXXXX@kth.se}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+\supervisorBsKTHID{u1XXXXXX}
+\supervisorBsSchool{\schoolAcronym{XXX}}
+\supervisorBsDepartment{XXX}
+% other for a supervisor outside of KTH add their organization info
+%\supervisorBsOrganization{Timbuktu University, Department of Pseudoscience}
+
+%If there is a third supervisor add them here:
+\supervisorCsLastname{Supervisor}
+\supervisorCsFirstname{Third Busy}
+\supervisorCsEmail{XXXXXXXXXXXX@tu.va}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+%\supervisorCsKTHID{u1XXXXXX}
+%\supervisorCsSchool{\schoolAcronym{XXX}}
+%\supervisorCsDepartment{XXX}
+% other for a supervisor outside of KTH add their organization info
+\supervisorCsOrganization{Timbuktu University, Department of Pseudoscience}
+
+%If there is a fourth supervisor add them here:
+%\supervisorDsLastname{Supervisor}
+%\supervisorDsFirstname{Forth Busy}
+%\supervisorDsEmail{XXXXXXXXXXXX@tu.va}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+%\supervisorDsKTHID{u1XXXXXX}
+%\supervisorDsSchool{\schoolAcronym{XXX}}
+%\supervisorDsDepartment{DepartmentName}
+% other for a supervisor outside of KTH add their organization info
+%\supervisorDsOrganization{Timbuktu University, Department of Secondary Pseudoscience}
+
+%If there is a fifth supervisor add them here:
+%\supervisorEsLastname{Supervisor}
+%\supervisorEsFirstname{Fifth Busy}
+%\supervisorEsEmail{XXXXXXXXXXXX@tu.va}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+%\supervisorEsKTHID{u1XXXXXX}
+%\supervisorEsSchool{\schoolAcronym{XXX}}
+%\supervisorEsDepartment{DepartmentName}
+% other for a supervisor outside of KTH add their organization info
+%\supervisorDsOrganization{Timbuktu University, Department of Tertiary Pseudoscience}
+
+
+% --- Required information  ---
+%%%%% for DiVA's National Subject Category information
+%%% See examples in README_notes/National_Subject_Categories.tex
+%% Full list at 
+%%% See https://www.scb.se/contentassets/3a12f556522d4bdc887c4838a37c7ec7/standard-for-svensk-indelning--av-forskningsamnen-2011-uppdaterad-aug-2016.pdf
+%%% See https://www.scb.se/contentassets/10054f2ef27c437884e8cde0d38b9cc4/oversattningsnyckel-forskningsamnen.pdf
+%%% Enter one or more 3 or 5 digit codes
+%% Example for a thesis in Computer Science and Computer Systems: \nationalsubjectcategories{10201, 10206}
+\nationalsubjectcategories{ddddd, ddddd}
+
+%%%%% UN's Sustainable Development Goals (SDGs)
+% See list in README_notes/Sustainable_Development_Goals.tex
+%%% simply add numbers separated by commas
+%% Example for SDGs 8 and 9: \SDGs{8, 9}
+\SDGs{XXX, XXX}
+
+% Enter the English and Swedish keywords here for use in the PDF metadata _and_ for later use following the respective abstract.
+% Try to put the words in the same order in both languages to facilitate matching. For example:
+\EnglishKeywords{KeywordA, KeywordB, KeywordC}
+\SwedishKeywords{NyckelordA, NyckelordB, NyckelordC}
+
+%%%%% For the oral presentation
+%% Add this information once your presentation has been scheduled 
+\presentationDateAndTimeISO{2025-04-15 14:00}
+\presentationLanguage{eng}
+\presentationRoom{SAL-C and via Zoom https://kth-se.zoom.us/j/ddddddddddd}
+\presentationAddress{Isafjordsgatan 22 (Kistagången 16)}
+\presentationCity{Stockholm}
+% Based on the above information and the degreeName and optional degreeModifier, the template will generate the defense description on the title page
+
+
+% When there are multiple opponents, separate their names with '\&'
+% Generally, there is only one opponent for a 3rd cycle defense.
+% Opponent's information
+\opponentsNames{A. B. Normal \& A. X. E. Normalè}
+
+
+% It is possible to have a cover illustration
+%\coverIllustration{figures/image1.png}
+% if so, the author might acknowledge this or give the copyright information for it with:
+%\coverIllustrationCredit{A. B. Normal}
+
+% Once a thesis is approved by the main supervisor, add the TRITA number
+% The TRITA number for a thesis consists of two parts: a series (unique to each school)
+% and the number in the series, which is formatted as the year followed by a colon and
+% then a unique series number for the thesis - starting with 1 each year.
+% --- TRITA Number ---
+% This will use the data from the admin office if the file exists,
+% otherwise it will use the placeholder.
+\InputIfFileExists{assigned-TRITA.tex}
+  { % Code to execute if the file is found (do nothing, as the file contains the command)
+  }
+  { % Code to execute if the file is NOT found (use the placeholder)
+    \trita{TRITA -- XXX-AVL}{2025:0000}
+  }
+
+% --- ISBN ---
+% This will use the data from the library if the file exists,
+% otherwise it will use the placeholder.
+\InputIfFileExists{assigned-ISBN.tex}
+  { % File is found
+  }
+  { % File is NOT found
+    \thesisISBN{978-91-8106-***-*}
+  }
+
+\printedBy{Printed by: Universitetsservice US-AB, Sweden 2026}
+
+
+% --- Second author information ---
+% For a third-cycle thesis, it is _extremely _rare that there will be a second author
+% If there is a second author, then add them here:
+%\secondAuthorsLastname{Student}
+%\secondAuthorsFirstname{Fake B.}
+%\secondemail{XXXXXXXXXXXX@kth.se}
+%\secondkthid{u1XXXXXX}
+%\secondorcid{xxxxx-xxxx-xxxx-xxxx}
+%\secondAuthorsSchool{\schoolAcronym{XXX}}
+%If the student is not in Stockholm, Sweden, add that information here
+% This information will be used when generating the acknowledgements signature.
+%\secondAuthorCity{A City}
+%\secondAuthorCountry{A Country}
+% pass into \secondAuthorCityCountryDate{} the month and year for the acknowledgement
+%\secondAuthorCityCountryDate{\MONTH\enspace\the\year}
+%\secondAuthorCityCountryDate{}
+
+
+% Uncomment to hide specific comments, to hide **all** ToDos add `final` to
+% document class
+% \renewcommand\warningExpl[1]{}
+% \renewcommand\generalExpl[1]{}
+% \renewcommand\engExpl[1]{}
+% For example uncommenting the following line hides the Swedish language explanations
+% \renewcommand\sweExpl[1]{}
