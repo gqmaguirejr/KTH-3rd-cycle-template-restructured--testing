@@ -1,0 +1,31 @@
+name: Merge Wizard Configuration
+on:
+  push:
+    paths:
+      - 'config_snippet.tex'
+
+jobs:
+  merge-config:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run merge script
+        run: python scripts/merge_config.py
+
+      - name: Clean up snippet and Commit changes
+        run: |
+          rm config_snippet.tex
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add custom_configuration.tex
+          git commit -m "Auto-update configuration from Wizard snippet"
+          git push
