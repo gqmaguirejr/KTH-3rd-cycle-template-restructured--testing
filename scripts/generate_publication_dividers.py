@@ -1,6 +1,29 @@
 import json
 import os
 
+def clean_latex_string(text):
+    """Cleans a string for LaTeX while preserving math mode."""
+    if not text: return ""
+    text = re.sub(r'\s+', ' ', text).strip()
+    parts = re.split(r'(\$.*?\$)', text)
+    mapping = {
+        '&': r'\&', '%': r'\%', '$': r'\$', '#': r'\#',
+        '_': r'\_', '{': r'\{', '}': r'\}',
+        '~': r'\textasciitilde{}', '^': r'\textasciicircum{}'
+    }
+    cleaned_parts = []
+    for part in parts:
+        if part.startswith('$') and part.endswith('$'):
+            cleaned_parts.append(part)
+        else:
+            local_mapping = mapping.copy()
+            del local_mapping['$'] 
+            temp_part = part
+            for char, escape in local_mapping.items():
+                temp_part = temp_part.replace(char, escape)
+            cleaned_parts.append(temp_part)
+    return "".join(cleaned_parts)
+
 def generate_latex_dividers(json_path, output_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         pubs = json.load(f)
@@ -88,7 +111,9 @@ def generate_latex_dividers(json_path, output_path):
             # Add a comment in the TeX file
             lines.append(f"% PDF file missing for {label} - please check your Included_publications/ folder")
             # Optional: Add a visual placeholder in the PDF
-            lines.append(f"\\begin{{center}}\\huge\\color{{red}}MISSING PDF: {pdf_file}\\end{{center}}")
+            # Clean the path string so underscores like 'Included_publications' don't break LaTeX
+            clean_path = clean_latex_string(pdf_file)
+            lines.append(f"\\begin{{center}}\\huge\\color{{red}}MISSING PDF: {clean_path}\\end{{center}}")
             lines.append(f"%\\includepdf[pages={{{pages}}},scale={scale}]{{{pdf_file}}}")
         lines.append("\\cleardoublepage")
 
