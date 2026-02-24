@@ -205,9 +205,15 @@
     "pubtype": "article",
     "status": "included",
     "label": "paper:B",
+    "tab_index": 2,
     "bib_key": "maguire_jr_new_2014",
     "in_bib": true,
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/Paper_B_one_page.pdf",
+    "pdf_pages": "1-",
+    "scale": 1.0,
+    "permission_text": "This publication has a \href{https://creativecommons.org/licenses/by/3.0/}{CC BY 3.0 license - Attribution 3.0 Unported}."
+
   },
   "diva2:335178": {
     "title": "A new computed tomography-based radiographic method to detect early loosening of total wrist implants",
@@ -675,9 +681,14 @@
     "pubtype": "patent",
     "status": "included",
     "label": "patent:A",
+    "tab_index": 6,
     "bib_key": "US7107453B2",
     "in_bib": true,
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/",
+    "pdf_pages": "1-2",
+    "scale": 0.9,
+    "permission_text": "This publication is a U.S. Government publication; hence, it has no copyright."
   },
   "diva2:461408": {
     "title": "Automating Image Format Conversion - Twelve Years and Twenty-five Formats Later",
@@ -885,9 +896,14 @@
     "pubtype": "article",
     "status": "included",
     "label": "paper:A",
+    "tab_index": 1,
     "bib_key": "ioannidis_coherent_1991",
     "in_bib": true,
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/rfc1235.txt.pdf",
+    "pdf_pages": "1-2",
+    "scale": 1.0,
+    "permission_text": "The authors granted IETF Trust and the IETF the non-exclusive right to publish the document as an RFC. All other rights are retained by the authors."
   },
   "diva2:454122": {
     "title": "Comparison and evaluation of retrospective intermodality brain image registration techniques",
@@ -1115,9 +1131,14 @@
     "pubtype": "article",
     "status": "included",
     "label": "paper:D",
+    "tab_index": 4,
     "bib_key": "kim_small-mass_2016",
     "in_bib": true,
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/Paper_D.pdf",
+    "pdf_pages": "1-2",
+    "scale": 0.9,
+    "permission_text": "This publication has a \\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0 - Attribution 4.0 International} license."
   },
   "diva2:481564": {
     "title": "Document of network architecture strategies and tradeoffs",
@@ -1405,9 +1426,14 @@
     "pubtype": "conferencePaper",
     "status": "included",
     "label": "paper:E",
+    "tab_index": 5,
     "bib_key": "verardo2023fmmheadenhancingautoencoderbasedecg",
     "in_bib": true,
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/Paper_E.pdf",
+    "pdf_pages": "1-2",
+    "scale": 0.9,
+    "permission_text": "This paper is unpublished but appears as an arXiv preprint."
   },
   "diva2:461414": {
     "title": "Fusing of immunoscintigraphy SPECT with CT or MRI for improved multimodality image interpretation",
@@ -1975,9 +2001,14 @@
     "pubtype": "conferencePaper",
     "status": "included",
     "label": "paper:C",
+    "tab_index": 3,
     "bib_key": "farshin_make_2019",
     "in_bib": true,
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/Paper_C.pdf",
+    "pdf_pages": "1-",
+    "scale": 1.0,
+    "permission_text": "Copyright © 2019 ACM.\\\\ Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from Permissions@acm.org"
   },
   "diva2:463300": {
     "title": "Making the Most of WLANs -- From Any Location",
@@ -2035,9 +2066,14 @@
     "pubtype": "patent",
     "status": "included",
     "label": "patent:B",
+    "tab_index": 7,
     "bib_key": "US12111768B2",
     "in_bib": true,
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/US12111768.pdf",
+    "pdf_pages": "1-2",
+    "scale": 0.9,
+    "permission_text": "This publication is a U.S. Government publication; hence, it has no copyright."
   },
   "diva2:1926020": {
     "title": "Methods and nodes for handling memory",
@@ -2246,10 +2282,15 @@
     "pubtype": "conferencePaper",
     "status": "included",
     "label": "artifact:A",
+    "tab_index": 8,
     "bib_key": "10.1145/3445814.3446724",
     "in_bib": true,
     "better_bib_key": "10.5281/zenodo.4435970",
-    "pdf_downloaded": false
+    "pdf_downloaded": True,
+    "file_path": "Included_publications/PacketMill-Artifact_for_ASPLOS21.pdf",
+    "pdf_pages": "1-",
+    "scale": 0.9,
+    "permission_text": "For details see \cite{10.1145/3445814.3446724}. The following pages are based on hand-editing the web page \url{https://dl.acm.org/do/10.5281/zenodo.4435970/full/} to keep only the essential content related to the artifact."
   },
   "diva2:463341": {
     "title": "PACS Compatibility, In Search of a Universal Language for Digital Image Exchange",
