@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 def clean_latex_string(text):
     """Cleans a string for LaTeX while preserving math mode."""
