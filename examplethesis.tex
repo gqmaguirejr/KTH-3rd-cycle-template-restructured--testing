@@ -2595,7 +2595,8 @@ For details see \cite{10.1145/3445814.3446724}. The following pages are based on
 
 \fi % end the ifincludepublications conditional 
 \end{comment}
-\input{lib/publications_dividers_generated.tex}
+# input the automatically generated dividers and papers
+\IfFileExists{lib/publications_dividers_generated.tex}{\input{lib/publications_dividers_generated.tex}}
 
 % --- End of Main matter
 %% The following label is necessary for computing the last page number of the body of the report to include in the "For DIVA" information
