@@ -21,7 +21,7 @@ jobs:
       - name: Run merge script
         run: python scripts/merge_config.py
 
-- name: Clean up snippet and Commit changes
+      - name: Clean up snippet and Commit changes
         run: |
           git rm --ignore-unmatch config_snippet.tex
           # Use the same identity as your Sync workflow for a clean history
