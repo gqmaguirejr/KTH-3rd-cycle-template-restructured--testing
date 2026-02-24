@@ -212,7 +212,7 @@
     "file_path": "Included_publications/Paper_B_one_page.pdf",
     "pdf_pages": "1-",
     "scale": 1.0,
-    "permission_text": "This publication has a \href{https://creativecommons.org/licenses/by/3.0/}{CC BY 3.0 license - Attribution 3.0 Unported}."
+    "permission_text": "This publication has a \\href{https://creativecommons.org/licenses/by/3.0/}{CC BY 3.0 license - Attribution 3.0 Unported}."
 
   },
   "diva2:335178": {
@@ -2290,7 +2290,7 @@
     "file_path": "Included_publications/PacketMill-Artifact_for_ASPLOS21.pdf",
     "pdf_pages": "1-",
     "scale": 0.9,
-    "permission_text": "For details see \cite{10.1145/3445814.3446724}. The following pages are based on hand-editing the web page \url{https://dl.acm.org/do/10.5281/zenodo.4435970/full/} to keep only the essential content related to the artifact."
+    "permission_text": "For details see \\cite{10.1145/3445814.3446724}. The following pages are based on hand-editing the web page \\url{https://dl.acm.org/do/10.5281/zenodo.4435970/full/} to keep only the essential content related to the artifact."
   },
   "diva2:463341": {
     "title": "PACS Compatibility, In Search of a Universal Language for Digital Image Exchange",
