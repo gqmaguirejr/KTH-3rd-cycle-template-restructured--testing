@@ -9,7 +9,7 @@
 
 \ifbiblatex
 \relax
-\else    
+\else
 \makeatletter
 % Disable the back reference
 %\renewcommand*{\backref}[1]{}
@@ -25,27 +25,24 @@
 
 % Redefine the thebibliography to format as we want
 \renewenvironment{thebibliography}[1]
-     {\list{}%
-           {\leftmargin0pt \usecounter{enumiv}}%
-      \sloppy
-      \clubpenalty4000
-      \@clubpenalty \clubpenalty
-      \widowpenalty4000%
-      \sfcode`\.\@m}
-     {\def\@noitemerr
-       {\@latex@warning{Empty `thebibliography' environment}}%
-      \endlist}
+{\list{}%
+   {\leftmargin0pt \usecounter{enumiv}}%
+\sloppy
+\clubpenalty4000
+\@clubpenalty \clubpenalty
+\widowpenalty4000%
+\sfcode`\.\@m}
+{\def\@noitemerr
+{\@latex@warning{Empty `thebibliography' environment}}%
+\endlist}
 \makeatother
-\fi % end of ifbiblatex
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fi % end of ifbiblatex%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Make a file to put the cited information into
 \FileOpen{citedtagsfile}{citedtags.bib}
 
 \makeatletter
 \newcommand\removebibheader{\let\bib@heading\relax}
 \makeatother
-
 % Divider for paper:A
 \thispagestyle{empty}
 \begin{dividerContent}{0cm}{5cm}
@@ -54,7 +51,7 @@
 The authors granted IETF Trust and the IETF the non-exclusive right to publish the document as an RFC. All other rights are retained by the authors.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=0.9]{Included_publications/rfc1235.txt.pdf}
+\includepdf[pages={1-2},scale=1.0]{Included_publications/rfc1235.txt.pdf}
 \cleardoublepage
 % Divider for paper:B
 \thispagestyle{empty}
@@ -74,7 +71,7 @@ This publication has a \href{https://creativecommons.org/licenses/by/3.0/}{CC BY
 Copyright © 2019 ACM.\\Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than ACM must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from Permissions@acm.org
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={},scale=1.0]{Included_publications/}
+%\includepdf[pages={},scale=1.0]{Included_publications/}
 \cleardoublepage
 % Divider for paper:D
 \thispagestyle{empty}
@@ -84,7 +81,7 @@ Copyright © 2019 ACM.\\Permission to make digital or hard copies of all or part
 This publication has a \href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0 - Attribution 4.0 International} license.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=1.0]{Included_publications/Paper_D.pdf}
+\includepdf[pages={1-2},scale=0.9]{Included_publications/Paper_D.pdf}
 \cleardoublepage
 % Divider for paper:E
 \thispagestyle{empty}
@@ -94,7 +91,7 @@ This publication has a \href{https://creativecommons.org/licenses/by/4.0/}{CC BY
 This paper is unpublished but appears as an arXiv preprint.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=1.0]{Included_publications/Paper_E.pdf}
+\includepdf[pages={1-2},scale=0.9]{Included_publications/Paper_E.pdf}
 \cleardoublepage
 % Divider for patent:A
 \thispagestyle{empty}
