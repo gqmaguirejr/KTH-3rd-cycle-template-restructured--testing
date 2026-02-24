@@ -21,11 +21,16 @@ jobs:
       - name: Run merge script
         run: python scripts/merge_config.py
 
-      - name: Clean up snippet and Commit changes
+- name: Clean up snippet and Commit changes
         run: |
-          rm -f config_snippet.tex
+          git rm --ignore-unmatch config_snippet.tex
+          # Use the same identity as your Sync workflow for a clean history
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          
           git add custom_configuration.tex
-          git commit -m "Auto-update configuration from Wizard snippet"
-          git push
+          # Use git rm if the snippet was tracked, or keep your rm -f for untracked
+          git add config_snippet.tex || true 
+          
+          # Only commit and push if the configuration actually changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update configuration from Wizard snippet" && git push)
