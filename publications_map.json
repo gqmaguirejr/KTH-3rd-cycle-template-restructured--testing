@@ -1798,6 +1798,7 @@
             ],
             "Maguire, G. Q.": [
                 "Conceptualization",
+                "Data Curation",
                 "Formal Analysis",
                 "Investigation",
                 "Methodology",
@@ -1822,7 +1823,9 @@
                 "Writing – Original Draft",
                 "Writing – Review & Editing"
             ]
-        }
+        },
+        "equal_contributors": [],
+        "contribution_note": ""
     },
     "diva2:481564": {
         "title": "Document of network architecture strategies and tradeoffs",
