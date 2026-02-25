@@ -38,19 +38,30 @@ jobs:
           # Generates lib/publications_dividers_generated.tex
           python3 -u scripts/generate_publication_dividers.py 
 
+      - name: Run Publication and Divider Generators
+        run: |
+          python3 -u scripts/generate_publication_dividers.py
+          # New step to generate CReDiT contributions
+          python3 -u scripts/generate_thesis_contributions.py
+
       - name: Commit and Push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Force-add ensures the bot 'sees' the files even if they are in .gitignore
+          # Force-add the mapping and the primary generated bib/list
+          git add -f publications_map.json 
           git add -f lib/publications_generated.tex
-          git add -f publications_map.json
           
-          # Conditionally add the dividers file only if it exists
+          # Conditionally add the dividers file if it exists
           if [ -f "lib/publications_dividers_generated.tex" ]; then
             git add -f lib/publications_dividers_generated.tex
           fi
           
-          # The logic below ensures a clean exit if nothing changed
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Sync publication list and dividers" && git push)
+          # Conditionally add the CReDiT contributions file
+          if [ -f "lib/thesis_contributions_generated.tex" ]; then
+            git add -f lib/thesis_contributions_generated.tex
+          fi
+          
+          # Check for changes across all files before committing
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Sync publication metadata and CReDiT contributions" && git push)
