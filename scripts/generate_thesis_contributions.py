@@ -58,7 +58,9 @@ def generate_contributions(json_path, output_path):
             author_name = clean_latex_string(author)
             # Wrap the name in a parbox to allow wrapping and remove the colon 
             # The width (3.8cm) should be slightly less than the leftmargin (4cm)
-            label_content = f"\\parbox[t]{{3.8cm}}{{{author_name}}}"
+            # Group the parbox in extra braces to prevent "extra }" errors
+            # Grouping protects the [t] from the \item parser
+            label_content = f"{{\\parbox[t]{{3.8cm}}{{\\raggedright \\bfseries {author_name}}}}}"
         
             clean_roles = [clean_latex_string(r) for r in roles]
             role_str = ", ".join(clean_roles)
