@@ -49,11 +49,10 @@ def generate_contributions(json_path, output_path):
             tex.append(f"\\textit{{{clean_latex_string(note)}}}\\\\")
 
         # CReDiT Role List using enumitem description
-        tex.append("\\begin{description}[style=multiline, leftmargin=3.5cm, font=\\bfseries]")
+        tex.append("\\begin{description}[style=multiline, leftmargin=4.5cm, font=\\bfseries, itemsep=1.5ex]")
         credit = paper.get("credit_contributions", {})
         for author, roles in credit.items():
             author_name = clean_latex_string(author)
-            # Escape each role in the list
             clean_roles = [clean_latex_string(r) for r in roles]
             role_str = ", ".join(clean_roles)
             tex.append(f"    \\item[{author_name}:] {role_str}")
