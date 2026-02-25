@@ -49,13 +49,22 @@ def generate_contributions(json_path, output_path):
             tex.append(f"\\textit{{{clean_latex_string(note)}}}\\\\")
 
         # CReDiT Role List using enumitem description
-        tex.append("\\begin{description}[style=multiline, leftmargin=4.5cm, font=\\bfseries, itemsep=1.5ex]")
+
+        # Increase leftmargin and add itemsep for vertical breathing room 
+        tex.append("\\begin{description}[style=multiline, leftmargin=4cm, font=\\bfseries, itemsep=1.5ex]")
+    
         credit = paper.get("credit_contributions", {})
         for author, roles in credit.items():
             author_name = clean_latex_string(author)
+            # Wrap the name in a parbox to allow wrapping and remove the colon 
+            # The width (3.8cm) should be slightly less than the leftmargin (4cm)
+            label_content = f"\\parbox[t]{{3.8cm}}{{{author_name}}}"
+        
             clean_roles = [clean_latex_string(r) for r in roles]
             role_str = ", ".join(clean_roles)
-            tex.append(f"    \\item[{author_name}:] {role_str}")
+        
+            tex.append(f"    \\item[{label_content}] {role_str}")
+    
         tex.append("\\end{description}\n")
         tex.append("\\bigskip\n")
 
