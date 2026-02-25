@@ -1,11 +1,12 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{url}
 \newcommand{\dname}[1]{\textbf{#1}}
 \newcommand{\fname}[1]{\texttt{#1}}
 
 \title{Quick Start Guide}
 \author{Gerald Q. Maguire Jr.}
-\date{July 2025}
+\date{February 2026}
 
 \begin{document}
 
@@ -19,7 +20,14 @@ The four most important steps are:
     \item  The \texttt{examplethesis.tex} file is your main thesis file. You will replace the example content within it with your own writing. I suggest you start by entering your draft abstract and configuring the \texttt{documentclass} with your choice of language, bibliographic management tool, whether you want to include papers, \ldots ; and 
     \item Use the Overleaf "Menu" to change the settings of "Main document" to \texttt{examplethesis.tex} and choose your Compiler (you \textbf{must} select\linebreak[4]LuaLaTeX) (see Figure~\ref{fig:SettngsMenu}). Next, click the "Recompile" button. Now you have the example thesis with covers, title page, abstracts, and other preface pages, along with the body, example appendices, and examples of included papers (if you chose the \texttt{includepublications} option).
 \end{enumerate}
-    
+
+\section*{Using Overleaf and GitHub Integration}
+If you are used to working with GitHub, you might want to take advantage of the Overleaf and GitHub Integration. 
+If you wish to use this integration or simply refer to work with a GitHub repository, see the repository \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
+Note that this means that, as step 1, you should clone the repository and then make a new Overleaf project by importing from your GitHub repository.
+
+Using the GitHub repository enables some automated functions that can help you configure the \texttt{custom\_configuration.tex} file and generate a list of included publications and even create the tab pages together with including the PDF of publications (if you have downloaded it).
+
 \begin{figure}[!ht]
 \begin{center}
     \includegraphics[width=0.45\textwidth]{figures/Selecting_LuaLaTeX.png}
