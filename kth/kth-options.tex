@@ -46,6 +46,7 @@
 % --- Create a specific flag for each language for which there can be an abstract ---
 \newif\ifenabledalbanianabstract
 \newif\ifenabledarabicabstract
+\newif\ifenabledbosnianabstract
 \newif\ifenabledcatalanabstract
 \newif\ifenabledcentralkurdishabstract
 \newif\ifenabledchinesesimplifiedabstract
@@ -86,6 +87,8 @@
 
 \DeclareOption{EnableArabicFont}{\enabledarabicfonttrue\enabledbiditrue}
 \DeclareOption{EnableArabicAbstract}{\enabledarabicabstracttrue\enabledarabicfonttrue\enabledbiditrue}
+
+\DeclareOption{EnableBosnian}{\enabledbosnianabstracttrue}
 
 \DeclareOption{EnableCatalanAbstract}{\enabledcatalanabstracttrue}
 

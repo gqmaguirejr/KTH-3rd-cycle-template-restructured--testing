@@ -70,6 +70,8 @@ includepublications,    % uncomment - if you want to include publications for a 
 %EnableArabicFont,           % enable Arabic font
 %EnableArabicAbstract,       % include Arabic abstract
 %
+%EnableBosnianAbstract,      % include Bosnian abstract
+%
 %EnableCatalanAbstract,      % include Catalan abstract
 %
 %EnableCentralkurdishAbstract, % include Centralkurdish Abstract
@@ -758,6 +760,11 @@ Skriv in din svenska sammanfattning eller abstrakt här!
 % --- Include Arabic abstract ---
 \ifenabledarabicabstract
 \input{Additional_Abstracts/abstract_arabic}
+\fi
+
+% --- Include Bosnian abstract ---
+\ifenabledbosnianabstract
+\input{Additional_Abstracts/abstract_bosnian}
 \fi
 
 % --- Include Catalan abstract ---
