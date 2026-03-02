@@ -6,7 +6,7 @@
 # fill in the form, then upload the config_snippet.tex file to your repository
 # This will trigger the .github/workflows/merge_wizard.yml to run.
 # This workflow will merge your snippet values into custom_configuration.tex at the repository.
-
+# Added a check for an existing publications_map.json - allow the user to delete it.
 
 import streamlit as st
 import requests
