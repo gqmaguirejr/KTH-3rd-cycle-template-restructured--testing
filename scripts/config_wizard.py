@@ -21,7 +21,7 @@ HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 
 TRANSLATIONS = {
     'English': {
-        'title': "🎓 KTH Thesis Template Configuration Wizard",
+        'title': "🎓 Third-cycle Thesis Template Configuration Wizard",
         'lang_label': "Select Language",
         'auth_header': "1. Author & Thesis Information",
         'sup_header': "2. Supervisors",
@@ -41,7 +41,7 @@ TRANSLATIONS = {
         'degree_label': "Degree Name", 'modifier_label': "Modifier (Philosophy)",
     },
     'Swedish': {
-        'title': "🎓 Konfigurationsguide för KTH:s examensarbetesmall",
+        'title': "🎓 Konfigurationsguide för avhandlings mall för tredje nivån",
         'lang_label': "Välj språk",
         'auth_header': "1. Författar- & avhandlingsinformation",
         'sup_header': "2. Handledare",
@@ -195,6 +195,35 @@ if not st.session_state["initialized"]:
 lang = st.radio("Language / Språk", ["English", "Swedish"], horizontal=True)
 t = TRANSLATIONS[lang]
 st.title(t['title'])
+
+# --- FILE SAFETY CHECK ---
+PUB_MAP_FILE = "publications_map.json"
+
+if os.path.exists(PUB_MAP_FILE):
+    # Determine which language to use for the warning
+    warn_msg = (
+        "⚠️ **Existing Publication Map Found:** A `publications_map.json` file already exists in the scripts folder."
+        if lang == "English" else
+        "⚠️ **Befintlig publikationskarta hittades:** Filen `publications_map.json` finns redan i mappen scripts."
+    )
+    info_msg = (
+        "If this belongs to a previous user or is the demo version in the template, please delete it to ensure the Wizard uses your own data."
+        if lang == "English" else
+        "Om detta tillhör en tidigare användare eller är demoversionen i mallen, vänligen radera den för att säkerställa att guiden använder dina egna data."
+    )
+    btn_label = "Delete existing map & Start fresh" if lang == "English" else "Ta bort karta & börja om"
+
+    with st.container(border=True):
+        st.warning(warn_msg)
+        st.write(info_msg)
+        if st.button(btn_label, type="primary"):
+            try:
+                os.remove(PUB_MAP_FILE)
+                st.success("File deleted. You can now generate your own map." if lang == "English" else "Filen borttagen. Du kan nu generera din egen karta.")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Error: {e}")
+    st.divider()
 
 # --- AUTHOR SECTION ---
 st.header(t['auth_header'])
