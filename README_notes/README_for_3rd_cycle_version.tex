@@ -64,13 +64,13 @@
 
 \usepackage[plainpages=false, unicode=true]{hyperref}
 
-\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate, automake]{glossaries-extra}
 %% In overleaf, if this file is in a folder and not the root
 %% using \makeglossaries will not work, as the Overleaf latexmk
 %% will not run the program to take the output.acn file and make the output.acr file
-%\makeglossaries
+\makeglossaries
 % However, you can get TeX to do the work with the following:
-\makenoidxglossaries
+%\makenoidxglossaries
 % For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
 %% Potentially, one could set up a latexmkrc file in the folder
 
@@ -1890,7 +1890,7 @@ KI has an excellent page about graphical abstracts, see \href{https://kib.ki.se/
 \section{Table of contents and its placement}
 \label{sec:cycle3TableOfContents}
 
-Following the page order described in the \textit{Chicago Manual of Style}, the table of contents is located before the lists of figures, tables, abbreviations, \etc. In contrast, the AW-template places the table of contents after these lists. I see no reason to follow the page ordering of the AW-template; hence, I have placed the table of contents after the acknowledgments and before the various lists. In this way, the list-like front matter is all together, and the text-like front matter is also together\footnote{At Karolinska Institutet, they place the acknowledgments after the \textit{Points of Perspective} and the \textit{Declaration about the use of Generative AI}, and the \textit{References} - see \url{https://staff.ki.se/doctoral-education/time-to-defend-your-thesis/content-of-the-thesis}.}.
+Following the page order described in the \textit{Chicago Manual of Style}\,\cite{university_of_chicago_press_chicago_1982}, the table of contents is located before the lists of figures, tables, abbreviations, \etc. In contrast, the AW-template places the table of contents after these lists. I see no reason to follow the page ordering of the AW-template; hence, I have placed the table of contents after the acknowledgments and before the various lists. In this way, the list-like front matter is all together, and the text-like front matter is also together\footnote{At Karolinska Institutet, they place the acknowledgments after the \textit{Points of Perspective} and the \textit{Declaration about the use of Generative AI}, and the \textit{References} - see \url{https://staff.ki.se/doctoral-education/time-to-defend-your-thesis/content-of-the-thesis}.}.
 
 Note that the AW-template sets the heading of the table of contents as all caps in 22pt. However, as noted earlier, I see no reason to do so, especially as this is \textit{not} in keeping with the other \textit{front matter} pages. Additionally, I set it in 24pt to match the other preface page headings.
 
@@ -2008,7 +2008,7 @@ The AW-template provides no guidance about how to include publications or how th
 It is highly desirable for a compilation thesis to have divider pages inserted before each of the included publications. My aim is to automate much of the generation of such pages.
 
 \Needspace*{4\baselineskip}
-Looking at the printed thesis \textit{Data verification for GNSS systems and protection of GNSS services} by Marco Spanghero, URN: \href{https://urn.kb.se/resolve?urn=urn%3Anbn%3Ase%3Akth%3Adiva-361272}{urn:nbn:se:kth:diva-361272}, ISBN: 978-91-8106-231-1 (print), I found that the positioning of the tabs follows (roughly) the parameters shown in \Cref{lst:myfaancytabParameters}.
+Looking at the printed thesis \textit{Data verification for GNSS systems and protection of GNSS services} by Marco Spanghero,  URN: \href{https://urn.kb.se/resolve?urn=urn%3Anbn%3Ase%3Akth%3Adiva-361272}{urn:nbn:se:kth:diva-361272},ISBN: 978-91-8106-231-1 (print), I found that the positioning of the tabs follows (roughly) the parameters shown in \Cref{lst:myfaancytabParameters}.
 
 \Needspace*{12\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, caption={Parameters used with myfancytab macro}, label=lst:myfaancytabParameters]
@@ -2106,8 +2106,8 @@ In conjunction with the posting (or ``nailing'') of the thesis, there is a need 
 \printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
 och förkortningar}]
 \else
-%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
-\printnoidxglossaries
+\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+%\printnoidxglossaries
 \fi
 \clearpage
 
