@@ -53,6 +53,35 @@
 %% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
 \disablepackage{transparent}{}
 
+% To avoid complaints from datatool and glossaries regarding missing latin and swedish support
+\begin{filecontents*}{datatool-swedish.ldf}
+\ProvidesFile{datatool-swedish.ldf}
+% Define how Swedish characters should be handled during sorting
+% This maps them so Å, Ä, and Ö appear at the end of the alphabet
+\@ifundefined{dtl@sortreplace}{}{%
+  \dtl@sortreplace{å}{za}%
+  \dtl@sortreplace{Å}{Za}%
+  \dtl@sortreplace{ä}{zb}%
+  \dtl@sortreplace{Ä}{Zb}%
+  \dtl@sortreplace{ö}{zc}%
+  \dtl@sortreplace{Ö}{Zc}%
+}
+\end{filecontents*}
+\begin{filecontents*}{datatool-latin.ldf}
+\ProvidesFile{datatool-latin.ldf}
+\end{filecontents*}
+\begin{filecontents*}{glossaries-swedish.ldf}
+\ProvidesGlossariesLang{swedish}[2024/03/26]
+% Use provide or renew to avoid the "already defined" error
+\renewcommand*{\glossaryname}{Ordlista}
+\renewcommand*{\acronymname}{Akronymer}
+\renewcommand*{\entryname}{Term}
+\renewcommand*{\descriptionname}{Beskrivning}
+\end{filecontents*}
+\begin{filecontents*}{glossaries-latin.ldf}
+\ProvidesGlossariesLang{latin}[2024/03/26]
+\end{filecontents*}
+
 % --- Configure the documentclass ---
 %% The template is designed to handle a thesis in English or Swedish
 %%
