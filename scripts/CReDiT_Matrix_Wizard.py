@@ -38,7 +38,7 @@ def get_authors_from_bib(bib_path, bib_key):
     for entry in library.entries:
         if entry.get('ID') == bib_key:
             author_str = entry.get('author', '')
-            return [a.strip() for a in author_str.split(' and ')]
+            return [a.replace("{", "").replace("}", "").strip() for a in author_str.split(' and ')]
     return []
 
 st.set_page_config(page_title="CReDiT Wizard", layout="wide")
@@ -62,7 +62,7 @@ else:
     data = load_json(json_path)
     # Filter for included papers only
     included = {k: v for k, v in data.items() if v.get("status") == "included"}
-    
+
     # Sort tabs by tab_index
     sorted_keys = sorted(included.keys(), key=lambda x: included[x].get("tab_index", 999))
     
@@ -75,11 +75,22 @@ else:
             paper = included[key]
             with tabs[i]:
                 st.subheader(f"Paper {paper.get('label')}: {paper.get('title')}")
-                authors = get_authors_from_bib(bib_path, paper.get("bib_key"))
+                authors = []
+                bib_authors = get_authors_from_bib(bib_path, paper.get("bib_key"))
                 
-                if not authors:
+                if not bib_authors:
                     st.error(f"Authors not found for {paper.get('bib_key')}")
                     continue
+
+                authors.extend(bib_authors)
+
+                # get 'specific_contributors' from publications_map.json for 'paper'
+                specifics = paper.get('specific_contributors', [])
+                for person in specifics:
+                    # Format to 'Lname, Fname' to match your credit_contributions keys
+                    formatted_name = f"{person['lname']}, {person['fname']}"
+                    if formatted_name not in authors:
+                        authors.append(formatted_name)
 
                 # CReDiT Matrix setup
                 existing_credit = paper.get("credit_contributions", {})
