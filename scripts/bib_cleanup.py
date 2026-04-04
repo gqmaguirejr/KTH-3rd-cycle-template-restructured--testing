@@ -71,8 +71,9 @@ def get_cited_keys(artifact_path):
         
     return cited
 
-def validate_isbn_metadata(isbn, email="unknown@example.com"):
+def validate_isbn_metadata(isbn, email="unknown@example.com", verbose=False):
     """Tiered metadata check: Crossref -> Google (via isbnlib) -> Open Library."""
+    global args
     isbn = canonical(isbn)
     if not (is_isbn10(isbn) or is_isbn13(isbn)):
         return None
@@ -87,6 +88,8 @@ def validate_isbn_metadata(isbn, email="unknown@example.com"):
         # Crossref uses a specific API for ISBN-A or DOI lookups
         r = requests.get(f"https://api.crossref.org/works?filter=isbn:{isbn}", timeout=5, headers=headers)
         if r.status_code == 200 and r.json()['message']['total-results'] > 0:
+            if verbose:
+                print(f"{r.json}")
             item = r.json()['message']['items'][0]
             return {"title": item.get("title", [None])[0], "source": "Crossref"}
     except Exception: pass
@@ -107,23 +110,48 @@ def validate_isbn_metadata(isbn, email="unknown@example.com"):
 
     return None
 
-def validate_doi_metadata(doi, email="unknown@example.com"):
+def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
     """Checks DOI validity via Crossref."""
+    global args
     try:
-        # The Crossref 'Polite' User-Agent format
-        headers = {
-            'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'
-        }
+        # Clean the DOI just in case
+        doi = doi.strip().replace("doi:", "") 
+        headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
         url = f"https://api.crossref.org/works/{doi}"
+        
         r = requests.get(url, timeout=5, headers=headers)
-        if r.status_code == 200:
-            item = r.json()['message']
-            # Crossref titles are usually lists
-            title = item.get("title", [None])[0]
-            return {"title": title, "source": "Crossref (DOI)"}
-    except Exception:
+        
+        if r.status_code != 200:
+            if verbose:
+                print(f"  [!] Crossref lookup failed for {doi} (Status: {r.status_code})")
+            return None
+
+        item = r.json()['message']
+        
+        # Helper to extract year
+        def get_year(date_field):
+            if date_field:
+                parts = date_field.get('date-parts', [])
+                if parts and len(parts[0]) >= 1:
+                    return parts[0][0]
+            return None
+
+        final_year = get_year(item.get('published-print')) or get_year(item.get('issued'))
+
+        if verbose:
+            print(f"  [+] Crossref Found: {final_year=}") # This should now appear
+
+        return {
+            "title": item.get("title", [None])[0], 
+            "year": str(final_year) if final_year else '',
+            "source": "Crossref (DOI)"
+        }
+    except Exception as e:
+        if verbose:
+            print(f"  [!] Error in validate_doi_metadata: {e}")
         pass
     return None
+
 
 def validate_patent_url(patent_id):
     """Checks if a Google Patents page exists and returns the URL."""
@@ -141,6 +169,8 @@ def validate_patent_url(patent_id):
     return None
 
 def main():
+    global args
+
     git_fallback = get_git_email() or "your-backup-contact@example.com"
     default_email = os.environ.get('USER_EMAIL', git_fallback)
 
@@ -222,10 +252,10 @@ def main():
                 print(f"CACHE MISS: Re-checking metadata for {entry['ID']}...")
             validation_result = None
             if 'doi' in entry:
-                validation_result = validate_doi_metadata(entry.get('doi'), args.email)
+                validation_result = validate_doi_metadata(entry.get('doi'), args.email, args.verbose)
             
             if not validation_result and 'isbn' in entry:
-                validation_result = validate_isbn_metadata(entry.get('isbn'), args.email)
+                validation_result = validate_isbn_metadata(entry.get('isbn'), args.email, args.verbose)
 
             if not validation_result and (entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')):
                 validation_result = validate_patent_url(entry['ID'])
@@ -251,6 +281,25 @@ def main():
 
         # 4d. CRITICAL: Add the processed (and potentially updated) entry to our list
         used_entries.append(entry)
+
+        # 4e. check year of entry and year of validation_result (if it exists)
+        # Use .get() to safely check for keys without crashing
+
+        # if entry.get('year') and validation_result and validation_result.get('year'):
+        #     if args.verbose:
+        #         print(f"DEBUG: Comparing {entry['ID']} - Bib: {entry['year']} vs API: {validation_result['year']}")
+
+        e_year = entry.get('year')
+        v_year = validation_result.get('year') if validation_result else None
+
+        if e_year and v_year:
+            try:
+                if int(e_year) != int(v_year):
+                    warnings.append(f"Mismatch in years: {entry['ID']} ({e_year}) != Crossref ({v_year})")
+            except (ValueError, TypeError):
+                # Handle cases where the year isn't a simple integer (e.g., '1975a')
+                if str(e_year) != str(v_year):
+                    warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
 
     # 5. Final Output and Summary
     db.entries = used_entries
