@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-	  # Fetch the absolute latest commit, not a cached version.
+          # Fetch the absolute latest commit, not a cached version.
           fetch-depth: 0
           ref: main
 
