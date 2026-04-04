@@ -35,7 +35,7 @@ def save_cache(cache):
 
 # Configuration
 INPUT_BIB = 'references.bib'
-OUTPUT_BIB = 'references_used.bib'
+OUTPUT_BIB = 'referencesUsed.bib'
 STRIP_FIELDS = ['abstract', 'file', 'mendeley-groups', 'keywords']
 
 # def get_cited_keys(aux_path):
