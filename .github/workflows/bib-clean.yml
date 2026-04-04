@@ -37,6 +37,9 @@ jobs:
       - name: Run Cleanup Script
         # Added verbose flag so we can see the failure in the logs
         run: python scripts/bib_cleanup.py --verbose
+        env:
+          # Use the email of the person who pushed the code
+          USER_EMAIL: ${{ github.event.pusher.email }}
 
       - name: Commit and Push changes
         run: |
