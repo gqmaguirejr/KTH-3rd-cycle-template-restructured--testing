@@ -13,7 +13,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # CRITICAL: Grant the token permission to push changes
+
+    # enable the script to write
     permissions:
       contents: write
 
