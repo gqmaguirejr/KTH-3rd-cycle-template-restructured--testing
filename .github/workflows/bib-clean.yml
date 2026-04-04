@@ -38,10 +38,21 @@ jobs:
         # Added verbose flag so we can see the failure in the logs
         run: python scripts/bib_cleanup.py --verbose
 
-      - name: Commit cleaned bibliography
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Auto-update: Cleaned references_used.bib and cache"
-          file_pattern: 'references_used.bib .bib_validator_cache.json'
-	  # This helps the bot push even if a small change happened during the run
-          push_options: '--force'
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Add the specific files
+          git add references_used.bib .bib_validator_cache.json
+          
+          # Only commit if there are actually changes to avoid empty commit errors
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update: Cleaned references_used.bib and cache"
+            
+            # The "Magic" sequence: pull any last-second changes, then push
+            git pull --rebase origin main
+            git push origin main
+          fi
