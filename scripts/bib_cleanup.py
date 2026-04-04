@@ -13,8 +13,18 @@ import argparse
 from pathlib import Path
 import hashlib
 import json
+import subprocess
 
 CACHE_FILE = ".bib_validator_cache.json"
+
+def get_git_email():
+    """Retrieves the global or local git user email as a fallback."""
+    try:
+        # Changed from ['git', 'config', 'get', 'user.email'] 
+        # to the classic ['git', 'config', 'user.email']
+        return subprocess.check_output(['git', 'config', 'user.email']).decode().strip()
+    except Exception:
+        return None
 
 def get_entry_hash(entry):
     """Computes a stable hash of the entry's key-value pairs."""
@@ -37,22 +47,6 @@ def save_cache(cache):
 INPUT_BIB = 'references.bib'
 OUTPUT_BIB = 'referencesUsed.bib'
 STRIP_FIELDS = ['abstract', 'file', 'mendeley-groups', 'keywords']
-
-# def get_cited_keys(aux_path):
-#     """Extracts citation keys from LaTeX .aux file."""
-#     if not os.path.exists(aux_path):
-#         print(f"Warning: {aux_path} not found. Processing all entries.")
-#         return None
-    
-#     with open(aux_path, 'r') as f:
-#         content = f.read()
-#     # Matches \citation{key1,key2}
-#     keys = re.findall(r'\\citation\{([^}]+)\}', content)
-#     cited = set()
-#     for k_group in keys:
-#         for k in k_group.split(','):
-#             cited.add(k.strip())
-#     return cited
 
 def get_cited_keys(artifact_path):
     """Supports both .aux (BibTeX) and .bcf (BibLaTeX/Biber)."""
@@ -77,7 +71,7 @@ def get_cited_keys(artifact_path):
         
     return cited
 
-def validate_isbn_metadata(isbn):
+def validate_isbn_metadata(isbn, email="unknown@example.com"):
     """Tiered metadata check: Crossref -> Google (via isbnlib) -> Open Library."""
     isbn = canonical(isbn)
     if not (is_isbn10(isbn) or is_isbn13(isbn)):
@@ -85,8 +79,13 @@ def validate_isbn_metadata(isbn):
 
     # 1. Try Crossref (Excellent for academic books/proceedings)
     try:
+        # The Crossref 'Polite' User-Agent format
+        headers = {
+            'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'
+        }
+
         # Crossref uses a specific API for ISBN-A or DOI lookups
-        r = requests.get(f"https://api.crossref.org/works?filter=isbn:{isbn}", timeout=5)
+        r = requests.get(f"https://api.crossref.org/works?filter=isbn:{isbn}", timeout=5, headers=headers)
         if r.status_code == 200 and r.json()['message']['total-results'] > 0:
             item = r.json()['message']['items'][0]
             return {"title": item.get("title", [None])[0], "source": "Crossref"}
@@ -108,11 +107,15 @@ def validate_isbn_metadata(isbn):
 
     return None
 
-def validate_doi_metadata(doi):
+def validate_doi_metadata(doi, email="unknown@example.com"):
     """Checks DOI validity via Crossref."""
     try:
+        # The Crossref 'Polite' User-Agent format
+        headers = {
+            'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'
+        }
         url = f"https://api.crossref.org/works/{doi}"
-        r = requests.get(url, timeout=5)
+        r = requests.get(url, timeout=5, headers=headers)
         if r.status_code == 200:
             item = r.json()['message']
             # Crossref titles are usually lists
@@ -138,15 +141,28 @@ def validate_patent_url(patent_id):
     return None
 
 def main():
+    git_fallback = get_git_email() or "your-backup-contact@example.com"
+    default_email = os.environ.get('USER_EMAIL', git_fallback)
+
     # 1. Setup the specific argument parser
     arg_parser = argparse.ArgumentParser(description="Clean and validate BibTeX based on used citations.")
     arg_parser.add_argument("--artifact", default="output.aux", help="Path to .aux or .bcf file")
     arg_parser.add_argument("--verbose", action='store_true', help="Print lots of output to stdout")
+# Logic: Check --email flag first, then USER_EMAIL env var, then hardcoded fallback
+    arg_parser.add_argument(
+        "--email", 
+        type=str, 
+        default=default_email,
+        help="Contact email for Crossref 'Polite' API pool"
+    )
 
     args = arg_parser.parse_args()
     print(f"{args.artifact=}")
 
-# 2. Extract cited keys with "Stub-Aware" failover
+    if args.verbose:
+        print(f"using {args.email} as the polite e-mail address for Crossref")
+
+    # 2. Extract cited keys with "Stub-Aware" failover
     artifact_path = Path(args.artifact)
     
     # Try to get keys from the initial file
@@ -203,13 +219,13 @@ def main():
                 print(f"CACHE HIT: Using stored metadata for {entry['ID']}")
         else:
             if args.verbose:
-                print(f"CACHE MISS: Re-checking metadata for {entry['ID']}...") # <-- ADD THIS
+                print(f"CACHE MISS: Re-checking metadata for {entry['ID']}...")
             validation_result = None
             if 'doi' in entry:
-                validation_result = validate_doi_metadata(entry.get('doi'))
+                validation_result = validate_doi_metadata(entry.get('doi'), args.email)
             
             if not validation_result and 'isbn' in entry:
-                validation_result = validate_isbn_metadata(entry.get('isbn'))
+                validation_result = validate_isbn_metadata(entry.get('isbn'), args.email)
 
             if not validation_result and (entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')):
                 validation_result = validate_patent_url(entry['ID'])
