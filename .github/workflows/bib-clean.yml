@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetches all history so git can merge correctly
+	  ref: ${{ github.head_ref }} # Or simply 'main'
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -41,3 +42,5 @@ jobs:
         with:
           commit_message: "Auto-update: Cleaned references_used.bib and cache"
           file_pattern: 'references_used.bib .bib_validator_cache.json'
+	  # This helps the bot push even if a small change happened during the run
+          push_options: '--force'
