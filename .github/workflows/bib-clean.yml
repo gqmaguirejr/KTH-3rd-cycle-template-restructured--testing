@@ -44,13 +44,13 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # Add the specific files
-          git add references_used.bib .bib_validator_cache.json
+          git add referencesUsed.bib .bib_validator_cache.json
           
           # Only commit if there are actually changes to avoid empty commit errors
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Auto-update: Cleaned references_used.bib and cache"
+            git commit -m "Auto-update: Cleaned referencesUsed.bib and cache"
             
             # The "Magic" sequence: pull any last-second changes, then push
             git pull --rebase origin main
