@@ -7,6 +7,9 @@ on:
       - 'output.aux'
       - 'references.bib'
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Add this line here
+
 jobs:
   build:
     runs-on: ubuntu-latest
