@@ -13,6 +13,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # CRITICAL: Grant the token permission to push changes
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,7 +30,8 @@ jobs:
         run: pip install bibtexparser isbnlib requests
 
       - name: Run Cleanup Script
-        run: python scripts/bib_cleanup.py
+        # Added verbose flag so we can see the failure in the logs
+        run: python scripts/bib_cleanup.py --verbose
 
       - name: Commit cleaned bibliography
         uses: stefanzweifel/git-auto-commit-action@v5
