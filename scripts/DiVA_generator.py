@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.11
 # -*- coding: utf-8 -*-
 # -*- mode: python; python-indent-offset: 4 -*-
 
