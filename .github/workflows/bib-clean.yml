@@ -22,8 +22,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetches all history so git can merge correctly
-	  ref: ${{ github.head_ref }} # Or simply 'main'
+	  # Fetch the absolute latest commit, not a cached version
+          fetch-depth: 0
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
