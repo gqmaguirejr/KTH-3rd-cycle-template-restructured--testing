@@ -17,6 +17,30 @@ import subprocess
 
 CACHE_FILE = ".bib_validator_cache.json"
 
+# Crossref uses the following DOIs for testing and internal use
+# from https://api.crossref.org/members?query=test%20accounts
+# and https://api.crossref.org/members?query=Crossref
+test_DOI_prefixes_Crossref = [
+    "10.18810", # Test accounts
+    "10.5555", # Test accounts - used frequently in examples in their documentation
+    "10.88888", # Test accounts
+    "10.30444",
+    "10.30446",
+    "10.30447",
+    "10.30448",
+    "10.30449",
+    "10.64000", # Crossref Blog
+    "10.13003",
+    "10.30443"
+]
+
+# ACM uses https://dl.acm.org/doi/10.5555/*
+# as a prefix when cross-listing content from another publisher,
+# such as conference papers from others, for example for a paper from the Proceedings of the 33rd International Conference on Neural Information Processing Systems
+# https://dl.acm.org/doi/10.5555/3454287.3454840
+# ACM does _not_ assign DOIs to these papers, but uses the string when generating the BibTeX key when exporting bibtex
+# See also the blog post: https://nickwalker.us/blog/2024/acm-dl-fake-dois/
+
 def get_git_email():
     """Retrieves the global or local git user email as a fallback."""
     try:
@@ -46,7 +70,8 @@ def save_cache(cache):
 # Configuration
 INPUT_BIB = 'references.bib'
 OUTPUT_BIB = 'referencesUsed.bib'
-STRIP_FIELDS = ['abstract', 'file', 'mendeley-groups', 'keywords']
+STRIP_FIELDS = ['abstract', 'file', 'groups', 'mendeley-groups', 'keywords', 'annote', 'annotation']
+
 
 def get_cited_keys(artifact_path):
     """Supports both .aux (BibTeX) and .bcf (BibLaTeX/Biber)."""
@@ -89,10 +114,35 @@ def validate_isbn_metadata(isbn, email="unknown@example.com", verbose=False):
         r = requests.get(f"https://api.crossref.org/works?filter=isbn:{isbn}", timeout=5, headers=headers)
         if r.status_code == 200 and r.json()['message']['total-results'] > 0:
             if verbose:
-                print(f"{r.json}")
+                print(f"{r.json()}")
             item = r.json()['message']['items'][0]
-            return {"title": item.get("title", [None])[0], "source": "Crossref"}
-    except Exception: pass
+
+            # Helper to extract year
+            def get_year(date_field):
+                if date_field:
+                    parts = date_field.get('date-parts', [])
+                    if parts and len(parts[0]) >= 1:
+                        return parts[0][0]
+                return None
+
+            # Priority: Print date is the traditional gold standard for proceedings,
+            # but 'issued' is the most common canonical fallback in Crossref.
+            final_year = (get_year(item.get('published-print')) or 
+                          get_year(item.get('issued')) or 
+                          get_year(item.get('published-online')))
+
+            if verbose:
+                print(f"  [+] Crossref Found: {final_year=}")
+
+            return {"title": item.get("title", [None])[0],
+                    "year": str(final_year) if final_year else '',
+                    "source": "Crossref (ISBN)"}
+
+    except Exception as e:
+        if verbose:
+            print(f"  [!] Error in validate_isbn_metadata: {e}")
+        pass
+    return None
 
     # 2. Try Google Books (via isbnlib default service)
     try:
@@ -116,6 +166,12 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
     try:
         # Clean the DOI just in case
         doi = doi.strip().replace("doi:", "") 
+
+        # filter out Crossref's test DOI prefixes
+        for doi_prefix in test_DOI_prefixes_Crossref:
+            if doi.startswith(doi_prefix+'/'):
+                return None
+
         headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
         url = f"https://api.crossref.org/works/{doi}"
         
@@ -139,7 +195,7 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
         final_year = get_year(item.get('published-print')) or get_year(item.get('issued'))
 
         if verbose:
-            print(f"  [+] Crossref Found: {final_year=}") # This should now appear
+            print(f"  [+] Crossref Found: {final_year=}")
 
         return {
             "title": item.get("title", [None])[0], 
@@ -219,6 +275,7 @@ def main():
     print(f"{cited_keys=}")
 
     # Load the source bibliography
+    # handle nonstandard types, such as @software
     parser = BibTexParser(common_strings=True, ignore_nonstandard_types=False)
     with open(INPUT_BIB, 'r', encoding='utf-8') as f:
         db = bibtexparser.load(f, parser=parser)
@@ -230,7 +287,7 @@ def main():
     new_cache = {}
 
     # 4. Process entries
-
+    # entry is an bibtex entry
     for entry in db.entries:
         # Filter for used entries only
         if cited_keys and entry['ID'] not in cited_keys:
