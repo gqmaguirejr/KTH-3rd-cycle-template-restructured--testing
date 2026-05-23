@@ -234,7 +234,7 @@ def main():
     arg_parser = argparse.ArgumentParser(description="Clean and validate BibTeX based on used citations.")
     arg_parser.add_argument("--artifact", default="output.aux", help="Path to .aux or .bcf file")
     arg_parser.add_argument("--verbose", action='store_true', help="Print lots of output to stdout")
-# Logic: Check --email flag first, then USER_EMAIL env var, then hardcoded fallback
+    # Logic: Check --email flag first, then USER_EMAIL env var, then hardcoded fallback
     arg_parser.add_argument(
         "--email", 
         type=str, 
