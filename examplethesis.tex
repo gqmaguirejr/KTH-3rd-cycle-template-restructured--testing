@@ -431,6 +431,10 @@ morekeywords={begin, todo, textbf, textit, texttt}
         backend=biber]{biblatex}
     \fi    
 
+    % --- Allow biblatex to break long URL identifiers gracefully ---
+    \setcounter{biburlnumpenalty}{9000} % Permits line breaks after numeric digits
+    \setcounter{biburllcpenalty}{9000} % Permits line breaks after lowercase letters
+    \setcounter{biburlucpenalty}{9000} % Permits line breaks after uppercase letters
 
     % Use the chapter* style for the heading of the bibliography
     \defbibheading{bibliography}[\bibname]{%
