@@ -1,0 +1,249 @@
+% lib/biblatex-and-friends.tex
+% Centralized biblatex configuration, sourcemaps, and extended identifiers
+
+%\usepackage[language=english,bibstyle=authoryear,citestyle=authoryear, maxbibnames=99]{biblatex}
+  
+% Alternatively, you might use another style, such as IEEE and use citestyle=numeric-comp  to put multiple citations in a single pair of square brackets
+% Note that the following explicitly uses biber as the backend
+\ifinswedish
+    \usepackage[language=swedish,
+        style=ieee,citestyle=numeric-comp,
+        maxbibnames=99, % Allow up to 99 names to be displayed
+        minbibnames=99,      % If truncated, display up to 99 names (reduces use of et al.)
+        maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
+        mincitenames=1,       % Companion for in-text citations
+        giveninits=false, 
+        refsection=none,  %
+        refsegment=none,   %
+        datamodel=ext-eprint, % to use the extended data model
+        backend=biber]{biblatex}
+\else
+        \usepackage[language=english,
+        style=ieee,citestyle=numeric-comp,
+        maxbibnames=99, % Allow up to 99 names to be displayed
+        minbibnames=99,      % If truncated, display up to 99 names (reduces use of et al.)
+        maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
+        mincitenames=1,       % Companion for in-text citations
+        giveninits=false, 
+        refsection=none,  %
+        refsegment=none,   %
+        datamodel=ext-eprint, % to use the extended data model
+        backend=biber]{biblatex}
+\fi
+    
+% --- Allow biblatex to break long URL identifiers gracefully ---
+\setcounter{biburlnumpenalty}{9000} % Permits line breaks after numeric digits
+\setcounter{biburllcpenalty}{9000} % Permits line breaks after lowercase letters
+\setcounter{biburlucpenalty}{9000} % Permits line breaks after uppercase letters
+
+
+% If you need to patch the driver using xpatch
+\usepackage{xpatch}
+
+% biblatex related code
+
+% --- Allow biblatex to break long URL identifiers gracefully ---
+\setcounter{biburlnumpenalty}{9000} % Permits line breaks after numeric digits
+\setcounter{biburllcpenalty}{9000} % Permits line breaks after lowercase letters
+\setcounter{biburlucpenalty}{9000} % Permits line breaks after uppercase letters
+
+
+% One can add aliases
+% Source - https://tex.stackexchange.com/a/163787
+% Posted by moewe, modified by community. See post 'Timeline' for change history
+% Retrieved 2026-06-11, License - CC BY-SA 3.0
+% Augmented by GQMJr to add second mapping and comments for both
+
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    % Map 1: Aliasing pmid to pubmed
+    \map{
+      \step[fieldsource=pmid, fieldtarget=pubmed]
+      }
+    % Map 2: Aliasing mrnumber to mr
+    \map{
+      \step[fieldsource=mrnumber, fieldtarget=mr]
+    }
+    % Map 3 and 4: Conditionally strip English language indicators
+    \map{
+      % Check if 'language' field matches "English" or "eng" (case-insensitive)
+      % note that one has to use '\A' rather than '^' and '\z' rather than a '$' due to Overleaf's parser
+      % The 'final' directive causes an early termination of the processing, hence it does not execute the following step.
+      \step[fieldsource=language, match=\regexp{\A(English|eng)\z}, final]
+      \step[fieldset=language, null]
+    }
+    \map{
+      % Check if 'langid' field matches "English" or "eng" (case-insensitive)
+      \step[fieldsource=langid, match=\regexp{\A(English|eng)\z}, final]
+      \step[fieldset=langid, null]
+    }
+  }
+}
+
+
+% Source - https://tex.stackexchange.com/a/163787
+% Posted by moewe, modified by community. See post 'Timeline' for change history
+% Retrieved 2026-06-11, License - CC BY-SA 3.0
+
+\makeatletter
+\DeclareFieldFormat{arxiv}{%
+  arXiv\addcolon\space
+  \ifhyperref
+    {\href{http://arxiv.org/\abx@arxivpath/#1}{%
+       \nolinkurl{#1}%
+       \iffieldundef{arxivclass}
+         {}
+         {\addspace\texttt{\mkbibbrackets{\thefield{arxivclass}}}}}}
+    {\nolinkurl{#1}
+     \iffieldundef{arxivclass}
+       {}
+       {\addspace\texttt{\mkbibbrackets{\thefield{arxivclass}}}}}}
+\makeatother
+\DeclareFieldFormat{pmcid}{%
+  PMCID\addcolon\space
+  \ifhyperref
+    {\href{http://www.ncbi.nlm.nih.gov/pmc/articles/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+\DeclareFieldFormat{mr}{%
+  MR\addcolon\space
+  \ifhyperref
+    {\href{http://www.ams.org/mathscinet-getitem?mr=MR#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+\DeclareFieldFormat{zbl}{%
+  Zbl\addcolon\space
+  \ifhyperref
+    {\href{http://zbmath.org/?q=an:#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+\DeclareFieldAlias{jstor}{eprint:jstor}
+\DeclareFieldAlias{hdl}{eprint:hdl}
+\DeclareFieldAlias{pubmed}{eprint:pubmed}
+\DeclareFieldAlias{googlebooks}{eprint:googlebooks}
+
+
+
+% Define the explicit field formatting style with hyperref detection
+\DeclareFieldFormat{oai}{%
+  OAI Identifier\addcolon\space
+  \ifhyperref
+    {\href{https://core.ac.uk/oai-resolver?id=#1}{\nolinkurl{#1}}} % Using a standard global OAI resolver link
+    {\nolinkurl{#1}}}
+
+% 1. Declare field format for adsbibcode (linking via adsurl if available)
+\DeclareFieldFormat{adsbibcode}{%
+  \iffieldundef{adsurl}
+    {ADS bibcode\addcolon\space\nolinkurl{#1}}
+    {\href{\thefield{adsurl}}{ADS bibcode\addcolon\space\nolinkurl{#1}}}}
+
+% 2. Define the bibmacro to print the ADS bibcode
+\newbibmacro*{adsbibcode}{%
+  \iffieldundef{adsbibcode}
+    {}
+    {\printfield{adsbibcode}}}
+
+
+% Source - https://tex.stackexchange.com/a/163787
+% Posted by moewe, modified by community. See post 'Timeline' for change history
+% Retrieved 2026-06-11, License - CC BY-SA 3.0
+
+\renewbibmacro*{eprint}{%
+  \printfield{arxiv}%
+  \newunit\newblock
+  \printfield{jstor}%
+  \newunit\newblock
+  \printfield{mr}%
+  \newunit\newblock
+  \printfield{zbl}%
+  \newunit\newblock
+  \printfield{hdl}%
+  \newunit\newblock
+  \printfield{pubmed}%
+  \newunit\newblock
+  \printfield{pmcid}%
+  \newunit\newblock
+  \printfield{googlebooks}%
+  \newunit\newblock
+  \printfield{oai}
+  \newunit\newblock
+  \usebibmacro{adsbibcode}%
+  \newunit\newblock
+  \iffieldundef{eprinttype}
+    {\printfield{eprint}}
+    {\printfield[eprint:\strfield{eprinttype}]{eprint}}}
+
+% 1. Create the custom field formats for your data model variants
+\DeclareFieldFormat{e-issn}{e-ISSN\addcolon\space\texttt{#1}}
+\DeclareFieldFormat{h-issn}{h-ISSN\addcolon\space\texttt{#1}}
+\DeclareFieldFormat{l-issn}{ISSN-L\addcolon\space\texttt{#1}}
+
+% 2. Hijack the primary native 'issn' field format to print everything at once
+\DeclareFieldFormat{issn}{%
+  ISSN\addcolon\space\texttt{#1}% Print the primary print ISSN right here
+  \iffieldundef{e-issn}{}{\addcomma\space\printfield{e-issn}}% Chain e-issn if it exists
+  \iffieldundef{h-issn}{}{\addcomma\space\printfield{h-issn}}% Chain h-issn if it exists
+  \iffieldundef{l-issn}{}{\addcomma\space\printfield{l-issn}}% Chain l-issn if it exists
+}
+
+
+% Source - https://tex.stackexchange.com/a/303178
+% Posted by moewe, modified by community. See post 'Timeline' for change history
+% Retrieved 2026-06-11, License - CC BY-SA 3.0
+
+\DeclareFieldFormat{archiveurl}{\bibstring{archivedat}\space\url{#1}}
+\DeclareFieldFormat{archivedate}{\bibstring{archivedon}\space#1}
+
+\newbibmacro*{archiveurl}{\printfield{archiveurl}}
+\newbibmacro*{archivedate}{\printarchivedate}
+
+% Source - https://tex.stackexchange.com/a/303178
+% Posted by moewe, modified by community. See post 'Timeline' for change history
+% Retrieved 2026-06-11, License - CC BY-SA 3.0
+
+\renewbibmacro*{url+urldate}{%
+  \usebibmacro{url}%
+  \iffieldundef{urlyear}
+    {}
+    {\setunit*{\addspace}%
+     \usebibmacro{urldate}}%
+  \setunit{\addcomma\space}%
+  \usebibmacro{archiveurl}%
+  \iffieldundef{archiveyear}
+    {}
+    {\setunit*{\addspace}%
+     \usebibmacro{archivedate}}}
+
+%% Style Portability:
+% Some patches rely on overriding low-level macros (such as volume+number+eid and \xpatchbibdriver{inproceedings}) specifically tailored to style=ieee. These hooks may need slight adjustments if switching to authoryear or chicago-authordate formats.
+
+% fix the way that volume and number are output
+% 1. Strip the default comma prefix that styles inject before numbers
+% Declare the structural format for the 'number' field specifically within this macro
+\DeclareFieldFormat[article,periodical]{number}{\mkbibparens{#1}}
+
+% 2. Intercept and clear the contextual punctuation buffer specifically for the journal volume string
+\renewbibmacro*{journal+issuetitle}{%
+  \usebibmacro{journal}%
+  \setunit*{\addspace}%
+  \iffieldundef{series}
+    {}
+    {\newunit
+     \printfield{series}%
+     \setunit*{\addspace}}%
+  \usebibmacro{volume+number+eid}%
+}
+
+% 3. Force the absolute execution override to eliminate the nested separator
+\renewbibmacro*{volume+number+eid}{%
+  \printfield{volume}%
+  \unspace% <--- FORCE-STRIP ANY COMMAS CURRENTLY SITTING IN THE PIPELINE
+  \printfield{number}%
+  \setunit{\addcomma\space}%
+  \printfield{eid}%
+}
+
+
+
+% 1. Inject the master ISSN printing block into the @inproceedings (Conference) driver
+\xpatchbibdriver{inproceedings}
+  {\usebibmacro{doi+eprint+url}}
+  {\printfield{issn}\newunit\newblock\usebibmacro{doi+eprint+url}}
+  {}{}
