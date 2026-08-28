@@ -1,0 +1,38 @@
+% lib/ext-eprint-dbx.tex
+% Emits the custom biblatex data model for extended eprints (e.g., URN, MR, etc.)
+\begin{filecontents*}{ext-eprint.dbx}
+% Source - https://tex.stackexchange.com/a/163787
+% Posted by moewe, modified by community. See post 'Timeline' for change history
+% Retrieved 2026-06-11, License - CC BY-SA 3.0
+\ProvidesFile{ext-eprint.dbx}[2016/09/11 extended stand-alone eprint fields]
+\DeclareDatamodelFields[type=field,datatype=verbatim]{arxiv,mr,zbl,jstor,hdl,pubmed,googlebooks,pmcid,adsbibcode}
+\DeclareDatamodelEntryfields{arxiv,mr,zbl,jstor,hdl,pubmed,googlebooks,pmcid,adsbibcode}
+\DeclareDatamodelFields[type=field,datatype=literal]{arxivclass}
+\DeclareDatamodelEntryfields{arxivclass}
+% add support for OAI information
+\DeclareDatamodelFields[type=field,datatype=literal]{oai}
+\DeclareDatamodelEntryfields{oai}
+
+% Source - https://tex.stackexchange.com/a/303178
+% Posted by moewe, modified by community. See post 'Timeline' for change history
+% Retrieved 2026-06-11, License - CC BY-SA 3.0
+
+\DeclareDatamodelFields[type=field, datatype=uri]{archiveurl,adsurl}
+\DeclareDatamodelEntryfields{archiveurl,adsurl}
+\DeclareDatamodelFields[type=field, datatype=date, skipout]{
+  archivedate,
+}
+\DeclareDatamodelEntryfields{archivedate}
+
+% Handle different forms of ISSNs
+\DeclareDatamodelFields[type=field, datatype=literal]{
+  e-issn,
+  h-issn,
+  l-issn,
+}
+\DeclareDatamodelEntryfields[article,periodical]{
+  e-issn,
+  h-issn,
+  l-issn,
+}
+\end{filecontents*}

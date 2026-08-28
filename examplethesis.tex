@@ -1,5 +1,5 @@
 
-%% The project is now in a github repository - see https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured--testing
+%% KTH 3rd cycle template restructured repository is at https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured
 %%
 %% forked from https://gits-15.sys.kth.se/giampi/kthlatex kthlatex-0.2rc4 on 2020-02-13
 %% expanded upon by Gerald Q. Maguire Jr.
@@ -53,34 +53,11 @@
 %% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
 \disablepackage{transparent}{}
 
-% To avoid complaints from datatool and glossaries regarding missing latin and swedish support
-\begin{filecontents*}{datatool-swedish.ldf}
-\ProvidesFile{datatool-swedish.ldf}
-% Define how Swedish characters should be handled during sorting
-% This maps them so Å, Ä, and Ö appear at the end of the alphabet
-\@ifundefined{dtl@sortreplace}{}{%
-  \dtl@sortreplace{å}{za}%
-  \dtl@sortreplace{Å}{Za}%
-  \dtl@sortreplace{ä}{zb}%
-  \dtl@sortreplace{Ä}{Zb}%
-  \dtl@sortreplace{ö}{zc}%
-  \dtl@sortreplace{Ö}{Zc}%
-}
-\end{filecontents*}
-\begin{filecontents*}{datatool-latin.ldf}
-\ProvidesFile{datatool-latin.ldf}
-\end{filecontents*}
-\begin{filecontents*}{glossaries-swedish.ldf}
-\ProvidesGlossariesLang{swedish}[2024/03/26]
-% Use provide or renew to avoid the "already defined" error
-\renewcommand*{\glossaryname}{Ordlista}
-\renewcommand*{\acronymname}{Akronymer}
-\renewcommand*{\entryname}{Term}
-\renewcommand*{\descriptionname}{Beskrivning}
-\end{filecontents*}
-\begin{filecontents*}{glossaries-latin.ldf}
-\ProvidesGlossariesLang{latin}[2024/03/26]
-\end{filecontents*}
+% Input file generators before \documentclass
+\input{lib/ext-eprint-dbx}
+% Emit local LDF shims before packages load
+\input{lib/datatool-ldf}
+
 
 % --- Configure the documentclass ---
 %% The template is designed to handle a thesis in English or Swedish
@@ -176,8 +153,11 @@ includepublications,    % uncomment - if you want to include publications for a 
 
 % --- Load the warning filters  ---
 % For filtering out warnings that the user is not interested in
-%\input{lib/filter-warnings.tex}
+\input{lib/filter-warnings.tex}
 % ------------------------------------
+
+% Load datatool and babel/polyglossia
+\usepackage{datatool}
 
 % include a variety of packages that are useful
 \input{lib/includes}
@@ -413,29 +393,9 @@ morekeywords={begin, todo, textbf, textit, texttt}
 
 \ifbiblatex
   % set up the bibliography style
-  %\usepackage[language=english,bibstyle=authoryear,citestyle=authoryear, maxbibnames=99]{biblatex}
-  
-    % Alternatively, you might use another style, such as IEEE and use citestyle=numeric-comp  to put multiple citations in a single pair of square brackets
-    % Note that the following explicitly uses biber as the backend
-    \ifinswedish
-    \usepackage[language=swedish,
-        style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
-        refsection=none,  %
-        refsegment=none,   %
-        backend=biber]{biblatex}
-    \else
-        \usepackage[language=english,
-        style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
-        refsection=none,  %
-        refsegment=none,   %
-        backend=biber]{biblatex}
-    \fi    
-
-    % --- Allow biblatex to break long URL identifiers gracefully ---
-    \setcounter{biburlnumpenalty}{9000} % Permits line breaks after numeric digits
-    \setcounter{biburllcpenalty}{9000} % Permits line breaks after lowercase letters
-    \setcounter{biburlucpenalty}{9000} % Permits line breaks after uppercase letters
-
+  % Input centralized biblatex configuration
+    \input{lib/biblatex-and-friends}
+    
     % Use the chapter* style for the heading of the bibliography
     \defbibheading{bibliography}[\bibname]{%
     \chapter*{#1}%   skip \centering 
@@ -630,7 +590,7 @@ morekeywords={begin, todo, textbf, textit, texttt}
 %\begin{comment}
 % such a page has no page number shown
 \thispagestyle{empty}
-\engExpl{A dedication page is optional - it has no heading. If you do \textbf{not} need a dedication page, remove the percent symbol before the \textbackslash begin\{comment\} and 
+\engExpl{A dedication page is optional - it has no heading. If you do \textbf{not} need a dedication page, add a percent symbol before the \textbackslash begin\{comment\} and 
 \textbackslash end\{comment\}. If you do want a dedication page, then add your text below the \textbackslash vspace macro.}
 \generalExpl{Keep in mind that your thesis is an archival document that will be accessible (ideally) for all time. Therefore, you should only say what you would want others to read in 1, 5, 10, \ldots\ years.}
 % set the font to a serif font 12pt in italic typeface
@@ -1003,6 +963,7 @@ En dualism som måste hanteras i hela rapporten och projektet
 \engExpl{Be sure that you acknowledge your funding source(s).}
 \sweExpl{Se till att du anger din/dina finansieringskällor.}
 
+
 I would like to thank xxxx for having yyyy. Or in the case of two authors:\\
 We would like to thank xxxx for having yyyy.
 
@@ -1102,20 +1063,19 @@ och förkortningar}]
         \item \label{artifact:A} PacketMill: Toward Per-Core 100-Gbps
 Networking - Artifact for ASPLOS’21\,\cite{10.5281/zenodo.4435970}
     \end{ListOfArtifacts}
-}
     } % end of font application
-
+}
     \engExpl{Those who want can also list other peer-reviewed original scientific publications not included in the thesis. I would include granted patents (relevant to the thesis) in this list.}
     \warningExpl{If you are using BibLaTeX, \ref{paper:F} shows an example of how you can easily include the title by simply citing the title field of a reference. The alternative uses math mode to set the special characters.\\In contrast, \ref{paper:G} shows how you can use the unicode version of the characters and explicitly control the font used to set them.}
     \section*{Scientific papers not included in the thesis}
     {\FigtreeFont\fontsize{11}{13}\fontshape{n}\selectfont
     \begin{ListOfPapers}
     \ifbiblatex
-        \item \label{paper:F} \citefield{Noz_1975}{title}
+        \item\label{paper:F} \citefield{Noz_1975}{title}
     \else
-        \item \label{paper:F}  {{Calculation of $\bar{E}_{\beta}$, $\Gamma$ and $\Delta_{i}$ for $^{99m}$Tc}}
+        \item\label{paper:F}  {{Calculation of $\bar{E}_{\beta}$, $\Gamma$ and $\Delta_{i}$ for $^{99m}$Tc}}
     \fi
-        \item \label{paper:G} Calculation of {\mystixmathfont \={Ε}\textsubscript{β}}, {\mystixmathfont Γ} and {\mystixmathfont Δ\textsubscript{i}} for \textsuperscript{99m}Tc
+    \item\label{paper:G} Calculation of {\mystixmathfont \={Ε}\textsubscript{β}}, {\mystixmathfont Γ} and {\mystixmathfont Δ\textsubscript{i}} for \textsuperscript{99m}Tc
 
     \end{ListOfPapers}
 
@@ -1219,7 +1179,7 @@ goals of this thesis, and outlines the structure of the thesis.\\
 \ifbiblatex
 \engExpl{We use the \emph{biblatex} package to handle our references.  We
 use the command \texttt{parencite} to get a reference in parentheses or square brackets, like
-this \textbackslash parencite\{hioannidis\_coherent\_1991\}, resulting in \parencite{ioannidis_coherent_1991}.  It is also possible to include the author as part of the sentence using \texttt{textcite}, when talking about the work of \textbackslash textcite\{maguire\_jr\_new\_2014\} resulting in \textcite{maguire_jr_new_2014}.\\
+this \textbackslash parencite\{ioannidis\_coherent\_1991\}, resulting in \parencite{ioannidis_coherent_1991}.  It is also possible to include the author as part of the sentence using \texttt{textcite}, when talking about the work of \textbackslash textcite\{maguire\_jr\_new\_2014\} resulting in \textcite{maguire_jr_new_2014}.\\
 This also means that you have to change the include files to include biblatex and change the way that the \texttt{reference.bib} file is included.}
 \else
 \engExpl{We use the \emph{bibtex} package to handle our references.  We, therefore,
@@ -1255,6 +1215,7 @@ projektet. }
 
 Longer problem statement\\
 If possible, end this section with a question as a problem statement.
+
 
 % Research Question
 \subsection{Original problem and definition}
@@ -1318,7 +1279,7 @@ If you have done this work with others, clearly state what your own contribution
 \IfFileExists{lib/thesis_contributions_generated.tex}{\input{lib/thesis_contributions_generated.tex}}
 
 \section{Structure of the thesis}\sweExpl{Rapportens disposition}
-\Cref{ch:background} presents relevant background information about xxx.  \Cref{ch:methods} presents the methodology and method used to solve the problem.
+\Cref{ch:background} presents relevant background information about xxx.  \Cref{ch:methods} presents the methodology and method used to solve the problem. 
 
 
 \cleardoublepage
@@ -1355,7 +1316,7 @@ There are xxx characteristics that distinguish yyy from other \gls{ICT} systems,
   \caption{Lots of stars  (Inspired by Figure x.y on page z of [xxx])}
   \label{fig:lotsofstars}
 \end{figure}
-\sweExpl{Massor av stärnor (Inspirerad av figur x.y på sidan z i [xxx])}
+\sweExpl{Massor av stjärnor (Inspirerad av figur x.y på sidan z i [xxx])}
 
 
 \begin{table}[!ht]
@@ -1536,7 +1497,7 @@ Ofta kan man koppla ett antal följdfrågor till undersökningsfrågan och probl
 (1) Vilken process skall användas för konstruktion av lösningen och vilken process skall kopplas till denna för att svara på undersökningsfrågan?\\
 (2) Hur och vilket resultat (storheter) skall presenteras både för att redovisa svar på undersökningsfrågan (resultatkapitlet i denna rapport) och redovisa resultat av problemlösningen (prototypen, ofta dokument som bilagor men vilka dokument och varför?).\\
 (3) Vilken teori/teknik skall väljas och användas både för undersökningen (taxonomi, matematik, grafer, storheter mm)  och  problemlösning (UML, UseCases, Java mm) och varför?\\
-(4) Vad behöver du som student leverera för att uppnå hög kvaliet (minimikrav) eller mycket hög kvalitet på avhandling?\\
+(4) Vad behöver du som student leverera för att uppnå hög kvalitet (minimikrav) eller mycket hög kvalitet på avhandling?\\
 (5) Frågorna kopplar till de följande underkapitlen.\\
 (6) Resonemanget bygger på att studenter på hing-programmet ofta skall konstruera något åt problemägaren och att man till detta måste koppla en intressant ingenjörsfråga. Det finns hela tiden en dualism mellan dessa aspekter i exjobbet.
 }
@@ -1989,7 +1950,7 @@ The delay has been computed from the time the GET request is received until the 
   \begin{center}
     \caption{Delay measurement statistics}
     \label{tab:delayMeasurements}
-    \begin{tabular}{l|S[table-format=4.2]|S[table-format=3.2]} % <-- Alignments: 1st column left, 2nd and 3rd decimal aligned
+    \begin{tabular}{l|S[table-format=4.2]|S[table-format=3.2]} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
       \textbf{Configuration} & \textbf{Average delay (ns)} & \textbf{Median delay (ns)}\\
       \hline
       1 & 467.35 & 450.10\\
@@ -2589,6 +2550,7 @@ This publication has a \href{https://creativecommons.org/licenses/by/4.0/}{CC BY
 \begin{dividerContent}{0cm}{5cm}
 \myfancytab[RIGHT]{\ref*{paper:E}}{5}{verardo2023fmmheadenhancingautoencoderbasedecg}{Included_publications/Paper_E}
 
+
 This paper is unpublished but appears as an arXiv preprint.
 \end{dividerContent}
 \cleardoublepage
@@ -2602,6 +2564,7 @@ This paper is unpublished but appears as an arXiv preprint.
 \begin{dividerContent}{0cm}{5cm}
 \myfancytab[RIGHT]{\ref*{patent:A}}{6}{US7107453B2}{Included_publications/Patent_A}
 
+
 This publication is a U.S. Government publication; hence, it has no copyright.
 \end{dividerContent}
 \cleardoublepage
@@ -2609,17 +2572,16 @@ This publication is a U.S. Government publication; hence, it has no copyright.
 %% can include as options pagecommand={\thispagestyle{fancy}},frame to keep pagination and running headings
 % Just include 2 pages for this example
 \includepdf[pages={1-2},scale=0.9]{Included_publications/US7107453.pdf}
-\cleardoublepage
+
 % Seventh publication
-\thispagestyle{empty}
-\begin{dividerContent}{0cm}{5cm}
+\thispagestyle{empty}\begin{dividerContent}{0cm}{5cm}
 \myfancytab[RIGHT]{\ref*{patent:B}}{7}{US12111768B2}{Included_publications/Patent_B}
 
 This publication is a U.S. Government publication; hence, it has no copyright.
 \end{dividerContent}
 
 \cleardoublepage
-%% Include US12111768.pdf
+%% Include US7107453.pdf
 %% can include as options pagecommand={\thispagestyle{fancy}},frame to keep pagination and running headings
 % Just include 2 pages for this example
 \includepdf[pages={1-2},scale=0.9]{Included_publications/US12111768.pdf}
@@ -2630,6 +2592,7 @@ This publication is a U.S. Government publication; hence, it has no copyright.
 
 For details see \cite{10.1145/3445814.3446724}. The following pages are based on hand-editing the web page \url{https://dl.acm.org/do/10.5281/zenodo.4435970/full/} to keep only the essential content related to the artifact.
 \end{dividerContent}
+
 \cleardoublepage
 %% Include 
 %% can include as options pagecommand={\thispagestyle{fancy}},frame to keep pagination and running headings
