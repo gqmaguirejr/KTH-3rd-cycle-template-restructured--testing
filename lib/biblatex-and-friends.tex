@@ -1,150 +1,214 @@
 % lib/biblatex-and-friends.tex
 % Centralized biblatex configuration, sourcemaps, and extended identifiers
 
-%\usepackage[language=english,bibstyle=authoryear,citestyle=authoryear, maxbibnames=99]{biblatex}
-  
-% Alternatively, you might use another style, such as IEEE and use citestyle=numeric-comp  to put multiple citations in a single pair of square brackets
-% Note that the following explicitly uses biber as the backend
-\ifinswedish
-    \usepackage[language=swedish,
-        style=ieee,citestyle=numeric-comp,
-        maxbibnames=99, % Allow up to 99 names to be displayed
-        minbibnames=99,      % If truncated, display up to 99 names (reduces use of et al.)
-        maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
-        mincitenames=1,       % Companion for in-text citations
-        giveninits=false, 
-        refsection=none,  %
-        refsegment=none,   %
-        datamodel=ext-eprint, % to use the extended data model
-        backend=biber]{biblatex}
-\else
-        \usepackage[language=english,
-        style=ieee,citestyle=numeric-comp,
-        maxbibnames=99, % Allow up to 99 names to be displayed
-        minbibnames=99,      % If truncated, display up to 99 names (reduces use of et al.)
-        maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
-        mincitenames=1,       % Companion for in-text citations
-        giveninits=false, 
-        refsection=none,  %
-        refsegment=none,   %
-        datamodel=ext-eprint, % to use the extended data model
-        backend=biber]{biblatex}
-\fi
-    
-% --- Allow biblatex to break long URL identifiers gracefully ---
-\setcounter{biburlnumpenalty}{9000} % Permits line breaks after numeric digits
-\setcounter{biburllcpenalty}{9000} % Permits line breaks after lowercase letters
-\setcounter{biburlucpenalty}{9000} % Permits line breaks after uppercase letters
+\usepackage[language=english,
+    style=ieee,
+    isbn=true,
+    citestyle=numeric-comp,  
+    maxbibnames=99,      % Allow up to 99 names to be displayed
+    minbibnames=99,      % If truncated, display up to 99 names (reduces use of et al.)
+    maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
+    mincitenames=1,      % Companion for in-text citations
+    giveninits=false, 
+    refsection=none,  
+    refsegment=none,   
+    datamodel=ext-eprint, % to use the extended data model
+    backend=biber]{biblatex}
 
-
-% If you need to patch the driver using xpatch
 \usepackage{xpatch}
 
-% biblatex related code
-
 % --- Allow biblatex to break long URL identifiers gracefully ---
 \setcounter{biburlnumpenalty}{9000} % Permits line breaks after numeric digits
-\setcounter{biburllcpenalty}{9000} % Permits line breaks after lowercase letters
-\setcounter{biburlucpenalty}{9000} % Permits line breaks after uppercase letters
+\setcounter{biburllcpenalty}{9000}  % Permits line breaks after lowercase letters
+\setcounter{biburlucpenalty}{9000}  % Permits line breaks after uppercase letters
 
-
-% One can add aliases
-% Source - https://tex.stackexchange.com/a/163787
-% Posted by moewe, modified by community. See post 'Timeline' for change history
-% Retrieved 2026-06-11, License - CC BY-SA 3.0
-% Augmented by GQMJr to add second mapping and comments for both
-
+% --- Sourcemaps ---
 \DeclareSourcemap{
   \maps[datatype=bibtex]{
     % Map 1: Aliasing pmid to pubmed
     \map{
       \step[fieldsource=pmid, fieldtarget=pubmed]
-      }
+    }
     % Map 2: Aliasing mrnumber to mr
     \map{
       \step[fieldsource=mrnumber, fieldtarget=mr]
     }
     % Map 3 and 4: Conditionally strip English language indicators
     \map{
-      % Check if 'language' field matches "English" or "eng" (case-insensitive)
-      % note that one has to use '\A' rather than '^' and '\z' rather than a '$' due to Overleaf's parser
-      % The 'final' directive causes an early termination of the processing, hence it does not execute the following step.
       \step[fieldsource=language, match=\regexp{\A(English|eng)\z}, final]
       \step[fieldset=language, null]
     }
     \map{
-      % Check if 'langid' field matches "English" or "eng" (case-insensitive)
       \step[fieldsource=langid, match=\regexp{\A(English|eng)\z}, final]
       \step[fieldset=langid, null]
     }
   }
 }
 
-
-% Source - https://tex.stackexchange.com/a/163787
-% Posted by moewe, modified by community. See post 'Timeline' for change history
-% Retrieved 2026-06-11, License - CC BY-SA 3.0
+% --- Extended Field Formats (Resolvers) ---
 
 \makeatletter
 \DeclareFieldFormat{arxiv}{%
   arXiv\addcolon\space
   \ifhyperref
-    {\href{http://arxiv.org/\abx@arxivpath/#1}{%
+    {\href{https://arxiv.org/\abx@arxivpath/#1}{%
        \nolinkurl{#1}%
        \iffieldundef{arxivclass}
          {}
          {\addspace\texttt{\mkbibbrackets{\thefield{arxivclass}}}}}}
-    {\nolinkurl{#1}
+    {\nolinkurl{#1}%
      \iffieldundef{arxivclass}
        {}
        {\addspace\texttt{\mkbibbrackets{\thefield{arxivclass}}}}}}
 \makeatother
+
 \DeclareFieldFormat{pmcid}{%
   PMCID\addcolon\space
   \ifhyperref
-    {\href{http://www.ncbi.nlm.nih.gov/pmc/articles/#1}{\nolinkurl{#1}}}
+    {\href{https://www.ncbi.nlm.nih.gov/pmc/articles/#1}{\nolinkurl{#1}}}
     {\nolinkurl{#1}}}
+
 \DeclareFieldFormat{mr}{%
   MR\addcolon\space
   \ifhyperref
-    {\href{http://www.ams.org/mathscinet-getitem?mr=MR#1}{\nolinkurl{#1}}}
+    {\href{https://mathscinet.ams.org/mathscinet-getitem?mr=MR#1}{\nolinkurl{#1}}}
     {\nolinkurl{#1}}}
+
 \DeclareFieldFormat{zbl}{%
   Zbl\addcolon\space
   \ifhyperref
-    {\href{http://zbmath.org/?q=an:#1}{\nolinkurl{#1}}}
+    {\href{https://zbmath.org/?q=an:#1}{\nolinkurl{#1}}}
     {\nolinkurl{#1}}}
-\DeclareFieldAlias{jstor}{eprint:jstor}
-\DeclareFieldAlias{hdl}{eprint:hdl}
-\DeclareFieldAlias{pubmed}{eprint:pubmed}
-\DeclareFieldAlias{googlebooks}{eprint:googlebooks}
 
-
-
-% Define the explicit field formatting style with hyperref detection
 \DeclareFieldFormat{oai}{%
   OAI Identifier\addcolon\space
   \ifhyperref
-    {\href{https://core.ac.uk/oai-resolver?id=#1}{\nolinkurl{#1}}} % Using a standard global OAI resolver link
+    {\href{https://core.ac.uk/oai-resolver?id=#1}{\nolinkurl{#1}}}
     {\nolinkurl{#1}}}
 
-% 1. Declare field format for adsbibcode (linking via adsurl if available)
 \DeclareFieldFormat{adsbibcode}{%
   \iffieldundef{adsurl}
     {ADS bibcode\addcolon\space\nolinkurl{#1}}
     {\href{\thefield{adsurl}}{ADS bibcode\addcolon\space\nolinkurl{#1}}}}
 
-% 2. Define the bibmacro to print the ADS bibcode
+% --- New High-Value Global PIDs & Authority Resolvers ---
+
+\DeclareFieldFormat{hdl}{%
+  HDL\addcolon\space
+  \ifhyperref
+    {\href{https://hdl.handle.net/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+\DeclareFieldFormat{ark}{%
+  ARK\addcolon\space
+  \ifhyperref
+    {\href{https://n2t.net/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+\DeclareFieldFormat{urn}{%
+  URN\addcolon\space
+  \ifhyperref
+    {\href{https://nbn-resolving.org/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% LCCN Library of Congress Control Number
+\DeclareFieldFormat{lccn}{%
+  LCCN\addcolon\space
+  \ifhyperref
+    {\href{https://lccn.loc.gov/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% OCLC / WorldCat Number
+\DeclareFieldFormat{oclc}{%
+  OCLC\addcolon\space
+  \ifhyperref
+    {\href{https://www.worldcat.org/oclc/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% National Library of Sweden (KB) ID
+\DeclareFieldFormat{libris}{%
+  LIBRIS\addcolon\space
+  \ifhyperref
+    {\href{https://libris.kb.se/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% GND (Gemeinsame Normdatei) -- Authority Record
+\DeclareFieldFormat{gnd}{%
+  GND\addcolon\space
+  \ifhyperref
+    {\href{https://d-nb.info/gnd/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% DNB (Deutsche Nationalbibliothek ID / DNB-Nummer) -- Bibliographic Manifestation Record
+\DeclareFieldFormat{dnb}{%
+  DNB\addcolon\space
+  \ifhyperref
+    {\href{https://d-nb.info/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% SUDOC (Système Universitaire de Documentation) -- French Higher Education Union Catalog ID
+\DeclareFieldFormat{sudoc}{%
+  SUDOC\addcolon\space
+  \ifhyperref
+    {\href{https://www.idref.fr/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% SBN -- Italian National Catalog Code
+\DeclareFieldFormat{sbn}{%
+  SBN\addcolon\space
+  \ifhyperref
+    {\href{https://opac.sbn.it/bid/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% US Department of Energy Office of Scientific and Technical Information
+\DeclareFieldFormat{osti}{%
+  OSTI ID\addcolon\space
+  \ifhyperref
+    {\href{https://www.osti.gov/biblio/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% US National Technical Information Service (NTIS) ID
+\DeclareFieldFormat{ntis}{%
+  NTIS\addcolon\space
+  \ifhyperref
+  {\href{https://ntrl.ntis.gov/NTRL/dashboard/searchResults/titleDetail/#1.xhtml}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% US Department of Education Education Resources Information Center (ERIC)  accession number
+\DeclareFieldFormat{eric}{%
+  ERIC\addcolon\space
+  \ifhyperref
+    {\href{https://eric.ed.gov/?id=#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% Social Science Research Network (SSRN)
+\DeclareFieldFormat{ssrn}{%
+  SSRN\addcolon\space
+  \ifhyperref
+    {\href{https://ssrn.com/abstract=#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+% Amazon Standard Identification Number (ASIN)
+\DeclareFieldFormat{asin}{%
+  ASIN\addcolon\space
+  \ifhyperref
+    {\href{https://www.amazon.com/dp/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
+\DeclareFieldFormat{scopus}{Scopus EID\addcolon\space\nolinkurl{#1}}
+\DeclareFieldFormat{wos}{WoS\addcolon\space\nolinkurl{#1}}
+
+% Aliases for eprint delegation
+\DeclareFieldAlias{jstor}{eprint:jstor}
+\DeclareFieldAlias{pubmed}{eprint:pubmed}
+\DeclareFieldAlias{googlebooks}{eprint:googlebooks}
+
 \newbibmacro*{adsbibcode}{%
   \iffieldundef{adsbibcode}
     {}
     {\printfield{adsbibcode}}}
 
-
-% Source - https://tex.stackexchange.com/a/163787
-% Posted by moewe, modified by community. See post 'Timeline' for change history
-% Retrieved 2026-06-11, License - CC BY-SA 3.0
-
+% --- Unified eprint Chain ---
 \renewbibmacro*{eprint}{%
   \printfield{arxiv}%
   \newunit\newblock
@@ -162,41 +226,64 @@
   \newunit\newblock
   \printfield{googlebooks}%
   \newunit\newblock
-  \printfield{oai}
+  \printfield{oai}%
   \newunit\newblock
   \usebibmacro{adsbibcode}%
+  \newunit\newblock
+  \printfield{ark}%
+  \newunit\newblock
+  \printfield{urn}%
+  \newunit\newblock
+  \printfield{lccn}%
+  \newunit\newblock
+  \printfield{oclc}%
+  \newunit\newblock
+  \printfield{libris}%
+  \newunit\newblock
+  \printfield{gnd}%
+  \newunit\newblock
+  \printfield{dnb}%
+  \newunit\newblock
+  \printfield{sudoc}%
+  \newunit\newblock
+  \printfield{sbn}%
+  \newunit\newblock
+  \printfield{osti}%
+  \newunit\newblock
+  \printfield{ntis}%
+  \newunit\newblock
+  \printfield{eric}%
+  \newunit\newblock
+  \printfield{ssrn}%
+  \newunit\newblock
+  \printfield{asin}%
+  \newunit\newblock
+  \printfield{scopus}%
+  \newunit\newblock
+  \printfield{wos}%
   \newunit\newblock
   \iffieldundef{eprinttype}
     {\printfield{eprint}}
     {\printfield[eprint:\strfield{eprinttype}]{eprint}}}
 
-% 1. Create the custom field formats for your data model variants
+% --- Extended ISSN handling ---
 \DeclareFieldFormat{e-issn}{e-ISSN\addcolon\space\texttt{#1}}
 \DeclareFieldFormat{h-issn}{h-ISSN\addcolon\space\texttt{#1}}
 \DeclareFieldFormat{l-issn}{ISSN-L\addcolon\space\texttt{#1}}
 
-% 2. Hijack the primary native 'issn' field format to print everything at once
 \DeclareFieldFormat{issn}{%
-  ISSN\addcolon\space\texttt{#1}% Print the primary print ISSN right here
-  \iffieldundef{e-issn}{}{\addcomma\space\printfield{e-issn}}% Chain e-issn if it exists
-  \iffieldundef{h-issn}{}{\addcomma\space\printfield{h-issn}}% Chain h-issn if it exists
-  \iffieldundef{l-issn}{}{\addcomma\space\printfield{l-issn}}% Chain l-issn if it exists
+  ISSN\addcolon\space\texttt{#1}%
+  \iffieldundef{e-issn}{}{\addcomma\space\printfield{e-issn}}%
+  \iffieldundef{h-issn}{}{\addcomma\space\printfield{h-issn}}%
+  \iffieldundef{l-issn}{}{\addcomma\space\printfield{l-issn}}%
 }
 
-
-% Source - https://tex.stackexchange.com/a/303178
-% Posted by moewe, modified by community. See post 'Timeline' for change history
-% Retrieved 2026-06-11, License - CC BY-SA 3.0
-
+% --- Archive URL/Date handling ---
 \DeclareFieldFormat{archiveurl}{\bibstring{archivedat}\space\url{#1}}
 \DeclareFieldFormat{archivedate}{\bibstring{archivedon}\space#1}
 
 \newbibmacro*{archiveurl}{\printfield{archiveurl}}
 \newbibmacro*{archivedate}{\printarchivedate}
-
-% Source - https://tex.stackexchange.com/a/303178
-% Posted by moewe, modified by community. See post 'Timeline' for change history
-% Retrieved 2026-06-11, License - CC BY-SA 3.0
 
 \renewbibmacro*{url+urldate}{%
   \usebibmacro{url}%
@@ -211,15 +298,9 @@
     {\setunit*{\addspace}%
      \usebibmacro{archivedate}}}
 
-%% Style Portability:
-% Some patches rely on overriding low-level macros (such as volume+number+eid and \xpatchbibdriver{inproceedings}) specifically tailored to style=ieee. These hooks may need slight adjustments if switching to authoryear or chicago-authordate formats.
-
-% fix the way that volume and number are output
-% 1. Strip the default comma prefix that styles inject before numbers
-% Declare the structural format for the 'number' field specifically within this macro
+% --- IEEE Volume/Number Formatting Tweaks ---
 \DeclareFieldFormat[article,periodical]{number}{\mkbibparens{#1}}
 
-% 2. Intercept and clear the contextual punctuation buffer specifically for the journal volume string
 \renewbibmacro*{journal+issuetitle}{%
   \usebibmacro{journal}%
   \setunit*{\addspace}%
@@ -231,18 +312,15 @@
   \usebibmacro{volume+number+eid}%
 }
 
-% 3. Force the absolute execution override to eliminate the nested separator
 \renewbibmacro*{volume+number+eid}{%
   \printfield{volume}%
-  \unspace% <--- FORCE-STRIP ANY COMMAS CURRENTLY SITTING IN THE PIPELINE
+  \unspace
   \printfield{number}%
   \setunit{\addcomma\space}%
   \printfield{eid}%
 }
 
-
-
-% 1. Inject the master ISSN printing block into the @inproceedings (Conference) driver
+% --- Driver Patches ---
 \xpatchbibdriver{inproceedings}
   {\usebibmacro{doi+eprint+url}}
   {\printfield{issn}\newunit\newblock\usebibmacro{doi+eprint+url}}

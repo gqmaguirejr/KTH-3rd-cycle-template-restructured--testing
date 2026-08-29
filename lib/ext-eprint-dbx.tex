@@ -4,25 +4,93 @@
 % Source - https://tex.stackexchange.com/a/163787
 % Posted by moewe, modified by community. See post 'Timeline' for change history
 % Retrieved 2026-06-11, License - CC BY-SA 3.0
-\ProvidesFile{ext-eprint.dbx}[2016/09/11 extended stand-alone eprint fields]
-\DeclareDatamodelFields[type=field,datatype=verbatim]{arxiv,mr,zbl,jstor,hdl,pubmed,googlebooks,pmcid,adsbibcode}
-\DeclareDatamodelEntryfields{arxiv,mr,zbl,jstor,hdl,pubmed,googlebooks,pmcid,adsbibcode}
-\DeclareDatamodelFields[type=field,datatype=literal]{arxivclass}
-\DeclareDatamodelEntryfields{arxivclass}
-% add support for OAI information
-\DeclareDatamodelFields[type=field,datatype=literal]{oai}
-\DeclareDatamodelEntryfields{oai}
+% 2016/09/11 extended stand-alone eprint fields
+% Augmented by GQMJr to add additional fields
+\ProvidesFile{ext-eprint.dbx}[2026/08/28 v2.0 Extended persistent identifier data model]
 
-% Source - https://tex.stackexchange.com/a/303178
-% Posted by moewe, modified by community. See post 'Timeline' for change history
-% Retrieved 2026-06-11, License - CC BY-SA 3.0
-
-\DeclareDatamodelFields[type=field, datatype=uri]{archiveurl,adsurl}
-\DeclareDatamodelEntryfields{archiveurl,adsurl}
-\DeclareDatamodelFields[type=field, datatype=date, skipout]{
-  archivedate,
+% Use verbatim for URLs, file paths, raw hashes, DOIs, or identifier tokens containing characters that would otherwise conflict with TeX syntax.
+% Raw verbatim identifiers
+\DeclareDatamodelFields[type=field,datatype=verbatim]{%
+  % Scholarly indexing & Repositories
+  arxiv,
+  mr,
+  zbl,
+  jstor,
+  hdl,
+  pubmed,
+  pmcid,
+  googlebooks,
+  adsbibcode,
+  osti,
+  ntis,
+  eric,
+  ssrn,
+  % National authority & Global library identifiers
+  ark,
+  urn,
+  lccn,
+  oclc,
+  libris,
+  gnd,
+  dnb,
+  sudoc,
+  sbn,
+  asin,
+  % Proprietary metrics (optional)
+  scopus,
+  wos%
 }
-\DeclareDatamodelEntryfields{archivedate}
+
+% Literal strings
+\DeclareDatamodelFields[type=field,datatype=literal]{%
+  arxivclass,
+  oai%
+}
+
+% URI fields
+\DeclareDatamodelFields[type=field,datatype=uri]{%
+  archiveurl,
+  adsurl%
+}
+
+% Date fields
+\DeclareDatamodelFields[type=field,datatype=date,skipout]{%
+  archivedate%
+}
+
+% Register all fields as valid across all entry types
+\DeclareDatamodelEntryfields{%
+  arxiv,
+  mr,
+  zbl,
+  jstor,
+  hdl,
+  pubmed,
+  pmcid,
+  googlebooks,
+  adsbibcode,
+  osti,
+  ntis,
+  eric,
+  ssrn,
+  ark,
+  urn,
+  lccn,
+  oclc,
+  libris,
+  gnd,
+  dnb,
+  sudoc,
+  sbn,
+  asin,
+  scopus,
+  wos,
+  arxivclass,
+  oai,
+  archiveurl,
+  adsurl,
+  archivedate%
+}
 
 % Handle different forms of ISSNs
 \DeclareDatamodelFields[type=field, datatype=literal]{
@@ -35,4 +103,8 @@
   h-issn,
   l-issn,
 }
+
+% Add support for explicit placeholders
+\DeclareDatamodelFields[type=field,datatype=literal]{placeholder}
+\DeclareDatamodelEntryfields{placeholder}
 \end{filecontents*}
