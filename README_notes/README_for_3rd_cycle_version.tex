@@ -6,7 +6,6 @@
 \ifluatex\xeorluatrue\fi
 
 \RequirePackage{silence}
-\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
 \WarningFilter{latexfont}{Font shape}
 
 
@@ -37,6 +36,7 @@
 \input{lib/includes}
 \RequirePackage{fancyhdr} % Take control of headers and footers
 
+
 \ifinswedish
     \usepackage[english, main=swedish, bidi=basic]{babel}
 \else
@@ -48,14 +48,17 @@
 \newif\ifbiblatex
 \biblatextrue
 
-\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+%\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+
+% Input centralized biblatex configuration
+\input{lib/biblatex-and-friends}
 
 % Use the chapter* style for the heading of the bibliography
 \defbibheading{bibliography}[\bibname]{%
 \section*{#1}%   skip \centering 
 }
-  
-    \addbibresource{references.bib}    
+
+\addbibresource{references.bib}    
 \input{kth/kthcolors}
 
 
@@ -298,6 +301,13 @@ Extension = .ttf,
 \setlength{\headheight}{15pt}
 \addtolength{\topmargin}{-3pt}
 
+\lstdefinelanguage{BibTeX}{
+  keywords={@article,@book,@inproceedings,@misc,@techreport,@phdthesis,@manual},
+  sensitive=false,
+  comment=[l]{\%},
+  morestring=[b]",
+  morestring=[b]',
+}
 
 \lstdefinestyle{latexExampleForAuthors}{
 language=[LaTeX]{TeX},
@@ -361,6 +371,31 @@ end
 
 % Use the modern, built-in hook to log a message for each page
 \AddToHook{shipout/before}{\ReportTimeStamp{Shipping out page \thepage}}
+
+
+
+% Input file generators before \documentclass
+\input{lib/ext-eprint-dbx}
+% Emit local LDF shims before packages load
+\input{lib/datatool-ldf}
+
+% Check for placeholder references
+% Emit a prominent compiler warning and visual marker during the build if a placeholder survives
+% Preamble configuration for placeholder detection
+% 1. Intercept standard bibliography lists
+\AtEveryBibitem{%
+  \iffieldundef{placeholder}{}{%
+    \PackageWarning{biblatex}{Placeholder reference '\thefield{entrykey}' detected: \thefield{placeholder}}%
+    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
+  }%
+}
+
+% 2. Intercept inline citations (including \fullcite and \footfullcite)
+\AtEveryCitekey{%
+  \iffieldundef{placeholder}{}{%
+    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
+  }%
+}
 
 \title{Notes on 3rd cycle version of the template}
 
@@ -1977,7 +2012,9 @@ In Section 2.1 of the AW-template there is an example of a bulleted list with a 
 \label{sec:cycle3Refrences}
 The AW-template uses the American Psychological Association (APA) reference style\footnote{I suspect that this choice is because this is one of the reference formats supported by Word.} and specifies that the entries are to be formatted in Georgia Regular 11pt. In contrast, this template lets the author choose the citation and reference style. Additionally, it sets the references in the same font size as used for the body of the text (as I see no reason to reduce the point size of the text in each of the references by 1 pt).
 
-\Needspace*{2\baselineskip}
+\Needspace*{5\baselineskip}
+\subsection{Setting the List of References}
+
 The template sets the title of the reference page to ``References'' using:
 \begin{lstlisting}[style=latexExampleForAuthors]
 \renewcommand{\bibname}{References}
@@ -1992,6 +2029,126 @@ When using biblatex, the following is used to change the heading for the referen
 \end{lstlisting}
 
 Note that, unlike the AW-template, this template uses an unnumbered chapter heading for the references (as the references are \textbf{not} a chapter).
+
+\subsection{Extended Persistent Identifiers and Authority Resolvers}
+\label{sec:cycle3ExtendedBiblatex}
+Standard BibLaTeX models are often insufficient for modern engineering and cross-disciplinary dissertations:
+\begin{itemize}
+    \item Standard BibLaTeX provides native fields only for \texttt{doi}, \texttt{eprint}, \texttt{isbn}, and \texttt{issn}.
+
+    \item Academic literature (as observed in KTH third-cycle theses) frequently relies on domain-specific, national, or repository-level persistent identifiers that standard styles either ignore or mangle (e.g., LIBRIS XL slugs, MathSciNet MR numbers, PubMed Central IDs, Archival Resource Keys, OSTI IDs, and Handle URIs).
+\end{itemize}
+
+To support these additional \glspl{PID}, the BibLaTeX data model architecture has been extended in this template via two modular files:
+\begin{description}
+    \item[Data Model Extension (\texttt{lib/ext-eprint-dbx.tex})] Emits \texttt{ext-eprint.dbx} to declare custom \texttt{verbatim} fields for exact string preservation without \TeX\ character-escaping conflicts.
+    \item[Resolver and Formatting Pipeline (\texttt{lib/biblatex-and-friends.tex})] Provides driver patches, sourcemaps, and active hyperlinks (\texttt{\textbackslash ifhyperref}) wrapped in monospaced formatting (\texttt{\textbackslash nolinkurl}) pointing to global persistent resolvers (such as \url{https://n2t.net}, \url{https://libris.kb.se}, and \url{https://nbn-resolving.org}).
+\end{description}
+
+We categorize bibliographic identifiers into four architectural tiers:
+\begin{description}
+    \item[Tier 1: Native \texttt{biblatex} Fields] Pre-declared in standard BibLaTeX/Biber models (do \emph{not} add to \texttt{.dbx}):
+    \begin{itemize}
+        \item \texttt{doi} (covers Crossref, DataCite, Japan Link Center (JaLC))
+        \item \texttt{eprint}, \texttt{eprinttype}, \texttt{eprintclass} (generic eprint handler)
+        \item \texttt{isbn}, \texttt{issn}, \texttt{isrn}
+        \item \texttt{url}, \texttt{urldate}
+    \end{itemize}
+
+    \item[Tier 2: High-Value Global PIDs] Identifiers with universal prefix syntax, stable institutional resolvers, or dedicated authority indexes (declared with \texttt{datatype=verbatim} in \texttt{ext-eprint.dbx} and summarized in \Cref{tab:addedGlobalPIDs}).
+
+    The entries in \Cref{tab:addedGlobalPIDs} show the aliases defined for \texttt{mrnumber} and \texttt{pmid}]. These sourcemaps are provided to support authors whose reference managers (such as Zotero, Mendeley, or direct MathSciNet \BibTeX\ exports) still emit legacy field names.
+
+\begin{table}[!ht]
+  \centering
+  \small
+  \caption{Extended persistent identifier fields and their formatted bibliography output}
+  \label{tab:addedGlobalPIDs}
+  \begin{tabular}{p{2.8cm} | >{\raggedright\arraybackslash}p{6.8cm} | >{\raggedright\arraybackslash}p{5.2cm}}
+    \textbf{Field} & \textbf{Authority / Target Registry} & \textbf{Rendered In-Bibliography Output} \\
+    \hline
+    \multicolumn{3}{l}{\textbf{\textit{Scholarly Repositories \& Domain Indexes}}} \\
+    \texttt{arxiv}      & arXiv Open Access E-print repository     & arXiv:\ \nolinkurl{2301.12345} \\
+    \texttt{mr}\newline\footnotesize(\texttt{mrnumber})        & AMS Mathematical Reviews (MathSciNet)    & MR:\ \nolinkurl{3456789} \\
+    \texttt{zbl}        & FIZ Karlsruhe zbMATH Open                & Zbl:\ \nolinkurl{1234.56789} \\
+    \texttt{pmcid}      & NCBI PubMed Central Full-Text ID         & PMCID:\ \nolinkurl{PMC22399602} \\
+    \texttt{pubmed}\newline\footnotesize(\texttt{pmid}) & NCBI NLM PubMed (PMID)                   & PMID:\ \nolinkurl{22399602} \\
+    \texttt{hdl}        & CNRI Handle System (RePEc, DSpace)       & HDL:\ \nolinkurl{10419/193838} \\
+    \texttt{jstor}      & JSTOR Digital Archive                    & JSTOR:\ \nolinkurl{2134567} \\
+    \texttt{osti}       & US Dept.\ of Energy (OSTI) Resource ID   & OSTI ID:\ \nolinkurl{20161947} \\
+    \texttt{eric}       & US Dept.\ of Education (ERIC) ID         & ERIC:\ \nolinkurl{ED091983} \\
+    \texttt{ssrn}       & Social Science Research Network ID       & SSRN:\ \nolinkurl{1505251} \\
+    \texttt{adsbibcode} & NASA Astrophysics Data System (ADS)      & ADS bibcode:\ \nolinkurl{2024ApJ...123..456A} \\
+    \texttt{oai}        & Open Archives Initiative Identifier      & OAI Identifier:\ \nolinkurl{oai:arXiv.org:2301.12345} \\
+    \hline
+    \multicolumn{3}{l}{\textbf{\textit{National Authority \& Union Library Catalogs}}} \\
+    \texttt{libris}     & National Library of Sweden (LIBRIS XL)   & LIBRIS:\ \nolinkurl{7qj6drwk42flzpz} \\
+    \texttt{urn}        & Uniform Resource Name (NBN Resolver)     & URN:\ \nolinkurl{urn:nbn:se:kth:diva-361272} \\
+    \texttt{ark}        & Archival Resource Key (BnF, UNESCO)      & ARK:\ \nolinkurl{12148/bpt6k12345} \\
+    \texttt{lccn}       & Library of Congress Control Number       & LCCN:\ \nolinkurl{49004389} \\
+    \texttt{oclc}       & OCLC / WorldCat Accession Number         & OCLC:\ \nolinkurl{123456789} \\
+    \texttt{gnd}        & DNB Integrated Authority File (Entity)   & GND:\ \nolinkurl{112441315X} \\
+    \texttt{dnb}        & German National Library (Manifestation)  & DNB:\ \nolinkurl{956895318} \\
+    \texttt{sudoc}      & French Higher Education Union Catalog    & SUDOC:\ \nolinkurl{044342294} \\
+    \texttt{sbn}        & Italian National Library Service (BID)   & SBN:\ \nolinkurl{IT\textbackslash ICCU\textbackslash CUB\textbackslash 0198064} \\
+    \hline
+    \multicolumn{3}{l}{\textbf{\textit{Commercial \& Unlinked Indexing Identifiers}}} \\
+    \texttt{asin}       & Amazon Standard Identification Number    & ASIN:\ \nolinkurl{B0007J1DLO} \\
+    googlebooks & Google Books Record ID & Google Books: \nolinkurl{8OcHAAAAQAAJ} \\
+    \texttt{scopus}     & Scopus Electronic Identifier (EID)       & Scopus EID:\ \nolinkurl{2-s2.0-85087095386} \\
+    \nolinkurl{wos}        & Web of Science Accession Number (ISI)    & WoS:\ \nolinkurl{000257173900007} \\
+    \hline
+  \end{tabular}
+\end{table}
+
+    \item[Tier 3: Document Series \& Formal Specifications] Formal standards, agency reports, and legislative acts belong in standard entry types (\texttt{@report}, \texttt{@standard}, \texttt{@legislation}) using native fields:
+    \begin{itemize}
+        \item \textbf{Standards \& Industry Codes} (ISO, IEC, IEEE Std, CEN, AFNOR, DIN, ASTM, 3GPP, ETSI, CIGRE):\\
+        $\rightarrow$ Use \texttt{@standard} or \texttt{@report} with \texttt{number = \{...\}} and \texttt{organization = \{\{...\}\}}.
+        
+        \item \textbf{Agency Technical Reports} (NASA STI/NTRS, AGARD, AIAA, AFRL, JPL, LANL, LLNL, RAND, NCHRP, IAEA TECDOC, WHO TRS, USGS):\\
+        $\rightarrow$ Use \texttt{@report} with \texttt{type = \{Technical Report\}}, \texttt{number = \{...\}}, and \texttt{institution = \{\{...\}\}}.
+        
+        \item \textbf{Swedish Official Publications} (SFS, SOU, Ds, Prop., Skr., Trafikverket TDOK/TRV, Statskontoret, Boverket):\\
+        $\rightarrow$ Use \texttt{@legislation} or \texttt{@report} with \texttt{number = \{SFS 2026:123\}}.
+        
+        \item \textbf{United Nations \& EU Documents} (UN Doc Symbol, CELEX, ELI, Official Journal, EBA, EEA, JRC):\\
+        $\rightarrow$ Use \texttt{number = \{UNEP/EA.5/Res.14\}}, \texttt{eprint = \{...\}}, and \texttt{eprinttype = \{celex\}}.
+    \end{itemize}
+
+    \item[Tier 4: Ephemeral Local Catalog Keys (Excluded)] Do \emph{not} create \texttt{.dbx} fields for internal library inventory keys, temporary session IDs, or migration-fragile shelfmarks lacking persistent global resolvers.
+\end{description}
+\FloatBarrier
+
+\subsection{Explicit Placeholder References}
+\label{sec:placeholderReferences}
+
+By creating an explicit \texttt{placeholder} metadata field, that is considered during document compilation, one can ensure that draft reference stubs do not easily pass through continuous integration pipelines or supervisor review undetected. Now consider the following entry declared in the bibliography:
+
+\begin{lstlisting}[language=BibTeX, caption={{A \BibLaTeX\ entry containing an active \texttt{placeholder} directive}}]
+@article{placeholderExample1,
+  author      = {Doe, John and Smith, Jane},
+  title       = {A High-Performance Framework for Low-Latency Image Classification},
+  journal     = {Journal of Advanced Vision Systems},
+  year        = {2025},
+  placeholder = {Replace with authoritative IEEE/CVF conference publication and DOI once published in proceedings},
+}
+\end{lstlisting}
+
+When cited in the text using \texttt{\textbackslash cite\{placeholderExample1\}}, the custom hook executes before \texttt{\textbackslash printbibliography}, triggering a twofold defensive safeguard:
+\begin{enumerate}
+    \item \textbf{Compiler Warning:} A build-time diagnostic is issued to standard output and the build log:
+    \begin{quote}
+    \texttt{Package biblatex Warning: Placeholder reference 'placeholderExample1' detected: Replace with authoritative IEEE/CVF conference publication and DOI once published in proceedings.}
+    \end{quote}
+    
+    \item \textbf{Visual Markup in Print:} Rather than rendering as an apparently legitimate citation, the entry is prefixed in the bibliography list with an explicit high-visibility warning:
+    \begin{quote}
+    \fullcite{placeholderExample1}
+    \end{quote}
+\end{enumerate}
+
+
 
 \section{Appendices}
 \label{sec:cycle3Appendices}
@@ -2021,16 +2178,17 @@ Looking at the printed thesis \textit{Data verification for GNSS systems and pro
 \fancytabsStyle{\FigtreeFont\fontsize{24}{30}} % font to use for text on the tab
 \end{lstlisting}
 
+\Needspace*{10\baselineskip}
 \subsection{How to make divider pages}
 \label{sec:cycle3HowToMakeDividerPages}
 
-\Needspace*{7\baselineskip}
+
 The \texttt{fancytabs} package is used with the parameters shown in \Cref{lst:myfaancytabParameters}
 and a customized \texttt{myfancytab} macro. The definition of this macro is in the \texttt{examplethesis.tex} file. The arguments to the macro are \texttt{LEFT/RIGHT}, the text to be shown in white on a black tab, the index of the tab (starting at 1) the bibliographic tab for the entry to be used, and the name of the bibliography file that the bibentry can be found it. The end of the \texttt{examplethesis.tex} file shows examples of tabs for different types of publications and how to include the PDF of the included publications
 
 Note that the \texttt{myfancytab} macro retains the same initial arguments as the \texttt{fancytab} macro, so that if an author wanted to have \textit{very} fancy tabs, they could readily modify the \texttt{myfancytab} macro.
 
-The two additional arguments to the \texttt{myfancytab} macro were made based upon a request from one of the KTH librarians\footnote{< Andersson} to make it easier for people to add the publications that they have included in DiVA before they register their thesis in DiVA. Therefore, as a side effect of processing the divider pages \texttt{myfancytab} emits information into a file called \texttt{citedtags.bib}. In the case of bibtex, each of the bib entries for the included publication is inserted into the file. Unfortunately, since biblatex can search a number of bibliography files for an entry and it has no means to provide just the bibliography file where the entry was found or to return the bib entry itself, it has to use the separate \texttt{Paper\_A.bib}, etc. bib files to provide these entries - just the same as for bibtex. In the case of biblatex, the \texttt{myfancytab} macro also writes a fake bibentry with a tag of the form \texttt{fakebibN} where N is the integer index of the tab number. For some examples, see \Cref{lst:fakebibentry}.  Alternatively, one might just include all of the bibliography files that were available. The idea is that the \texttt{citedtags.bib} could later be processed by an external script that could check whether the publication is already in DIVA and if not, then offer to add it to DiVA for the user. Note that writing such a script remains for future work and the availability of the new Cora API that will be used for the new version of DiVA\footnote{Expected to be used by KTH in late Spring 2026}.
+The two additional arguments to the \texttt{myfancytab} macro were made based upon a request from one of the KTH librarians\footnote{Michael Andersson} to make it easier for people to add the publications that they have included in DiVA before they register their thesis in DiVA. Therefore, as a side effect of processing the divider pages \texttt{myfancytab} emits information into a file called \texttt{citedtags.bib}. In the case of \BibTeX, each of the bib entries for the included publication is inserted into the file. Unfortunately, since biblatex can search a number of bibliography files for an entry and it has no means to provide just the bibliography file where the entry was found or to return the bib entry itself, it has to use the separate \texttt{Paper\_A.bib}, etc. bib files to provide these entries - just the same as for \BibTeX. In the case of biblatex, the \texttt{myfancytab} macro also writes a fake bibentry with a tag of the form \texttt{fakebibN} where N is the integer index of the tab number. For some examples, see \Cref{lst:fakebibentry}.  Alternatively, one might just include all of the bibliography files that were available. The idea is that the \texttt{citedtags.bib} could later be processed by an external script that could check whether the publication is already in DIVA and if not, then offer to add it to DiVA for the user. Note that writing such a script remains for future work and the availability of the new Cora API that will be used for the new version of DiVA\footnote{Expected to be used by KTH in late Spring 2026}.
 
 
 \Needspace*{34\baselineskip}
