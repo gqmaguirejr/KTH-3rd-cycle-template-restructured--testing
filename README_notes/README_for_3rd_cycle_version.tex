@@ -302,11 +302,33 @@ Extension = .ttf,
 \addtolength{\topmargin}{-3pt}
 
 \lstdefinelanguage{BibTeX}{
-  keywords={@article,@book,@inproceedings,@misc,@techreport,@phdthesis,@manual},
+ basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{blue}\bfseries,      % @InProceedings in Blue
+  keywordstyle=[2]\color{darkgray},       % author, title, etc. in Gray
+  stringstyle=\color{red},                 % "Values" in Red
+  commentstyle=\color{green!50!black},
+  showstringspaces=false,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+  keywords={%
+    @article,@book,@collectedbook,@conference,@electronic,@ieeetranbstctl,%
+    @inbook,@incollectedbook,@incollection,@injournal,@inproceedings,%
+    @manual,@mastersthesis,@misc,@patent,@periodical,@phdthesis,@preamble,%
+    @proceedings,@standard,@string,@techreport,@unpublished%
+  },
+  % Entry fields/keys (e.g., author, title)
+  keywords=[2]{%
+    address,author,booktitle,chapter,edition,editor,howpublished,institution,%
+    journal,key,month,note,number,organization,pages,publisher,school,%
+    series,title,type,volume,year%
+  },
+  comment=[l][\itshape]{@comment},
   sensitive=false,
-  comment=[l]{\%},
-  morestring=[b]",
-  morestring=[b]',
+  % String handling
+  morestring=[b]",      % Matches "double quotes"
+  % morestring=[s]{\{}{\}}  % The correct way to handle {balanced braces}
+  % FIX: use moredelim with a style argument and escaped braces
+  % moredelim=[s][\color{red}]{\{}{\}}
 }
 
 \lstdefinestyle{latexExampleForAuthors}{
