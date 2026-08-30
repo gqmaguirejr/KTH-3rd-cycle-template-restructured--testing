@@ -312,7 +312,7 @@ Fundamental to the design of this template are several key factors:
 
 \section{Advice for the author}
 \label{sec:cycle3authors}
-One of the hardest problems an author faces is getting started writing, \ie the blank sheet of paper -- empty file barrier. The template\footnote{Realized as \texttt{examplethesis.tex} and the accompanying files.} provides a \mbox{non-blank} starting point; hence, avoiding the blank paper barrier. Additionally, the template provides some initial structure, basically, an Introduction, Methods, Results, and Discussion (IMRAD) structure, so that there are hints of where to place material. Moreover, there are places (and notes) about material that the author should consider adding; for example, the ``required reflections'' section in the final chapter.
+One of the hardest problems an author faces is getting started writing, \ie the blank sheet of paper -- empty file barrier. The template\footnote{Realized as \texttt{examplethesis.tex} and the accompanying files.} provides a \mbox{non-blank} starting point; hence, avoiding the blank paper barrier. Additionally, the template provides some initial structure, basically, an Introduction, Methods, Results, and Discussion (IMRAD) structure, so that there are hints of where to place material. Moreover, there are places (and notes) about material that the author should consider adding; for example, the \enquote{required reflections} section in the final chapter.
 
 \Needspace*{7\baselineskip}
 The template (located in the file \texttt{examplethesis.tex}) also provides some examples of commonly occurring types of content, so that one can easily find examples of how to include a figure, table, code listing, \etc. These examples are not meant to be exhaustive. Quite often, the author will want or need to learn new \LaTeX\  commands in the course of writing their thesis. The need to learn additional \LaTeX\  commands is strongly a function of just how much the author wants to control the details of the thesis and their interest (or lack thereof) in \LaTeX\  programming.
@@ -342,7 +342,7 @@ Note that if you are using Overleaf:
     You can invite your supervisors to your project, and they can provide direct comments and corrections on your drafts.
     
 \item[Log in to Overleaf with your \gls{KTH} account] 
-If you log in to Overleaf with your \gls{KTH} account, you get a version of Overleaf that lets you turn on ``Track changes'' which is very useful (particularly if you have invited your supervisors to join your project). It also gives you a larger time budget\footnote{~240 seconds of wall-clock time, rather than 100 seconds} to compile (which can be useful if you have a lot of Tikz figures or other things that take a lot of time for the LaTeX engine to render).
+If you log in to Overleaf with your \gls{KTH} account, you get a version of Overleaf that lets you turn on \enquote{Track changes} which is very useful (particularly if you have invited your supervisors to join your project). It also gives you a larger time budget\footnote{~240 seconds of wall-clock time, rather than 100 seconds} to compile (which can be useful if you have a lot of Tikz figures or other things that take a lot of time for the LaTeX engine to render).
 
 \item{Timeouts} If you have just started a new session (or started working after a long idle time) you may experience a timeout. This commonly happens because the fonts that you are (or were) using are no longer in the font cache. If you think this is the case, then add an "early" \texttt{\textbackslash end\{document\}} early in your document and compile again. Once the fonts are cached, you can comment out this early end document. For a better solution, see the document \fname{Saving\_and\_restoring\_font\_cache.tex}.
 
@@ -390,7 +390,7 @@ Missing character: There is no £{\mystixmathfont ^^^^fffd^^^^fffd}£ (U+1D6E4) 
 \end{lstlisting}
 
 \noindent In the above error message the '{\mystixmathfont ^^^^fffd^^^^fffd}' is actually output as a small box with the digits '01D6E4' in it. This is the hexadecimal value of the character MATHEMATICAL ITALIC CAPITAL GAMMA. However, you can enter the character {\mystixmathfont ^^^^^^01d792} using the hexadecimal code: 
-\textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum \textasciicircum 01d792 - for a MATHEMATICAL SANS-SERIF BOLD ITALIC CAPITAL GAMMA. You should choose the "SANS-SERIF BOLD ITALIC" version of the character, since the title is set in Figtree Bold, a sans-serif bold font. In the \texttt{defines.tex} file you can find an include of a file of ``Mathematical Alphanumeric Symbols, U+1D400 - U+1D7FF''  unicode characters that have been defined to render the character using the STIX Two Math font\footnote{the file's name is \fname{unicode\_blocks/U+1D400-U+1D7FF-Mathematical Alphanumeric Symbols}}.
+\textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum \textasciicircum 01d792 - for a MATHEMATICAL SANS-SERIF BOLD ITALIC CAPITAL GAMMA. You should choose the "SANS-SERIF BOLD ITALIC" version of the character, since the title is set in Figtree Bold, a sans-serif bold font. In the \texttt{defines.tex} file you can find an include of a file of \enquote{Mathematical Alphanumeric Symbols, U+1D400 - U+1D7FF}  unicode characters that have been defined to render the character using the STIX Two Math font\footnote{the file's name is \fname{unicode\_blocks/U+1D400-U+1D7FF-Mathematical Alphanumeric Symbols}}.
 
 
 \Needspace*{2\baselineskip}
@@ -429,7 +429,7 @@ So what happens if you want to put one of these bold script H's into your title?
 \textbackslash title\{This is the title in the language of the thesis \textbackslash texorpdfstring\{\textbackslash mystixmathfont \textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum1d4d7\}\{\textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum1d4d7\textasciicircum\textasciicircum\textasciicircum\textasciicircum fe00\}  or\linebreak[4]
 \textbackslash texorpdfstring\{\textbackslash mystixmathfontSSa \textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum1d4d7\}\{<span style="font-feature-settings: 'ss01' 1;">\textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum1d4d7\textasciicircum\textasciicircum\textasciicircum\textasciicircum </span>\}\}
 \end{flushleft}
-\noindent The linebreak before the ``or'' has been inserted for readability.
+\noindent The linebreak before the \enquote{or} has been inserted for readability.
 
 The resulting cover is shown in \Cref{fig:titleWithScriptHs}.
 \begin{figure}[!ht]
@@ -509,18 +509,18 @@ While the above has shown that we can get what we wanted on the cover and title 
 \label{sec:cycle3authorMacros}
 The template assumes that there can only be one or at most two authors. Generally, third-cycle theses only have one author\footnote{It is \textit{extremely rare} for there to be a second author for a third-cycle thesis, but if there is, see \Cref{sec:READMEauthorSecondAuthor}.}.
 
-For the author, there are a number of macros defined to store information about the author, so that it can later be used in multiple places -- for example, the \gls{KTH} cover (produced with \texttt{\textbackslash kthcover)}, the title page (produced with \texttt{\textbackslash titlepage}, the ``For DIVA'' section\footnote{Note that the actual section name has DiVA set in all caps - which hopefully should not occur in the thesis! If the string DiVA set in all caps, does have to appear, then the section heading should be preceded by four euro signs and followed by four more euro signs (as is done in this document).} at the end of the thesis (produced with \linebreak[4]
+For the author, there are a number of macros defined to store information about the author, so that it can later be used in multiple places -- for example, the \gls{KTH} cover (produced with \texttt{\textbackslash kthcover)}, the title page (produced with \texttt{\textbackslash titlepage}, the \enquote{For DIVA} section\footnote{Note that the actual section name has DiVA set in all caps - which hopefully should not occur in the thesis! If the string DiVA set in all caps, does have to appear, then the section heading should be preceded by four euro signs and followed by four more euro signs (as is done in this document).} at the end of the thesis (produced with \linebreak[4]
 {\small \texttt{\textbackslash divainfo\{pg:lastPageofPreface\}\{pg:lastPageofMainmatter\}}}), \linebreak[4]and possibly a JavaScript Object Notation (JSON) file named \texttt{fordiva.json} produced as a byproduct of the \texttt{\textbackslash divainfo}. Additionally, the author's name will be included in the DiVA entry, in the LADOK grade entry, and on the diploma.
 
 The author-related macros are:
 \begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash authorsFirstname\{\}}}]
-\item [\texttt{\textbackslash authorsLastname\{\}}] the last name of the author\footnote{Note that the author's name can include a suffix such as ``, Jr.'' or `` Jr.'', i.e., the suffix can be separated with a comma or not -- as the author prefers to write their name.}
+\item [\texttt{\textbackslash authorsLastname\{\}}] the last name of the author\footnote{Note that the author's name can include a suffix such as \enquote{, Jr.} or \enquote{ Jr.}, i.e., the suffix can be separated with a comma or not --- as the author prefers to write their name.}
 
 \item [\texttt{\textbackslash authorsFirstname\{\}}] the first name of the author
 
 \item [\texttt{\textbackslash email\{\}}] the \gls{KTH} e-mail address of the author
 
-\item [\texttt{\textbackslash kthid\{\}}] the author's kthid, this generally starts with the string ·``u1'' and is a unique identifier for every \gls{KTH} user
+\item [\texttt{\textbackslash kthid\{\}}] the author's kthid, this generally starts with the string \enquote{u1} and is a unique identifier for every \gls{KTH} user
 
 \item [\texttt{\textbackslash orcid\{\}}] ensure this is the author's official, registered ORCID ID - see \url{https://orcid.org/}
 
@@ -543,14 +543,14 @@ This information will be used when generating the acknowledgments signature. The
 \end{description}
 
 \Needspace*{8\baselineskip}
-If the student was working at a company, such as ``Företaget AB'', or an organization, such as ``CERN'' they can specify this using one of the following macros.
+If the student was working at a company, such as \enquote{Företaget AB}, or an organization, such as \enquote{CERN} they can specify this using one of the following macros.
 \begin{lstlisting}[style=latexExampleForAuthors]
 %%% If your work was done at a company or an external organization
 %\hostcompany{Företaget AB} % If the work was done at a host company
 %\hostorganization{CERN}   % if there was a host organization
 \end{lstlisting}
 
-\warningExpl{A limitation of the current template is that I do not handle multiple companies, as I assume that there is a single host company/organization or employer. However, you can have a list of names within the two text fields (but only a single \textbackslash hostcompany or a single \textbackslash hostorganization should be included). As of the DiVA administrators meeting of 2022-03-25, if there are a list of names, they should be separated by a semicolon or vertical bar (\ie the `|' character) and the information should be entered in a uniform manner (\ie ``på ett enhetligt sätt''). However, there is not yet a list of the partner names in canonical form. Moreover, it was also noted that if the name of the company or organization is confidential, then the field should contain the string ``Confidential'' and when the DiVA entry is made the actual name or the company or organization should be entered in the ``Internal'' information field (\ie ``intern kommentar'') in DiVA. Unfortunately, it is unclear how the DiVA administrator would know this information. However, 
+\warningExpl{A limitation of the current template is that I do not handle multiple companies, as I assume that there is a single host company/organization or employer. However, you can have a list of names within the two text fields (but only a single \textbackslash hostcompany or a single \textbackslash hostorganization should be included). As of the DiVA administrators meeting of 2022-03-25, if there are a list of names, they should be separated by a semicolon or vertical bar (\ie the `|' character) and the information should be entered in a uniform manner (\ie \enquote{\foreignlanguage{swedish}{på ett enhetligt sätt}}). However, there is not yet a list of the partner names in canonical form. Moreover, it was also noted that if the name of the company or organization is confidential, then the field should contain the string \enquote{Confidential} and when the DiVA entry is made the actual name or the company or organization should be entered in the \enquote{Internal} information field (\ie \enquote{\foreignlanguage{swedish}{intern kommentar}}) in DiVA. Unfortunately, it is unclear how the DiVA administrator would know this information. However, 
 the \gls{KTHB} bibliometrics unit is interested in this data, as is the \gls{GVS} unit working with industrial relations.}
 
 \subsection{Second author}
@@ -699,7 +699,7 @@ You can find examples of the subjects and their codes at in \Cref{tab:examplesOf
 and\\
 \url{https://www.scb.se/contentassets/10054f2ef27c437884e8cde0d38b9cc4/oversattningsnyckel-forskningsamnen.pdf}
 
-\texttt{README\_notes/National\_Subject\_Categories.tex} also\linebreak[4] contains the full list. This file can be processed separately by selecting this filename as the main document or by simply clicking on the file in the list of files and then clicking on the ``Recompile'' button. The full list is $\sim$16 pages long.
+\texttt{README\_notes/National\_Subject\_Categories.tex} also\linebreak[4] contains the full list. This file can be processed separately by selecting this filename as the main document or by simply clicking on the file in the list of files and then clicking on the \enquote{Recompile} button. The full list is $\sim$16 pages long.
 
 \begin{table}[!ht]
 \begin{small}
@@ -831,37 +831,37 @@ As with most of the information in the \texttt{custom\_configuration} file, you 
 
 \section{Background about the thesis and its defense}
 \label{sec:cycle3BackgroundOfThesisAndDefense}
-The thesis (if a monograph) or the kappa (if a compilation thesis) becomes a public document from the time of the posting (``nailing up''\footnote{\foreignlanguage{swedish}{In Swedish: spikningen}}) of the thesis in public. At KTH, the thesis should ``be made available (posted) in both printed and electronic form, at least three weeks prior to the doctoral defence or licentiate seminar'' (see \href{https://www.kth.se/en/biblioteket/publicera-analysera/hantera-publikationer/om-att-spika-avhandling-1.854781}{About posting a thesis}).
+The thesis (if a monograph) or the kappa (if a compilation thesis) becomes a public document from the time of the posting (\enquote{nailing up}\footnote{\foreignlanguage{swedish}{In Swedish: spikningen}}) of the thesis in public. At KTH, the thesis should \enquote{be made available (posted) in both printed and electronic form, at least three weeks prior to the doctoral defence or licentiate seminar} (see \href{https://www.kth.se/en/biblioteket/publicera-analysera/hantera-publikationer/om-att-spika-avhandling-1.854781}{About posting a thesis}).
 
 The printer must send printed copies of the full thesis to the National Library of Sweden and a list of repository libraries distributed around Sweden. Additionally, it is customary to send the thesis to others, such as the department(s) in other universities that might be interested in the thesis. At KTH, the public document is made available via DiVA and a printed copy is always available on request to the registrar.
 
 An important thing to understand about the doctoral/licentiate oral disputation (or public defense\footnote{
 \ifinswedish
-\foreignlanguage{swedish}{8 kap. 13 § högskoleförordningen (1993:100) ``skall disputationer försvaras offentligt''}
+\foreignlanguage{swedish}{8 kap. 13 § högskoleförordningen (1993:100) \enquote{skall disputationer försvaras offentligt}}
 \else
 Chapter 8, Section 13 of the Higher Education Ordinance (1993:100), dissertations shall be defended publicly
 \fi
 }) is that it is the \textbf{thesis} (published weeks in advance) - plus possible errata (presented \textit {before} the start of the defense)\footnote{For formatting of the errata see \Cref{sec:cycle3Errata}.} - that has to be defended\footnote{The oral defense is really a defense of the \textbf{thesis} and \textbf{not} an \textit{evaluation} of the \textbf{student}.}. At KTH, there is \textbf{no} possibility to \textit{revise} a thesis \textit{after} a defense. This is unlike the case in many U.S. universities where the thesis is not published before the oral defense; hence, the thesis can be revised \textit{after} the defense to address issues brought up at the defense.
 
-At KTH, the outcome of the defense (as decided by the grading committee)\footnote {The members of the grading committee do not include the supervisors of the student. The members of the grading committee cannot have any conflicts of interest with the student, such as having been a co-author with the student on prior publications, sponsored the student's research, \etc.} is either \textbf{Pass} or \textbf{Fail}\footnote{For further background see, ``Guideline on Third-Cycle Studies'', V-2019-0111  \url{https://intra.kth.se/polopoly_fs/1.1306945.1724056475!/Guideline-on-Third-Cycle-Studies-V-2024-0221\%20\%28translation-of-Swedish-orginal\%29.pdf}, last amended by V2024-0221.}. If the decision is \textbf{Fail}, then the student will need to do a new thesis and a new defense, but the previously published thesis remains in DiVA, and the previous thesis is still in the repository libraries. Note that there is \textbf{no} possibility to simply revise the thesis and have a new defense\footnote{This is unlike the case at Stockholm's University, where there is the possibility for a student who fails to address the written deficiencies noted by the opponent and grading committee and then submit (once) a revised thesis - to address these issues to the satisfaction of the grading committee. If the student fails to do so, then they will need to do a new thesis and have a new defense.}.
+At KTH, the outcome of the defense (as decided by the grading committee)\footnote {The members of the grading committee do not include the supervisors of the student. The members of the grading committee cannot have any conflicts of interest with the student, such as having been a co-author with the student on prior publications, sponsored the student's research, \etc.} is either \textbf{Pass} or \textbf{Fail}\footnote{For further background see, \enquote{Guideline on Third-Cycle Studies}, V-2019-0111  \url{https://intra.kth.se/polopoly_fs/1.1306945.1724056475!/Guideline-on-Third-Cycle-Studies-V-2024-0221\%20\%28translation-of-Swedish-orginal\%29.pdf}, last amended by V2024-0221.}. If the decision is \textbf{Fail}, then the student will need to do a new thesis and a new defense, but the previously published thesis remains in DiVA, and the previous thesis is still in the repository libraries. Note that there is \textbf{no} possibility to simply revise the thesis and have a new defense\footnote{This is unlike the case at Stockholm's University, where there is the possibility for a student who fails to address the written deficiencies noted by the opponent and grading committee and then submit (once) a revised thesis - to address these issues to the satisfaction of the grading committee. If the student fails to do so, then they will need to do a new thesis and have a new defense.}.
 
 The paragraph above emphasizes the importance of an \textbf{Errata} -- if there are any changes that should be made since the thesis was published, as they need to be announced \textit{before} the defense. 
 
 \Needspace*{4\baselineskip}
 Traditionally, the convener of the defense asks the student two questions:
 \begin{enumerate}
-    \item ``Do you wish to withdraw your thesis before the defense?''
+    \item \enquote{Do you wish to withdraw your thesis before the defense?}
 
-    \item ``Do you have any errata to announce before the defense?''
+    \item \enquote{Do you have any errata to announce before the defense?}
 \end{enumerate}
 
-If the answer to the first question is `Yes'', then there is no second question and the defense ends.
-If the answer to the first question is ``No'' and the answer to the second question is ``Yes'', then the student presents the errata. In simple cases, this might be done orally, but in more complex cases, the student makes a printed version of the errata available (along with the printed thesis) at the time of the defense. These errata formally become part of the thesis that is to be defended. Therefore, the errata should be uploaded as supplementary material for the thesis in DiVA, as they help define what the thesis was that was defended.
+If the answer to the first question is \enquote{Yes}, then there is no second question and the defense ends.
+If the answer to the first question is \enquote{No} and the answer to the second question is \enquote{Yes}, then the student presents the errata. In simple cases, this might be done orally, but in more complex cases, the student makes a printed version of the errata available (along with the printed thesis) at the time of the defense. These errata formally become part of the thesis that is to be defended. Therefore, the errata should be uploaded as supplementary material for the thesis in DiVA, as they help define what the thesis was that was defended.
 
 \subsection{Forms of theses at KTH}
 \label{sec:cycle3TypsofTheses}
 
-There are two major different forms of third-cycle theses at KTH\footnote{While the template includes support for textual \& image artifacts and references to other types of artifacts, I have not fully considered additional types of media, such as video, audio, physical artifacts, $\ldots$, and artistic output.  I apologize in advance that the template might not suit a student in a doctoral program, such as: Architecture, ``Art, Technology and Design''; and others. Constructive suggestions as to how the template can be improved are welcome.}:
+There are two major different forms of third-cycle theses at KTH\footnote{While the template includes support for textual \& image artifacts and references to other types of artifacts, I have not fully considered additional types of media, such as video, audio, physical artifacts, $\ldots$, and artistic output.  I apologize in advance that the template might not suit a student in a doctoral program, such as: Architecture, \enquote{Art, Technology and Design}; and others. Constructive suggestions as to how the template can be improved are welcome.}:
 \begin{enumerate}
     \item Compilation thesis (see \Cref{sec:cycle3CompilationThesis}) and
     \item Monograph (see \Cref{sec:cycle3Monographs}).
@@ -920,7 +920,7 @@ SCI & 2024 & 391 &  & 7 & 1 & 53 &  &  53\\
 \subsubsection{Compilation thesis}
 \label{sec:cycle3CompilationThesis}
 
-A compilation thesis, in Swedish \textit{\foreignlanguage{swedish}{sammanläggning}}, consists of a ``Kappa'', \ie a comprehensive summary of the thesis, and a set of publications (included in the thesis\footnote{Note that the KI documentation refers to these publications as ``the constituent papers''.}). Ideally, the Kappa helps establish the so-called ``red thread'' that ties the set of included publications together. As the kappa is written \textit{after} the publications that are included in the thesis, it can exploit the information from all of the separate publications -- (ideally) to tie them all together in a readily understandable way.
+A compilation thesis, in Swedish \textit{\foreignlanguage{swedish}{sammanläggning}}, consists of a \enquote{Kappa}, \ie a comprehensive summary of the thesis, and a set of publications (included in the thesis\footnote{Note that the KI documentation refers to these publications as \enquote{the constituent papers}.}). Ideally, the Kappa helps establish the so-called \enquote{red thread} that ties the set of included publications together. As the kappa is written \textit{after} the publications that are included in the thesis, it can exploit the information from all of the separate publications --- (ideally) to tie them all together in a readily understandable way.
 
 \Needspace*{5\baselineskip}
 For an excellent description of the kappa, issues to consider when writing it, and its relation to the Intended Learning Outcomes (ILOs) associated with a given degree, see Karolinska Institutet's web page \textit{Content of the thesis} at \url{https://staff.ki.se/doctoral-education/time-to-defend-your-thesis/content-of-the-thesis}. The document  ``\href{https://intra.kth.se/polopoly_fs/1.1355932.1726050722!/EECS%20Kappa%20Guidance%2020240910.pdf}{EECS Kappa guidance-20240910.pdf}'' relates the degree objectives of the \gls{ISP} to the parts of the kappa.
@@ -939,12 +939,12 @@ An advantage (as seen by many) is that there has already been a peer review of e
 For information about how to include your publications, see \Cref{sec:cycle3IncludingPublications}.
 \vspace{0.5cm}
 
-\noindent\textbf{NB} Some programs have specific requirements on the number of papers and the student's contributions to them. For example, the \href{https://www.kth.se/polopoly_fs/1.982602.1588861401!/Nationalekonomi%20ASP%20fastst%C3%A4lld%202017-02-16.pdf}{``\foreignlanguage{swedish}{Studieplan för ämne på forskarnivå: Nationalekonomi}''} 2017-02-16, dnr: V-2017-0040 specifies that the compilation thesis should include at least four publishable scientific articles. Of these, the doctoral student must be the responsible first author of at least one article and the sole author of at least one article. It goes on to say that by the time of the defense, at least two articles should be accepted for publication in internationally recognized scientific journals with peer review.
+\noindent\textbf{NB} Some programs have specific requirements on the number of papers and the student's contributions to them. For example, the \href{https://www.kth.se/polopoly_fs/1.982602.1588861401!/Nationalekonomi%20ASP%20fastst%C3%A4lld%202017-02-16.pdf}{\enquote{\foreignlanguage{swedish}{Studieplan för ämne på forskarnivå: Nationalekonomi}}} 2017-02-16, dnr: V-2017-0040 specifies that the compilation thesis should include at least four publishable scientific articles. Of these, the doctoral student must be the responsible first author of at least one article and the sole author of at least one article. It goes on to say that by the time of the defense, at least two articles should be accepted for publication in internationally recognized scientific journals with peer review.
 
 \subsubsection{Monograph}
 \label{sec:cycle3Monographs}
 
-While it might seem that a monograph lacks the ``the work has already been peer-reviewed'' aspect of a compilation thesis, this is \textit{not} always the case. Many theses that are written as a monograph may be based on one or more peer-reviewed papers, patents, and other peer-reviewed content. As a result, there are monographs that have papers, patents, \etc that are \textit{implicitly} included in the thesis -- these publications will be enumerated and the student's contributions to each of them will be specified. This is typically done in the first chapter of the thesis in a section entitled ``Research Contributions''.
+While it might seem that a monograph lacks the \enquote{the work has already been peer-reviewed} aspect of a compilation thesis, this is \textit{not} always the case. Many theses that are written as a monograph may be based on one or more peer-reviewed papers, patents, and other peer-reviewed content. As a result, there are monographs that have papers, patents, \etc that are \textit{implicitly} included in the thesis --- these publications will be enumerated and the student's contributions to each of them will be specified. This is typically done in the first chapter of the thesis in a section entitled \enquote{Research Contributions}.
 
 \Needspace*{6\baselineskip}
 When the author(s) has (have) retained the copyright for a publication, they can include a new version of this publication as a chapter in their thesis. This chapter usually has a suitable citation to the published work and if there are co-authors, it indicates that the co-authors have agreed to the inclusion of this material into the thesis. The citation and note about the agreement by the co-authors are usually included on the first page of the chapter.\footnote{Some research groups have a policy that a given publication can only be included in the thesis of \emph{one} student. Then the other students in the group will refer to the publication and/or chapter when writing their own thesis.}
@@ -963,7 +963,7 @@ An advantage of a monograph is that the student has the opportunity to present t
 
 \subsection{Typical lengths}
 \label{sec:typicalThesisLengths}
-The \href{https://www.kth.se/polopoly_fs/1.982602.1588861401!/Nationalekonomi%20ASP%20fastst%C3%A4lld%202017-02-16.pdf}{``\foreignlanguage{swedish}{Studieplan för ämne på forskarnivå: Nationalekonomi}''} 2017-02-16, dnr: V-2017-0040 says in §5, that a monograph is typically
+The \href{https://www.kth.se/polopoly_fs/1.982602.1588861401!/Nationalekonomi%20ASP%20fastst%C3%A4lld%202017-02-16.pdf}{\enquote{\foreignlanguage{swedish}{Studieplan för ämne på forskarnivå: Nationalekonomi}}} 2017-02-16, dnr: V-2017-0040 says in §5, that a monograph is typically
 \qtyrange[range-units=single,range-phrase=..]{80000}{100000}{words} \ie \qtyrange[range-units=single,range-phrase=..]{220}{260}{pages} while a kappa is \qtyrange[range-units=single,range-phrase=..]{30}{50}{pages}. Some statistics about recent third-cycle theses lengths are shown in \Cref{tab:thesesxLengths2020toSpring2025}. Note that this table and \Cref{fig:ABETlen,fig:CBHTlen,fig:EECSTlen,fig:ITMTlen,fig:SCITlen} are based upon the total number of pages, \ie, the sum of the number of preface, body, and appendices pages. This data is based on DiVA exporting a Metadata Object Description Schema (MODS)\cite{SwePubMODS2019} file where the DiVA public type codes ('publicationTypeCode') for third-cycle theses are: 'comprehensiveDoctoralThesis',
 'comprehensiveLicentiateThesis',
 'monographDoctoralThesis', and
@@ -1234,7 +1234,7 @@ chapter\{Introduction\}}.
 \subsection{Choosing a bibliography management package}
 \label{sec:cycle3aChoosingBibMgmtpackaage}
 
-The template has been designed to work with either the bibtex or the biblatex package. Of these, biblatex is more modern and supports more types of entries; for example, datasets and software. Additionally, biblatex supports a number of ``Non-standard Types''\footnote{Such as: artwork, audio, commentary, commentary, image, jurisdiction, legislation, legal, letter, movie, music, performance, review, standard, and video}, see §2.1.3 of the documentation for the \texttt{biblatex} package, \ie \textit{The biblatex Package: Programmable Bibliographies and Citations}. Biblatex also offers additional citation functionality, such as \texttt{\textbackslash fullcite}. Biblatex also offers support for a large number of languages (see ``Table 2: Supported Languages'' of the package documentation). See also \href{https://www.overleaf.com/learn/latex/Bibliography_management_with_biblatex}{Bibliography management with biblatex}.
+The template has been designed to work with either the bibtex or the biblatex package. Of these, biblatex is more modern and supports more types of entries; for example, datasets and software. Additionally, biblatex supports a number of \enquote{Non-standard Types}\footnote{Such as: artwork, audio, commentary, commentary, image, jurisdiction, legislation, legal, letter, movie, music, performance, review, standard, and video}, see §2.1.3 of the documentation for the \texttt{biblatex} package, \ie \textit{The biblatex Package: Programmable Bibliographies and Citations}. Biblatex also offers additional citation functionality, such as \texttt{\textbackslash fullcite}. Biblatex also offers support for a large number of languages (see \enquote{Table 2: Supported Languages} of the package documentation). See also \href{https://www.overleaf.com/learn/latex/Bibliography_management_with_biblatex}{Bibliography management with biblatex}.
 
 After you have made your choice, you add either \texttt{bibtex} or \texttt{biblatex} as an option to the \texttt{\textbackslash
 documentclass}.
@@ -1469,7 +1469,7 @@ You may want to define an acronym to help you with your writing, as this can bot
 \subsection{Some predefined macros to help when writing}
 \label{sec:cycle3predefine}
 
-The file \texttt{lib/defines.tex} includes some macros that will help you when writing. This includes \textbackslash etc, to give you ``\etc'', \textbackslash eg, \textbackslash ie, and \textbackslash etal.
+The file \texttt{lib/defines.tex} includes some macros that will help you when writing. This includes \textbackslash etc, to give you \enquote{\etc}, \textbackslash eg, \textbackslash ie, and \textbackslash etal.
 The file also defines \textbackslash first, \textbackslash Second, ... \textbackslash eighth to give you \first, \Second, \third, ... \eighth. Note that `Second' is written with an initial capital letter to avoid conflict with the unit `second' in the \texttt{siunitx} package.
 
 
@@ -1486,7 +1486,7 @@ It is quite likely that you will find parts of the template that you do not want
 \noindent The comment package is one of the first packages in the \texttt{kththesis.cls} file, so you can use these two commands - almost everywhere. Note that both commands must be placed at the \textbf{start of lines}, otherwise they will not work as intended!
 
 \Needspace*{5\baselineskip}
-For example, if you are not interested in the Swedish language \texttt{todo} notes, you can look for lines with ``\textbackslash sweExpl'' in them and comment them out (or delete them). You can also uncomment the line \texttt{\textbackslash renewcommand\textbackslash sweExpl[1]\{\}} in the \fname{custom\_configuration} file, and these notes will not be shown when you compile the thesis. Similarly, for other types of explanations and warnings.
+For example, if you are not interested in the Swedish language \texttt{todo} notes, you can look for lines with \enquote{\textbackslash sweExpl} in them and comment them out (or delete them). You can also uncomment the line \texttt{\textbackslash renewcommand\textbackslash sweExpl[1]\{\}} in the \fname{custom\_configuration} file, and these notes will not be shown when you compile the thesis. Similarly, for other types of explanations and warnings.
 
 \warningExpl{{\mystixmathfont ☡} Commenting out some parts of the document or \texttt{kththesis.cls} file can break the functionality of the template!}
 
@@ -1535,7 +1535,7 @@ Note that if the \texttt{doclicense} package is used, it automatically redefines
 ]{doclicense}
 \end{lstlisting}
 
-Note that the option ``hyphenation={RaggedRight}'' can be used with the configuration of the package to set the license information with a ragged right margin rather than as a filled and justified paragraph.
+Note that the option \enquote{hyphenation={RaggedRight}} can be used with the configuration of the package to set the license information with a ragged right margin rather than as a filled and justified paragraph.
 
 \Needspace*{10\baselineskip}
 \subsubsection{Example configuration to have a CC BY-NC-ND license with a Euro symbol rather than a Dollar sign}
@@ -1576,7 +1576,7 @@ The choice of fonts is a very individual matter and may be affected by the kind 
 
     \item There are also fonts that, although they have a vast number of characters in them, do not have the math table that \LaTeX\ needs to be able to set mathematical content\footnote{An example of such a font is Google's Noto font. Although it includes a vast number of characters, it lacks a math table -- although there is an awareness of this missing feature. This is a reason why text set in Noto needs special effort to intersperse mathematical expressions in it - \ie explicitly adding commands to set the mathematical expressions in another font. For example, if you configure, unicode characters (such as {\mystixmathfont ♂} and {\mystixmathfont ♀}, shown in this section - you can include them in title, subtitles, \etc).}.
 
-    \item Many fonts are proprietary, thus you need to consider whether you have an appropriate license to use them.\warningExpl{Caution, the thesis template ``\foreignlanguage{swedish}{Avhandlingsmall Word}'' from
+    \item Many fonts are proprietary, thus you need to consider whether you have an appropriate license to use them.\warningExpl{Caution, the thesis template \enquote{\foreignlanguage{swedish}{Avhandlingsmall Word}} from
 \url{https://www.kth.se/student/studier/examensarbete/avhandlingarochexamensarbeten/mall-for-avhandling-1.458236} uses a number of proprietary fonts.}
 \end{itemize}
 
@@ -1606,7 +1606,7 @@ What can you do when the fonts you use are missing characters that you need to u
 \subsubsection{Use of fonts on the covers, title page, and book info pages}
 \label{sec:cycle3useOfFontsonCovrrs}
 
-The thesis template ``\foreignlanguage{swedish}{Avhandlingsmall Word}'' from
+The thesis template \enquote{\foreignlanguage{swedish}{Avhandlingsmall Word}} from
 \url{https://www.kth.se/student/studier/examensarbete/avhandlingarochexamensarbeten/mall-for-avhandling-1.458236} does not include the cover, title page, and book info pages, as the assumption is that US-AB will make these pages for a third-cycle thesis. However, for students and their supervisors, it is important to have at least the title and book information pages so that one can know which document is which and to ensure that all of the contents of these pages are correct. Therefore, I have developed covers, title page, and book information page based on my examination of some existing printed theses or PDF files of recent theses. These pages primarily use different font faces from the Figtree font family.
 
 \Cref{sec:configuringTitleSubtitle} on page\,\pageref{sec:configuringTitleSubtitle} discusses some of the issues about including mathematical content or content that uses characters that are not in Figtree in titles, subtitles, and headings.
@@ -1615,13 +1615,13 @@ The thesis template ``\foreignlanguage{swedish}{Avhandlingsmall Word}'' from
 \subsubsection{Use of fonts within the thesis}
 \label{sec:authorUseOfFontsWithinThesis}
 
-The thesis template ``\foreignlanguage{swedish}{Avhandlingsmall Word}'' specifies the use of fonts for the preface pages and the body of the thesis. Figree has been used as a sans serif font for headings. They specified the use of Georgia, a proprietary font, as the serif font for the body.
+The thesis template \enquote{\foreignlanguage{swedish}{Avhandlingsmall Word}} specifies the use of fonts for the preface pages and the body of the thesis. Figtree has been used as a sans serif font for headings. They specified the use of Georgia, a proprietary font, as the serif font for the body.
 
 In contrast, this template uses TeX Gyre Termes, a Times-like font, as the main font; TeX Gyre Heros, a Helvetica-like font, as the sans serif font; 
 TeX Gyre Cursor, a Courier-like font, as the monospaced font; and 
 STIX\footnote{STIX Project (Scientific and Technical Information Exchange)} Two Math font as a math font. Additionally, TeX Gyre Pagella Math can be used as math font.
 
-Additionally, the template makes available the STIX Two Math font as \texttt{\textbackslash mystixmathfont}. This font contains a very large number (more than \num{5200}) glyphs, see the CTAN\footnote{Comprehensive \TeX\  Archive Network} documentation for the package ``\href{https://ctan.org/pkg/stix2-otf/?lang=en}{\texttt{stix2-otf}} – OpenType Unicode text and maths fonts''. Moreover, the STIX fonts are available under the SIL Open Font License. For additional information, see \href{https://www.overleaf.com/learn/latex/Articles/OpenType-based_math_typesetting%3A_An_introduction_to_the_STIX2_OpenType_fonts}{OpenType-based math typesetting: An introduction to the STIX2 OpenType fonts}.
+Additionally, the template makes available the STIX Two Math font as \texttt{\textbackslash mystixmathfont}. This font contains a very large number (more than \num{5200}) glyphs, see the CTAN\footnote{Comprehensive \TeX\  Archive Network} documentation for the package \enquote{\href{https://ctan.org/pkg/stix2-otf/?lang=en}{\texttt{stix2-otf}} – OpenType Unicode text and maths fonts}. Moreover, the STIX fonts are available under the SIL Open Font License. For additional information, see \href{https://www.overleaf.com/learn/latex/Articles/OpenType-based_math_typesetting%3A_An_introduction_to_the_STIX2_OpenType_fonts}{OpenType-based math typesetting: An introduction to the STIX2 OpenType fonts}.
 
 An example of defining a new font \texttt{\textbackslash mystixmathfontSSa} is:
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=£]
@@ -1681,7 +1681,7 @@ While this section focused on including PDF files and possibly figures, it is al
 \subsection{Details of how the code works}
 \label{sec:cycle3DividercodeSteps}
 
-For those that want to understand the details of how the code works, see the following subsections and the section on ``Divider pages'' in the \texttt{README\_for\_3rd\_cycle\_version.tex} file.
+For those who want to understand the details of how the code works, see the following subsections and the section on \enquote{Divider pages} in the \texttt{README\_for\_3rd\_cycle\_version.tex} file.
 
 \subsubsection{Setting up for use with BibTeX}
 If BibTeX is being used, then prior to each of the included publications, we set up some macros as shown in Listing\,\ref{lst:ConfigureForBibtexDividerPage}
@@ -1718,7 +1718,7 @@ If BibTeX is being used, then prior to each of the included publications, we set
 \end{lstlisting}
 
 \subsubsection{The first step}
-For each included publication, the first step is to create an empty page and add the fancy tab at the correct position. This is done using the code shown in Listing\,\ref{lst:FirstStepForDividerPage}. In this case, the fancy table will be labelled ``Paper A'' and in this case it will be positioned at the first tab position, i.e., position 1. Subsequent invocations of the \texttt{\textbackslash myfancytab} macro should increment the position. The macro will automatically handle the vertical offsets modulo the maximum number of tab positions on a page, as set by \texttt{\textbackslash fancytabsCount}\iflabelexists{lst:myfaancytabParameters}{ (see \Cref{lst:myfaancytabParameters})}.
+For each included publication, the first step is to create an empty page and add the fancy tab at the correct position. This is done using the code shown in Listing\,\ref{lst:FirstStepForDividerPage}. In this case, the fancy table will be labelled \enquote{Paper A} and in this case it will be positioned at the first tab position, i.e., position 1. Subsequent invocations of the \texttt{\textbackslash myfancytab} macro should increment the position. The macro will automatically handle the vertical offsets modulo the maximum number of tab positions on a page, as set by \texttt{\textbackslash fancytabsCount}\iflabelexists{lst:myfaancytabParameters}{ (see \Cref{lst:myfaancytabParameters})}.
 
 \begin{lstlisting}[style=latexExampleForAuthors, caption={First step for each included publications}, label=lst:FirstStepForDividerPage]
 \thispagestyle{empty}
@@ -1736,7 +1736,7 @@ When using BibTeX, there will be 1 to 3 files created for each new bibliography,
 The \texttt{X.bbl} file gets generated from the \texttt{FUNCTION {begin.bib}} and \texttt{FUNCTION {end.bib}} functions in the \texttt{myIEEEtran.bst} file. It defines the \texttt{thebibliography} environment.
 
 Note also that we need to use a different label to access the bibliographic information. If we do not do this, then the label for the reference will be multiply defined and \textbf{the last definition will be used elsewhere in the document!}
-To make this simple, I have created a folder \texttt{Included\_publications} where one can put separate bib files for each of the included publications. I have simply appended the string ``\_pub'' to the bibtex entry's label. This leads to the BibTeX case for the first publication shown in Listing\,\ref{lst:FirstPublicationDividerPage}.
+To make this simple, I have created a folder \texttt{Included\_publications} where one can put separate bib files for each of the included publications. I have simply appended the string \enquote{\_pub} to the bibtex entry's label. This leads to the BibTeX case for the first publication shown in Listing\,\ref{lst:FirstPublicationDividerPage}.
 
 \Needspace*{3\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, caption={Second step for each included publication, for bibtex}, label=lst:FirstPublicationDividerPage]
@@ -1762,7 +1762,7 @@ I take full responsibility for the content of the “kappa”/comprehensive summ
 \section{Errata}
 \label{sec:cycle3Errata}
 
-As described in \Cref{sec:cycle3BackgroundOfThesisAndDefense}, the errata have to be announced before the student starts their actual oral defense. I have not found a standard format for this, as a printed document. Looking at a number of errata that are in DiVA for theses at KTH, most have a title of ``Errata'' or `Errata for doctoral/licentiate thesis'' followed by a reference to the thesis. This reference can be as short as the title of the thesis \& the author or as long as a full reference (with ISBN). The key is that it should be possible to identify the relevant thesis from the information at the top of the errata.
+As described in \Cref{sec:cycle3BackgroundOfThesisAndDefense}, the errata have to be announced before the student starts their actual oral defense. I have not found a standard format for this, as a printed document. Looking at a number of errata that are in DiVA for theses at KTH, most have a title of \enquote{Errata} or `Errata for doctoral/licentiate thesis'' followed by a reference to the thesis. This reference can be as short as the title of the thesis \& the author or as long as a full reference (with ISBN). The key is that it should be possible to identify the relevant thesis from the information at the top of the errata.
 
 \Needspace*{5\baselineskip}
 The errata can concern the text in the thesis and even include the text in published papers. Each item in the errata should identify where the correction should be applied and what the correction is. The identification can include a page number (or page range), section heading, figure/table/equation/$\ldots$ , publication identifier, \etc. The aim is that the reader should be able to identify exactly where the change should be made.
@@ -1784,7 +1784,7 @@ If you have even more detailed questions about the third-cycle template, see the
 \section{Math alphabets with their mappings to Unicode}
 Earlier in this document, several instances of Unicode values were used. It may be helpful to understand the mapping of math commands to these Unicode ranges. \Cref{tab:mathMappingToUnicode} is adapted from \url{https://tug.ctan.org/fonts/stix2-type1/stix2.dtx}.
 
-By looking at this table, you can better understand the earlier statement ``because STIX Two Math has no bold face (or semibold face), but only bold face \textit{characters} within the font'' - as the bold face version of a character is found at a different codepoint within the font -- as one can readily see when comparing the first two rows. The same occurs when considering other typefaces, such as italics (in the third row).
+By looking at this table, you can better understand the earlier statement \enquote{because STIX Two Math has no bold face (or semibold face), but only bold face \textit{characters} within the font} - as the bold face version of a character is found at a different codepoint within the font -- as one can readily see when comparing the first two rows. The same occurs when considering other typefaces, such as italics (in the third row).
 
 \begin{table}[h]
 \setlength{\tabcolsep}{3.5pt}
