@@ -37,6 +37,7 @@
 \input{lib/includes}
 \RequirePackage{fancyhdr} % Take control of headers and footers
 
+
 \begin{comment}
 \ifinswedish
     \usepackage[english, main=swedish, bidi=basic]{babel}
@@ -99,6 +100,8 @@
 \input{lib/defines}  % load some additional definitions to make writing more consistent
 
 \usepackage[plainpages=false, unicode=true]{hyperref}
+\input{lib/includes-after-hyperref}
+\usepackage{orcidlink}  %% to provide ORCID icons and links
 
 \usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
 %% In overleaf, if this file is in a folder and not the root
@@ -3914,7 +3917,7 @@ Fortunately, one can use the picture support as shown in the example below to ge
 \subsection{Acronyms in abstracts}
 \label{sec:AcronymsInAbstracts}
 
-As students may use acronyms in abstracts, there is support for the commands: \textbackslash gls{}, \textbackslash glspl{}, \textbackslash Gls{}, \textbackslash Glspl{}, \textbackslash acrlong{}, \textbackslash acrshort{}, and \textbackslash acrfull{}. There is also an optional argument to the extraction program to specify the name of the file with definitions of acronyms using the \texttt{\textbackslash newacronyms\{label\}\{acronym\}\{phrase\}} form of definitions. This optional argument is shown in \Cref{lst:specifyingAcronymsFile}. Note that expanding acronyms are handled independently for the abstracts, so that they are spelled out on first use in each abstract. Note also that there is no support for multiple languages for 
+As students may use acronyms in abstracts, there is support for the commands: \textbackslash gls\{\}, \textbackslash glspl\{\}, \textbackslash Gls\{\}, \textbackslash Glspl\{\}, \textbackslash acrlong\{\}, \textbackslash acrshort\{\}, and \textbackslash acrfull\{\}. There is also an optional argument to the extraction program to specify the name of the file with definitions of acronyms using the \texttt{\textbackslash newacronyms\{label\}\{acronym\}\{phrase\}} form of definitions. This optional argument is shown in \Cref{lst:specifyingAcronymsFile}. Note that expanding acronyms are handled independently for the abstracts, so that they are spelled out on first use in each abstract. Note also that there is no support for multiple languages for 
     the phrase that is used, \ie the expansion simply uses the phrase defined in the \texttt{\textbackslash newacronyms}/*/ definition.
 \Needspace*{4\baselineskip}
 \begin{lstlisting}[language={bash}, caption={Specifying acronyms file}, label=lst:specifyingAcronymsFile]
@@ -4011,30 +4014,45 @@ There is an open question of the extent to which the National Subject Category i
 \subsection{Using Biber data annotations in BibLaTeX entries}
 \label{sec:furtherBiberAnnotation}
 
-Biber's data annotation syntax enables bibliography entries to carry rich, structured metadata attached directly to individual author or field items without modifying the underlying \BibLaTeX\ data model. For example:
+Biber's data annotation syntax enables bibliography entries to carry rich, structured metadata attached directly to individual author or field items without modifying the underlying \BibLaTeX\ data model. \Cref{lst:biberAuthorAnnotation} shows an example with three authors, each of whom has an \gls{ORCID} identifier, \ie an ORCID iD. Additionally, the first two authors are noted as having contributed equally (\eg to designate joint first authorship).
 
 
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, caption={{Example of Biber author annotations for ORCID and equal contribution}}, label=lst:biberAuthorAnnotation]
 @article{doe2025collaborative,
+@article{doe2025collaborative,
   author    = {Maguire, Jr., Gerald Q. and Smith, Jane and Green, Alex},
   author+an = {
-    1:orcid="0000-0002-6066-7469", equal=true;
-    2:orcid="0000-0001-2345-6789", equal=true;
-    3:orcid="0000-0003-9876-5432"
+    1:orcid="0000-0002-6066-7469";
+    1:equal="true";
+    2:orcid="0000-0001-2345-6789";
+    2:equal="true";
+    3:orcid="0000-0003-9876-5432";
   },
   title     = {Collaborative Systems in Higher Education},
   journal   = {Journal of Academic Stewardship},
   year      = {2025},
-  doi       = {10.1000/182},
+  volume    = {3},
+  number    = {2},
+  pages     = {112--128},
+  doi       = {10.1000/182}
+}
 }
 \end{lstlisting}
 
-\begin{enumerate}
-    \item Semicolons (\texttt{;}) separate distinct list items (e.g., Author~1, Author~2, Author~3).
-    \item Commas (\texttt{,}) separate multiple annotations declared on the same item (\eg \texttt{orcid=...} and \texttt{equal=true}).
-\end{enumerate}
+Note that each line of the annotation has a prefix of the form `<number>:' followed by a name, equal sign, and a quoted value. Internally, this information is encoded into \textit{parts} and stored by Biber into the `.bbl' file.
 
-To render these annotations in print, define \BibLaTeX\ formatting hooks. In the preamble, test for active annotations using \texttt{\textbackslash hasitemannotation} and retrieve values with \texttt{\textbackslash getitemannotation}:
+\subsection{BibLaTeX Part Annotation Signature}
+Programmatic access to the annotation is done via:
+\begin{quote}
+\texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
+
+\texttt{\textbackslash getpartannotation[<field>][<name>][<item>]\{<part>\}}
+\end{quote}
+
+The three optional brackets define the bibliographic coordinates (`[author][default][<idx>]`), while the part slug is passed as the mandatory brace argument (`\{<part>\}`). In the example above, the slug will be \enquote{orcid} or \enquote{equal}.
+
+
+To render these annotations in print, one can define \BibLaTeX\ formatting hooks (as shown in \Cref{lst:biberHookExample1}). You can test for active annotations using \texttt{\textbackslash haspartannotation[} and retrieve values with \texttt{\textbackslash getpartannotation}. In this code the equal authorship in indicated with a superscript asterisk, while the name gets an  \texttt{\textbackslash orcidlink} hyperlink, \ie beside the name is the official green, circular \gls{ORCID} icon as an actionable, live hyperlink targeting the author's \gls{ORCID} record page. The icon itself is drawn as a resolution-independent vector path using TikZ/PDF literals rather than a raster image.
 
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example of a \LaTeX{} hook for equal contribution and ORCID icons}}, label=lst:biberHookExample1]
 \usepackage{biblatex}
@@ -4044,46 +4062,203 @@ To render these annotations in print, define \BibLaTeX\ formatting hooks. In the
 \renewcommand*{\mkbibnamefamily}[1]{%
   #1%
   % Check for equal contribution annotation
-  \hasitemannotation[\currentname][equal]{%
+  \haspartannotation[author][default][\the\value{listcount}]{equal}{%
     \textsuperscript{*}%
   }{}%
   % Check for ORCID annotation
-  \hasitemannotation[\currentname][orcid]{%
-    \,\orcidlink{\getitemannotation[\currentname][orcid]}%
+  \haspartannotation[author][default][\the\value{listcount}]{orcid}{%
+    \,\orcidlink{\getpartannotation[author][default][\the\value{listcount}]{orcid}}%
   }{}%
 }
 \end{lstlisting}
-    
 
-Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022). However, standard canonical identifiers can be utilized directly as annotation keys, as outlined in \cref{tab:CReDiT_annotation}.
+As an example of this for \textbackslash fullcite\{doe2025collaborative\}:
+\newbox\orcidbox
+
+\newcommand*{\renderorcidbadge}[1]{%
+  \,\href{https://orcid.org/#1}{\textcolor[HTML]{A6CE39}{\tiny\textbf{iD}}}%
+}
+
+\begin{luacode*}
+function render_orcid_from_box()
+  local box_head = tex.box.orcidbox.head
+  if not box_head then return end
+
+  local chars = {}
+  local GLYPH = node.id("glyph")
+  local DISC  = node.id("discretionary")
+
+  local function walk(head)
+    for n in node.traverse(head) do
+      if n.id == GLYPH then
+        table.insert(chars, utf8.char(n.char))
+      elseif n.id == DISC then
+        if n.replace then
+          walk(n.replace)
+        elseif n.pre then
+          walk(n.pre)
+        else
+          table.insert(chars, "-")
+        end
+      elseif n.head then
+        walk(n.head)
+      end
+    end
+  end
+
+  walk(box_head)
+  local raw_orcid = table.concat(chars)
+
+  -- Filter out anything except digits and X/x (hyphen placed at the very end of class)
+  local base = ""
+  for c in raw_orcid:gmatch("[0-9xX]") do
+    base = base .. c
+  end
+
+  local formatted_orcid = ""
+  if #base == 16 then
+    -- Normalize the 16th character (check digit) to uppercase X if applicable
+    local prefix = base:sub(1, 15)
+    local checksum = base:sub(16, 16):upper()
+    local full = prefix .. checksum
+
+    formatted_orcid = string.format("%s-%s-%s-%s",
+      full:sub(1, 4),
+      full:sub(5, 8),
+      full:sub(9, 12),
+      full:sub(13, 16)
+    )
+  else
+    formatted_orcid = raw_orcid
+  end
+
+  if formatted_orcid and formatted_orcid ~= "" then
+    tex.sprint(token.create("renderorcidbadge"), "{", formatted_orcid, "}")
+  end
+end
+\end{luacode*}
+
+\begingroup
+\renewcommand*{\mkbibnamefamily}[1]{%
+  #1%
+  \edef\curridx{\the\value{listcount}}%
+  \haspartannotation[author][default][\curridx]{equal}{%
+    \textsuperscript{*}%
+  }{}%
+  \haspartannotation[author][default][\curridx]{orcid}{%
+    \global\setbox\orcidbox=\hbox{\getpartannotation[author][default][\curridx]{orcid}}%
+    \directlua{render_orcid_from_box()}%
+  }{}%
+}
+
+\AtNextCite{%
+  \defcounter{maxnames}{99}%
+  \defcounter{minnames}{99}%
+}
+
+\fullcite{doe2025collaborative}
+\endgroup
+
+Hello!
+\begingroup
+\directlua{
+  function inspect_box0()
+    local b = tex.box[0]
+    if not b then
+      tex.print("[box0 is nil]")
+      return
+    end
+    if not b.list then
+      tex.print("[box0.list is nil (empty box)]")
+      return
+    end
+
+    local trace = {}
+    local chars = {}
+    local GLYPH = node.id("glyph")
+    local HLIST = node.id("hlist")
+    local VLIST = node.id("vlist")
+
+    local function walk(head)
+      for n in node.traverse(head) do
+        local ntype = tostring(node.type(n.id))
+        table.insert(trace, ntype)
+        if n.id == GLYPH then
+          table.insert(chars, utf8.char(n.char))
+        elseif n.id == HLIST or n.id == VLIST then
+          if n.list then walk(n.list) end
+        end
+      end
+    end
+
+    walk(b.list)
+
+    local collected = table.concat(chars)
+    local nodetypes = table.concat(trace, ", ")
+
+    -- Print directly onto the typeset page in magenta
+    tex.print(string.char(92) .. "textcolor{magenta}{[chars: " .. collected .. " | nodes: " .. nodetypes .. "]}")
+    
+    -- Also print to the compilation terminal/log
+    texio.write_nl("--- BOX 0 INSPECTION START ---")
+    texio.write_nl("Collected string: " .. collected)
+    texio.write_nl("Node sequence:    " .. nodetypes)
+    texio.write_nl("--- BOX 0 INSPECTION END ---")
+  end
+}
+
+\renewcommand*{\mkbibnamefamily}[1]{%
+  #1%
+  \edef\curridx{\the\value{listcount}}%
+  \haspartannotation[author][default][\curridx]{equal}{%
+    \textsuperscript{*}%
+  }{}%
+  \haspartannotation[author][default][\curridx]{orcid}{%
+    \setbox0=\hbox{\getpartannotation[author][default][\curridx]{orcid}}%
+    \directlua{inspect_box0()}%
+  }{}%
+}
+
+\AtNextCite{%
+  \defcounter{maxnames}{99}%
+  \defcounter{minnames}{99}%
+}
+
+\fullcite{doe2025collaborative}
+\endgroup
+
+\subsubsection{Using annotation to store Contributor Roles Taxonomy (CReDiT) data}
+
+Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022\,\cite{niso_z39_104_2022}). However, standard canonical identifiers using the \enquote{Simplified Name} form can be utilized directly as annotation keys, as outlined in \Cref{tab:CReDiT_annotation}. The values of these can be: \enquote{lead}, \enquote{equal} (=true), or \enquote{supporting}.
 
 \begin{table}[!htp]
     \centering
-    \caption{CReDiT roles for author data annotations in \BibLaTeX}
+    \caption{CReDiT roles for author data annotations in \BibLaTeX with their Simplified Name,\ie annotation key }
     \label{tab:CReDiT_annotation}
     \begin{tabular}{L{4.2cm} L{4.5cm} L{5.3cm}}
       \hline
-      \textbf{CReDiT Role} & \textbf{Canonical Key} & \textbf{Typical Degrees of Contribution} \\
+      \textbf{CReDiT Role} & \textbf{Simplified Name} \\
       \hline
-      Conceptualization          & \texttt{conceptualization}     & lead, supporting, equal (or true) \\
-      Data curation              & \texttt{data\_curation}         & lead, supporting, equal \\
-      Formal analysis            & \texttt{formal\_analysis}       & lead, supporting, equal \\
-      Funding acquisition        & \texttt{funding\_acquisition}   & lead, supporting, equal \\
-      Investigation              & \texttt{investigation}         & lead, supporting, equal \\
-      Methodology                & \texttt{methodology}           & lead, supporting, equal \\
-      Project administration     & \texttt{project\_administration}& lead, supporting, equal \\
-      Resources                  & \texttt{resources}             & lead, supporting, equal \\
-      Software                   & \texttt{software}              & lead, supporting, equal \\
-      Supervision                & \texttt{supervision}           & lead, supporting, equal \\
-      Validation                 & \texttt{validation}            & lead, supporting, equal \\
-      Visualization              & \texttt{visualization}         & lead, supporting, equal \\
-      Writing -- original draft  & \texttt{writing\_original}     & lead, supporting, equal \\
-      Writing -- review \& editing & \texttt{writing\_review}     & lead, supporting, equal \\
+      Conceptualization          & \texttt{conceptualization} \\
+      Data curation              & \texttt{data-curation} \\
+      Formal analysis            & \texttt{formal-analysis}\\
+      Funding acquisition        & \texttt{funding-acquisition} \\
+      Investigation              & \texttt{investigation}\\
+      Methodology                & \texttt{methodology} \\
+      Project administration     & \texttt{project-administration} \\
+      Resources                  & \texttt{resources} \\
+      Software                   & \texttt{software} \\
+      Supervision                & \texttt{supervision} \\
+      Validation                 & \texttt{validation} \\
+      Visualization              & \texttt{visualization} \\
+      Writing -- original draft  & \texttt{writing-original-draft} \\
+      Writing -- review \& editing & \texttt{writing-review-editing}\\
       \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
-There are two primary paradigms for encoding \gls{CReDiT} roles using Biber annotations:
+There are two primary paradigms for encoding \gls{CReDiT} roles using Biber annotations, as shown in \Cref{lst:biberCreditPatternA} and \Cref{lst:biberCreditPatternB}.
 
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, caption={{Pattern A: Role-as-Key (Fine-grained with degrees of contribution)}}, label=lst:biberCreditPatternA]
 @article{maguire2026pipeline,
@@ -4101,6 +4276,7 @@ There are two primary paradigms for encoding \gls{CReDiT} roles using Biber anno
   journal   = {Journal of Academic Stewardship},
   year      = {2026},
   doi       = {10.1000/182},
+  placeholder = {A fake example for documentation}
 }
 \end{lstlisting}
 
@@ -4108,14 +4284,18 @@ There are two primary paradigms for encoding \gls{CReDiT} roles using Biber anno
 @article{maguire2026pipeline,
   author    = {Maguire, Jr., Gerald Q. and Smith, Jane},
   author+an = {
-    1:orcid="0000-0002-6066-7469", credit="Conceptualization, Software, Writing - original draft";
+    1:orcid="0000-0002-6066-746X", credit="Conceptualization, Software, Writing - original draft";
     2:orcid="0000-0001-2345-6789", credit="Supervision, Writing - review & editing"
   },
   title     = {Automated Metadata Integrity in Academic Publishing},
   journal   = {Journal of Academic Stewardship},
   year      = {2026},
+  placeholder = {A fake example for documentation}
 }
 \end{lstlisting}
+
+
+Which of these two is the best method for KTH's doctoral thesis students?
 
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example \LaTeX{} hook for extracting and rendering contributor roles}}, label=lst:biberHookExample2]
 \usepackage{biblatex}
@@ -4143,7 +4323,7 @@ This setup allows automated Python/CI validation pipelines to extract and cross-
 
 Because \texttt{\textbackslash renewbibmacro*} is dynamically scoped in \LaTeX, it can be redefined specifically for the author contribution section and either restored afterward or restricted within a local group.
 
-Wrapping the contribution section inside a \TeX\ group (\texttt{\begingroup \dots \endgroup}) ensures the modification automatically discards itself when the scope closes, leaving the main thesis bibliography unaffected:
+As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribution section inside a \TeX\ group (\texttt{\textbackslash  begingroup \ldots \textbackslash endgroup}) ensures the modification automatically discards itself when the scope closes, leaving the main thesis bibliography unaffected:
 
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Local group scoping for CReDiT bibliography output}}, label=lst:biberHookExampleLocalGroupScoping]
 \chapter*{Author Contributions}
@@ -4164,6 +4344,96 @@ Wrapping the contribution section inside a \TeX\ group (\texttt{\begingroup \dot
 
 % Outside the group, finentry reverts to its original standard definition
 \end{lstlisting}
+
+The following generates some example output when using Approach B for the CReDiT information in the.bib file:
+\begingroup
+% 1. Helper mapping from simplified kebab-case slug to display text
+\newcommand{\formatcreditrole}[1]{%
+  \ifcsdef{credit@#1}{\csuse{credit@#1}}{\detokenize{#1}}%
+}
+\csdef{credit@conceptualization}{Conceptualization}
+\csdef{credit@data-curation}{Data curation}
+\csdef{credit@formal-analysis}{Formal analysis}
+\csdef{credit@funding-acquisition}{Funding acquisition}
+\csdef{credit@investigation}{Investigation}
+\csdef{credit@methodology}{Methodology}
+\csdef{credit@project-administration}{Project administration}
+\csdef{credit@resources}{Resources}
+\csdef{credit@software}{Software}
+\csdef{credit@supervision}{Supervision}
+\csdef{credit@validation}{Validation}
+\csdef{credit@visualization}{Visualization}
+\csdef{credit@writing-original-draft}{Writing -- original draft}
+\csdef{credit@writing-review-editing}{Writing -- review \& editing}
+\csdef{credit@equal}{Equal contribution}
+
+% 2. List of CReDiT simplified slugs to check
+\newcommand*{\CreditSlugList}{%
+  conceptualization,data-curation,formal-analysis,funding-acquisition,%
+  investigation,methodology,project-administration,resources,software,%
+  supervision,validation,visualization,writing-original-draft,writing-review-editing,equal%
+}
+
+% 3. Check and print role:
+%    Syntax: \haspartannotation[<field>][<annotation_name>][<item_index>]{<part_name>}{<true>}{<false>}
+%    Syntax: \getpartannotation[<field>][<annotation_name>][<item_index>]{<part_name>}
+\newcommand*{\checkandprintrole}[2]{%
+  % #1 = author integer, #2 = slug
+  \haspartannotation[author][default][#1]{#2}{%
+    \par\hspace*{1.5em}\formatcreditrole{#2}: \textit{\getpartannotation[author][default][#1]{#2}}%
+  }{}%
+}
+
+% 4. Name format driver
+\DeclareNameFormat{creditnames}{%
+  \edef\currentauthornum{\the\value{listcount}}%
+  \par\smallskip\noindent\textbf{\namepartfamily}%
+  \def\do##1{\checkandprintrole{\currentauthornum}{##1}}%
+  \expandafter\docsvlist\expandafter{\CreditSlugList}%
+}
+
+% 5. Bibmacro: forces evaluation of all authors
+\newbibmacro*{author:credit:roles}{%
+  \begingroup
+  \defcounter{maxnames}{99}%
+  \defcounter{minnames}{99}%
+  \par\medskip\noindent\textbf{Author Contributions:}%
+  \printnames[creditnames]{author}%
+  \endgroup
+}
+
+% 6. Hook into finentry
+\renewbibmacro*{finentry}{%
+  \finentry
+  \usebibmacro{author:credit:roles}%
+}
+
+\section*{Paper I}
+\fullcite{maguire2026pipeline}
+
+\section*{Paper II}
+\fullcite{doe2025collaborative}
+\endgroup
+
+
+
+\subsubsection{Architectural Takeaways for Your Pipeline}
+\begin{itemize}
+    \item \textbf{Biber `.bib` Annotation Delimiters:} Item annotations must be delimited by semicolons (`;`), not commas (`,`), with the item index explicit on each part (e.g., `1:conceptualization="lead"; 1:software="lead"`).
+    \item \textbf{Kebab-Case Slugs:} Adopting the standard CReDiT simplified names (e.g., `writing-original-draft`, `data-curation`) avoids unescaped underscore collisions in TeX math mode and simplifies downstream JSON serialization.
+    \item \textbf{BibLaTeX Part Annotation Signature:}
+\begin{quote}
+\texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
+
+
+\texttt{\textbackslash getpartannotation[<field>][<name>][<item>]\{<part>\}}
+\end{quote}
+
+
+The three optional brackets define the bibliographic coordinates (`[author][default][<idx>]`), while the part slug is passed as the mandatory brace argument (`\{<part>\}`).
+    \item \textbf{Index Isolation:} Freezing `\textbackslash the\textbackslash value{listcount}` via `\textbackslash edef` before triggering `\textbackslash docsvlist` prevents the inner loop from clobbering the active author index.
+\end{itemize} 
+
 
 If you prefer to redefine macros globally across document sections, redefine \texttt{finentry} before the papers list and reset it before calling \texttt{\textbackslash printbibliography}:
 
@@ -4199,6 +4469,170 @@ For granular control when citing individual papers with contributor details with
   \endgroup
 }
 \end{lstlisting}
+
+To define the slug-to-text mappings:
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Defining slug-to-text mappings}}, label=lst:biberCreditCommandSlugs]
+% ==============================================================================
+% CReDiT Role Slug-to-Text Mappings
+% ==============================================================================
+\usepackage{etoolbox}
+
+% Define the formatted title string for each canonical CReDiT slug
+\csdef{credit@conceptualization}{Conceptualization}
+\csdef{credit@data_curation}{Data curation}
+\csdef{credit@formal_analysis}{Formal analysis}
+\csdef{credit@funding_acquisition}{Funding acquisition}
+\csdef{credit@investigation}{Investigation}
+\csdef{credit@methodology}{Methodology}
+\csdef{credit@project_administration}{Project administration}
+\csdef{credit@resources}{Resources}
+\csdef{credit@software}{Software}
+\csdef{credit@supervision}{Supervision}
+\csdef{credit@validation}{Validation}
+\csdef{credit@visualization}{Visualization}
+\csdef{credit@writing_original}{Writing -- original draft}
+\csdef{credit@writing_review}{Writing -- review \& editing}
+
+% Lookup macro: formats the mapped string, or safely detokenizes if unknown
+\newcommand{\formatcreditrole}[1]{%
+  \ifcsdef{credit@#1}{\csuse{credit@#1}}{\detokenize{#1}}%
+}
+\end{lstlisting}
+
+For Pattern A:
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Define author:credit:roles macro}}, label=lst:biberCreditRolesMacro]
+\newbibmacro*{author:credit:roles}{%
+  \begingroup
+  % Example for checking explicit role-as-key annotations (Pattern A)
+  \newcommand{\checkrole}[1]{%
+    \hasitemannotation[\currentname][##1]{%
+      \par\small\hspace*{1em}\textbf{\formatcreditrole{##1}}%
+      \space(\getitemannotation[\currentname][##1])%
+    }{}%
+  }%
+  % Iterate over canonical slugs
+  \checkrole{conceptualization}%
+  \checkrole{software}%
+  \checkrole{writing_original}%
+  \checkrole{writing_review}%
+  \endgroup
+}
+\end{lstlisting}
+
+
+\BibLaTeX\ provides the author index context automatically via \texttt{\textbackslash currentname} (which expands to the current name list position, such as 1, 2, etc.) when stepping through an author list with \texttt{\textbackslash indexnames} or custom name formatters.
+
+Key Built-in Macros.
+\begin{itemize}
+    \item \textbackslash hasitemannotation[<item-index>][<annotation-name>]: Checks whether the name at <item-index> possesses the specified annotation slug.
+
+    \item \textbackslash getitemannotation[<item-index>][<annotation-name>]: Retrieves the assigned value (\eg lead, equal, supporting, or true) for that slug.
+\end{itemize}
+
+Implementation: Iterating Through the Slugs for Each Author
+Using etoolbox list iteration (\texttt{\textbackslash docsvlist)}, you can step through each author and test each of the 14 standard CReDiT slugs systematically:
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Iterate through slugs}}, label=lst:biberCreditRolesIterate]
+\usepackage{biblatex}
+\usepackage{etoolbox}
+
+% 1. List of all 14 standard CReDiT slugs to test
+\newcommand*{\CreditSlugList}{%
+  conceptualization,%
+  data_curation,%
+  formal_analysis,%
+  funding_acquisition,%
+  investigation,%
+  methodology,%
+  project_administration,%
+  resources,%
+  software,%
+  supervision,%
+  validation,%
+  visualization,%
+  writing_original,%
+  writing_review%
+}
+
+% 2. Helper macro to check and print an individual role for the current author index
+\newcommand*{\PrintCreditRoleForCurrentAuthor}[1]{%
+  \hasitemannotation[\currentname][#1]{%
+    \par\hspace*{2em}%
+    \formatcreditrole{#1}: \textit{\getitemannotation[\currentname][#1]}%
+  }{}%
+}
+
+% 3. Format driver for each author in the author list
+\DeclareNameFormat{creditRolesPerAuthor}{%
+  % Print the author's family name (and initials if desired)
+  \par\small\textbf{\namepartfamily}%
+  % Iterate through all 14 slugs for \currentname (the active author index)
+  \renewcommand*{\do}[1]{\PrintCreditRoleForCurrentAuthor{##1}}%
+  \expandafter\docsvlist\expandafter{\CreditSlugList}%
+}
+
+% 4. Bibliography macro to trigger the iteration over the entry's authors
+\newbibmacro*{author:credit:roles}{%
+  \begingroup
+  \indexnames[creditRolesPerAuthor]{author}%
+  \endgroup
+}
+\end{lstlisting}
+
+
+In \BibLaTeX, whenever a citation or bibliography driver is executing (such as inside \texttt{\textbackslash AtEveryBibitem}, \texttt{\textbackslash AtEveryCitekey}, \texttt{\textbackslash DeclareBibliographyDriver}, \texttt{\textbackslash fullcite}, or inside a bibmacro like \texttt{finentry}), the active entry key is automatically set as the current context.
+
+To retrieve or manipulate the current citation entry key, \BibLaTeX\ provides the following internal macros and mechanisms:
+
+\begin{enumerate}
+    \item Standard Built-in Key Registers
+    \begin{itemize}
+        \item 
+
+\textbackslash thefield\{entrykey\}: Prints or retrieves the active .bib entry key (e.g., maguire2026pipeline).
+
+\textbackslash strfield\{entrykey\}: Returns the unexpanded string representation of the entry key.
+
+\textbackslash currententrykey: An internal macro holding the literal key of the item currently being processed.
+    \end{itemize}
+    
+    \item Explicitly Setting an Arbitrary Entry as "Current"
+    
+If you are outside a standard bibliography loop (for example, in custom TeX/Lua code or arbitrary body text) and want to load a specific entry key into the active \BibLaTeX\  evaluation context without printing a full citation:
+\end{enumerate}
+
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Load specific entry key}}, label=lst:biberLoadSpecifcEntryKey]
+\begingroup
+% Switch the active biblatex context to 'myEntryKey'
+\entryclone{myEntryKey}{current_context_key} % Optional clone
+% or set the entry data context directly:
+\usedatacontext[entrykey=myEntryKey]
+...
+\endgroup
+\end{lstlisting}
+
+More commonly, \BibLaTeX\ provides \textbackslash entrydata\{<entrykey>\}\{<code/macros>\}, which temporarily switches the current entry context to <entrykey> and executes your custom code within that entry's data scope:
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Temporary switch to specific entry key}}, label=lst:biberTemporarySwitchSpecifcEntryKey]
+\entrydata{maguire2026pipeline}{%
+  % Inside this block, 'maguire2026pipeline' is the active entry
+  \textbf{Active Key:} \thefield{entrykey}\par
+  \textbf{Title:} \printfield{title}\par
+  \usebibmacro{author:credit:roles}%
+}
+\end{lstlisting}
+
+Usage Example: Printing the Current Entry Key Alongside Metadata
+
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Print current entry key with metadata}}, label=lst:biberPrintCurrentEntry]
+\newbibmacro*{print:current:entry:info}{%
+  \par\noindent
+  \textbf{Entry Key:} \thefield{entrykey}\par
+  \textbf{Entry Type:} \thefield{entrytype}\par
+  \textbf{Active Authors:} \printnames{author}%
+}
+\end{lstlisting}
+
+Whenever this macro is invoked during bibliography rendering, \texttt{\textbackslash thefield\{entrykey\}} dynamically evaluates to whatever reference is currently being processed.
+
 
 \clearpage
 
