@@ -1,4 +1,7 @@
 \documentclass[12pt, twoside]{article}
+% Emit local LDF shims before packages load
+\input{lib/datatool-ldf}
+
 % Make it possible to conditionally depend on the TeX engine used
 \RequirePackage{ifluatex}
 \RequirePackage{comment}
@@ -55,7 +58,10 @@
 \newif\ifbiblatex
 \biblatextrue
 
-\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+%\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+% Input centralized biblatex configuration
+\input{lib/biblatex-and-friends}
+
 
 \lstdefinelanguage{BibTeX}{
  basicstyle=\footnotesize\ttfamily,
@@ -157,7 +163,8 @@
     %\setsansfont{TeX Gyre Heros}   %% Helvetica like font
     \babelfont{sf}{TeX Gyre Heros}
     %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
-    \babelfont{tt}{TeX Gyre Cursor}
+    %% Turn off ligature for tt font
+    \babelfont{tt}[Ligatures={ResetAll}]{TeX Gyre Cursor}
  \begin{comment}
     \babelfont[english]{rm}{TeX Gyre Termes}
     \babelfont[english]{sf}{TeX Gyre Heros}
@@ -317,8 +324,7 @@ Extension = .ttf,
     BoldItalicFont = NotoSerif-BoldItalic
     ]{NotoSerifCustomA}
 
-\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,
-    ]{DejaVu Sans}
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,]{DejaVu Sans}
 
 
 % Set up the header and footer for plain style pages
@@ -360,9 +366,7 @@ language=[LaTeX]{TeX},
     inputencoding=utf8,
     tabsize=2,
     columns=flexible,
-    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
-      courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode,
-      nationalsubjectcategories, todo, ifbiblatex, subsection}
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle, courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode, nationalsubjectcategories, todo, ifbiblatex, subsection}
 }
 
 
@@ -527,7 +531,26 @@ end
 % Use the modern, built-in hook to log a message for each page
 \AddToHook{shipout/before}{\ReportTimeStamp{Shipping out page \thepage}}
 
+% Input file generators before \documentclass
+\input{lib/ext-eprint-dbx}
 
+% Check for placeholder references
+% Emit a prominent compiler warning and visual marker during the build if a placeholder survives
+% Preamble configuration for placeholder detection
+% 1. Intercept standard bibliography lists
+\AtEveryBibitem{%
+  \iffieldundef{placeholder}{}{%
+    \PackageWarning{biblatex}{Placeholder reference '\thefield{entrykey}' detected: \thefield{placeholder}}%
+    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
+  }%
+}
+
+% 2. Intercept inline citations (including \fullcite and \footfullcite)
+\AtEveryCitekey{%
+  \iffieldundef{placeholder}{}{%
+    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
+  }%
+}
 
 \title{README and notes about the template for programmers}
 
@@ -655,18 +678,18 @@ The overall flow is shown in \Cref{fig:LogicalOverviewOfWhatIsDone2}. Notice tha
 
 \Cref{tab:inforAndItsUses} shows the relationship between the information and the scripts that use it. The sections highlighted in yellow are optional. For example, only 1\textsuperscript{st} cycle theses will have a second author. While all theses will have two supervisors, some may have more (the scripts support up to 10).
 
-Individuals can be associated with KTH, in this case, they have a Local User Id and an organization element (with the implicit top level (L0) being KTH). The organization levels of L1 == School and L2 == Department. It is possible to extend this further, but the programs currently only support L1 and L2. The Title and Alternative title fields are used to support the English and Swedish title (or visa versa) -– similarly, the abstracts and keywords must include English and Swedish versionss; with additional support for abstracts and keywords in many languages. Where a school should be specified, one can use \texttt{\textbackslash schoolAcronym\{xxxx\}}.
+Individuals can be associated with KTH, in this case, they have a Local User Id and an organization element (with the implicit top level (L0) being KTH). The organization levels of L1 == School and L2 == Department. It is possible to extend this further, but the programs currently only support L1 and L2. The Title and Alternative title fields are used to support the English and Swedish title (or visa versa) -– similarly, the abstracts and keywords must include English and Swedish versions; with additional support for abstracts and keywords in many languages. Where a school should be specified, one can use \texttt{\textbackslash schoolAcronym\{xxxx\}}.
 
 The Canvas course room’s course\_id is often an argument to my scripts. One reason for this is to be able to use the information in the course room to translate a local user ID (\ie a kthid) to an integration ID (\ie a LADOK user ID) or to be able to look up details of an author or supervisor.
 
-Note that for third-cycle degrees, the degree information is a little different as there are no program codes, but rather education codes. Also there is a \texttt{\textbackslash degreeModifier\{Philosophy\}} macro to enable the user to specify Philosophy as a modifier to the degree name.
+Note that for third-cycle degrees, the degree information is a little different as there are no program codes, but rather education codes. Also, there is a \texttt{\textbackslash degreeModifier\{Philosophy\}} macro to enable the user to specify Philosophy as a modifier to the degree name.
 
 \begin{landscape}
 \small{
 \begin{longtable}{L{2cm}|L{4cm}|l|L{4cm}|L{4cm}|l l l l|}
 \caption{Information and how it is used}\label{tab:inforAndItsUses}\\
     &  & & & \textbf{DOCX DocProperty} &  &  &  & \\
-    \textbf{Top level} & \textbf{elements} & \textbf{subelements}	& \textbf{\LaTeX~Macro} & \textbf{or fields} & \begin{rotate}{60}\textbf{calendar}\end{rotate} & \begin{rotate}{60}\textbf{cover}\end{rotate} & \begin{rotate}{60} \textbf{LADOK}\end{rotate} & \begin{rotate}{60}\textbf{MODS}\end{rotate}\\
+    \textbf{Top level} & \textbf{elements} & \textbf{subelements} & \textbf{\LaTeX{}~Macro} & \textbf{or fields} & \begin{rotate}{60}\textbf{calendar}\end{rotate} & \begin{rotate}{60}\textbf{cover}\end{rotate} & \begin{rotate}{60} \textbf{LADOK}\end{rotate} & \begin{rotate}{60}\textbf{MODS}\end{rotate}\\
         \endfirsthead
     \multicolumn{9}{c}%
 {\tablename\ \thetable\ -- \textit{Continued from previous page}} \\
@@ -2174,7 +2197,7 @@ Some additional colors are defined and used for \texttt{todonotes} – they shou
 \label{sec:ccessibilityOfTemplateItself}
 The template itself is written in \LaTeX{}~using UTF-8 characters. The template uses packages from \textit{TeX Live version 2024}. It must be compiled with \LuaLaTeX{}  (which natively supports UTF-8 input).
 
-The template is designed with a set of options to generate a thesis in English or Swedish\footnote{The option names for both languages are must be given in title case, \ie with initial capital letters.} and to use either \textsc{Bib}\TeX~ or \textsc{Bib}\LaTeX, as explained at the top of the \fname{examplethesis.tex} file (see \Cref{lst:document}).
+The template is designed with a set of options to generate a thesis in English or Swedish\footnote{The option names for both languages are must be given in title case, \ie with initial capital letters.} and to use either \BibTeX{} or \BibLaTeX, as explained at the top of the \fname{examplethesis.tex} file (see \Cref{lst:document}).
 \Needspace*{8\baselineskip}
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={{\textbackslash documentclass}}, label=lst:document]
 % --- Configure the documentclass ---
@@ -2194,13 +2217,13 @@ biblatex,                % the bibliographic processor to use: biblatex or bibte
 
 The template is available from Overleaf (via a share URL).
 
-The text in the template itself (\ie the \texttt{examplethesis.tex} file) is in Swedish and English. The notes regarding the \LaTeX{}~class file, the various \fname{lib} files, and the various \fname{README} files are currently only in English.
+The text in the template itself (\ie the \texttt{examplethesis.tex} file) is in Swedish and English. The notes regarding the \LaTeX{} class file, the various \fname{lib} files, and the various \fname{README} files are currently only in English.
 
-The default bibliographic style when using \textsc{Bib}\TeX~is my own adaptation of the IEEE Transactions format (\ie numbered citations, numbered references, references in order of use) with the extension of adding DOIs, URLs, and ISBNs (when relevant).
+The default bibliographic style when using \BibTeX{} is my own adaptation of the IEEE Transactions format (\ie numbered citations, numbered references, references in order of use) with the extension of adding DOIs, URLs, and ISBNs (when relevant).
 
 \subsection{Improving accessibility}
 \label{sec:improvingAccessibility}
-One method for improving accessibility would be to include the accessibility package, \ie \textbackslash usepackage\{axessibility\} as this would include a comment in the \gls{PDF} file for each equation with the \LaTeX that generated the equation. However, this package is no longer maintained and is incompatible with many other packages. For an introduction to what the \LaTeX{}-project has been working on, see ``LATEX Tagged PDF -- A blueprint for a large Project''\cite{MittelbachRowley2020}. Based upon this article and the status of the \texttt{tagpdf} package, I conclude that it is too early to worry about properly tagging \gls{PDF} files; thus, doing so will have to await the release of a package designed for production use.
+One method for improving accessibility would be to include the accessibility package, \ie \textbackslash usepackage\{accessibility\} as this would include a comment in the \gls{PDF} file for each equation with the \LaTeX{} that generated the equation. However, this package is no longer maintained and is incompatible with many other packages. For an introduction to what the \LaTeX{}-project has been working on, see ``LATEX Tagged PDF -- A blueprint for a large Project''\cite{MittelbachRowley2020}. Based upon this article and the status of the \texttt{tagpdf} package, I conclude that it is too early to worry about properly tagging \gls{PDF} files; thus, doing so will have to await the release of a package designed for production use.
 
 \section{The structure of the template and the report}
 \label{sec:structureOfTheTemplate}
@@ -2226,7 +2249,7 @@ The \texttt{school\_subjects\_3rdcycle.ins} contents were generated from the dat
 
 \section[Generating LaTeX commands for in the student’s thesis source files]{Generating LaTeX commands for in the\linebreak[4] student’s thesis source files}
 \label{sec:GeneratingLatexCommands}
-The thesis makes use of a set of \LaTeX{}~commands to collect information about the student and the supervisor(s) in the \texttt{custom\_configuration.tex} file. However, how can a student know what their KTHID and other necessary information is?
+The thesis makes use of a set of \LaTeX{} commands to collect information about the student and the supervisor(s) in the \texttt{custom\_configuration.tex} file. However, how can a student know what their KTHID and other necessary information is?
 
 There are two alternatives:
 \begin{itemize}
@@ -2804,7 +2827,7 @@ zul & zu & Zulu\\
 
 \section{Adding keywords and other data to PDF metadata}
 \label{sec:addingKeywordsAndMetaDataToPDF}
-In an effort to add the \gls{PDF} metadata via the \texttt{hyperref} package, I decided to add the English and Swedish keywords part of the \gls{PDF} metadata. However, in order to do this, I had to know the keywords \textit{before} the \textbackslash begin\{document\} command in the \LaTeX{}~file. To do so, I added three new commands to the \texttt{kththesis.cls} file, as shown in \Cref{lst:keywords}. The commands are used in the \texttt{examplethesis.tex} file to set up the keywords in both English and Swedish as well as include a new set of \LaTeX{}~commands to store the \gls{PDF} metadata (as shown in \Cref{lst:storingkeywords}) using a file called \texttt{lib/pdf\_related\_includes.tex} (shown in \Cref{lst:informationforPDFfile}). Later, the keywords that have been stored are inserted into the \LaTeX{}~after their respective language abstracts. The title page of the thesis and the PDF metadata are shown in \Cref{fig:pdfMetadata}. Note that both the English and Swedish versions of the keywords are included in the metadata. Finally, the keywords appear (as expected) in the ``For DiVA'' data at the end of the \gls{PDF} file.
+In an effort to add the \gls{PDF} metadata via the \texttt{hyperref} package, I decided to add the English and Swedish keywords part of the \gls{PDF} metadata. However, in order to do this, I had to know the keywords \textit{before} the \textbackslash begin\{document\} command in the \LaTeX{}~file. To do so, I added three new commands to the \texttt{kththesis.cls} file, as shown in \Cref{lst:keywords}. The commands are used in the \texttt{examplethesis.tex} file to set up the keywords in both English and Swedish as well as include a new set of \LaTeX{} commands to store the \gls{PDF} metadata (as shown in \Cref{lst:storingkeywords}) using a file called \texttt{lib/pdf\_related\_includes.tex} (shown in \Cref{lst:informationforPDFfile}). Later, the keywords that have been stored are inserted into the \LaTeX{}~after their respective language abstracts. The title page of the thesis and the PDF metadata are shown in \Cref{fig:pdfMetadata}. Note that both the English and Swedish versions of the keywords are included in the metadata. Finally, the keywords appear (as expected) in the ``For DiVA'' data at the end of the \gls{PDF} file.
 
 \Needspace*{7\baselineskip}
 Note that \texttt{\textbackslash makeatlette} and \texttt{\textbackslash makeatother} are used to include the character “@” as a letter and then return “@” to being a punctuation code. This use of “@” protects the internal names from being accessed outside of these two commands. More explicitly, \texttt{\textbackslash EnglishKeywords} is a function that takes one argument, the text of the English keywords, and then stores them into ``\texttt{@EnglishKeywords}''. Later, the text can be retrieved with the command \texttt{\textbackslash InsertKeywords\{english\}} or \texttt{\textbackslash InsertKeywords\{swedish\}}.
@@ -2844,7 +2867,7 @@ The \texttt{lib/pdf\_related\_includes.tex} file contains the \LaTeX{} ~- to add
 to the \gls{PDF} file (specifically, author(s), title(s), and keywords). It uses the
 \texttt{hyperref} package and should be included before the \texttt{\textbackslash begin\{document\}}.
 I want to acknowledge the inspiration of Karl Voit's template for TU Graz which inspired me to add the \gls{PDF} document information. For more information about his template, see \url{https://github.com/novoid/LaTeX-KOMA-template}
-Note that my template does not use anything from his template other than the names of the information for the \gls{PDF} meta fields, \ie \texttt{mytitle}, \texttt{myauthor}, and \texttt{mykeywords}, together with the idea of defining the corresponding \texttt{newcommand} to set the relevant \texttt{hyperref} parameters. A result of both these decisions is that these command names are visible to the rest of the \LaTeX{}~file. See \Cref{lst:informationforPDFfile} for the code.
+Note that my template does not use anything from his template other than the names of the information for the \gls{PDF} meta fields, \ie \texttt{mytitle}, \texttt{myauthor}, and \texttt{mykeywords}, together with the idea of defining the corresponding \texttt{newcommand} to set the relevant \texttt{hyperref} parameters. A result of both these decisions is that these command names are visible to the rest of the \LaTeX{} file. See \Cref{lst:informationforPDFfile} for the code.
 
 In keeping with the Swedish standard (\foreignlanguage{swedish}{Svenska skrivregler [Språkrådet 1.6.3 och 12.11.5]}) a ``\foreignlanguage{swedish}{mellanslag tankstreck}'' with a space before and after, \ie `` – '' is used to separate the title and subtitle when in Swedish, this leads to a condition based on whether the document is in Swedish or not in the computation of \texttt{mytitle} and \texttt{myalttitle}.
 
@@ -3025,7 +3048,7 @@ As a result of adding support for the \gls{PDF} metadata for the copyright notic
 \Needspace*{10\baselineskip}
 \subsection{Adding additional metadata to the PDF file}
 \label{sec:addingMetadataToPDFfile}
-Increasingly metadata is being embedded into digital objects to provide information about the creator (author, photographer, \etc), date of creation, copyright notices, \etc. In a typical \gls{PDF} file produced by \LaTeX{}~there is both PDF-specific metadata and additional metadata. This additional metadata is stored using Adobe's \glsfirst{XMP}. \gls{XMP} is a means of embedding metadata in \gls{XMP} format into \gls{PDF} documents so that tools can extract it mechanically.
+Increasingly metadata is being embedded into digital objects to provide information about the creator (author, photographer, \etc), date of creation, copyright notices, \etc. In a typical \gls{PDF} file produced by \LaTeX{}, there is both PDF-specific metadata and additional metadata. This additional metadata is stored using Adobe's \glsfirst{XMP}. \gls{XMP} is a means of embedding metadata in \gls{XMP} format into \gls{PDF} documents so that tools can extract it mechanically.
 
 An early paper about automatically extracting the title, authors(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004\,\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
 
@@ -3552,7 +3575,7 @@ caption={{The \texttt{dc:source} and \texttt{dc:language} metadata embedded in a
       </dc:language>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart12} shows the \texttt{xmp}-prefix elements in the file. This namespace is supposed to be defined at \url{http://ns.adobe.com/xap/1.0/}; however, this URL is not longer valid but the Adobe XMP Basic namespace is described at url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmp/}. In this specific case, the file provides the \texttt{CreateDate}, \texttt{xmp:ModifyDate}, \texttt{xmp:MetadataDate}, and \texttt{xmp:CreatorTool}. For the last of these the value is shown as ``LaTeX with hyperref<'' even though the \XeLaTeX~engine had been used.
+\Cref{lst:pdfinfoOutputPart12} shows the \texttt{xmp}-prefix elements in the file. This namespace is supposed to be defined at \url{http://ns.adobe.com/xap/1.0/}; however, this URL is not longer valid but the Adobe XMP Basic namespace is described at url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmp/}. In this specific case, the file provides the \texttt{CreateDate}, \texttt{xmp:ModifyDate}, \texttt{xmp:MetadataDate}, and \texttt{xmp:CreatorTool}. For the last of these the value is shown as ``LaTeX with hyperref'' even though the \XeLaTeX{} engine had been used.
 \begin{lstlisting}[style=myXML,
 caption={The final set of metadata embedded in a PDF file}, label={lst:pdfinfoOutputPart12}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
@@ -3763,7 +3786,7 @@ Add better support for the subject area (or areas in the case of a student doing
 
 \subsection{Better support for mathematical expressions in abstracts}
 \label{sec:betterSupportForMathInAbstracts}
-\LaTeX~in the abstracts is passed through to the pseudo JSON in the “For DIVA” text at the end of the thesis. When preparing this text for Cortina calendar entries or for the announcement in the Canvas course room (and for the calendar event in the course room) some simple \LaTeX~commands are converted to \gls{HTML}. As few abstracts (in the many abstracts that I looked at in DiVA) have equations I have only done these few transformations. However, if there were to be more use of equations, then there is probably a need to support them for the different platforms (Cortina (see Appendix~\ref{sec:BetterSupportforMathinCortina}), DiVA (see Appendix~\ref{sec:SupportForMathematicsInDiVA}), and Canvas (see Appendix~\ref{sec:betterSupportMathInCortinaAndCourseCalendar})).
+\LaTeX{} in the abstracts is passed through to the pseudo JSON in the “For DIVA” text at the end of the thesis. When preparing this text for Cortina calendar entries or for the announcement in the Canvas course room (and for the calendar event in the course room) some simple \LaTeX~commands are converted to \gls{HTML}. As few abstracts (in the many abstracts that I looked at in DiVA) have equations I have only done these few transformations. However, if there were to be more use of equations, then there is probably a need to support them for the different platforms (Cortina (see Appendix~\ref{sec:BetterSupportforMathinCortina}), DiVA (see Appendix~\ref{sec:SupportForMathematicsInDiVA}), and Canvas (see Appendix~\ref{sec:betterSupportMathInCortinaAndCourseCalendar})).
 
 
 \subsubsection{Better support for mathematics in Canvas course announcement and course calendar}
@@ -3856,7 +3879,7 @@ $<$span class=\textbackslash"math-tex\textbackslash"$>$\textbackslash\textbacksl
 
 \noindent He also noted that Cortina does not allow images in paragraphs, so the solutions for Cortina and DiVA have to be different.
 
-An important note about the above example is that \textbackslash over is deprecated and one should use \textbackslash frac{}{} or one of its variance instead; hence, I used this version of the equation in my source \LaTeX~file.
+An important note about the above example is that \textbackslash over is deprecated and one should use \textbackslash frac{}{} or one of its variance instead; hence, I used this version of the equation in my source \LaTeX{} file.
 
 \Cref{fig:cortinaExample1} shows the entry in the Cortina calendar, while \Cref{fig:cortinaExample2} and \Cref{fig:cortinaExample3} show zoomed in views of the equations.
 \clearpage
@@ -3892,7 +3915,7 @@ An important note about the above example is that \textbackslash over is depreca
 
 \subsubsection{Support for mathematics in DiVA}
 \label{sec:SupportForMathematicsInDiVA}
-In contrast to Canvas and Cortina, DiVA uses pictures (although these can have a \LaTeX~expression as an “alt” description of the image contents).
+In contrast to Canvas and Cortina, DiVA uses pictures (although these can have a \LaTeX{} expression as an “alt” description of the image contents).
 The code does not (yet) support the addition of equations to the DiVA entry of the abstracts.
 The current DiVA user interface seems to strip out the math-tex classes, \ie 
 
@@ -4016,9 +4039,10 @@ There is an open question of the extent to which the National Subject Category i
 
 Biber's data annotation syntax enables bibliography entries to carry rich, structured metadata attached directly to individual author or field items without modifying the underlying \BibLaTeX\ data model. \Cref{lst:biberAuthorAnnotation} shows an example with three authors, each of whom has an \gls{ORCID} identifier, \ie an ORCID iD. Additionally, the first two authors are noted as having contributed equally (\eg to designate joint first authorship).
 
+As described in §3.7 of the \texttt{biblatex} package manual, data annotations enable an author to attach semantic information to information in a bibliography. The field name suffix \enquote{+an} is a user-definable marker that this field contains an annotation. After this marker is an optional named marker (by default \enquote{default}). For example, in \Cref{lst:biberAuthorAnnotation} one can indicate the Swedish title for a work by adding: \texttt{title+an:swedish} and the Swedish title.
 
+\Needspace*{18\baselineskip}
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, caption={{Example of Biber author annotations for ORCID and equal contribution}}, label=lst:biberAuthorAnnotation]
-@article{doe2025collaborative,
 @article{doe2025collaborative,
   author    = {Maguire, Jr., Gerald Q. and Smith, Jane and Green, Alex},
   author+an = {
@@ -4029,19 +4053,20 @@ Biber's data annotation syntax enables bibliography entries to carry rich, struc
     3:orcid="0000-0003-9876-5432";
   },
   title     = {Collaborative Systems in Higher Education},
+  title+an:swedish = {Samarbetssystem inom högre utbildning},
   journal   = {Journal of Academic Stewardship},
   year      = {2025},
   volume    = {3},
   number    = {2},
   pages     = {112--128},
-  doi       = {10.1000/182}
-}
+  doi       = {10.1000/182},
+  placeholder={Placeholder fake reference for use in examples}
 }
 \end{lstlisting}
 
-Note that each line of the annotation has a prefix of the form `<number>:' followed by a name, equal sign, and a quoted value. Internally, this information is encoded into \textit{parts} and stored by Biber into the `.bbl' file.
+Note that each line of the annotation has a prefix of the form `<number>:' followed by a name, equal sign (`='), and a quoted value. Internally, this information is encoded into \textit{parts} and stored by Biber into the \texttt{`.bbl'} file. Note also the use of the \texttt{placeholder} field to explicitly identify this as a fake reference to be used simply for the purposes of examples.
 
-\subsection{BibLaTeX Part Annotation Signature}
+\subsubsection{BibLaTeX Part Annotation Signature}
 Programmatic access to the annotation is done via:
 \begin{quote}
 \texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
@@ -4051,32 +4076,41 @@ Programmatic access to the annotation is done via:
 
 The three optional brackets define the bibliographic coordinates (`[author][default][<idx>]`), while the part slug is passed as the mandatory brace argument (`\{<part>\}`). In the example above, the slug will be \enquote{orcid} or \enquote{equal}.
 
+To render these annotations in print, one can define \BibLaTeX\ formatting hooks (as shown in \Cref{lst:biberHookExample1A}). You can test for active annotations using \texttt{\textbackslash haspartannotation} and retrieve values with \texttt{\textbackslash getpartannotation}. In this code, equal authorship is indicated with a superscript asterisk, while the name gets an  \texttt{\textbackslash orcidlink} hyperlink, \ie beside the name is the official green, circular \gls{ORCID} icon as an actionable, live hyperlink targeting the author's \gls{ORCID} record page. The icon itself is drawn as a resolution-independent vector path using TikZ/PDF literals rather than a raster image.
 
-To render these annotations in print, one can define \BibLaTeX\ formatting hooks (as shown in \Cref{lst:biberHookExample1}). You can test for active annotations using \texttt{\textbackslash haspartannotation[} and retrieve values with \texttt{\textbackslash getpartannotation}. In this code the equal authorship in indicated with a superscript asterisk, while the name gets an  \texttt{\textbackslash orcidlink} hyperlink, \ie beside the name is the official green, circular \gls{ORCID} icon as an actionable, live hyperlink targeting the author's \gls{ORCID} record page. The icon itself is drawn as a resolution-independent vector path using TikZ/PDF literals rather than a raster image.
+\Cref{lst:biberHookIconOrText} shows how you can generate the green, circular \gls{ORCID} icon (requires use of the \texttt{orcidlink} package) or a tiny bold font green string saying \enquote{iD}. Note that \texttt{\textbackslash orcidlink\{\}} provides its own spacing after the name and before the icon.
 
-\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example of a \LaTeX{} hook for equal contribution and ORCID icons}}, label=lst:biberHookExample1]
-\usepackage{biblatex}
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{ORCID icon or colored text}}, label=lst:biberHookIconOrText]
 \usepackage{orcidlink}
 
-% Render both the equal-contribution symbol and the ORCID icon next to the name
-\renewcommand*{\mkbibnamefamily}[1]{%
-  #1%
-  % Check for equal contribution annotation
-  \haspartannotation[author][default][\the\value{listcount}]{equal}{%
-    \textsuperscript{*}%
-  }{}%
-  % Check for ORCID annotation
-  \haspartannotation[author][default][\the\value{listcount}]{orcid}{%
-    \,\orcidlink{\getpartannotation[author][default][\the\value{listcount}]{orcid}}%
-  }{}%
+\newcommand*{\renderorcidbadge}[1]{%
+\orcidlink{#1}%
+}
+
+\newcommand*{\renderorcidbadgeText}[1]{%
+\,\href{https://orcid.org/#1}{\textcolor[HTML]{A6CE39}{\tiny\textbf{iD}}}%
 }
 \end{lstlisting}
 
-As an example of this for \textbackslash fullcite\{doe2025collaborative\}:
+\Cref{sec:orcidlinksMethodA} and \Cref{sec:orcidlinksMethodB} demonstrate two different methods of getting an author's  ORCID iD and displaying the badge with a hyperlink to the author's \gls{ORCID} landing page. First, we shall note some common features of each method:
+both create a \TeX{} box (called \texttt{\textbackslash orcidbox}) to render text into, both feature a new command to render the \gls{ORCID} badge, each defines their own \texttt{render\_orcid\_from\_box()} Lua function, and within a group \first each defines a local \texttt{\textbackslash mkbibnamefamily}\footnote{One can also renew the command \texttt{\textbackslash mkbibnamegiven} for markup of the author's first name.} that is used when rendering a family name in a bibliography, \Second sets the values of the \texttt{maxnames} and \texttt{minnames} counters to be used for the next bibliographic citation (via 
+\texttt{\textbackslash AtNextCite}), and \third uses \texttt{\textbackslash fullcite\{\}} to render a given bibliographic entry.
+
+The two methods differ in their definition of the \texttt{render\_orcid\_from\_box()} or \texttt{render\_orcid\_clean()} Lua function and their own \texttt{\textbackslash renderorcidbadgeX} function. The main difference is how they walk the contents, \ie the rendered nodes in the box. So the questions that might come to mind are: Why do we need to render to a box? and Why do we need to walk the contents of this box? The answer to both questions is that the \texttt{\textbackslash getpartannotation} does not return a character string, but \texttt{\textbackslash href} or \texttt{\textbackslash orcidlink} operates in URL-string mode; hence it requires an evaluated, literal string. By setting the result of \texttt{\textbackslash getpartannotation} in a box, we can now examine its contents and turn it into a string. The code also takes advantage of the fixed format of an ORCID iD to avoid problems with hyphenation and discretionary hyphenation (this is a deep morass in the \LaTeX{} engine used, the font used, many different types of hyphens, and even ligature processing). The two methods utilize different methods of walking the nodes of the box's contents:
+\begin{itemize}
+    \item Method A (Deep Recursive Walk): Walks into the sub-lists of discretionary nodes (\texttt{n.replace} and \texttt{n.pre}) directly, attempting to extract the literal glyphs embedded inside hyphenation alternatives.
+
+    \item Method B (Box Descent with Direct Hyphen Substitution): Explicitly descends into nested horizontal and vertical box lists (HLIST and VLIST), treats any encountered discretionary node directly as a hyphen (\texttt{table.insert(chars, \enquote{-})}), and relies on the subsequent 16-character normalization pass to format the canonical 4-4-4-4 structure regardless of font shaping effects.
+\end{itemize}
+
+
+\subsubsection{Method A for inserting ORCID links}
+\label{sec:orcidlinksMethodA}
+As an example of this for \textbackslash fullcite\{doe2025collaborative\} using the code in \Cref{lst:biberHookExample1A} is:
 \newbox\orcidbox
 
 \newcommand*{\renderorcidbadge}[1]{%
-  \,\href{https://orcid.org/#1}{\textcolor[HTML]{A6CE39}{\tiny\textbf{iD}}}%
+\orcidlink{#1}%
 }
 
 \begin{luacode*}
@@ -4159,54 +4193,76 @@ end
 \fullcite{doe2025collaborative}
 \endgroup
 
-Hello!
-\begingroup
-\directlua{
-  function inspect_box0()
-    local b = tex.box[0]
-    if not b then
-      tex.print("[box0 is nil]")
-      return
-    end
-    if not b.list then
-      tex.print("[box0.list is nil (empty box)]")
-      return
-    end
+Note that this reference has a red warning \enquote{[Unresolved Placeholder: Placeholder fake reference for use in examples]} to explicitly indicate that it is \emph{not} a real reference. This markup is done via the field declaration in \texttt{ext-eprint-dbx.tex} and realized by the check \texttt{\textbackslash iffieldundef\{placeholder\}} invoked by \texttt{\textbackslash AtEveryCitekey} (executes when a citation key is processed in text, \eg \texttt{\textbackslash cite}, \texttt{\textbackslash parencite}, \texttt{\textbackslash textcite}, and \texttt{\textbackslash fullcite}) and \texttt{\textbackslash AtEveryBibitem} (executes inside the bibliography list, \ie \texttt{\textbackslash printbibliography}). Because \texttt{\textbackslash fullcite} internally expands using bibliography drivers, there is no double-printing or omission of the warning on standalone citations in the log file.
 
-    local trace = {}
-    local chars = {}
-    local GLYPH = node.id("glyph")
-    local HLIST = node.id("hlist")
-    local VLIST = node.id("vlist")
+\Needspace*{10\baselineskip} % to prevent just a tiny portion being shown at the bottom of a page
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example of a \LaTeX{} hook for equal contribution and ORCID icons}}, label=lst:biberHookExample1A]
+\newbox\orcidbox
 
-    local function walk(head)
-      for n in node.traverse(head) do
-        local ntype = tostring(node.type(n.id))
-        table.insert(trace, ntype)
-        if n.id == GLYPH then
-          table.insert(chars, utf8.char(n.char))
-        elseif n.id == HLIST or n.id == VLIST then
-          if n.list then walk(n.list) end
-        end
-      end
-    end
-
-    walk(b.list)
-
-    local collected = table.concat(chars)
-    local nodetypes = table.concat(trace, ", ")
-
-    -- Print directly onto the typeset page in magenta
-    tex.print(string.char(92) .. "textcolor{magenta}{[chars: " .. collected .. " | nodes: " .. nodetypes .. "]}")
-    
-    -- Also print to the compilation terminal/log
-    texio.write_nl("--- BOX 0 INSPECTION START ---")
-    texio.write_nl("Collected string: " .. collected)
-    texio.write_nl("Node sequence:    " .. nodetypes)
-    texio.write_nl("--- BOX 0 INSPECTION END ---")
-  end
+\newcommand*{\renderorcidbadge}[1]{%
+\orcidlink{#1}%
 }
 
+\begin{luacode*}
+function render_orcid_from_box()
+  local box_head = tex.box.orcidbox.head
+  if not box_head then return end
+
+  local chars = {}
+  local GLYPH = node.id("glyph")
+  local DISC  = node.id("discretionary")
+
+  local function walk(head)
+    for n in node.traverse(head) do
+      if n.id == GLYPH then
+        table.insert(chars, utf8.char(n.char))
+      elseif n.id == DISC then
+        if n.replace then
+          walk(n.replace)
+        elseif n.pre then
+          walk(n.pre)
+        else
+          table.insert(chars, "-")
+        end
+      elseif n.head then
+        walk(n.head)
+      end
+    end
+  end
+
+  walk(box_head)
+  local raw_orcid = table.concat(chars)
+
+  -- Filter out anything except digits and X/x (hyphen placed at the very end of class)
+  local base = ""
+  for c in raw_orcid:gmatch("[0-9xX]") do
+    base = base .. c
+  end
+
+  local formatted_orcid = ""
+  if #base == 16 then
+    -- Normalize the 16th character (check digit) to uppercase X if applicable
+    local prefix = base:sub(1, 15)
+    local checksum = base:sub(16, 16):upper()
+    local full = prefix .. checksum
+
+    formatted_orcid = string.format("%s-%s-%s-%s",
+      full:sub(1, 4),
+      full:sub(5, 8),
+      full:sub(9, 12),
+      full:sub(13, 16)
+    )
+  else
+    formatted_orcid = raw_orcid
+  end
+
+  if formatted_orcid and formatted_orcid ~= "" then
+    tex.sprint(token.create("renderorcidbadge"), "{", formatted_orcid, "}")
+  end
+end
+\end{luacode*}
+
+\begingroup
 \renewcommand*{\mkbibnamefamily}[1]{%
   #1%
   \edef\curridx{\the\value{listcount}}%
@@ -4214,8 +4270,8 @@ Hello!
     \textsuperscript{*}%
   }{}%
   \haspartannotation[author][default][\curridx]{orcid}{%
-    \setbox0=\hbox{\getpartannotation[author][default][\curridx]{orcid}}%
-    \directlua{inspect_box0()}%
+    \global\setbox\orcidbox=\hbox{\getpartannotation[author][default][\curridx]{orcid}}%
+    \directlua{render_orcid_from_box()}%
   }{}%
 }
 
@@ -4226,35 +4282,210 @@ Hello!
 
 \fullcite{doe2025collaborative}
 \endgroup
+\end{lstlisting}
+
+
+
+
+\subsubsection{Method B for inserting ORCID links}
+\label{sec:orcidlinksMethodB}
+Another example of this for \textbackslash fullcite\{doe2025collaborative\} using the code in \Cref{lst:biberHookExample1B} is:
+\newbox\orcidbox
+
+\newcommand*{\renderorcidbadgeB}[1]{%
+\orcidlink{#1}%
+}
+
+\begin{luacode*}
+function render_orcid_clean()
+  local box_head = tex.box.orcidbox.head
+  if not box_head then return end
+
+  local chars = {}
+  local GLYPH = node.id("glyph")
+  local DISC  = node.id("discretionary")
+  local HLIST = node.id("hlist")
+  local VLIST = node.id("vlist")
+
+  local function walk(head)
+    for n in node.traverse(head) do
+      if n.id == GLYPH then
+        table.insert(chars, utf8.char(n.char))
+      elseif n.id == DISC then
+        table.insert(chars, "-")
+      elseif n.id == HLIST or n.id == VLIST then
+        if n.head then walk(n.head) end
+      end
+    end
+  end
+
+  walk(box_head)
+  local raw_orcid = table.concat(chars)
+
+  -- 1. Extract only alphanumeric characters (digits and X/x)
+  local alphanum = ""
+  for c in raw_orcid:gmatch("[0-9xX]") do
+    alphanum = alphanum .. c
+  end
+
+  -- 2. Format into standard ORCID 4-4-4-4 hyphenated layout
+  local final_orcid = ""
+  if #alphanum == 16 then
+    local prefix = alphanum:sub(1, 15)
+    local checksum = alphanum:sub(16, 16):upper()
+    local full = prefix .. checksum
+
+    final_orcid = string.format("%s-%s-%s-%s",
+      full:sub(1, 4),
+      full:sub(5, 8),
+      full:sub(9, 12),
+      full:sub(13, 16)
+    )
+  else
+    final_orcid = raw_orcid
+  end
+
+  if final_orcid and final_orcid ~= "" then
+    tex.sprint(token.create("renderorcidbadgeB"), "{", final_orcid, "}")
+  end
+end
+\end{luacode*}
+
+\begingroup
+\renewcommand*{\mkbibnamefamily}[1]{%
+  #1%
+  \edef\curridx{\the\value{listcount}}%
+  \haspartannotation[author][default][\curridx]{equal}{%
+    \textsuperscript{*}%
+  }{}%
+  \haspartannotation[author][default][\curridx]{orcid}{%
+    \global\setbox\orcidbox=\hbox{\getpartannotation[author][default][\curridx]{orcid}}%
+    \directlua{render_orcid_clean()}%
+  }{}%
+}
+
+\AtNextCite{%
+  \defcounter{maxnames}{99}%
+  \defcounter{minnames}{99}%
+}
+
+\fullcite{doe2025collaborative}
+\endgroup
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example of a \LaTeX{} hook for equal contribution and ORCID icons}}, label=lst:biberHookExample1B]
+\usepackage{biblatex}
+\usepackage{orcidlink}
+
+\newbox\orcidbox
+
+\newcommand*{\renderorcidbadgeB}[1]{%
+\orcidlink{#1}%
+}
+
+\begin{luacode*}
+function render_orcid_clean()
+  local box_head = tex.box.orcidbox.head
+  if not box_head then return end
+
+  local chars = {}
+  local GLYPH = node.id("glyph")
+  local DISC  = node.id("discretionary")
+  local HLIST = node.id("hlist")
+  local VLIST = node.id("vlist")
+
+  local function walk(head)
+    for n in node.traverse(head) do
+      if n.id == GLYPH then
+        table.insert(chars, utf8.char(n.char))
+      elseif n.id == DISC then
+        table.insert(chars, "-")
+      elseif n.id == HLIST or n.id == VLIST then
+        if n.head then walk(n.head) end
+      end
+    end
+  end
+
+  walk(box_head)
+  local raw_orcid = table.concat(chars)
+
+  -- 1. Extract only alphanumeric characters (digits and X/x)
+  local alphanum = ""
+  for c in raw_orcid:gmatch("[0-9xX]") do
+    alphanum = alphanum .. c
+  end
+
+  -- 2. Format into standard ORCID 4-4-4-4 hyphenated layout
+  local final_orcid = ""
+  if #alphanum == 16 then
+    local prefix = alphanum:sub(1, 15)
+    local checksum = alphanum:sub(16, 16):upper()
+    local full = prefix .. checksum
+
+    final_orcid = string.format("%s-%s-%s-%s",
+      full:sub(1, 4),
+      full:sub(5, 8),
+      full:sub(9, 12),
+      full:sub(13, 16)
+    )
+  else
+    final_orcid = raw_orcid
+  end
+
+  if final_orcid and final_orcid ~= "" then
+    tex.sprint(token.create("renderorcidbadgeB"), "{", final_orcid, "}")
+  end
+end
+\end{luacode*}
+
+\begingroup
+\renewcommand*{\mkbibnamefamily}[1]{%
+  #1%
+  \edef\curridx{\the\value{listcount}}%
+  \haspartannotation[author][default][\curridx]{equal}{%
+    \textsuperscript{*}%
+  }{}%
+  \haspartannotation[author][default][\curridx]{orcid}{%
+    \global\setbox\orcidbox=\hbox{\getpartannotation[author][default][\curridx]{orcid}}%
+    \directlua{render_orcid_clean()}%
+  }{}%
+}
+
+\AtNextCite{%
+  \defcounter{maxnames}{99}%
+  \defcounter{minnames}{99}%
+}
+
+\fullcite{doe2025collaborative}
+\endgroup
+\end{lstlisting}
 
 \subsubsection{Using annotation to store Contributor Roles Taxonomy (CReDiT) data}
 
 Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022\,\cite{niso_z39_104_2022}). However, standard canonical identifiers using the \enquote{Simplified Name} form can be utilized directly as annotation keys, as outlined in \Cref{tab:CReDiT_annotation}. The values of these can be: \enquote{lead}, \enquote{equal} (=true), or \enquote{supporting}.
 
 \begin{table}[!htp]
-    \centering
-    \caption{CReDiT roles for author data annotations in \BibLaTeX with their Simplified Name,\ie annotation key }
-    \label{tab:CReDiT_annotation}
-    \begin{tabular}{L{4.2cm} L{4.5cm} L{5.3cm}}
-      \hline
-      \textbf{CReDiT Role} & \textbf{Simplified Name} \\
-      \hline
-      Conceptualization          & \texttt{conceptualization} \\
-      Data curation              & \texttt{data-curation} \\
-      Formal analysis            & \texttt{formal-analysis}\\
-      Funding acquisition        & \texttt{funding-acquisition} \\
-      Investigation              & \texttt{investigation}\\
-      Methodology                & \texttt{methodology} \\
-      Project administration     & \texttt{project-administration} \\
-      Resources                  & \texttt{resources} \\
-      Software                   & \texttt{software} \\
-      Supervision                & \texttt{supervision} \\
-      Validation                 & \texttt{validation} \\
-      Visualization              & \texttt{visualization} \\
-      Writing -- original draft  & \texttt{writing-original-draft} \\
-      Writing -- review \& editing & \texttt{writing-review-editing}\\
-      \hline
-    \end{tabular}
+  \centering
+  \caption{CReDiT roles for author data annotations in \BibLaTeX with their Simplified Name, \ie annotation key }
+  \label{tab:CReDiT_annotation}
+  \begin{tabular}{L{5.5cm} L{8.5cm}}
+    \hline
+    \textbf{CReDiT Role} & \textbf{Simplified Name} \\
+    \hline
+    Conceptualization          & \texttt{conceptualization} \\
+    Data curation              & \texttt{data-curation} \\
+    Formal analysis            & \texttt{formal-analysis}\\
+    Funding acquisition        & \texttt{funding-acquisition} \\
+    Investigation              & \texttt{investigation}\\
+    Methodology                & \texttt{methodology} \\
+    Project administration     & \texttt{project-administration} \\
+    Resources                  & \texttt{resources} \\
+    Software                   & \texttt{software} \\
+    Supervision                & \texttt{supervision} \\
+    Validation                 & \texttt{validation} \\
+    Visualization              & \texttt{visualization} \\
+    Writing -- original draft  & \texttt{writing-original-draft} \\
+    Writing -- review \& editing & \texttt{writing-review-editing}\\
+    \hline
+  \end{tabular}
 \end{table}
 \FloatBarrier
 
@@ -4262,21 +4493,24 @@ There are two primary paradigms for encoding \gls{CReDiT} roles using Biber anno
 
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, caption={{Pattern A: Role-as-Key (Fine-grained with degrees of contribution)}}, label=lst:biberCreditPatternA]
 @article{maguire2026pipeline,
-  author    = {Maguire, Jr., Gerald Q. and Smith, Jane},
+  author    = {Maguire Jr., Gerald Q. and Smith, Jane},
   author+an = {
-    1:orcid="0000-0002-6066-7469", 
-      conceptualization="lead", 
-      software="lead", 
-      writing_original="lead";
-    2:orcid="0000-0001-2345-6789", 
-      supervision="lead", 
-      writing_review="supporting"
+    1:orcid="0000-0002-6066-746X";
+    1:conceptualization="lead";
+    1:software="lead";
+    1:writing-original-draft="lead";
+    2:orcid="0000-0001-2345-6789";
+    2:supervision="lead";
+    2:writing-review-editing="supporting"
   },
   title     = {Automated Metadata Integrity in Academic Publishing},
   journal   = {Journal of Academic Stewardship},
   year      = {2026},
+  volume    = {4},
+  number    = {1},
+  pages     = {45--60},
   doi       = {10.1000/182},
-  placeholder = {A fake example for documentation}
+  placeholder={Placeholder fake reference for use in examples}
 }
 \end{lstlisting}
 
@@ -4284,8 +4518,8 @@ There are two primary paradigms for encoding \gls{CReDiT} roles using Biber anno
 @article{maguire2026pipeline,
   author    = {Maguire, Jr., Gerald Q. and Smith, Jane},
   author+an = {
-    1:orcid="0000-0002-6066-746X", credit="Conceptualization, Software, Writing - original draft";
-    2:orcid="0000-0001-2345-6789", credit="Supervision, Writing - review & editing"
+    1:orcid="0000-0002-6066-746X"; 1:credit="Conceptualization, Software, Writing - original draft";
+    2:orcid="0000-0001-2345-6789"; 2:credit="Supervision, Writing - review & editing"
   },
   title     = {Automated Metadata Integrity in Academic Publishing},
   journal   = {Journal of Academic Stewardship},
@@ -4294,8 +4528,7 @@ There are two primary paradigms for encoding \gls{CReDiT} roles using Biber anno
 }
 \end{lstlisting}
 
-
-Which of these two is the best method for KTH's doctoral thesis students?
+Pattern A is the best method for \gls{KTH} doctoral thesis students because it makes it easy to state the values associated with a role.
 
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example \LaTeX{} hook for extracting and rendering contributor roles}}, label=lst:biberHookExample2]
 \usepackage{biblatex}
@@ -4304,9 +4537,9 @@ Which of these two is the best method for KTH's doctoral thesis students?
 \newbibmacro*{author:credit:roles}{%
   \begingroup
   \def\do{%
-    \hasitemannotation[\currentname][credit]{%
-      \par\small\textbf{\namepartfamily}: \getitemannotation[\currentname][credit]%
-    }{}%
+    \haspartannotation[author][default][\currentname]{credit}%
+      {\par\small\textbf{\namepartgiven} \textbf{\namepartfamily}: \getpartannotation[author][default][\currentname]{credit}}%
+      {}%
   }%
   \printnames[creditnames]{author}%
   \endgroup
@@ -4323,8 +4556,9 @@ This setup allows automated Python/CI validation pipelines to extract and cross-
 
 Because \texttt{\textbackslash renewbibmacro*} is dynamically scoped in \LaTeX, it can be redefined specifically for the author contribution section and either restored afterward or restricted within a local group.
 
-As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribution section inside a \TeX\ group (\texttt{\textbackslash  begingroup \ldots \textbackslash endgroup}) ensures the modification automatically discards itself when the scope closes, leaving the main thesis bibliography unaffected:
+As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribution section inside a \TeX\ group (\texttt{\textbackslash begingroup \ldots \textbackslash endgroup}) ensures the modification automatically discards itself when the scope closes, leaving the main thesis bibliography unaffected:
 
+\Needspace*{18\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Local group scoping for CReDiT bibliography output}}, label=lst:biberHookExampleLocalGroupScoping]
 \chapter*{Author Contributions}
 
@@ -4345,7 +4579,7 @@ As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribut
 % Outside the group, finentry reverts to its original standard definition
 \end{lstlisting}
 
-The following generates some example output when using Approach B for the CReDiT information in the.bib file:
+The following generates some example output when using Approach A for the CReDiT information in the \texttt{.bib} file:
 \begingroup
 % 1. Helper mapping from simplified kebab-case slug to display text
 \newcommand{\formatcreditrole}[1]{%
@@ -4387,7 +4621,7 @@ The following generates some example output when using Approach B for the CReDiT
 % 4. Name format driver
 \DeclareNameFormat{creditnames}{%
   \edef\currentauthornum{\the\value{listcount}}%
-  \par\smallskip\noindent\textbf{\namepartfamily}%
+  \par\smallskip\noindent\textbf{\namepartgiven} \textbf{\namepartfamily}%
   \def\do##1{\checkandprintrole{\currentauthornum}{##1}}%
   \expandafter\docsvlist\expandafter{\CreditSlugList}%
 }
@@ -4437,6 +4671,7 @@ The three optional brackets define the bibliographic coordinates (`[author][defa
 
 If you prefer to redefine macros globally across document sections, redefine \texttt{finentry} before the papers list and reset it before calling \texttt{\textbackslash printbibliography}:
 
+\Needspace*{16\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Sequential document-level redefinition of finentry}}, label=lst:biberHookExampleSequentialRedefinition]
 % In the Author Contributions front matter:
 \renewbibmacro*{finentry}{%
@@ -4470,119 +4705,76 @@ For granular control when citing individual papers with contributor details with
 }
 \end{lstlisting}
 
-To define the slug-to-text mappings:
-\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Defining slug-to-text mappings}}, label=lst:biberCreditCommandSlugs]
-% ==============================================================================
-% CReDiT Role Slug-to-Text Mappings
-% ==============================================================================
+\BibLaTeX\ provides the author index context automatically via \texttt{\textbackslash currentname} (which expands to the current name list position, such as 1, 2, etc.) when stepping through an author list with \texttt{\textbackslash indexnames} or custom name formatters.
+
+Define the slug-to-text mappings with \texttt{\textbackslash csdef}, as shown in \Cref{lst:biberCreditRolesIterate}. Using etoolbox list iteration (\texttt{\textbackslash docsvlist}), you can step through each author and test each of the 14 standard CReDiT slugs systematically. Note that the code in \Cref{lst:biberCreditRolesIterate} should be placed in the preamble, except for \enquote{6. Hook into finentry} which only needs to be invoked (within a \texttt{\textbackslash begingroup} \dots \texttt{\textbackslash endgroup}) when you need it for listing the author contributions in your thesis.
+
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Iterate through slugs}}, label=lst:biberCreditRolesIterate]
+\usepackage{biblatex}
 \usepackage{etoolbox}
 
-% Define the formatted title string for each canonical CReDiT slug
+% 1. Helper mapping from simplified kebab-case slug to display text
+\newcommand{\formatcreditrole}[1]{%
+  \ifcsdef{credit@#1}{\csuse{credit@#1}}{\detokenize{#1}}%
+}
 \csdef{credit@conceptualization}{Conceptualization}
-\csdef{credit@data_curation}{Data curation}
-\csdef{credit@formal_analysis}{Formal analysis}
-\csdef{credit@funding_acquisition}{Funding acquisition}
+\csdef{credit@data-curation}{Data curation}
+\csdef{credit@formal-analysis}{Formal analysis}
+\csdef{credit@funding-acquisition}{Funding acquisition}
 \csdef{credit@investigation}{Investigation}
 \csdef{credit@methodology}{Methodology}
-\csdef{credit@project_administration}{Project administration}
+\csdef{credit@project-administration}{Project administration}
 \csdef{credit@resources}{Resources}
 \csdef{credit@software}{Software}
 \csdef{credit@supervision}{Supervision}
 \csdef{credit@validation}{Validation}
 \csdef{credit@visualization}{Visualization}
-\csdef{credit@writing_original}{Writing -- original draft}
-\csdef{credit@writing_review}{Writing -- review \& editing}
+\csdef{credit@writing-original-draft}{Writing -- original draft}
+\csdef{credit@writing-review-editing}{Writing -- review \& editing}
+\csdef{credit@equal}{Equal contribution}
 
-% Lookup macro: formats the mapped string, or safely detokenizes if unknown
-\newcommand{\formatcreditrole}[1]{%
-  \ifcsdef{credit@#1}{\csuse{credit@#1}}{\detokenize{#1}}%
-}
-\end{lstlisting}
-
-For Pattern A:
-\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Define author:credit:roles macro}}, label=lst:biberCreditRolesMacro]
-\newbibmacro*{author:credit:roles}{%
-  \begingroup
-  % Example for checking explicit role-as-key annotations (Pattern A)
-  \newcommand{\checkrole}[1]{%
-    \hasitemannotation[\currentname][##1]{%
-      \par\small\hspace*{1em}\textbf{\formatcreditrole{##1}}%
-      \space(\getitemannotation[\currentname][##1])%
-    }{}%
-  }%
-  % Iterate over canonical slugs
-  \checkrole{conceptualization}%
-  \checkrole{software}%
-  \checkrole{writing_original}%
-  \checkrole{writing_review}%
-  \endgroup
-}
-\end{lstlisting}
-
-
-\BibLaTeX\ provides the author index context automatically via \texttt{\textbackslash currentname} (which expands to the current name list position, such as 1, 2, etc.) when stepping through an author list with \texttt{\textbackslash indexnames} or custom name formatters.
-
-Key Built-in Macros.
-\begin{itemize}
-    \item \textbackslash hasitemannotation[<item-index>][<annotation-name>]: Checks whether the name at <item-index> possesses the specified annotation slug.
-
-    \item \textbackslash getitemannotation[<item-index>][<annotation-name>]: Retrieves the assigned value (\eg lead, equal, supporting, or true) for that slug.
-\end{itemize}
-
-Implementation: Iterating Through the Slugs for Each Author
-Using etoolbox list iteration (\texttt{\textbackslash docsvlist)}, you can step through each author and test each of the 14 standard CReDiT slugs systematically:
-\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Iterate through slugs}}, label=lst:biberCreditRolesIterate]
-\usepackage{biblatex}
-\usepackage{etoolbox}
-
-% 1. List of all 14 standard CReDiT slugs to test
+% 2. List of CReDiT simplified slugs to check
 \newcommand*{\CreditSlugList}{%
-  conceptualization,%
-  data_curation,%
-  formal_analysis,%
-  funding_acquisition,%
-  investigation,%
-  methodology,%
-  project_administration,%
-  resources,%
-  software,%
-  supervision,%
-  validation,%
-  visualization,%
-  writing_original,%
-  writing_review%
+  conceptualization,data-curation,formal-analysis,funding-acquisition,%
+  investigation,methodology,project-administration,resources,software,%
+  supervision,validation,visualization,writing-original-draft,writing-review-editing,equal%
 }
 
-% 2. Helper macro to check and print an individual role for the current author index
-\newcommand*{\PrintCreditRoleForCurrentAuthor}[1]{%
-  \hasitemannotation[\currentname][#1]{%
-    \par\hspace*{2em}%
-    \formatcreditrole{#1}: \textit{\getitemannotation[\currentname][#1]}%
+% 3. Check and print role:
+\newcommand*{\checkandprintrole}[2]{%
+  \haspartannotation[author][default][#1]{#2}{%
+    \par\hspace*{1.5em}\formatcreditrole{#2}: \textit{\getpartannotation[author][default][#1]{#2}}%
   }{}%
 }
 
-% 3. Format driver for each author in the author list
-\DeclareNameFormat{creditRolesPerAuthor}{%
-  % Print the author's family name (and initials if desired)
-  \par\small\textbf{\namepartfamily}%
-  % Iterate through all 14 slugs for \currentname (the active author index)
-  \renewcommand*{\do}[1]{\PrintCreditRoleForCurrentAuthor{##1}}%
+% 4. Name format driver
+\DeclareNameFormat{creditnames}{%
+  \edef\currentauthornum{\the\value{listcount}}%
+  \par\smallskip\noindent\textbf{\namepartgiven} \textbf{\namepartfamily}%
+  \def\do##1{\checkandprintrole{\currentauthornum}{##1}}%
   \expandafter\docsvlist\expandafter{\CreditSlugList}%
 }
 
-% 4. Bibliography macro to trigger the iteration over the entry's authors
+% 5. Bibmacro: forces evaluation of all authors
 \newbibmacro*{author:credit:roles}{%
   \begingroup
-  \indexnames[creditRolesPerAuthor]{author}%
+  \defcounter{maxnames}{99}%
+  \defcounter{minnames}{99}%
+  \par\medskip\noindent\textbf{Author Contributions:}%
+  \printnames[creditnames]{author}%
   \endgroup
+}
+
+% 6. Hook into finentry
+\renewbibmacro*{finentry}{%
+  \finentry
+  \usebibmacro{author:credit:roles}%
 }
 \end{lstlisting}
 
-
 In \BibLaTeX, whenever a citation or bibliography driver is executing (such as inside \texttt{\textbackslash AtEveryBibitem}, \texttt{\textbackslash AtEveryCitekey}, \texttt{\textbackslash DeclareBibliographyDriver}, \texttt{\textbackslash fullcite}, or inside a bibmacro like \texttt{finentry}), the active entry key is automatically set as the current context.
 
-To retrieve or manipulate the current citation entry key, \BibLaTeX\ provides the following internal macros and mechanisms:
-
+When writing custom reports, contribution matrices, or diagnostic validation routines outside the standard citation loop, \BibLaTeX\ provides several mechanisms to inspect and manipulate the active citation context:
 \begin{enumerate}
     \item Standard Built-in Key Registers
     \begin{itemize}
@@ -4597,7 +4789,7 @@ To retrieve or manipulate the current citation entry key, \BibLaTeX\ provides th
     
     \item Explicitly Setting an Arbitrary Entry as "Current"
     
-If you are outside a standard bibliography loop (for example, in custom TeX/Lua code or arbitrary body text) and want to load a specific entry key into the active \BibLaTeX\  evaluation context without printing a full citation:
+If you are outside a standard bibliography loop (for example, in custom TeX/Lua code or arbitrary body text) and want to load a specific entry key into the active \BibLaTeX\ evaluation context without printing a full citation:
 \end{enumerate}
 
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Load specific entry key}}, label=lst:biberLoadSpecifcEntryKey]
@@ -4632,7 +4824,6 @@ Usage Example: Printing the Current Entry Key Alongside Metadata
 \end{lstlisting}
 
 Whenever this macro is invoked during bibliography rendering, \texttt{\textbackslash thefield\{entrykey\}} dynamically evaluates to whatever reference is currently being processed.
-
 
 \clearpage
 
