@@ -3048,7 +3048,7 @@ As a result of adding support for the \gls{PDF} metadata for the copyright notic
 \Needspace*{10\baselineskip}
 \subsection{Adding additional metadata to the PDF file}
 \label{sec:addingMetadataToPDFfile}
-Increasingly metadata is being embedded into digital objects to provide information about the creator (author, photographer, \etc), date of creation, copyright notices, \etc. In a typical \gls{PDF} file produced by \LaTeX{}, there is both PDF-specific metadata and additional metadata. This additional metadata is stored using Adobe's \glsfirst{XMP}. \gls{XMP} is a means of embedding metadata in \gls{XMP} format into \gls{PDF} documents so that tools can extract it mechanically.
+Increasingly, metadata is being embedded into digital objects to provide information about the creator (author, photographer, \etc), date of creation, copyright notices, \etc. In a typical \gls{PDF} file produced by \LaTeX{}, there is both PDF-specific metadata and additional metadata. This additional metadata is stored using Adobe's \glsfirst{XMP}. \gls{XMP} is a means of embedding metadata in \gls{XMP} format into \gls{PDF} documents so that tools can extract it mechanically.
 
 An early paper about automatically extracting the title, authors(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004\,\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
 
@@ -3998,12 +3998,12 @@ This information is valuable when the student is entering the metadata for their
 \subsection{Better exploiting unicode}
 \label{sec:betterExploitingUnicode}
 
-The current design store the \LaTeX{} commands in abstract \textit{without} expanding the \LaTeX{} macros This makes it possible to post-process these commands and make content that is suited for making announcements of the oral presentation, making calendar entries for this presentation, and generating the abstracts for the \gls{MODS} file for \gls{DiVA}. However,  if one wants to take the full leap to unicode, this is perhaps not a good design choice - as it requires that all of the processing that \LaTeX{} could do of the unicode is not done and that the programs that extract the unexpanded contents will have to keep changing to keep up with want \LaTeX{} macros are used. 
+The current design stores the \LaTeX{} commands in abstracts \textit{without} expanding the \LaTeX{} macros. This makes it possible to post-process these commands and make content that is suited for making announcements of the oral presentation, making calendar entries for this presentation, and generating the abstracts for the \gls{MODS} file for \gls{DiVA}. However,  if one wants to take the full leap to unicode, this is perhaps not a good design choice, as it requires that all of the processing that \LaTeX{} could do of the unicode is not done and that the programs that extract the unexpanded contents will have to keep changing to keep up with what \LaTeX{} macros are used. 
 
 There might seem to be two alternatives:
 \begin{enumerate}
     \item Keep modifying the extraction programs as needed or
-    \item Only allow the use of \LaTeX{} macros that expand into unicode; thus, not allowing environments and commands such as \textbackslash textbf\{\}, \textbackslash textif\{\}, etc. that do not translate directly into characters that can be written in unicode.
+    \item Only allow the use of \LaTeX{} macros that expand into unicode; thus, not allowing environments and commands such as \textbackslash textbf\{\}, \textbackslash textif\{\}, \etc that do not translate directly into characters that can be written in unicode.
 \end{enumerate}
 
 In the second alternative, one might think about translating the string inside a \textbackslash textbf\{\} into unicode characters in the Bold, Latin, uppercase \& lowercase range, \ie U+1D400 to U+1D433 (there is a similar transformation possible for Greek). The characters are defined in the \textsc{unicode-math} package. Logically, this would be similar to redefining \textbackslash textbf\{\} as \textbackslash mathtextbf\{\}\footnote{\textbackslash mathtextbf\{\} cannot be used directly as it only works in math mode.}.  
@@ -4552,7 +4552,7 @@ Pattern A is the best method for \gls{KTH} doctoral thesis students because it m
 }
 \end{lstlisting}
 
-This setup allows automated Python/CI validation pipelines to extract and cross-check contributor statements directly from \texttt{.bib} files without manual re-entry.
+This setup allows automated Python/\gls{CI} validation pipelines to extract and cross-check contributor statements directly from \texttt{.bib} files without manual re-entry.
 
 Because \texttt{\textbackslash renewbibmacro*} is dynamically scoped in \LaTeX, it can be redefined specifically for the author contribution section and either restored afterward or restricted within a local group.
 
@@ -4579,7 +4579,7 @@ As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribut
 % Outside the group, finentry reverts to its original standard definition
 \end{lstlisting}
 
-The following generates some example output when using Approach A for the CReDiT information in the \texttt{.bib} file:
+The following generates some example output when using Approach A for the \gls{CReDiT} information in the \texttt{.bib} file:
 \begingroup
 % 1. Helper mapping from simplified kebab-case slug to display text
 \newcommand{\formatcreditrole}[1]{%
@@ -4653,8 +4653,8 @@ The following generates some example output when using Approach A for the CReDiT
 
 \subsubsection{Architectural Takeaways for Your Pipeline}
 \begin{itemize}
-    \item \textbf{Biber `.bib` Annotation Delimiters:} Item annotations must be delimited by semicolons (`;`), not commas (`,`), with the item index explicit on each part (e.g., `1:conceptualization="lead"; 1:software="lead"`).
-    \item \textbf{Kebab-Case Slugs:} Adopting the standard CReDiT simplified names (e.g., `writing-original-draft`, `data-curation`) avoids unescaped underscore collisions in TeX math mode and simplifies downstream JSON serialization.
+    \item \textbf{Biber `.bib` Annotation Delimiters:} Item annotations must be delimited by semicolons (`;`), not commas (`,`), with the item index explicit on each part (\eg `1:conceptualization="lead"; 1:software="lead"`).
+    \item \textbf{Kebab-Case Slugs:} Adopting the standard \gls{CReDiT} simplified names (\eg `writing-original-draft`, `data-curation`) avoids unescaped underscore collisions in TeX math mode and simplifies downstream JSON serialization.
     \item \textbf{BibLaTeX Part Annotation Signature:}
 \begin{quote}
 \texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
@@ -4705,9 +4705,9 @@ For granular control when citing individual papers with contributor details with
 }
 \end{lstlisting}
 
-\BibLaTeX\ provides the author index context automatically via \texttt{\textbackslash currentname} (which expands to the current name list position, such as 1, 2, etc.) when stepping through an author list with \texttt{\textbackslash indexnames} or custom name formatters.
+\BibLaTeX{} provides the author index context automatically via \texttt{\textbackslash currentname} (which expands to the current name list position, such as 1, 2, \etc.) when stepping through an author list with \texttt{\textbackslash indexnames} or custom name formatters.
 
-Define the slug-to-text mappings with \texttt{\textbackslash csdef}, as shown in \Cref{lst:biberCreditRolesIterate}. Using etoolbox list iteration (\texttt{\textbackslash docsvlist}), you can step through each author and test each of the 14 standard CReDiT slugs systematically. Note that the code in \Cref{lst:biberCreditRolesIterate} should be placed in the preamble, except for \enquote{6. Hook into finentry} which only needs to be invoked (within a \texttt{\textbackslash begingroup} \dots \texttt{\textbackslash endgroup}) when you need it for listing the author contributions in your thesis.
+Define the slug-to-text mappings with \texttt{\textbackslash csdef}, as shown in \Cref{lst:biberCreditRolesIterate}. Using \texttt{etoolbox} list iteration (\texttt{\textbackslash docsvlist}), you can step through each author and test each of the 14 standard \gls{CReDiT} slugs systematically. Note that the code in \Cref{lst:biberCreditRolesIterate} should be placed in the preamble, except for \enquote{6. Hook into finentry} which only needs to be invoked (within a \texttt{\textbackslash begingroup} \dots \texttt{\textbackslash endgroup}) when you need it for listing the author contributions in your thesis.
 
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Iterate through slugs}}, label=lst:biberCreditRolesIterate]
 \usepackage{biblatex}
@@ -4780,7 +4780,7 @@ When writing custom reports, contribution matrices, or diagnostic validation rou
     \begin{itemize}
         \item 
 
-\textbackslash thefield\{entrykey\}: Prints or retrieves the active .bib entry key (e.g., maguire2026pipeline).
+\textbackslash thefield\{entrykey\}: Prints or retrieves the active \texttt{.bib} entry key (\eg maguire2026pipeline).
 
 \textbackslash strfield\{entrykey\}: Returns the unexpanded string representation of the entry key.
 
@@ -4823,7 +4823,420 @@ Usage Example: Printing the Current Entry Key Alongside Metadata
 }
 \end{lstlisting}
 
+
+
 Whenever this macro is invoked during bibliography rendering, \texttt{\textbackslash thefield\{entrykey\}} dynamically evaluates to whatever reference is currently being processed.
+
+\subsection{Using Biber data annotations for other purposes}
+\label{sec:otherUsesForBiberDataAnotations}
+
+Beyond author attribution and multilingual titles, Biber’s data annotations can attach semantic metadata to citations, authors, and sources without requiring custom \texttt{.dbx} datamodel extensions. Potentially, several applications could be integrated directly into thesis workflows:
+\begin{enumerate}
+    \item Thesis Inclusion \& Paper Categorization (Compilation Theses)
+
+In Swedish compilation doctoral theses (\foreignlanguage{swedish}{sammanläggningsavhandlingar}), candidates must distinguish between papers formally included in the thesis and secondary publications completed during their studies:
+
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Storing thesis related metadata}}, label=lst:biberThesisMetadata]
+@article{maguire2025routing,
+  author     = {Maguire, Jr., Gerald Q. and Student, Alice},
+  entry+an   = {included="true"; paper="Paper I"},
+  title      = {Adaptive Mesh Architectures in 6G Deployments},
+  journal    = {IEEE Transactions on Networking},
+  year       = {2025},
+  placeholder={Placeholder fake reference for use in examples}
+}
+
+@inproceedings{student2024early,
+  author     = {Student, Alice and Maguire, Jr., Gerald Q.},
+  entry+an   = {included="false"; category="other"},
+  title      = {Preliminary Bounds on Packet Dispersion},
+  booktitle  = {Proceedings of ACM SIGCOMM Posters},
+  year       = {2024},
+  placeholder={Placeholder fake reference for use in examples}
+}
+\end{lstlisting}
+\begin{description}
+    \item[Use in Document] A single \texttt{.bib} file can populate both the \textbf{Included Papers} section and the \textbf{Other Publications} appendix by filtering on  \texttt{\textbackslash hasentryannotation\{included\}} inside \texttt{\textbackslash defbibfilter} or \texttt{\textbackslash defbibcheck}.
+    \item[Automated Dividers] The value \texttt{paper="Paper I"} can be dynamically fetched to typeset decorative Roman-numeral divider sheets preceding individual reprint \glspl{PDF}.
+\end{description}
+
+    \item Institutional Affiliation \& Degree Eligibility Mapping
+
+For co-authored papers, evaluating committees often need to confirm whether an author was affiliated with KTH or performed the research under an external industrial partnership:
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, escapechar=|, caption={{Storing thesis related metadata}}, label=lst:biberThesisAffiliationMetadata]
+@article{smith2026telecom,
+  author    = {Smith, Jane and Maguire, Jr., Gerald Q. and Larsson, Sven},
+  author+an = {
+    1:affiliation="kth"; 1:school="EECS";
+    2:affiliation="kth"; 2:school="EECS";
+    3:affiliation="external"; 3:org="Ericsson Research"
+  },
+  title     = {Deterministic Latency Guarantees in TSN},
+  journal   = {Computer Networks},
+  year      = {2026},
+  placeholder={Placeholder fake reference for use in examples}
+}
+\end{lstlisting}
+\begin{description}
+    \item[Use in Document] Footnotes or superscript markers can identify authors belonging to specific departments or external bodies without cluttering standard citation styles.
+    \item[MODS / DiVA Generation] The Python pipeline can inspect \texttt{affiliation} and \texttt{org} to construct \texttt{<affiliation>} and corporate name nodes for \gls{DiVA} without manual disambiguation.
+\end{description}
+
+While footnotes or markers to identify authors belonging to specific departments or external bodies might be possible, I think they add too much cognitive load for the reader; therefore, it is better to include these descriptions in the text. Moreover, a better means to input metadata into \gls{DiVA} is needed (potentially, through its new \gls{API}); however, this lies outside the scope of the current work.
+
+    \item Open Access (OA) \& Archival Compliance Status
+
+Institutional repositories and funding bodies (such as the Swedish Research Council / \foreignlanguage{swedish}{Vetenskapsrådet}) track whether listed papers meet Plan S open-access criteria:
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Storing Open Access (OA) \& Archival Compliance Status}}, label=lst:biberOAMetadata]
+@article{johnson2026protocols,
+  author   = {Johnson, Mark and Maguire, Jr., Gerald Q.},
+  entry+an = {oa="gold"; license="cc-by-4.0"; repository="diva:123456"},
+  title    = {P4 Acceleration on SmartNIC Clusters},
+  journal  = {IEEE Communications Surveys & Tutorials},
+  year     = {2026},
+  placeholder={Placeholder fake reference for use in examples}
+}
+\end{lstlisting}
+
+\begin{description}
+    \item[Use in Document] Badges (\eg small open-access locks or CC icons) can be rendered beside citations in the list of publications.
+    \item[Verification Scripts] A Python/\gls{CI} pre-flight check can flag any included paper annotated as `oa="closed"` or missing a repository identifier.
+\end{description}
+
+This looks like a clear area for future work. It can build on the earlier \gls{ORCID} code.
+
+    \item Reproducibility, Artifact, and Dataset Linking
+
+Conferences and journals increasingly evaluate research artifacts (software, raw datasets, benchmarks). Annotating field-level URLs clarifies the target resource:
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Storing Reproducibility, Artifact, and Dataset Linking}}, label=lst:biberRepoducabilityMetadata]
+@article{turner2025inference,
+  author   = {Turner, Bob and Smith, Jane},
+  url      = {https://doi.org/10.1000/182},
+  url+an   = {type="publication"},
+  eprint   = {10.5281/zenodo.1234567},
+  eprint+an = {type="dataset"; badge="zenodo"},
+  note+an  = {artifact="acm-reproduced-badge"},
+  title    = {cuBLAS Acceleration for Structured Pruning},
+  journal  = {ACM Transactions on Computer Systems},
+  year     = {2025},
+  placeholder={Placeholder fake reference for use in examples}
+}
+\end{lstlisting}
+\begin{description}
+    \item[Use in Document] Field annotations on `eprint` or `url` allow custom bibliography macros to display distinct badges (\eg Zenodo dataset icon, GitHub repository badge, or ACM Reproducibility Seals) directly adjacent to the reference.
+\end{description}
+
+This looks like a clear area for future work. It can build on the earlier \gls{ORCID} code.
+
+    \item Peer-Review Status \& Acceptance Tracking
+
+Because doctoral theses are frequently submitted while papers are in various stages of publication, annotations can dynamically distinguish formal review stages:
+
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Storing Peer-Review Status \& Acceptance Tracking}}, label=lst:biberPeerReviewMetadata]
+@article{maguire2026verification,
+  author   = {Maguire, Jr., Gerald Q. and Student, Alice},
+  entry+an = {peerreview="accepted"; date_accepted="2026-08-15"; preprint="arxiv:2608.01234"},
+  title    = {Formal Verification of SmartNIC Microcode},
+  journal  = {IEEE Micro},
+  year     = {2026},
+  placeholder={Placeholder fake reference for use in examples}
+}
+\end{lstlisting}
+
+\begin{description}
+    \item[Use in Document] Bibliography listings can automatically append \textbf{"(Accepted for publication, Aug 2026)"} or \textbf{"(Under peer review)"} without hardcoding temporary text into the \texttt{journal} or \texttt{year} fields.
+    
+    \item[Automated Guardrails] Build hooks can emit compiler warnings if a student attempts to build a final dissertation (\texttt{\textbackslash finaltrue}) while citations contain \texttt{peerreview="submitted"}.
+\end{description}
+
+Before attempting this, more thought is needed --- as this would seem difficult to maintain \textbf{and} many of the manuscripts will not be accepted (except as preprints) before the thesis is finalized and printed. However, one might think of a script based workflow that could check the relevant \gls{DiVA} entry for updated information.
+\end{enumerate}
+
+
+\subsubsection{Can annotations be used in conjunction with reference managers}
+\label{sec:usingAnnotationsWithReferenceManagers}
+Considering the usage \enquote{Thesis Inclusion \& Paper Categorization (Compilation Theses)} above, there is a practical problem: 
+Currently, no mainstream reference manager supports Biber’s data annotations as first-class, structured semantic data.
+
+The landscape divides into tools that parse and preserve the raw fields versus tools that strip them entirely:
+\begin{enumerate}
+    \item JabRef (Best in Class, but Text-Only)
+
+Because JabRef uses the \texttt{.bib} file directly as its internal database (without converting entries into a generic internal schema), it is the most compatible tool:
+\begin{description}[labelwidth =\widthof{\textbf{Proprietary Flat Schemas}}, leftmargin = !]
+    \item[Preservation] When set to \BibLaTeX{} mode, JabRef will not corrupt or strip `author+an` or `title+an` fields when saving.
+    \item[UI Editing] It does not parse the sub-properties (`1:orcid="...";`) into GUI checkboxes, creator cards, or linked badges. The entire annotation block appears as an unformatted raw string in an auxiliary field text box.
+    \item[Feature Status] Native support for Biber data annotations has been discussed in feature issues (\eg Issue \#11505), but it remains an unparsed text field.
+\end{description}
+
+    \item Zotero \& Mendeley (Destructive / Incompatible)
+
+Both tools convert bibliographic entries into an internal relational model that assumes a flat `author` table (`first\_name`, `last\_name`, `role`):
+\begin{description}[labelwidth =\widthof{\textbf{Proprietary Flat Schemas}}, leftmargin = !]
+    \item[Data Loss on Import] If a `.bib` file decorated with `author+an = { 1:orcid="..."; }` is imported, the parser discards the annotation entirely because it does not map to any creator field.
+    \item[Export Inability] Neither tool can reconstruct `<field>+an` upon export unless an external layer like Better BibTeX (BBT) parses custom dummy strings stashed in the record's `Extra` field.
+\end{description}
+
+    \item EndNote, Citavi, \& Paperpile
+\begin{description}[labelwidth =\widthof{\textbf{Proprietary Flat Schemas}}, leftmargin = !]
+    \item[Proprietary Flat Schemas] These tools lack any concept of item/part-level annotation syntax.
+    \item[Export Stripping] They adhere to standard legacy BibTeX fields (\texttt{author}, \texttt{title}, \texttt{journal}, \etc). Unknown fields with plus signs (\enquote{+an}) are either sanitized away or converted to malformed entries during export.
+\end{description}
+\end{enumerate}
+
+\paragraph{Practical Recommendation}\mbox{}\par
+\smallskip
+
+Because reference managers lag behind Biber’s advanced data-model features, \textbf{managing annotations outside the GUI reference manager is the only stable design pattern}. For a KTH doctoral workflow, managing \glspl{ORCID} and \gls{CReDiT} through \texttt{publications\_map.json} and external Python/\gls{CI} scripts remains far more robust than relying on a reference manager.
+
+This means:
+\begin{enumerate}
+    \item \texttt{references.bib} as the standard citation repository (which Zotero or JabRef can export safely), and
+    \item \texttt{publications\_map.json} (managed via the Python/Streamlit wizard and GitHub Actions) as the pipeline that programmatically decorates entries with `author+an` at build time, ensuring reference managers never accidentally wipe out contributor roles or \glspl{ORCID} during library re-exports.
+\end{enumerate}
+
+\paragraph{A Forward-Looking Architecture: Split-File Overlay}\mbox{}\par
+\smallskip
+
+A cleaner architectural path forward is to decouple the reference management lifecycle from semantic metadata authoring by maintaining two distinct bibliographic files sharing identical citation keys:
+\begin{enumerate}
+\item \texttt{references.bib}: The upstream, GUI-managed store (exported directly from Zotero, Mendeley, or JabRef) containing canonical bibliographic descriptors (\eg \texttt{author}, \texttt{title}, \texttt{year}, \texttt{doi}).
+
+\item \texttt{references-annotations.bib}: A companion overlay containing sparse entries with matching citation keys that declare only the extended data annotations (\eg \texttt{author+an}, \texttt{title+an}, or \texttt{entry+an}).
+\end{enumerate}
+
+Existing utilities such as \texttt{bibtool}, \texttt{bibtex-tools}, or \texttt{bibmerge} are designed to detect duplicate citation keys and discard redundant entries. In contrast, an automated Python pre-compilation step (\eg integrated into a GitHub Action or local pre-commit hook) can perform an \emph{additive, field-level unification}. By parsing both files and merging fields that share a matching key into a unified intermediate file (\eg \texttt{references-merged.bib}), reference managers can safely overwrite \texttt{references.bib} during iterative library exports without clobbering curated author roles or \glspl{ORCID}.
+
+Such an overlay or split-file architecture (\texttt{references.bib} alongside \texttt{references-annotations.bib}) cleanly separates concerns while providing persistent annotations. As a result, students never have to manually re-annotate files after updating their reference library.
+
+In Biber and \BibLaTeX{}, data annotations are completely generic: \emph{any} standard or custom field can take the \enquote{+an} suffix at the item, field, or entry level.
+
+Under the split-file overlay architecture (\texttt{references.bib} + \texttt{references-annotations.bib}), an additive Python pre-processor can attach granular semantic metadata across several distinct bibliographic dimensions without reference-manager corruption. Examples of these other dimensions include:
+\begin{enumerate}
+    \item Identifier Verification \& Provenance (\texttt{doi+an}, \texttt{eprint+an}, \texttt{isbn+an})
+    \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
+        \item[Context] In automated pipelines, it is crucial to record whether a persistent identifier has been mechanically validated against Crossref, DataCite, MathSciNet, LIBRIS, or another source.
+        \Needspace*{6\baselineskip}
+        \item[Syntax]
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Identifier Verification \& Provenance}}, label=lst:biberIdentifierVerificationAndProvenanceMetadata]
+doi      = {10.1109/TNET.2025.1234567},
+doi+an   = {status="verified"; resolver="crossref"; checked="2026-03-01"},
+eprint   = {2501.09876},
+eprint+an = {archive="arxiv"; primaryClass="cs.NI"; openaccess="true"}
+\end{lstlisting}
+        \item[Application] BibLaTeX macros can selectively render a green verification checkmark beside verified DOIs or trigger build-time compiler warnings for unverified or dead links.
+    \end{description}
+    
+    \item Open Access \& Licensing Terms (\texttt{url+an}, \texttt{file+an})
+        \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
+        \item[Context] Theses submitted to \gls{DiVA} often must comply with funder mandates (\eg Plan S) requiring explicit distinction between closed publisher links, author-accepted manuscripts (AAM), and open-access mirrors.
+        \Needspace*{6\baselineskip}
+        \item[Syntax]
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Open Access \& Licensing Terms}}, label=lst:biberOpenAccessAndLicensingTermsMetadata]
+url      = {https://doi.org/10.1016/j.comnet.2025.109876},
+url+an   = {access="closed"; version="vor"},
+url:mirror = {https://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-345678},
+url:mirror+an = {access="gold"; license="cc-by-4.0"; version="aam"}
+\end{lstlisting}
+
+        \item[Application] The bibliography driver can conditionally typeset open-access badges, Creative Commons micro-icons, or repository links.
+        \end{description}
+    
+    \item Publication Venue Integrity \& Indexing (\texttt{journal+an}, \texttt{booktitle+an})
+        \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
+        \item[Context] Academic reporting increasingly requires tracking journal quartiles (Q1/Q2), Scopus/Web of Science indexing, or conference CORE rankings (A*, A, B).
+        \Needspace*{6\baselineskip}
+        \item[Syntax]
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Publication Venue Integrity \& Indexing}}, label=lst:biberPublicationVenueIntegrityAndIndexingMetadata]
+journal    = {IEEE Transactions on Networking},
+journal+an = {issn="1063-6692"; ranking="core-a"; jcr="q1"; sjr="1.82"},
+booktitle  = {Proceedings of ACM SIGCOMM '25},
+booktitle+an = {ranking="core-a-star"; acceptance_rate="15.2%"}
+\end{lstlisting}
+
+        \item[Application] A student can generate extended bibliographic summaries (or committee review appendices) that automatically display venue selectivity and impact metrics alongside included thesis publications.
+        \end{description}
+        
+    \item Funding Acknowledgment \& Grant Tracking (\texttt{note+an}, \texttt{addendum+an})
+        \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
+        \item[Context] Doctoral projects frequently span multiple funding bodies (\eg VR, Vinnova, EU Horizon Europe) where specific publications must trace back to concrete grant IDs.
+        \Needspace*{6\baselineskip}
+        \item[Syntax]
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Funding Acknowledgment \& Grant Tracking}}, label=lst:biberFundingAcknowledgmentAndGrantTrackingMetadata]
+addendum   = {Supported by the Swedish Research Council},
+addendum+an = {funder="VR"; grant="2023-04567"; project="6G-SEC"}
+\end{lstlisting}
+
+        \item[Application] Citation drivers can automatically inject formal grant disclosures into the printed thesis bibliography or export structured funding metadata into \gls{DiVA}/\gls{MODS} exports.
+        \end{description}
+    \item Editorial Curation \& Retraction Watches (\texttt{entry+an})
+        \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
+        \item[Context] Long-lived literature repositories occasionally contain retracted papers, expressions of concern, or errata.
+        \Needspace*{6\baselineskip}
+        \item[Syntax]
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Editorial Curation \& Retraction Watches}}, label=lst:biberEditorialCurationAndRetractionWatchesMetadata]
+entry+an = {
+  retraction_status="clean";
+  verified_retractionwatch="2026-08-10";
+  curation_notes="Benchmark baseline verified against source code"
+}
+\end{lstlisting}
+
+        \item[Application] Pre-flight \gls{CI} actions can check Crossref's \enquote{is-retracted} \gls{API} (or other source of retractions) and inject warnings into the \gls{PDF} during compilation if an author inadvertently cites retracted work.
+        \end{description}
+        
+    \item Typographic \& Pagination Overrides (\texttt{pages+an}, \texttt{edition+an})
+        \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
+        \item[Context] Older conference proceedings, electronic article numbering (e-locators), or bilingual editions often require localized presentation strings without modifying the raw page numbering data.
+        \Needspace*{6\baselineskip}
+        \item[Syntax]
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Typographic \& Pagination Overrides}}, label=lst:biberTypographicAndPaginationOverridesMetadata]
+pages    = {45--60},
+pages+an = {type="article-number"; prefix="art: "},
+edition  = {2},
+edition+an = {swedish="2:a uppl."; english="2nd ed."}
+\end{lstlisting}
+
+        \item[Application] Custom formatting drivers can switch between language-sensitive labels without maintaining multiple \texttt{.bib} variants.
+        \end{description}
+\end{enumerate}
+
+Because reference managers routinely discard or corrupt non-standard fields, isolating these annotations inside \texttt{references-annotations.bib} and merging them via Python guarantees that extended provenance, venue, and licensing data remain permanently intact.
+
+\subsubsection{Contrasting annotations with current workflows}
+\label{sec:contrastingAnnotationsWithCurrentWorkflows}
+The current design approaches publication management and thesis inclusion from an architectural standpoint that is fundamentally different from a purely in-\TeX{} data-annotation model.
+
+Rather than overloading \texttt{.bib} entries with document-assembly directives, the current workflows decouple bibliographic citation data from administrative pipeline state:
+\begin{description}[style=nextline, labelwidth = {1cm}, leftmargin = !]
+    \item[External Source of Truth (\texttt{publications\_map.json})]
+In the current workflow, inclusion (\texttt{status: "included"}), label assignments (\texttt{paper:A}, \texttt{techreport:A}), tab order (\texttt{tab\_index}), physical reprint paths (\texttt{file\_path}), page slices (\texttt{pdf\_pages}), scaling factors, and reproduction copyright notices (\texttt{permission\_text}) live entirely inside \texttt{publications\_map.json}. This separates immutable bibliographic facts (which belong in \texttt{references.bib}) from the mutable, student-curated decisions about how physical \gls{PDF} reprints are laid out in a compilation thesis.
+
+
+    \item[Two-Way Upstream Sync (\gls{DiVA} Discovery)]
+The automated workflow pulls publication metadata directly from \gls{DiVA} via the student's KTHID through GitHub Actions. In a pure in-\TeX{} annotation workflow, the candidate must hand-annotate raw \texttt{.bib} files. In your pipeline, the GitHub Action generates \texttt{lib/publications\_generated.tex} and \texttt{lib/publications\_dividers\_generated.tex} dynamically from \gls{DiVA} and \texttt{publications\_map.json}, removing the manual editing step entirely.
+
+\smallskip\noindent
+\item[CI/CD Build-Time Validation]
+Because paper inclusion is tracked in \gls{JSON}, the GitHub Actions can validate physical \gls{PDF} assets \textbf{before} typesetting:
+
+\smallskip
+\noindent\makebox[\linewidth][l]{%
+  \hspace*{-\leftmargin}%
+  \footnotesize
+  \begin{tabular}{@{}ll@{}}
+    \texttt{"status": "included", "pdf\_downloaded": false} & $\longrightarrow$ Emits visual missing-file warning page\\
+    \texttt{"status": "included", "pdf\_downloaded": true}  & $\longrightarrow$ Injects divider tab and binds reprint PDF
+  \end{tabular}%
+}
+\smallskip
+
+Testing file existence, checking scaling, and enforcing page intervals are trivial in Python, whereas executing robust filesystem checks and multi-page \gls{PDF} inclusions dynamically inside macro-level \texttt{biblatex} hooks is notoriously fragile.
+
+
+    \item[Granular Multi-Author \& Collaboration CReDiT]
+Your handling of massive collaborations (like the BNL Multi-Particle Spectrometer example) via \texttt{specific\_contributors} demonstrates why the wizard approach (\texttt{CReDiT\_Matrix\_Wizard.py}) is cleaner than annotating \texttt{.bib} files. In large multi-author experiments, attempting to attach 14 \gls{CReDiT} part annotations to individual authors inside a standard BibTeX string quickly becomes unwieldy. Generating a standalone \texttt{lib/thesis\_contributions\_generated.tex} file keeps the bibliography clean while producing an explicit, readable contribution matrix for the defense committee.
+\end{description}
+
+Your pipeline positions the \texttt{.bib} file as a traditional citation store, delegating document assembly, inclusion filtering, DiVA harvesting, and \gls{PDF} insertion to external Python and \gls{CI} automation where it is most maintainable.
+
+\subsubsection{Integrating annotations with current workflows}
+\label{sec:integratingAnnotationsWithCurrentWorkflows}
+
+The challenge with handling entities like the \textbf{MPS Collaboration} in standard \texttt{.bib} files is that the individual student or researcher (\eg Gerald Q. Maguire Jr.) is not listed as an indexed name item in the \texttt{author} field (which contains only \enquote{Lindenbaum, S. J.} and \enquote{\{MPS Collaboration\}}). Consequently, Biber’s item-indexed annotations (\texttt{author+an = \{ 3:software="supporting"\}}) cannot bind to an author index (in this example \enquote{3}) that does not exist in the primary name list (or might only appear far down the list, \ie beyond the range of the authors processed).
+
+Under Biber, this can be solved cleanly using one of two annotation architectures:
+
+\begin{enumerate}
+    \item Standalone Contributor Data Annotation (\texttt{contributors+an})
+
+Rather than attempting to attach metadata to the primary \texttt{author} field, declare an annotated dummy or user field (such as \texttt{contributors+an}). Biber allows data annotations on arbitrary fields, even when the underlying base field is sparse or virtual.
+
+In your \texttt{references-annotations.bib} overlay:
+
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Example of non-named author collaborator inclusion}}, label=lst:biberPatternOneCollaborMetadata]
+@techreport{bnlMPS1975,
+  % Entry annotation to flag a collaborator inclusion
+  entry+an = {
+    has_specific_contributors = "true";
+    collaboration_name        = "MPS Collaboration";
+    contribution_note         = "Summer student working on PDP-10 software and graphical display of data."
+  },
+  % Granular CReDiT annotations for contributors not named in the author field:
+  contributors+an = {
+    1:name="Maguire Jr., Gerald Q.";
+    1:role="software";
+    1:role="visualization";
+    1:affiliation="Brookhaven National Laboratory"
+  }
+}
+\end{lstlisting}
+
+\Needspace*{12\baselineskip}
+\textbf{Inside LaTeX / BibLaTeX:}
+
+You can query this with:
+\begin{lstlisting}[language={[LaTeX]TeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Standalone Contributor Data Annotation code}}, label=lst:biberPatternOneCode]
+\hasentryannotation{has_specific_contributors}{%
+  \par\smallskip\noindent\textbf{Collaboration Contributor Disclosure:}%
+  \par\hspace*{1.5em}\getentryannotation{contribution_note}%
+  \par\hspace*{1.5em}\getpartannotation[contributors][default][1]{name}: %
+    \textit{\getpartannotation[contributors][default][1]{role}}%
+}{}
+\end{lstlisting}
+
+    \item Part Annotation on Collaboration Author Index (Sub-part Mapping)
+
+If the collaboration is listed in the \texttt{author} field as a collective corporate entity (for instance, index 2 in \texttt{Lindenbaum, S. J.} and \texttt{\{MPS Collaboration\}}), you can attach the individual contributor directly to that author's index using structured part keys:
+\Needspace*{15\baselineskip}
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Part Annotation on Collaboration Author Index (Sub-part Mapping)}}, label=lst:biberPatternTwoCollaborPartMetadata]
+@techreport{bnlMPS1975,
+  author    = {Lindenbaum, S. J. and {MPS Collaboration}},
+  author+an = {
+    % Roles for Professor Lindenbaum
+    1:conceptualization="lead";
+    1:supervision="lead";
+    % Specific contributor anchored to Author 2 (the Collaboration)
+    2:specific-contributor="Maguire Jr., Gerald Q.";
+    2:software="supporting";
+    2:visualization="supporting";
+    2:note="Summer student: PDP-10 assembly-to-FORTRAN conversion & track display"
+  }
+}
+\end{lstlisting}
+
+\Needspace*{14\baselineskip}
+\textbf{How the In-TeX Driver Handles It:}
+
+In your existing \texttt{creditnames} name formatting driver, when the driver processes Author 2 (\texttt{MPS Collaboration}), you can add an interceptor:
+\begin{lstlisting}[language={[LaTeX]TeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Code for handling specific-contributor metadata}}, label=lst:biberPatternTwoCollaborPartMetadataCode]
+\newcommand*{\checkspecificcontributors}[1]{%
+  % #1 = current author index
+  \haspartannotation[author][default][#1]{specific-contributor}{%
+    \par\hspace*{1.5em}\textbf{Specific Contributor:} %
+      \getpartannotation[author][default][#1]{specific-contributor}%
+    \haspartannotation[author][default][#1]{note}{%
+      \par\hspace*{3em}\textit{\getpartannotation[author][default][#1]{note}}%
+    }{}%
+  }{}%
+}
+\end{lstlisting}
+\end{enumerate} 
+
+
+\textbf{Python Pipeline Synthesis (Connecting \texttt{CReDiT\_Matrix\_Wizard.py})}
+
+In your Streamlit wizard and GitHub Actions workflow:
+\begin{enumerate}
+    \item \texttt{publications\_map.json} remains the interactive store holding\linebreak[4] \texttt{specific\_contributors} and \texttt{contribution\_note}.
+    
+    \item When the wizard generates or updates \texttt{references-annotations.bib}, the Python script inspects \texttt{entry.get("specific\_contributors")}.
+    
+    \item If \texttt{specific\_contributors} contains entries, Python matches the named collaboration in the author list and writes the corresponding \texttt{2:specific-contributor="\ldots"} and role slugs directly into the generated overlay entry.
+\end{enumerate}
+
+This preserves standard bibliography listings for external readers while enabling the defense committee to inspect candidate contributions to large institutional consortia.
+
 
 \clearpage
 
