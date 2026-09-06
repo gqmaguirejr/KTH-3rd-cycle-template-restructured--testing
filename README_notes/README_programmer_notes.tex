@@ -880,7 +880,7 @@ Unfortunately, \texttt{luaotfload} program must still resolve the font name into
 
 \subsubsection{Babel ranges}
 
-The file \texttt{babel-data-bidi.lua} \footnote{Perhaps under \texttt{/usr/share/texmf/tex/generic/babel/}} defines the Babel table. This is shown in \Cref{lst:BabelTableandRanges}. The format of the entries is the starting codepoint of a range, the ending codepoint of a range (inclusive), and the direction. The direction is defined according to ``Table 4. Bidirectional Character Types'' in \textit{Unicode® Standard Annex \#9: The Bidirectional Algorithm}\,\cite{UAX9}. Accordingly, `r' is right-to-left, `l' is is left-to-right (the default), `al' is right-to-left Arabic, and `on' is other neutrals.
+The file \texttt{babel-data-bidi.lua} \footnote{Perhaps under \texttt{/usr/share/texmf/tex/generic/babel/}} defines the Babel table. This is shown in \Cref{lst:BabelTableandRanges}. The format of the entries is the starting codepoint of a range, the ending codepoint of a range (inclusive), and the direction. The direction is defined according to ``Table 4. Bidirectional Character Types'' in \textit{Unicode® Standard Annex \#9: The Bidirectional Algorithm}~\cite{UAX9}. Accordingly, `r' is right-to-left, `l' is is left-to-right (the default), `al' is right-to-left Arabic, and `on' is other neutrals.
 
 \begin{lstlisting}[language={[5.2]Lua}, caption={Babel table and Babel-ranges supplemented with additional comments about Unicode blocks}, label=lst:BabelTableandRanges]
 Babel = Babel or {}
@@ -1304,7 +1304,7 @@ end
 \Needspace*{7\baselineskip}
 \subsubsection{Two new environments for capturing abstract and keywords}
 \label{sec:TwoEnvironmentsForAbstractAndKeywords}
-Also shown in \Cref{lst:luaExample2} are two new environments: ThesisAbstract and ThesisKeywords. The first of these captures the raw \LaTeX{} in the environment, while the second first expands the \LaTeX{} and then saves it. These environments must be followed by the three-letter ISO 639-2 Code – specifically the "B" (bibliographic) variant of these codes.
+Also shown in \Cref{lst:luaExample2} are two new environments: ThesisAbstract and ThesisKeywords. The first of these captures the raw \LaTeX{} in the environment, while the second first expands the \LaTeX{} and then saves it. These environments must be followed by the three-letter \gls{ISO} 639-2 Code – specifically the "B" (bibliographic) variant of these codes.
 
 This leads to a new style of writing abstract, as shown in \Cref{lst:FrenchAbstract}. The first step is to select the language and when using babel this will also potentially select the correct font to use. The second step is to update the term \texttt{\textbackslash abstractname} to use for this abstract (as it could be an abstract or summary). While babel (or polyglossia) often provides definitions of this term, doing it as shown makes it simple for the author to change it is they need to. The whole abstract is in an \texttt{abstract} environment. This environment is important for several reason. \first entering this environment formats the heading in the Figtree font (or a language-specific font if Figtree does not have the requisite glyphs) and \Second it enables the macros that warn if a citation or cross-reference has been used. The \texttt{\textbackslash markboth} sets up the page heading. Next the \texttt{\textbackslash begin\{ThesisAbstract\}\{fre\}} begins the environment for the thesis abstract. Following this the \texttt{\textbackslash keywordHeading} macro defines the heading to be used for the keywords (in the proper typeface). The ThesisKeywords environment handles the keywords. Finally, a \texttt{\textbackslash cleardoublepage} is done to advance to the next odd-numbered (i.e., right-hand) page. Note that the running heading will also be used on the page (if needed) to get to the next odd-numbered page.
 
@@ -2533,11 +2533,11 @@ Exception: Couldn't register PRO3=P 2021-07-14: Hinder mot skapa resultat påtr�
 \label{sec:LanguageCodes}
 The US Library of Congress has a table of the language codes at \url{https://www.loc.gov/standards/iso639-2/php/code_list.php}.
 
-Based upon the US Library of Congress ``Codes for the Representation of Names of Languages: Codes arranged alphabetically by alpha-3/ISO 639-2 Code'', I have eliminated all of the rows that did not have both a three-letter ISO 639-2 Code \textbf{and} a two-letter ISO 639-1 Code. For the three-letter ISO 639-2 Codes, I used only the  ``B'', \ie bibliographic codes. I split the table into two parts: Languages already implemented (\Cref{tab:languagesImplemented}) and those remaining to be implemented (\Cref{tab:languagesNotImplemented}). The term ``implemented'' means that I have considered it in the current template, at least to some extent (but do not necessarily have a skeleton abstract in the language\footnote{For example, I do not have a skeleton abstract in Belarusian - but babel supports belarusian and the template supports the use of the Cyrillic alphabet. However, I have not done an investigation of whether the font supports all of the glyphs used in Belarusian.}).  For example, babel supports northernsami and yiddish as languages you can select, and I have created skeleton abstracts for both languages. In the case of Yiddish, I added it to the language switch in the code described in \Cref{sec:newLanguagesFOrAbstracts}. For Norwegian Bokmål, one can use the ``nob'' code for an abstract and specify the babel language Norwegian. In contrast, for Norwegian Nynorsk one uses the ``nno'' code for an abstract and the babel language nynorsk. However, I have only implemented a skeleton abstract for Norwegian.
+Based upon the US Library of Congress ``Codes for the Representation of Names of Languages: Codes arranged alphabetically by alpha-3/ISO 639-2 Code'', I have eliminated all of the rows that did not have both a three-letter \gls{ISO} 639-2 Code \textbf{and} a two-letter \gls{ISO} 639-1 Code. For the three-letter \gls{ISO} 639-2 Codes, I used only the  ``B'', \ie bibliographic codes. I split the table into two parts: Languages already implemented (\Cref{tab:languagesImplemented}) and those remaining to be implemented (\Cref{tab:languagesNotImplemented}). The term ``implemented'' means that I have considered it in the current template, at least to some extent (but do not necessarily have a skeleton abstract in the language\footnote{For example, I do not have a skeleton abstract in Belarusian - but babel supports belarusian and the template supports the use of the Cyrillic alphabet. However, I have not done an investigation of whether the font supports all of the glyphs used in Belarusian.}).  For example, babel supports northernsami and yiddish as languages you can select, and I have created skeleton abstracts for both languages. In the case of Yiddish, I added it to the language switch in the code described in \Cref{sec:newLanguagesFOrAbstracts}. For Norwegian Bokmål, one can use the ``nob'' code for an abstract and specify the babel language Norwegian. In contrast, for Norwegian Nynorsk one uses the ``nno'' code for an abstract and the babel language nynorsk. However, I have only implemented a skeleton abstract for Norwegian.
 
 I have a skeleton abstract in Kurdish Sorani (babel language centralkurdish) with language code ``cbk'', I do not have any support for Kurmanji. However, as Kurmanji uses a Latin-based alphabet, it should not be a problem to add an abstract with the ``kur'' code.
 
-According to SCB (\url{https://www.scb.se/contentassets/221c69e399f0424b852b21236952e300/sprakkoder.xlsx}), there are also ISO 639-2 codes for Yiddish with regions (see \Cref{tab:SCByiddish}). For Romanian, the ISO 639-2 B code is "rum" and the ISO 639-1 code is  "ro". However, SCB gives additional ISO 639-2 codes (see \Cref{tab:SCBromani}). For Northern Sami (Samiska, (norra)), the ISO 639-2 is "sme" and the ISO 639-1 code is "se", but is there a region code that should be used? (See \Cref{tab:SCBsami}) For Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}), the ISO 639-2 code is "fit", but I am unable to determine what ISO 639-1 code should be used (see \Cref{tab:languagesMissing}). Is it "fi" with some region code? If so, what region code? 
+According to SCB (\url{https://www.scb.se/contentassets/221c69e399f0424b852b21236952e300/sprakkoder.xlsx}), there are also \gls{ISO} 639-2 codes for Yiddish with regions (see \Cref{tab:SCByiddish}). For Romanian, the \gls{ISO} 639-2 B code is "rum" and the ISO 639-1 code is  "ro". However, SCB gives additional \gls{ISO} 639-2 codes (see \Cref{tab:SCBromani}). For Northern Sami (Samiska, (norra)), the \gls{ISO} 639-2 is "sme" and the ISO 639-1 code is "se", but is there a region code that should be used? (See \Cref{tab:SCBsami}) For Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}), the ISO 639-2 code is "fit", but I am unable to determine what \gls{ISO} 639-1 code should be used (see \Cref{tab:languagesMissing}). Is it "fi" with some region code? If so, what region code? 
 
 \generalExpl{I have added a skeleton abstract for Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}). It is probably incorrect, but it provides a starting point. My assumption is that the spacing, hyphenation, \etc follow that of Finnish, but that there is a difference in words.}
 
@@ -2545,7 +2545,7 @@ According to SCB (\url{https://www.scb.se/contentassets/221c69e399f0424b852b2123
     \caption{SCB table - Yiddish with regions}
     \label{tab:SCByiddish}
     \begin{tabular}{L{3cm}|L{6.5cm}}
-      \textbf{ISO 639-2 Code} &\textbf{Swedish name of Language}\\
+      \textbf{\gls{ISO} 639-2 Code} &\textbf{Swedish name of Language}\\
       \hline
 YIH  &  Jiddisch (Väst)\\
 YDD  &  Jiddisch (Öst)\\
@@ -2556,7 +2556,7 @@ YDD  &  Jiddisch (Öst)\\
     \caption{SCB table - Romainian with regions}
     \label{tab:SCBromani}
     \begin{tabular}{L{3cm}|L{6.5cm}}
-      \textbf{ISO 639-2 Code} &\textbf{Swedish name of Language}\\
+      \textbf{\gls{ISO} 639-2 Code} &\textbf{Swedish name of Language}\\
       \hline
 ROM &   Romani chib\\
 RMO &   Romani, Abbruzzesi, Serbisk romani, Slovensk-kroatisk romani\\
@@ -2574,7 +2574,7 @@ RMW &   Romani, Walesisk\\
     \caption{SCB table - Sami with regions}
     \label{tab:SCBsami}
     \begin{tabular}{L{3cm}|L{6.5cm}}
-      \textbf{ISO 639-2 Code} &\textbf{Swedish name of Language}\\
+      \textbf{\gls{ISO} 639-2 Code} &\textbf{Swedish name of Language}\\
       \hline
 SMI &   Samiska\\
 SIA &   Samiska, Akkalasamiska\\
@@ -2596,7 +2596,7 @@ SJU &  Umesamiska\\
     \begin{footnotesize}
 
     \begin{tabular}{L{3cm}|L{3cm}|L{6.5cm}}
-      \textbf{ISO 639-2 Code} & \textbf{ISO 639-1 Code} & \textbf{English name of Language}\\
+      \textbf{\gls{ISO} 639-2 Code} & \textbf{\gls{ISO} 639-1 Code} & \textbf{English name of Language}\\
       \hline
 alb & sq & Albanian\\
 ara & ar & Arabic\\
@@ -2647,10 +2647,10 @@ yid & yi & Yiddish\\
 \FloatBarrier
 
 \begin{table}[!ht]
-    \caption{Missing ISO 639-1 Code from the Library of Congress list}
+    \caption{Missing \gls{ISO} 639-1 Code from the Library of Congress list}
     \label{tab:languagesMissing}
     \begin{tabular}{L{3cm}|L{3cm}|L{6.5cm}}
-      \textbf{ISO 639-2 Code} & \textbf{ISO 639-1 Code} & \textbf{English name of Language}\\
+      \textbf{\gls{ISO} 639-2 Code} & \textbf{\gls{ISO} 639-1 Code} & \textbf{English name of Language}\\
       \hline
 fit & ??? & Meänkieli\\
 \hline
@@ -2658,18 +2658,18 @@ fit & ??? & Meänkieli\\
 \end{table}
 \FloatBarrier
 
-As to the language tag to use for Meänkieli, one can simply skip the ISO 639-1 Code and use "fit" - as done in \url{https://www.msb.se/sv/om-msb/information-pa-andra-sprak/meankieli/om-msb/}.
-However, it seems strange that there is no ISO 639-1 Code. Interestingly, they use 'smi' for Lule Sami (\foreignlanguage{swedish}{lulesamiska}) in \url{https://www.msb.se/sv/om-msb/information-pa-andra-sprak/lulesamiska/om-msb/}.
+As to the language tag to use for Meänkieli, one can simply skip the \gls{ISO} 639-1 Code and use "fit" - as done in \url{https://www.msb.se/sv/om-msb/information-pa-andra-sprak/meankieli/om-msb/}.
+However, it seems strange that there is no \gls{ISO} 639-1 Code. Interestingly, they use 'smi' for Lule Sami (\foreignlanguage{swedish}{lulesamiska}) in \url{https://www.msb.se/sv/om-msb/information-pa-andra-sprak/lulesamiska/om-msb/}.
 \generalExpl{I have added a skeleton abstract for \foreignlanguage{swedish}{Meänkieli}. I had help from a former professor at Stockholm's university and sprakcentrummeankieli@isof.se for the abstract and keywords in Meänkieli (although there is a small difference between their spellings of two words).}
 
 \begin{longtable}{|L{3cm}|L{3cm}|L{5cm}|}
 \caption{Remaining languages to implement}
 \label{tab:languagesNotImplemented}\\
-\hline \multicolumn{1}{|c|}{\textbf{ISO 639-2 Code}} & \multicolumn{1}{c|}{\textbf{ISO 639-1 Code}} & \multicolumn{1}{c|}{\textbf{English name of Language}} \\
+\hline \multicolumn{1}{|c|}{\textbf{\gls{ISO} 639-2 Code}} & \multicolumn{1}{c|}{\textbf{\gls{ISO} 639-1 Code}} & \multicolumn{1}{c|}{\textbf{English name of Language}} \\
 \endfirsthead
 \multicolumn{3}{c}%
 {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
-\hline \multicolumn{1}{|c|}{\textbf{ISO 639-2 Code}} & \multicolumn{1}{c|}{\textbf{ISO 639-1 Code}} & \multicolumn{1}{c|}{\textbf{English name of Language}} \\
+\hline \multicolumn{1}{|c|}{\textbf{\gls{ISO} 639-2 Code}} & \multicolumn{1}{c|}{\textbf{\gls{ISO} 639-1 Code}} & \multicolumn{1}{c|}{\textbf{English name of Language}} \\
 \hline 
 \endhead
 \hline \multicolumn{3}{|r|}{{Continued on next page}} \\
@@ -3050,7 +3050,7 @@ As a result of adding support for the \gls{PDF} metadata for the copyright notic
 \label{sec:addingMetadataToPDFfile}
 Increasingly, metadata is being embedded into digital objects to provide information about the creator (author, photographer, \etc), date of creation, copyright notices, \etc. In a typical \gls{PDF} file produced by \LaTeX{}, there is both PDF-specific metadata and additional metadata. This additional metadata is stored using Adobe's \glsfirst{XMP}. \gls{XMP} is a means of embedding metadata in \gls{XMP} format into \gls{PDF} documents so that tools can extract it mechanically.
 
-An early paper about automatically extracting the title, authors(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004\,\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
+An early paper about automatically extracting the title, authors(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004~\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
 
 More recently, Elsevier's Digital Commons \footnote{\url{https://www.elsevier.com/solutions/digital-commons}} uses an extension of the Dublin Core\footnote{\url{https://www.dublincore.org/}} shown in \Cref{tab:dublicCoreDigitalCommons} to collect metadata. We will see the Dublin Core elements and other metadata schema used in XMP in the remainder of this section.
 
@@ -3427,10 +3427,10 @@ caption={{The \texttt{dc:format} metadata embedded in a PDF file}}, label={lst:p
       <dc:format>application/pdf</dc:format>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart6} shows the next part of the \gls{XMP} data. In this case, we can see another element from the \texttt{dc} namespace. More specifically, the element named \texttt{dc:title} and this contains the title of the document. This also illustrates another feature of \gls{XML} -- it is possible to have the title in several different languages. The \gls{RDF} tag \texttt{rdf:Alt} indicates that there are a list of alternatives. In this case, the items in the list are tagged with a language tag. The language tag \texttt{xml:lang="x-default"} is the default language of the document. This is followed by items that contain the English (tagged ``en'') and Swedish (tagged ``sv''). The language tags are an ISO 639-1 two-letter language code with an
-optional ISO 3166-1 two-letter region code.
+\Cref{lst:pdfinfoOutputPart6} shows the next part of the \gls{XMP} data. In this case, we can see another element from the \texttt{dc} namespace. More specifically, the element named \texttt{dc:title} and this contains the title of the document. This also illustrates another feature of \gls{XML} -- it is possible to have the title in several different languages. The \gls{RDF} tag \texttt{rdf:Alt} indicates that there are a list of alternatives. In this case, the items in the list are tagged with a language tag. The language tag \texttt{xml:lang="x-default"} is the default language of the document. This is followed by items that contain the English (tagged ``en'') and Swedish (tagged ``sv''). The language tags are an \gls{ISO} 639-1 two-letter language code with an
+optional \gls{ISO} 3166-1 two-letter region code.
 \begin{lstlisting}[style=myXML,
-caption={{The \texttt{dc:title>} metadata embedded in a PDF file (some reformatting has been done to fit the text in the boarders)}}, label={lst:pdfinfoOutputPart6}]
+caption={{The \texttt{dc:title>} metadata embedded in a PDF file (some reformatting has been done to fit the text in the borders)}}, label={lst:pdfinfoOutputPart6}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
       <dc:title>
         <rdf:Alt>
@@ -3640,7 +3640,7 @@ For XMP, there are some specific areas that might be of interest in the future:
 \subsubsection{Adding new dc elements}
 \label{sec:newDCelements}
 In \Cref{tab:dublicCoreDigitalCommons} on \pageref{tab:dublicCoreDigitalCommons} we saw five elements that are perhaps worth adding, specifically:
-\texttt{thesis.degree}, \texttt{thesis.degree.discipline}, \linebreak[4]\texttt{thesis.degree.grantor}, \texttt{thesis.degree.level}, and \linebreak[4] \texttt{thesis.degree.name}. It may be worth adding these to the XMP data for a thesis in the future. For some discussion of these elements, please see the discussion of EDT‐MS metadata elements in the paper by Ivanović, Ivanović, and Surla entitled ``A data model of theses and dissertations compatible with {CERIF}, {Dublin} {Core} and {EDT}‐{MS}''\cite{ivanovic_data_2012}. ETD-MS is defined in ``ETD-MS v1.1: an Interoperability Metadata Standard for Electronic Theses and Dissertations''\,\cite{hickey_pavani_suleman_2010} and available at \url{https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html}.
+\texttt{thesis.degree}, \texttt{thesis.degree.discipline}, \linebreak[4]\texttt{thesis.degree.grantor}, \texttt{thesis.degree.level}, and \linebreak[4] \texttt{thesis.degree.name}. It may be worth adding these to the XMP data for a thesis in the future. For some discussion of these elements, please see the discussion of EDT‐MS metadata elements in the paper by Ivanović, Ivanović, and Surla entitled ``A data model of theses and dissertations compatible with {CERIF}, {Dublin} {Core} and {EDT}‐{MS}''\cite{ivanovic_data_2012}. ETD-MS is defined in ``ETD-MS v1.1: an Interoperability Metadata Standard for Electronic Theses and Dissertations''~\cite{hickey_pavani_suleman_2010} and available at \url{https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html}.
 
 
 
@@ -3684,7 +3684,7 @@ doi\\
 
 \subsubsection{Adding citation data to the metadata}
 \label{sec:addingCitation}
-There is also a desire by many to include bibliographic citation information into the XMP so that the \gls{PDF} carries this data and one does \emph{not} need to access some other source to find this information. The element \texttt{DCTERMS.bibliographicCitation} is proposed for this purpose in a document by Ann Apps, ``Guidelines for Encoding Bibliographic Citation Information in Dublin Core™ Metadata''\,\cite{Ann_Apps_2005}.
+There is also a desire by many to include bibliographic citation information into the XMP so that the \gls{PDF} carries this data and one does \emph{not} need to access some other source to find this information. The element \texttt{DCTERMS.bibliographicCitation} is proposed for this purpose in a document by Ann Apps, ``Guidelines for Encoding Bibliographic Citation Information in Dublin Core™ Metadata''~\cite{Ann_Apps_2005}.
 
 \Needspace*{3\baselineskip}
 Note that to include the URN and \gls{DiVA} identifiers assigned by \gls{DiVA}, you first need to create a \gls{DiVA} entry and then use the assigned values to update the \gls{XMP} information in the \gls{PDF} file \textit{before} uploading the full text to \gls{DiVA}.
@@ -4460,7 +4460,7 @@ end
 
 \subsubsection{Using annotation to store Contributor Roles Taxonomy (CReDiT) data}
 
-Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022\,\cite{niso_z39_104_2022}). However, standard canonical identifiers using the \enquote{Simplified Name} form can be utilized directly as annotation keys, as outlined in \Cref{tab:CReDiT_annotation}. The values of these can be: \enquote{lead}, \enquote{equal} (=true), or \enquote{supporting}.
+Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022~\cite{niso_z39_104_2022}). However, standard canonical identifiers using the \enquote{Simplified Name} form can be utilized directly as annotation keys, as outlined in \Cref{tab:CReDiT_annotation}. The values of these can be: \enquote{lead}, \enquote{equal} (=true), or \enquote{supporting}.
 
 \begin{table}[!htp]
   \centering
@@ -4778,13 +4778,11 @@ When writing custom reports, contribution matrices, or diagnostic validation rou
 \begin{enumerate}
     \item Standard Built-in Key Registers
     \begin{itemize}
-        \item 
+        \item \textbackslash thefield\{entrykey\}: Prints or retrieves the active \texttt{.bib} entry key (\eg maguire2026pipeline).
 
-\textbackslash thefield\{entrykey\}: Prints or retrieves the active \texttt{.bib} entry key (\eg maguire2026pipeline).
+        \item \textbackslash strfield\{entrykey\}: Returns the unexpanded string representation of the entry key.
 
-\textbackslash strfield\{entrykey\}: Returns the unexpanded string representation of the entry key.
-
-\textbackslash currententrykey: An internal macro holding the literal key of the item currently being processed.
+        \item \textbackslash currententrykey: An internal macro holding the literal key of the item currently being processed.
     \end{itemize}
     
     \item Explicitly Setting an Arbitrary Entry as "Current"
@@ -4832,6 +4830,7 @@ Whenever this macro is invoked during bibliography rendering, \texttt{\textbacks
 
 Beyond author attribution and multilingual titles, Biber’s data annotations can attach semantic metadata to citations, authors, and sources without requiring custom \texttt{.dbx} datamodel extensions. Potentially, several applications could be integrated directly into thesis workflows:
 \begin{enumerate}
+\Needspace*{27\baselineskip}
     \item Thesis Inclusion \& Paper Categorization (Compilation Theses)
 
 In Swedish compilation doctoral theses (\foreignlanguage{swedish}{sammanläggningsavhandlingar}), candidates must distinguish between papers formally included in the thesis and secondary publications completed during their studies:
@@ -4859,7 +4858,7 @@ In Swedish compilation doctoral theses (\foreignlanguage{swedish}{sammanläggnin
     \item[Use in Document] A single \texttt{.bib} file can populate both the \textbf{Included Papers} section and the \textbf{Other Publications} appendix by filtering on  \texttt{\textbackslash hasentryannotation\{included\}} inside \texttt{\textbackslash defbibfilter} or \texttt{\textbackslash defbibcheck}.
     \item[Automated Dividers] The value \texttt{paper="Paper I"} can be dynamically fetched to typeset decorative Roman-numeral divider sheets preceding individual reprint \glspl{PDF}.
 \end{description}
-
+\Needspace*{20\baselineskip}
     \item Institutional Affiliation \& Degree Eligibility Mapping
 
 For co-authored papers, evaluating committees often need to confirm whether an author was affiliated with KTH or performed the research under an external industrial partnership:
@@ -4883,7 +4882,7 @@ For co-authored papers, evaluating committees often need to confirm whether an a
 \end{description}
 
 While footnotes or markers to identify authors belonging to specific departments or external bodies might be possible, I think they add too much cognitive load for the reader; therefore, it is better to include these descriptions in the text. Moreover, a better means to input metadata into \gls{DiVA} is needed (potentially, through its new \gls{API}); however, this lies outside the scope of the current work.
-
+\Needspace*{18\baselineskip}
     \item Open Access (OA) \& Archival Compliance Status
 
 Institutional repositories and funding bodies (such as the Swedish Research Council / \foreignlanguage{swedish}{Vetenskapsrådet}) track whether listed papers meet Plan S open-access criteria:
@@ -4904,7 +4903,7 @@ Institutional repositories and funding bodies (such as the Swedish Research Coun
 \end{description}
 
 This looks like a clear area for future work. It can build on the earlier \gls{ORCID} code.
-
+\Needspace*{20\baselineskip}
     \item Reproducibility, Artifact, and Dataset Linking
 
 Conferences and journals increasingly evaluate research artifacts (software, raw datasets, benchmarks). Annotating field-level URLs clarifies the target resource:
@@ -4927,7 +4926,7 @@ Conferences and journals increasingly evaluate research artifacts (software, raw
 \end{description}
 
 This looks like a clear area for future work. It can build on the earlier \gls{ORCID} code.
-
+\Needspace*{18\baselineskip}
     \item Peer-Review Status \& Acceptance Tracking
 
 Because doctoral theses are frequently submitted while papers are in various stages of publication, annotations can dynamically distinguish formal review stages:
@@ -5224,6 +5223,25 @@ In your existing \texttt{creditnames} name formatting driver, when the driver pr
 \end{enumerate} 
 
 
+\subsubsection{Support for Mega-Collaborations}
+\label{sec:biberMegaCollaborations}
+To prevent Biber and \LaTeX{} from crashing on mega-collaborations while still providing granular \gls{CReDiT} attribution for a student, you can use \textbf{sparse target indexing}, (\ie you only need to add the relevant additional author details):
+
+\Needspace*{12\baselineskip}
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{)}}, label=lst:biberMegaCollaborationMetadata]
+@article{atlas2026higgs,
+  author    = {Lindenbaum, S. J. and {MPS Collaboration}},
+  author+an = {
+    % Only annotate specific contributors, lead analysts, or the student:
+    3:specific-contributor="Maguire Jr., Gerald Q.";
+    3:software="lead";
+    3:formal-analysis="lead";
+    3:note="Summer student: PDP-10 assembly-to-FORTRAN conversion & track display"
+  }
+}
+\end{lstlisting}
+
+\Needspace*{18\baselineskip}
 \textbf{Python Pipeline Synthesis (Connecting \texttt{CReDiT\_Matrix\_Wizard.py})}
 
 In your Streamlit wizard and GitHub Actions workflow:
@@ -5237,6 +5255,52 @@ In your Streamlit wizard and GitHub Actions workflow:
 
 This preserves standard bibliography listings for external readers while enabling the defense committee to inspect candidate contributions to large institutional consortia.
 
+\section{Recommendations for generating fake \BibLaTeX{} entries}
+\label{sec:generatingFakeBibLaTeXEntries}
+
+\gls{ORCID} iDs are a designated subset of \glspl{ISNI}\footnote{See \url{https://isni.org/} and \gls{ISO} 27729~\cite{iso27729:2024} for more information.}, specifically within the range \texttt{0000-0001-5000-0007} to \texttt{0000-0003-5000-0001}. Values entirely outside this assignment block --- such as those starting with all zeroes (\texttt{0000-0000-XXXX-XXXX}) --- do not represent valid \gls{ORCID} registry allocations. Additionally, \gls{ORCID} iDs use a MOD 11-2 checksum as the final character; thus, any 16-digit string with a failed checksum is invalid and will be rejected by any schema or \gls{API} validator. Because valid \glspl{ISNI} exist outside the designated \gls{ORCID} block, arbitrary non-ORCID \glspl{ISNI} should still be avoided to prevent collisions with real registered entities in the global \gls{ISNI} database; test entries should strictly employ mathematically invalid checksums or zero-filled blocks (\eg \texttt{0000-0000-0000-000X}).
+
+The International DOI Foundation (IDF) has reserved a designated \gls{DOI} prefix specifically for testing, documentation, and development, and a number of other \gls{DOI} prefixes are used/reserved for similar purposes. These are:
+\begin{itemize}
+    \item \texttt{10.1000} (The Demonstration \& Documentation Prefix):
+The \textit{DOI Handbook} explicitly assigns the prefix \texttt{10.1000} for examples, demonstration systems, and documentation (similar to example domain names like \enquote{\texttt{example.com}}). Identifiers using this prefix --- such as \texttt{10.1000/182} --- are reserved for instructional and testing purposes and will not resolve to real production literature.
+
+    \item DataCite Test Environment (\texttt{10.5072}):
+DataCite reserves prefix \texttt{10.5072} strictly for sandbox environments and test accounts. \glspl{DOI} registered under \texttt{10.5072} are test records used during API integration and are never routed to the production registry.
+
+    \item Crossref Test Prefix (\texttt{10.5555}):
+Crossref provides test accounts with prefixes such as \texttt{10.5555} (and similar designated sandbox prefixes) for verifying \gls{XML} deposits and validation pipelines without creating permanent scholarly records.
+
+    \item Reserved Registrant Code \texttt{10.0000}:
+The \texttt{10.0000} space is unassigned to any \gls{DOI} Registration Agency (RA) and is invalid for production publication metadata.
+\end{itemize}
+
+For mock datasets, documentation examples, or pipeline test suites, \texttt{10.1000} is the standard, RFC/handbook-compliant choice. Use this prefix for examples.
+
+\subsection{Authors, Titles, and other Metadata Fields}
+
+When constructing synthetic entries for documentation, testing, or pipeline verification, all accompanying fields must be constructed so that they cannot be conflated with genuine scholarly assets:
+
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{Domains \& URIs}}, leftmargin=!]
+    \item[Explicit Metadata Markers (\texttt{placeholder})]
+    When real names, institutional affiliations, or historical works are used in illustrative examples, the entry should explicitly declare:
+\begin{lstlisting}[language={BibTeX}, basicstyle=\small\ttfamily]
+placeholder = {Placeholder fake reference for use in examples},
+\end{lstlisting}
+    This provides a machine-readable flag that downstream \gls{CI} verification scripts (\eg \texttt{bib\_cleanup.py}) and pre-flight linters can inspect to ensure synthetic records are not inadvertently retained in final thesis submissions or uploaded to production repositories like \gls{DiVA}.
+
+    \item[Authors \& Consortia]
+    Avoid realistic common names that could collide with actual researchers in databases such as Scopus, Web of Science, or DiVA. Prefer conventional metasyntactic names (\eg \enquote{Alice Example} and \enquote{Bob Sample}) or clearly designated institutional placeholders (\eg \enquote{Researcher, Mock A.} or \texttt{\{\{The Example Collaboration\}\}}).
+
+    \item[Titles \& Publication Venues]
+    Titles should explicitly include the terms \enquote{Example}, \enquote{Mock}, or \enquote{Demonstration} (\eg \textit{A Synthetic Benchmark for Example Systems}). Journals and book titles should use explicitly fictional titles (\eg \textit{Journal of Illustrative Studies}, \textit{Proceedings of the Demonstration Conference}) to avoid collisions with predatory or newly minted real journals.
+
+    \item[ISBNs \& ISSNs]
+    Follow \gls{ISO} 2108 recommendations for example \glspl{ISBN}~\cite{iso2108:2017}. Use the standard demonstration ISBN-13 (\texttt{978-3-16-148410-0}) or an unassigned/failed-checksum sequence (\eg \texttt{978-0-00-000000-0}). For serial publications, the dummy \gls{ISSN} \texttt{0000-0000} is unallocated by the \gls{ISSN} International Centre.
+
+    \item[Domains \& URIs]
+    Under \gls{RFC} 2606~\cite{rfc2606} and its update \gls{RFC} 6761~\cite{rfc6761}, only the reserved second-level domains (\texttt{example.com}, \texttt{example.org}, \texttt{example.edu}) or the reserved top-level domains (\texttt{.test}, \texttt{.example}, \texttt{.invalid}) should be used for \glspl{URL} and repository mirrors. For national repository handles, use zero-padded identifiers (\eg \texttt{urn:nbn:se:kth:diva-000000}).
+\end{description}
 
 \clearpage
 
