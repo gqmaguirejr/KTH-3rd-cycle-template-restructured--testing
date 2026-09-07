@@ -128,7 +128,15 @@ def sync_discovery():
                 is_creator = False
                 orcid = None
                 kthid = None
-                
+
+                # Check attributes on the <name> element itself
+                # Handles xlink:href="u1d13i2c" under the XLink namespace
+                for attr_key, attr_val in elem.attrib.items():
+                    if attr_key.endswith("href") or attr_key.count("}href") == 1:
+                        val = attr_val.strip()
+                        if val.startswith("u1"):
+                            kthid = val
+
                 for sub in elem:
                     if sub.tag.count("}role") == 1:
                         for role_term in sub:
