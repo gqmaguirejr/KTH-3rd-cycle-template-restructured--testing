@@ -17,7 +17,7 @@ import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 
-testing = True
+testing = False
 if testing:
     Basefile_name = "test"
     Basefile_name_annotations = "test-annotations"
