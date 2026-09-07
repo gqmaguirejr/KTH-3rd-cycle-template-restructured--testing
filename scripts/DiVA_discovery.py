@@ -95,6 +95,11 @@ def sync_discovery():
         year = "Unknown"
         pub_type = "unknown"
 
+        # --- Extracted storage structures for annotations/identifiers ---
+        diva_identifiers = {}
+        author_annotations = {}  # index -> {'orcid': ..., 'kthid': ...}
+        author_index = 0
+
         for elem in record:
             if elem.tag.count("}titleInfo") == 1:
                 lang = elem.attrib.get('lang', 'eng')
@@ -109,6 +114,40 @@ def sync_discovery():
                 if elem.attrib.get('type') == "publicationTypeCode":
                     pub_type = elem.text
 
+            # 1. Harvest Name Identifiers (ORCID, KTHID)
+            elif elem.tag.count("}name") == 1:
+                is_creator = False
+                orcid = None
+                kthid = None
+                
+                for sub in elem:
+                    if sub.tag.count("}role") == 1:
+                        for role_term in sub:
+                            if role_term.text and role_term.text.lower() in ["author", "aut"]:
+                                is_creator = True
+                    elif sub.tag.count("}description") == 1 and sub.text:
+                        if "orcid.org=" in sub.text:
+                            orcid = sub.text.split("orcid.org=")[-1].strip()
+                    elif sub.tag.count("}nameIdentifier") == 1:
+                        val = sub.text.strip() if sub.text else ""
+                        if val.startswith("u1"):
+                            kthid = val
+
+                if is_creator:
+                    author_index += 1
+                    author_annotations[author_index] = {}
+                    if orcid:
+                        author_annotations[author_index]["orcid"] = orcid
+                    if kthid:
+                        author_annotations[author_index]["kthid"] = kthid
+
+            # 2. Harvest Bibliographic & System Identifiers
+            elif elem.tag.count("}identifier") == 1:
+                id_type = elem.attrib.get('type')
+                id_val = elem.text.strip() if elem.text else None
+                if id_type and id_val:
+                    diva_identifiers[id_type.lower()] = id_val
+
         main_title = title_dict.get('eng') or title_dict.get('swe') or "Untitled"
 
         # --- DEEP MERGE LOGIC ---
@@ -118,22 +157,26 @@ def sync_discovery():
                 "title": main_title,
                 "year": year,
                 "pubtype": pub_type,
-                "status": "unprocessed", # Default status for new items
+                "identifiers": diva_identifiers,          # <-- Save extracted PIDs
+                "author_identifiers": author_annotations, # <-- Save harvested ORCIDs/KTHIDs
+                "status": "unprocessed",
                 "label": None,
-                "tab_index": None,       # Manual curation required
+                "tab_index": None,
                 "bib_key": None,
                 "in_bib": False,
                 "pdf_downloaded": False,
-                "file_path": "Included_publications/", # Default dir
+                "file_path": "Included_publications/",
                 "pdf_pages": "",
                 "scale": 1.0,
-                "permission_text": ""    # Manual curation required
+                "permission_text": ""
             }
         else:
-            # Update only objective metadata from DiVA
+            # Update metadata from DiVA
             pub_map[diva_id]["title"] = main_title
             pub_map[diva_id]["year"] = year
             pub_map[diva_id]["pubtype"] = pub_type
+            pub_map[diva_id]["identifiers"] = diva_identifiers
+            pub_map[diva_id]["author_identifiers"] = author_annotations
             
             # Ensure new divider fields exist in older JSON records without overwriting
             pub_map[diva_id].setdefault("tab_index", None)
