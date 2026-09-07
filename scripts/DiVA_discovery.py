@@ -47,6 +47,15 @@ def normalize_text(text):
     if not text: return ""
     return re.sub(r'[^\w\s]', '', text).lower().strip()
 
+def normalize_doi(doi_str):
+    """Normalize a DOI by removing URL/URI prefixes and converting to lowercase."""
+    if not doi_str:
+        return ""
+    doi = doi_str.strip().lower()
+    doi = re.sub(r"^https?://(dx\.)?doi\.org/", "", doi)
+    doi = re.sub(r"^doi:\s*", "", doi)
+    return doi.strip()
+
 def fetch_diva_mods(kthid):
     """Fetches MODS records from DiVA API."""
     url = f'https://kth.diva-portal.org/smash/export.jsf?format=mods&addFilename=true&aq=[[{{\"personId\":\"{kthid}\"}}]]&aqe=[]&aq2=[[]]&onlyFullText=false&noOfRows=5000&sortOrder=title_sort_asc&sortOrder2=title_sort_asc'
@@ -188,8 +197,18 @@ def sync_discovery():
         # --- Cross-referencing with .bib remains unchanged ---
         found_in_bib = False
         norm_diva_title = normalize_text(pub_map[diva_id].get('title', ''))
+        diva_doi = normalize_doi(diva_identifiers.get('doi', ''))
 
         for entry in bib_entries:
+            # 1. Exact match on DOI if present in both records
+            bib_doi = normalize_doi(entry.get('doi', ''))
+            if diva_doi and bib_doi and (diva_doi == bib_doi):
+                found_in_bib = True
+                pub_map[diva_id]["in_bib"] = True
+                pub_map[diva_id]["bib_key"] = entry['ID']
+                break
+
+            # 2. Fallback: Fuzzy title matching
             bib_title_raw = entry.get('title', '').replace('{', '').replace('}', '')
             norm_bib_title = normalize_text(bib_title_raw)
             
@@ -198,7 +217,7 @@ def sync_discovery():
                 pub_map[diva_id]["in_bib"] = True
                 pub_map[diva_id]["bib_key"] = entry['ID']
                 break
-        
+            
         if not found_in_bib:
             pub_map[diva_id]["in_bib"] = False
             pub_map[diva_id]["bib_key"] = None
