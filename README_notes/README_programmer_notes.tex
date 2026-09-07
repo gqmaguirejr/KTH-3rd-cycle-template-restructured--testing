@@ -5143,17 +5143,27 @@ Your pipeline positions the \texttt{.bib} file as a traditional citation store, 
 \label{sec:biberMegaCollaborations}
 To prevent Biber and \LaTeX{} from crashing on mega-collaborations while still providing granular \gls{CReDiT} attribution for a student, you can use \textbf{sparse target indexing}, (\ie you only need to add the relevant additional author details):
 
-\Needspace*{12\baselineskip}
-\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{)}}, label=lst:biberMegaCollaborationMetadata]
-@article{atlas2026higgs,
-  author    = {Lindenbaum, S. J. and {MPS Collaboration}},
-  author+an = {
-    % Only annotate specific contributors, lead analysts, or the student:
+\Needspace*{24\baselineskip}
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Example of a specific contributor to a large collaboration}}, label=lst:biberMegaCollaborationMetadata]
+@techreport{bnlMPS1975,
+  author     = {Lindenbaum, S. J. and {MPS Collaboration}},
+  author+an  = {
     3:specific-contributor="Maguire Jr., Gerald Q.";
     3:software="lead";
-    3:formal-analysis="lead";
-    3:note="Summer student: PDP-10 assembly-to-FORTRAN conversion & track display"
-  }
+    3:visualization="lead";
+  },
+  title      = {The {Brookhaven} {Multi-Particle} {Spectrometer} ({MPS}) Facility},
+  year       = {1975},
+  number     = {BNL-20202},
+  url        = {https://www.osti.gov/servlets/purl/4162299},
+  note       = {An invited paper presented at the IV International Symposium on NN Interaction, Syracuse University, May 2-4, 1975.},
+  entry+an   = {
+    diva_id="bnlMPS1975";
+    contribution_note="Summer student working on PDP-10 software and graphical display of data.";
+    has_specific_contributors="true";
+  },
+  institution = {Brookhaven National Laboratory},
+  type       = {Report},
 }
 \end{lstlisting}
 
