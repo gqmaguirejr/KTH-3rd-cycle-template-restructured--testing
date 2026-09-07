@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # -*- mode: python; python-indent-offset: 4 -*-
-# run the script locally with streamlit run ./scripts/CReDiT_Matrix_Wizard.py
+# run the script locally with: streamlit run ./scripts/CReDiT_Matrix_Wizard.py
 
 import streamlit as st
 import json
@@ -21,6 +21,9 @@ CREDIT_ROLES = [
     "Writing – Original Draft", "Writing – Review & Editing"
 ]
 
+# Supported contributor degrees per NISO Z39.104-2022
+DEGREES = ["none", "lead", "equal", "supporting"]
+
 def load_json(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
         return json.load(f)
@@ -31,9 +34,10 @@ def save_json(file_path, data):
 
 def get_authors_from_bib(bib_path, bib_key):
     """Parses references.bib using an inclusive parser."""
-    if not bib_path.exists(): return []
+    if not bib_path.exists(): 
+        return []
     with open(bib_path, 'r', encoding='utf-8') as bibfile:
-        parser = BibTexParser(ignore_nonstandard_types=False) #
+        parser = BibTexParser(ignore_nonstandard_types=False)
         library = bibtexparser.load(bibfile, parser=parser)
     for entry in library.entries:
         if entry.get('ID') == bib_key:
@@ -48,7 +52,6 @@ with st.sidebar:
     st.header("Controls")
     if st.button("🔴 Quit Wizard", help="Click to stop the Streamlit server"):
         st.warning("Shutting down the server. You can close this tab now.")
-        # Sends a signal to the process to terminate cleanly
         os.kill(os.getpid(), signal.SIGINT)
 
 st.title("🎓 CReDiT Contribution Wizard")
@@ -84,25 +87,51 @@ else:
 
                 authors.extend(bib_authors)
 
-                # get 'specific_contributors' from publications_map.json for 'paper'
+                # Get 'specific_contributors' from publications_map.json for 'paper'
                 specifics = paper.get('specific_contributors', [])
                 for person in specifics:
-                    # Format to 'Lname, Fname' to match your credit_contributions keys
-                    formatted_name = f"{person['lname']}, {person['fname']}"
-                    if formatted_name not in authors:
+                    formatted_name = f"{person.get('lname', '')}, {person.get('fname', '')}".strip(" ,")
+                    if formatted_name and formatted_name not in authors:
                         authors.append(formatted_name)
 
-                # CReDiT Matrix setup
+                # CReDiT Matrix setup with degree support
                 existing_credit = paper.get("credit_contributions", {})
-                df = pd.DataFrame(False, index=authors, columns=CREDIT_ROLES)
-                for auth, roles in existing_credit.items():
+                
+                # Initialize grid defaulting to "none"
+                df = pd.DataFrame("none", index=authors, columns=CREDIT_ROLES)
+                
+                # Populate existing data supporting both legacy list and dict formats
+                for auth, roles_data in existing_credit.items():
                     if auth in df.index:
-                        for r in roles: df.at[auth, r] = True
+                        if isinstance(roles_data, dict):
+                            for r, degree in roles_data.items():
+                                if r in CREDIT_ROLES and degree in DEGREES:
+                                    df.at[auth, r] = degree
+                        elif isinstance(roles_data, list):
+                            # Legacy format: migrate bare presence to 'lead'
+                            for r in roles_data:
+                                if r in CREDIT_ROLES:
+                                    df.at[auth, r] = "lead"
 
-                # Data Editor with updated 2026 'width' parameter
+                # Configure each column as a Selectbox dropdown
+                column_configs = {
+                    r: st.column_config.SelectboxColumn(
+                        label=r,
+                        help=f"Degree of contribution for {r}",
+                        options=DEGREES,
+                        default="none",
+                        required=True
+                    )
+                    for r in CREDIT_ROLES
+                }
+
+                # Interactive Data Editor
                 edited_df = st.data_editor(
-                    df, key=f"ed_{key}", width="stretch", num_rows="fixed",
-                    column_config={r: st.column_config.CheckboxColumn() for r in CREDIT_ROLES}
+                    df,
+                    key=f"ed_{key}",
+                    width="stretch",
+                    num_rows="fixed",
+                    column_config=column_configs
                 )
 
                 st.markdown("---")
@@ -126,11 +155,19 @@ else:
                     )
 
                 if st.button(f"Update JSON for Paper {paper.get('label')}", type="primary"):
-                    new_credit = {auth: edited_df.columns[edited_df.loc[auth]].tolist() 
-                                  for auth in edited_df.index if edited_df.loc[auth].any()}
+                    # Extract active contributions as a structured dictionary {role: degree}
+                    new_credit = {}
+                    for auth in edited_df.index:
+                        author_roles = {}
+                        for r in CREDIT_ROLES:
+                            val = edited_df.loc[auth, r]
+                            if val in ["lead", "equal", "supporting"]:
+                                author_roles[r] = val
+                        if author_roles:
+                            new_credit[auth] = author_roles
                     
                     data[key]["credit_contributions"] = new_credit
                     data[key]["equal_contributors"] = eq_contribs
                     data[key]["contribution_note"] = contrib_note
                     save_json(json_path, data)
-                    st.success("Successfully updated publications_map.json")
+                    st.success(f"Successfully updated publications_map.json for Paper {paper.get('label')}")
