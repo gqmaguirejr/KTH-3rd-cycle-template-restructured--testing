@@ -1,17 +1,64 @@
-% Check for placeholder references
-% Emit a prominent compiler warning and visual marker during the build if a placeholder survives
-% Preamble configuration for placeholder detection
-% 1. Intercept standard bibliography lists
+% lib/check_for_placeholder_references.tex
+%
+% Intercept and deduplicate placeholder references in BibLaTeX.
+% - Emits exactly one warning per unique entry key to the console/log.
+% - Prints inline red visual alerts in the PDF.
+% - Safely captures resolved field values for a single summary banner at \AtEndDocument.
+
+\RequirePackage{etoolbox}
+\RequirePackage{xcolor}
+
+\makeatletter
+
+% Container for the formatted summary at the end of the build
+\newcommand{\gqm@placeholder@summary}{}
+
+% Safe recording macro:
+% Uses \savefield to extract strings into temporary macros BEFORE appending,
+% and uses etoolbox's \gappto (which avoids \xdef/# parameter conflicts).
+\newcommand{\gqm@record@placeholder}{%
+  \savefield{entrykey}{\gqm@curr@key}%
+  \savefield{placeholder}{\gqm@curr@val}%
+  % Check if this key has already been registered
+  \expandafter\ifinlistcs\expandafter{\gqm@curr@key}{gqm@placeholder@seen}{}{%
+    % Register key in list
+    \expandafter\listcsadd\expandafter{gqm@placeholder@seen}{\gqm@curr@key}%
+    % Emit immediate compiler warning without trailing line number
+    \PackageWarningNoLine{biblatex}{Unresolved placeholder reference '\gqm@curr@key': \gqm@curr@val}%
+    % Safely append resolved strings to summary
+    \begingroup
+      \edef\gqm@temp@line{\MessageBreak\space\space* [\gqm@curr@key] \gqm@curr@val}%
+      \expandafter\gappto\expandafter\gqm@placeholder@summary\expandafter{\gqm@temp@line}%
+    \endgroup
+  }%
+}
+
+% 1. Intercept bibliography entries
 \AtEveryBibitem{%
   \iffieldundef{placeholder}{}{%
-    \PackageWarning{biblatex}{Placeholder reference '\thefield{entrykey}' detected: \thefield{placeholder}}%
+    \gqm@record@placeholder
     \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
   }%
 }
 
-% 2. Intercept inline citations (including \fullcite and \footfullcite)
+% 2. Intercept inline citations (\cite, \parencite, \textcite, \fullcite)
 \AtEveryCitekey{%
   \iffieldundef{placeholder}{}{%
-    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
+    \gqm@record@placeholder
+    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}%
   }%
 }
+
+% 3. Consolidated end-of-run banner
+\AtEndDocument{%
+  \ifcsvoid{gqm@placeholder@seen}{}{%
+    \PackageWarningNoLine{biblatex}{%
+      =======================================================\MessageBreak
+      \space UNRESOLVED PLACEHOLDER REFERENCES DETECTED IN THIS BUILD:\MessageBreak
+      \gqm@placeholder@summary\MessageBreak
+      =======================================================%
+    }%
+  }%
+}
+
+\makeatother

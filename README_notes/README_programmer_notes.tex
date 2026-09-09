@@ -503,28 +503,47 @@ language=[LaTeX]{TeX},
 }
 
 \usepackage{luacode}
+
 % --- LUA BACKEND ---
 \begin{luacode*}
--- Record start time
+-- Record CPU start time
 compilation_start_time = os.clock()
 
--- Function for logging an event with a timestamp
+-- Function for logging an elapsed event timestamp to the log file
 function log_event(message)
   local current_time = os.clock()
   local elapsed = current_time - compilation_start_time
-  local log_message = string.format("[+%.3fs] %s", elapsed, message)
-  tex.sprint("\\wlog{" .. log_message .. "}")
+  local log_message = string.format("[+%.3fs] %s", elapsed, message or "")
+  texio.write_nl("log", log_message)
+end
+
+-- Function for logging wall-clock time directly to the log file
+function log_wall_clock_time(msg)
+  local t = os.date("%Y-%m-%d %H:%M:%S")
+  texio.write_nl("log", "[" .. t .. "] " .. (msg or ""))
 end
 \end{luacode*}
 
 % --- LATEX FRONTEND ---
 % 1. Log the start time immediately
-\directlua{log_wall_clock_time("Compilation started")}
-
-% 2. Use the \AtEndDocument hook to log the end time
-\AtEndDocument{%
-  \directlua{log_wall_clock_time("Compilation finished")}%
+\directlua{
+  if log_wall_clock_time then
+    log_wall_clock_time("Compilation started")
+  end
 }
+
+% 2. Log both wall-clock and total CPU duration at the end of the run
+\AtEndDocument{%
+  \directlua{
+    if log_wall_clock_time then
+      log_wall_clock_time("Compilation finished")
+    end
+    if log_event then
+      log_event("Total CPU time to end of document")
+    end
+  }%
+}
+
 % Command for explicit, manual logging
 \newcommand{\ReportTimeStamp}[1]{\directlua{log_event("#1")}}
 
