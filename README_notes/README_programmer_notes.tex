@@ -4460,7 +4460,15 @@ end
 
 \subsubsection{Using annotation to store Contributor Roles Taxonomy (CReDiT) data}
 
-Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022~\cite{niso_z39_104_2022}). However, standard canonical identifiers using the \enquote{Simplified Name} form can be utilized directly as annotation keys, as outlined in \Cref{tab:CReDiT_annotation}. The values of these can be: \enquote{lead}, \enquote{equal} (=true), or \enquote{supporting}.
+Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022~\cite{niso_z39_104_2022}). However, standard canonical identifiers using the \enquote{Simplified Name} form can be utilized directly as annotation keys, as outlined in \Cref{tab:CReDiT_annotation}. The degree values of these can be: \enquote{lead}, \enquote{equal} (=true), or \enquote{supporting}:
+\begin{description}[labelwidth =\widthof{\textbf{supporting}}, leftmargin = !]
+    \item[lead] The contributor took primary responsibility for the facet of the work.
+
+    \item[equal] The contributor shared substantial, balanced responsibility alongside one or more co-authors.
+
+    \item[supporting] The contributor provided supplementary contribution, operational assistance, or targeted input.
+\end{description}
+Absence of the key implies no attributed contribution.
 
 \begin{table}[!htp]
   \centering
@@ -4821,9 +4829,127 @@ Usage Example: Printing the Current Entry Key Alongside Metadata
 }
 \end{lstlisting}
 
+\subsubsection{Listing roles grouped by degree}
 
+Whenever the \texttt{author:credit:roles} macro is invoked during bibliography rendering, \texttt{\textbackslash thefield\{entrykey\}} dynamically evaluates to whatever reference is currently being processed. \Cref{lst:biberCReDiTrolesGroupedByDegree} shows how the roles can be listed grouped by degree. If an author has no roles allocated under a specific degree (such as no Equal roles), that row is omitted entirely.
+\Needspace*{22\baselineskip}
+\begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Listing CReDiT roles grouped by degree}}, label=lst:biberCReDiTrolesGroupedByDegree]
+\usepackage{etoolbox}
 
-Whenever this macro is invoked during bibliography rendering, \texttt{\textbackslash thefield\{entrykey\}} dynamically evaluates to whatever reference is currently being processed.
+% Master list of the 14 standard CReDiT roles
+\newcommand*{\CreditRolesList}{%
+  conceptualization,%
+  data-curation,%
+  formal-analysis,%
+  funding-acquisition,%
+  investigation,%
+  methodology,%
+  project-administration,%
+  resources,%
+  software,%
+  supervision,%
+  validation,%
+  visualization,%
+  writing-original-draft,%
+  writing-review-editing%
+}
+
+% Human-readable labels for role slugs
+\newcommand*{\formatcreditrole}[1]{%
+  \ifcsdef{creditlabel@#1}%
+    {\csuse{creditlabel@#1}}%
+    {#1}%
+}
+\csdef{creditlabel@conceptualization}{Conceptualization}
+\csdef{creditlabel@data-curation}{Data Curation}
+\csdef{creditlabel@formal-analysis}{Formal Analysis}
+\csdef{creditlabel@funding-acquisition}{Funding Acquisition}
+\csdef{creditlabel@investigation}{Investigation}
+\csdef{creditlabel@methodology}{Methodology}
+\csdef{creditlabel@project-administration}{Project Administration}
+\csdef{creditlabel@resources}{Resources}
+\csdef{creditlabel@software}{Software}
+\csdef{creditlabel@supervision}{Supervision}
+\csdef{creditlabel@validation}{Validation}
+\csdef{creditlabel@visualization}{Visualization}
+\csdef{creditlabel@writing-original-draft}{Writing -- Original Draft}
+\csdef{creditlabel@writing-review-editing}{Writing -- Review \& Editing}
+
+% Formatting template for each degree group
+\newcommand*{\printcreditgroup}[2]{%
+  \ifcsvoid{#1}{}{%
+    \par\hskip 1.5em\relax
+    \textit{#2:} \csvtolabel{#1}%
+  }%
+}
+
+% Comma-separated output helper for role lists
+\newcommand*{\csvtolabel}[1]{%
+  \begingroup
+  \def\do##1{\formatcreditrole{##1}\def\do{, \formatcreditrole{####1}}}%
+  \dolistcsloop{#1}%
+  \endgroup
+}
+
+% Grouped synthesis name-formatting driver
+\DeclareNameFormat{creditgrouped}{%
+  \begingroup
+  % Initialize accumulators for each contribution degree
+  \csgdef{credit@lead@\the\value{listcount}}{}%
+  \csgdef{credit@equal@\the\value{listcount}}{}%
+  \csgdef{credit@supporting@\the\value{listcount}}{}%
+  \togglefalse{hascredit}%
+  %
+  % Iterate through all 14 roles for the current author index
+  \renewcommand*{\do}[1]{%
+    \haspartannotation[author][##1][\the\value{listcount}]%
+      {%
+        \toggletrue{hascredit}%
+        \edef\curdegree{\getpartannotation[author][##1][\the\value{listcount}]}%
+        \ifdefstring{\curdegree}{lead}%
+          {\listcsgadd{credit@lead@\the\value{listcount}}{##1}}{}%
+        \ifdefstring{\curdegree}{equal}%
+          {\listcsgadd{credit@equal@\the\value{listcount}}{##1}}{}%
+        \ifdefstring{\curdegree}{supporting}%
+          {\listcsgadd{credit@supporting@\the\value{listcount}}{##1}}{}%
+      }{}%
+  }%
+  \docsvlist{\CreditRolesList}%
+  %
+  % Typeset author and grouped roles only if contributions are registered
+  \iftoggle{hascredit}{%
+    \par\smallskip\noindent
+    \textbf{%
+      \ifdefvoid{\namepartgiven}{}{\namepartgiven\ }%
+      \ifdefvoid{\namepartfamily}{}{\namepartfamily}%
+      \ifdefvoid{\namepartjunior}{}{ \namepartjunior}%
+    }%
+    \haspartannotation[author][orcid][\the\value{listcount}]%
+      {\space\footnotesize(\url{https://orcid.org/\getpartannotation[author][orcid][\the\value{listcount}]})}%
+      {}%
+    \par\nopagebreak
+    \printcreditgroup{credit@lead@\the\value{listcount}}{Lead}%
+    \printcreditgroup{credit@equal@\the\value{listcount}}{Equal}%
+    \printcreditgroup{credit@supporting@\the\value{listcount}}{Supporting}%
+  }{}%
+  \endgroup
+}
+
+% Replacement master macro
+\newbibmacro*{author:credit:roles}{%
+  \begingroup
+  \newtoggle{hascredit}%
+  \printnames[creditgrouped]{author}%
+  \endgroup
+}
+\end{lstlisting}
+
+Using creditlabel@\ldots{} provides strict separation:
+\begin{description}[labelwidth =\widthof{\textbf{credit@<degree>@<author\_idx>}}, leftmargin = !]
+    \item[creditlabel@<role>] Static translation table mapping raw slug keys to typeset strings.
+
+    \item[credit@<degree>@<author\_idx>] Dynamic runtime data containers accumulating roles during macro evaluation.
+\end{description}
 
 \subsection{Using Biber data annotations for other purposes}
 \label{sec:otherUsesForBiberDataAnotations}
@@ -5113,7 +5239,7 @@ In the current workflow, inclusion (\texttt{status: "included"}), label assignme
 
 
     \item[Two-Way Upstream Sync (\gls{DiVA} Discovery)]
-The automated workflow pulls publication metadata directly from \gls{DiVA} via the student's KTHID through GitHub Actions. In a pure in-\TeX{} annotation workflow, the candidate must hand-annotate raw \texttt{.bib} files. In your pipeline, the GitHub Action generates \texttt{lib/publications\_generated.tex} and \texttt{lib/publications\_dividers\_generated.tex} dynamically from \gls{DiVA} and \texttt{publications\_map.json}, removing the manual editing step entirely.
+The automated workflow pulls publication metadata directly from \gls{DiVA} via the student's KTHID through GitHub Actions. In a pure in-\TeX{} annotation workflow, the candidate must hand-annotate raw \texttt{.bib} files. In the current pipeline, the GitHub Action generates \texttt{lib/publications\_generated.tex} and \texttt{lib/publications\_dividers\_generated.tex} dynamically from \gls{DiVA} and \texttt{publications\_map.json}, removing the manual editing step entirely.
 
 \smallskip\noindent
 \item[CI/CD Build-Time Validation]
@@ -5134,10 +5260,10 @@ Testing file existence, checking scaling, and enforcing page intervals are trivi
 
 
     \item[Granular Multi-Author \& Collaboration CReDiT]
-Your handling of massive collaborations (like the BNL Multi-Particle Spectrometer example) via \texttt{specific\_contributors} demonstrates why the wizard approach (\texttt{CReDiT\_Matrix\_Wizard.py}) is cleaner than annotating \texttt{.bib} files. In large multi-author experiments, attempting to attach 14 \gls{CReDiT} part annotations to individual authors inside a standard BibTeX string quickly becomes unwieldy. Generating a standalone \texttt{lib/thesis\_contributions\_generated.tex} file keeps the bibliography clean while producing an explicit, readable contribution matrix for the defense committee.
+Handling of massive collaborations (such as, the BNL Multi-Particle Spectrometer example) via \texttt{specific\_contributors} demonstrates why the wizard approach (\texttt{CReDiT\_Matrix\_Wizard.py}) is cleaner than annotating \texttt{.bib} files. In large multi-author experiments, attempting to attach 14 \gls{CReDiT} part annotations to individual authors inside a standard BibTeX string quickly becomes unwieldy. Generating a standalone \texttt{lib/thesis\_contributions\_generated.tex} file keeps the bibliography clean while producing an explicit, readable contribution matrix for the defense committee.
 \end{description}
 
-Your pipeline positions the \texttt{.bib} file as a traditional citation store, delegating document assembly, inclusion filtering, DiVA harvesting, and \gls{PDF} insertion to external Python and \gls{CI} automation where it is most maintainable.
+The existing pipeline positions the \texttt{.bib} file as a traditional citation store, delegating document assembly, inclusion filtering, DiVA harvesting, and \gls{PDF} insertion to external Python and \gls{CI} automation where it is most maintainable.
 
 \subsubsection{Support for Mega-Collaborations}
 \label{sec:biberMegaCollaborations}
@@ -5199,7 +5325,7 @@ In your \texttt{references-annotations.bib} overlay:
 }
 \end{lstlisting}
 
-\Needspace*{12\baselineskip}
+\Needspace*{13\baselineskip}
 \textbf{Inside LaTeX / BibLaTeX:}
 
 You can query this with:
@@ -5268,6 +5394,108 @@ In your Streamlit wizard and GitHub Actions workflow:
 This preserves standard bibliography listings for external readers while enabling the defense committee to inspect candidate contributions to large institutional consortia.
 
 It should be possible to mine the \texttt{publications\_map.json} file generated by \texttt{CReDiT\_Matrix\_Wizard.py} to produce and initial \texttt{references-annotations.bib} file with the \gls{CReDiT} annotations for authors.
+
+\subsection{Scaling with the number of publications a student has in DiVA}
+The \texttt{publications\_map.json} file has the same number of entries as the number of publications (other than the current thesis) that an author already has in \gls{DiVA}. How large is this likely to be? \Cref{tab:histogramPriorPublications} shows how many students (from those who defended in 2025) have a given number of other publications in \gls{DiVA} (\ie not counting any third-cycle theses).
+
+From this data, we see that the distribution is heavily right-skewed by outliers with 46 and 405 publications in \gls{DiVA}. Looking at these, we see that the student with 405 publications in \gls{DiVA} worked in the ATLAS consortium (thesis title: \textit{Divide and Conquer: A Fine-Grained Look at the Higgs Boson Cross Section in WW Decays Using the ATLAS Experiment}). This means that if they were to identify their contributions to specific papers, the student would have to use the method described in \Cref{sec:biberMegaCollaborations}. However, in this case, the student wrote a monograph and not a compilation-style thesis.
+In the case of the student with 46 publications in Electromagnetic Engineering (thesis title: \textit{Modeling and design of lenses combined with array antennas in the \mbox{millimetre-wave} regime}), the student chose to prune, and they included seven publications in their compilation thesis and cited five others that were related.
+
+Of the $N = 310$ theses (comprising both doctoral and licentiate degrees), the median is 7 prior publications, with an \gls{IQR} spanning 4 to 10. Less than \qty{2}{\percent} of students have 36 or more publications in \gls{DiVA}, and only \qty{4.2}{\percent} have 25 or more. Therefore, the manual effort required to designate which publications are to be included in a compilation thesis\footnote{Unfortunately, \gls{DiVA} does not provide an automated mechanism to query constituent paper linkages for third-cycle theses in aggregate. Consequently, determining the exact number of publications formally incorporated into each compilation thesis requires inspecting each individual record or \gls{PDF}. \Cref{sec:includedPublications2025} examines manually collected data for the year 2025.} and specify their tab order and logical labels remains feasible. Furthermore, because authors include only a curated subset of their total output, subsequent role curation in \texttt{CReDiT\_Matrix\_Wizard.py} remains a modest-sized task.
+
+\begin{table}[!htp]
+    \caption{Histogram of the number of authors with a given number of publications in \gls{DiVA} for third-cycle students who presented in 2025.}
+    \label{tab:histogramPriorPublications}
+    \centering
+    \begin{tabular}{S[table-format=4.0] S[table-format=4.0]}
+    \toprule
+      {\textbf{Number of other publications in \gls{DiVA}}} & {\textbf{Number of authors}}\\
+    \midrule
+1&	6\\
+2&	15\\
+3&	24\\
+4&	31\\
+5&	28\\
+6&	22\\
+7&	31\\
+8&	27\\
+9&	14\\
+10&	17\\
+11&	15\\
+12&	14\\
+13&	12\\
+14&	11\\
+15&	9\\
+16&	5\\
+17&	5\\
+18&	2\\
+19&	3\\
+21&	1\\
+22&	1\\
+24&	4\\
+25&	5\\
+26&	1\\
+27&	1\\
+28&	1\\
+34&	1\\
+36&	2\\
+46&	1\\
+405&	1\\
+\bottomrule
+\end{tabular}
+\end{table}
+\FloatBarrier
+
+\subsubsection{Summary of Included Publications in Compilation theses (2025 Cohort)}
+\label{sec:includedPublications2025}
+Out of the 310 total third-cycle theses presented in 2025, exactly 298 (\qty{96.1}{\percent}) were compilation-style theses with constituent publications, leaving 12 monographs. The number of included publications in these compilation-style theses from 2025 was manually collected from \gls{DiVA} ($N = 298$, comprising 271 doctoral and 27 licentiate theses). \Cref{tab:histogramIncludedPublications2025} gives the distribution of the number of included publications, while the summary below outlines key statistical measures:
+
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{Combined Cohort ($N = 298$)}}, leftmargin=!]
+    \item[Combined Cohort ($N = 298$)]
+        Mean: 4.89; Standard Deviation ($s$, sample/pop): 1.66 / 1.65; Median: 5.0; Mode: 4 (110 theses); Range: 2 to 12; $Q_1 = 4.0$, $Q_3 = 6.0$, $\text{IQR} = 2.0$.
+    \item[Doctoral Theses ($N = 271$)]
+        Mean: 5.13; Standard Deviation ($s$, sample/pop): 1.53 / 1.53; Median: 5.0; Mode: 4 (109 theses); Range: 2 to 12; $Q_1 = 4.0$, $Q_3 = 6.0$, $\text{IQR} = 2.0$.
+    \item[Licentiate Theses ($N = 27$)]
+        Mean: 2.48; Standard Deviation ($s$, sample/pop): 0.58 / 0.57; Median: 2.0; Mode: 2 (15 theses); Range: 2 to 4; $Q_1 = 2.0$, $Q_3 = 3.0$, $\text{IQR} = 1.0$.
+\end{description}
+
+\begin{table}[!htp]
+    \caption{Distribution of included publications in third-cycle compilation theses presented in 2025.}
+    \label{tab:histogramIncludedPublications2025}
+    \centering
+    \begin{tabular}{S[table-format=2.0] S[table-format=3.0] S[table-format=2.2] S[table-format=2.0] S[table-format=2.2] S[table-format=3.0] S[table-format=2.2]}
+    \toprule
+      & \multicolumn{2}{c}{\textbf{Doctoral ($N=271$)}} & \multicolumn{2}{c}{\textbf{Licentiate ($N=27$)}} & \multicolumn{2}{c}{\textbf{Combined ($N=298$)}} \\
+      \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+      {\textbf{Publications}} & {\textbf{Freq.}} & {\textbf{\%}} & {\textbf{Freq.}} & {\textbf{\%}} & {\textbf{Freq.}} & {\textbf{\%}} \\
+    \midrule
+      2  &   4 &  1.48 & 15   & 55.56 &  19 &  6.38 \\
+      3  &   6 &  2.21 & 11   & 40.74 &  17 &  5.70 \\
+      4  & 109 & 40.22 &  1   &  3.70 & 110 & 36.91 \\
+      5  &  66 & 24.35 & {--} & {--}  &  66 & 22.15 \\
+      6  &  43 & 15.87 & {--} & {--}  &  43 & 14.43 \\
+      7  &  24 &  8.86 & {--} & {--}  &  24 &  8.05 \\
+      8  &   9 &  3.32 & {--} & {--}  &   9 &  3.02 \\
+      9  &   5 &  1.85 & {--} & {--}  &   5 &  1.68 \\
+     10  &   2 &  0.74 & {--} & {--}  &   2 &  0.67 \\
+     11  &   2 &  0.74 & {--} & {--}  &   2 &  0.67 \\
+     12  &   1 &  0.37 & {--} & {--}  &   1 &  0.34 \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+\FloatBarrier
+
+
+
+\subsubsection{Key Analytical Takeaways With Respect to Included Publications}
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{CReDiT Tooling Workload}}, leftmargin=!]
+\item[Compact Scaling Envelope] Over \qty{80.4}{\percent} of doctoral compilation theses include between 4 and 6 papers, with the modal value being exactly 4.
+
+\item[Licentiate Norm] Over \qty{96.3}{\percent} of licentiates incorporate either 2 or 3 papers.
+
+\item[CReDiT Tooling Workload] Even for the single extreme doctoral outlier with 12 included works, populating \texttt{publications\_map.json} and managing contributor attributions in\linebreak[4] \texttt{CReDiT\_Matrix\_Wizard.py} involves an input matrix of modest dimensions. For most doctoral candidates ($Q_1 = 4$, $Q_3 = 6$, $\mathrm{IQR} = 2$), the manual CReDiT assignment task requires processing only 4 to 6 rows.
+\end{description}
+
 
 \section{Recommendations for generating fake \BibLaTeX{} entries}
 \label{sec:generatingFakeBibLaTeXEntries}
