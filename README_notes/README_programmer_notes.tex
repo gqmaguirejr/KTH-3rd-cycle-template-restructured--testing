@@ -109,7 +109,12 @@
 \input{lib/includes-after-hyperref}
 \usepackage{orcidlink}  %% to provide ORCID icons and links
 
-\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+%\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+% In the document preamble where glossaries-extra is loaded:
+\usepackage[
+  acronym,
+  nohypertypes={main, acronym}, % disables link generation to targets that do not exist
+]{glossaries-extra}
 %% In overleaf, if this file is in a folder and not the root
 %% using \makeglossaries will not work, as the Overleaf latexmk
 %% will not run the program to take the output.acn file and make the output.acr file
@@ -5556,8 +5561,9 @@ placeholder = {Placeholder fake reference for use in examples},
 \printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
 och förkortningar}]
 \else
-\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
-%\printnoidxglossaries
+%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+%\printnoidxglossaries% Replace \printglossary[type=\acronymtype, ...] with:
+\printnoidxglossary[type=\acronymtype, style=mylong, title={List of Acronyms and Abbreviations}]
 \fi
 \clearpage
 
