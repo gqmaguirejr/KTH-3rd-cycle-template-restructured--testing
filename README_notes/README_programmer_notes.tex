@@ -534,23 +534,7 @@ end
 % Input file generators before \documentclass
 \input{lib/ext-eprint-dbx}
 
-% Check for placeholder references
-% Emit a prominent compiler warning and visual marker during the build if a placeholder survives
-% Preamble configuration for placeholder detection
-% 1. Intercept standard bibliography lists
-\AtEveryBibitem{%
-  \iffieldundef{placeholder}{}{%
-    \PackageWarning{biblatex}{Placeholder reference '\thefield{entrykey}' detected: \thefield{placeholder}}%
-    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
-  }%
-}
-
-% 2. Intercept inline citations (including \fullcite and \footfullcite)
-\AtEveryCitekey{%
-  \iffieldundef{placeholder}{}{%
-    \textcolor{red}{\textbf{[\textsc{Unresolved Placeholder:} \thefield{placeholder}]}}\addperiod\space
-  }%
-}
+\input{lib/check_for_placeholder_references}
 
 \title{README and notes about the template for programmers}
 
