@@ -113,7 +113,12 @@
 % In the document preamble where glossaries-extra is loaded:
 \usepackage[
   acronym,
+  toc=false,
+  nonumberlist,
+  nomain,
+  nopostdot=true, 
   nohypertypes={main, acronym}, % disables link generation to targets that do not exist
+  notranslate,
 ]{glossaries-extra}
 %% In overleaf, if this file is in a folder and not the root
 %% using \makeglossaries will not work, as the Overleaf latexmk
