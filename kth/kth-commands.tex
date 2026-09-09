@@ -504,3 +504,22 @@
 \renewcommand{\bfseries}{\fontseries{b}\selectfont}
 \robustify\bfseries
 \newrobustcmd{\B}{\bfseries}
+
+\NewDocumentCommand{\IfFileNotEmpty}{m m O{}}{%
+  \IfFileExists{#1}{%
+    \ifnum\directlua{
+      local p = kpse.find_file("\luaescapestring{#1}")
+      local attr = p and lfs.attributes(p)
+      if attr and attr.size > 0 then
+        tex.sprint(1)
+      else
+        tex.sprint(0)
+      end
+    }=1\relax
+      #2%
+    \else
+      #3%
+    \fi
+  }{#3}%
+}
+

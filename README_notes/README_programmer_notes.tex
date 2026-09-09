@@ -98,7 +98,7 @@
 \section*{#1}%   skip \centering 
 }
   
-    \addbibresource{references.bib}    
+\addbibresource{references.bib}    
 \input{kth/kthcolors}
 
 
@@ -4587,6 +4587,7 @@ As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribut
 % Outside the group, finentry reverts to its original standard definition
 \end{lstlisting}
 
+\Needspace*{20\baselineskip}
 The following generates some example output when using Approach A for the \gls{CReDiT} information in the \texttt{.bib} file:
 \begingroup
 % 1. Helper mapping from simplified kebab-case slug to display text
@@ -4653,6 +4654,7 @@ The following generates some example output when using Approach A for the \gls{C
 \section*{Paper I}
 \fullcite{maguire2026pipeline}
 
+\Needspace*{20\baselineskip}
 \section*{Paper II}
 \fullcite{doe2025collaborative}
 \endgroup
@@ -4717,6 +4719,7 @@ For granular control when citing individual papers with contributor details with
 
 Define the slug-to-text mappings with \texttt{\textbackslash csdef}, as shown in \Cref{lst:biberCreditRolesIterate}. Using \texttt{etoolbox} list iteration (\texttt{\textbackslash docsvlist}), you can step through each author and test each of the 14 standard \gls{CReDiT} slugs systematically. Note that the code in \Cref{lst:biberCreditRolesIterate} should be placed in the preamble, except for \enquote{6. Hook into finentry} which only needs to be invoked (within a \texttt{\textbackslash begingroup} \dots \texttt{\textbackslash endgroup}) when you need it for listing the author contributions in your thesis.
 
+\Needspace*{21\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Iterate through slugs}}, label=lst:biberCreditRolesIterate]
 \usepackage{biblatex}
 \usepackage{etoolbox}
