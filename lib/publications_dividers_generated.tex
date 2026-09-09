@@ -5,39 +5,6 @@
     \part{Included publications}
     \cleardoublepage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% set up macros for BibTeX - if necessary
-
-\ifbiblatex
-\relax
-\else
-\makeatletter
-% Disable the back reference
-%\renewcommand*{\backref}[1]{}
-%\renewcommand*{\backrefalt}[4]{}
-\newcommand*{\backref}[1]{}
-\newcommand*{\backrefalt}[4]{}
-
-% No special openbib formatting
-\let\@openbib@code\@empty % see https://www.latex-project.org/help/documentation/classes.pdf
-
-% Turn off item's biblabel
-\renewcommand\@biblabel[1]{}
-
-% Redefine the thebibliography to format as we want
-\renewenvironment{thebibliography}[1]
-{\list{}%
-   {\leftmargin0pt \usecounter{enumiv}}%
-\sloppy
-\clubpenalty4000
-\@clubpenalty \clubpenalty
-\widowpenalty4000%
-\sfcode`\.\@m}
-{\def\@noitemerr
-{\@latex@warning{Empty `thebibliography' environment}}%
-\endlist}
-\makeatother
-\fi % end of ifbiblatex
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Make a file to put the cited information into
 \FileOpen{citedtagsfile}{citedtags.bib}
 

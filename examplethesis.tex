@@ -8,8 +8,9 @@
 %% translation of English headings into Swedish with the addition of Swedish.
 %% Many thanks to others who have provided constructive input regarding the template.
 
+%% 2026-09-09: Removed support for bibtex; the template now only supports biblatex
+
 % Make it possible to conditionally depend on the TeX engine used
-%\RequirePackage{ifluatex}
 \RequirePackage{iftex}
 
 \RequirePackage{expl3}
@@ -64,7 +65,6 @@
 %%
 \documentclass[
 English,                 % the language of the body of the document: English or Swedish
-biblatex,             % the bibliographic processor to use: biblatex or bibtex
 includepublications,    % uncomment - if you want to include publications for a compilation thesis - also creates divider pages
 %includeExtraAbstracts, % uncomment to allow abstracts in languages beyond English & Swedish
 %nomenclature,           % add the option nomenclature
@@ -219,21 +219,8 @@ morekeywords={begin, todo, textbf, textit, texttt}
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
 
 % Because backref is not compatible with biblatex
-\ifbiblatex
-    \usepackage{hyperref}
-\else
-    \usepackage[
-    backref=page,
-    pagebackref=false,
+\usepackage{hyperref}
 
-    bookmarks=true,         % generate bookmarks in PDF files
-    bookmarksopen=false,    % Do not automatically open the bookmarks in the PDF reading program
-    pdfpagemode=UseNone,    % None, UseOutlines, UseThumbs, or FullScreen
-    destlabel,              % better naming of destinations
-    
-    ]{hyperref}
-%% Removed use of backref package as it is incompatible with using attachfile
-\fi
 \hypersetup{
  plainpages=false,
                         % PDF related options
@@ -391,67 +378,21 @@ morekeywords={begin, todo, textbf, textit, texttt}
 \end{comment}
 \makeatletter
 
-\ifbiblatex
-  % set up the bibliography style
-  % Input centralized biblatex configuration
-    \input{lib/biblatex-and-friends}
+% set up the bibliography style
+% Input centralized biblatex configuration
+\input{lib/biblatex-and-friends}
     
-    % Use the chapter* style for the heading of the bibliography
-    \defbibheading{bibliography}[\bibname]{%
-    \chapter*{#1}%   skip \centering 
-    }
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\chapter*{#1}%   skip \centering 
+}
   
-    \addbibresource{references.bib}
-    %\DeclareLanguageMapping{norsk}{norwegian}
+\addbibresource{references.bib}
+%\DeclareLanguageMapping{norsk}{norwegian}
 
-    % print up to 99 of the authors' names in a \fullcite{}
-    % use with divider pages
-    \preto\fullcite{\AtNextCite{\defcounter{maxnames}{99}}}
-\else
-    % The line(s) below are for BibTeX
-    \bibliographystyle{bibstyle/myIEEEtran}
-    %\bibliographystyle{apalike}
-    
-    % To be able to cite single publications
-    % The multibib package is used to create a category for each publication,
-    % then these separate bibliographies can be printed
-    \usepackage[labeled]{multibib}
-    % Define several bibliographies
-    % One for each of the publications that you want to include
-    \newcites{pa}{Publication 1}
-    \bibliographystylepa{bibstyle/myIEEEtran}
-        
-    \newcites{pb}{Publication 2}
-    \bibliographystylepb{bibstyle/myIEEEtran}
-        
-    \newcites{pc}{Publication 3}
-    \bibliographystylepc{bibstyle/myIEEEtran}
-    
-    \newcites{pd}{Publication 4}
-    \bibliographystylepd{bibstyle/myIEEEtran}
-    
-    \newcites{pe}{Publication 5}
-    \bibliographystylepe{bibstyle/myIEEEtran}
-    
-    \newcites{pf}{Publication 6}
-    \bibliographystylepf{bibstyle/myIEEEtran}
-
-    \newcites{pg}{Publication 7}
-    \bibliographystylepg{bibstyle/myIEEEtran}
-
-    \newcites{ph}{Publication 8}
-    \bibliographystyleph{bibstyle/myIEEEtran}
-
-    %\newcites{pi}{Publication 9}
-    %\bibliographystylepi{bibstyle/myIEEEtran}
-
-    %\newcites{pj}{Publication 10}
-    %\bibliographystylepj{bibstyle/myIEEEtran}
-
-    % If you have more included publications, then add additional styles here
-    
-\fi
-
+% print up to 99 of the authors' names in a \fullcite{}
+% use with divider pages
+\preto\fullcite{\AtNextCite{\defcounter{maxnames}{99}}}
 
 % For making tabbed pages for included papers
 \usepackage{fancytabs} % for adding tabs to pages
@@ -521,44 +462,10 @@ morekeywords={begin, todo, textbf, textit, texttt}
     {\tab@style\textcolor{white}{#2}};%
     };%
     \end{tikzpicture}%
-    % Extract the tag from \ref* and the bib file name (you'll need to adapt this)
-    \begingroup%
-    \ifbiblatex\relax%
-    \else%
-    \immediate\write\citedtagsfile{@misc{fakebib#3, cited="#4" bib="#5"}} % Write fake bib entry
-    \fi%
     \ifstrempty{#5}{}{%   If #5 is empty ignore it
-        \mywritebibfileinfo{#5.bib}%
-    }%
-    \ifbiblatex%
+    \mywritebibfileinfo{#5.bib}%
     \noindent\fullcite{#4}%
-    \else%
-    \ifnum #3=1%
-        \nocitepa{#4_pub}\bibliographypa{#5}%
-    \fi%
-    \ifnum #3=2%
-        \nocitepb{#4_pub}\bibliographypb{#5}%
-    \fi%
-    \ifnum #3=3%
-        \nocitepc{#4_pub}\bibliographypc{#5}%
-    \fi%
-    \ifnum #3=4%
-        \nocitepd{#4_pub}\bibliographypd{#5}%
-    \fi%
-    \ifnum #3=5%
-        \nocitepe{#4_pub}\bibliographype{#5}%
-    \fi%
-    \ifnum #3=6%
-        \nocitepf{#4_pub}\bibliographypf{#5}%
-    \fi%
-    \ifnum #3=7%
-        \nocitepg{#4_pub}\bibliographypg{#5}%
-    \fi%
-    \ifnum #3=8%
-        \nociteph{#4_pub}\bibliographyph{#5}%
-    \fi%
-    \fi % end of non-biblatex case
-  \endgroup%
+    }%
 }
 \makeatother
 
@@ -1039,19 +946,17 @@ och förkortningar}]
     % alternatively use \small as the size - this may be suitable if you have titles that contain characters not in Figtree
     {\FigtreeFont\fontsize{11}{13}\fontshape{n}\selectfont
 % Check if there was an automatically generated list of publications file.
-\IfFileExists{lib/publications\_generated}{
-      \input{lib/publications_generated}
-}{
+%\IfFileExists{lib/publications\_generated}{
+%      \input{lib/publications_generated}
+%}{
     \begin{ListOfPapers}
         \item \label{paper:A} Coherent {File} {Distribution} {Protocol}\cite{ioannidis_coherent_1991}
         \item \label{paper:B} A {New} {Automated} {Way} to {Measure}{Polyethylene} {Wear} in {THA} {Using} a {High} {Resolution} {CT} {Scanner}: {Method} and {Analysis}\,\cite{maguire_jr_new_2014}
         \item \label{paper:C} Make the {Most} out of {Last} {Level} {Cache} in {Intel} {Processors}\ \cite{farshin_make_2019}
         \item \label{paper:D} Do {Small}-{Mass} {Neutrinos} {Participate} in {Gauge} {Transformations}?\,\cite{kim_small-mass_2016}
-    \ifbiblatex
+
         \item \label{paper:E} \citefield{verardo2023fmmheadenhancingautoencoderbasedecg}{title}
-   \else
-        \item \label{paper:E}  {{FMM-Head: Enhancing Autoencoder-based ECG anomaly detection with prior knowledge}}\,\cite{verardo2023fmmheadenhancingautoencoderbasedecg}
-    \fi
+
     \end{ListOfPapers}
 
     \begin{ListOfPatents}
@@ -1064,17 +969,14 @@ och förkortningar}]
 Networking - Artifact for ASPLOS’21\,\cite{10.5281/zenodo.4435970}
     \end{ListOfArtifacts}
     } % end of font application
-}
+%}
     \engExpl{Those who want can also list other peer-reviewed original scientific publications not included in the thesis. I would include granted patents (relevant to the thesis) in this list.}
-    \warningExpl{If you are using BibLaTeX, \ref{paper:F} shows an example of how you can easily include the title by simply citing the title field of a reference. The alternative uses math mode to set the special characters.\\In contrast, \ref{paper:G} shows how you can use the unicode version of the characters and explicitly control the font used to set them.}
+    \warningExpl{When using BibLaTeX, \ref{paper:F} shows an example of how you can easily include the title by simply citing the title field of a reference. \\In contrast, \ref{paper:G} shows how you can use the unicode version of the characters and explicitly control the font used to set them.}
     \section*{Scientific papers not included in the thesis}
     {\FigtreeFont\fontsize{11}{13}\fontshape{n}\selectfont
     \begin{ListOfPapers}
-    \ifbiblatex
-        \item\label{paper:F} \citefield{Noz_1975}{title}
-    \else
-        \item\label{paper:F}  {{Calculation of $\bar{E}_{\beta}$, $\Gamma$ and $\Delta_{i}$ for $^{99m}$Tc}}
-    \fi
+    \item\label{paper:F} \citefield{Noz_1975}{title}
+
     \item\label{paper:G} Calculation of {\mystixmathfont \={Ε}\textsubscript{β}}, {\mystixmathfont Γ} and {\mystixmathfont Δ\textsubscript{i}} for \textsuperscript{99m}Tc
 
     \end{ListOfPapers}
@@ -1175,18 +1077,10 @@ goals of this thesis, and outlines the structure of the thesis.\\
 
 \generalExpl{Give a general introduction to the area. (Remember to use appropriate references in this and all other sections.)}
 
-% One can use either biblatex or bibtex - set as the option for the document at the top of this file
-\ifbiblatex
 \engExpl{We use the \emph{biblatex} package to handle our references.  We
 use the command \texttt{parencite} to get a reference in parentheses or square brackets, like
 this \textbackslash parencite\{ioannidis\_coherent\_1991\}, resulting in \parencite{ioannidis_coherent_1991}.  It is also possible to include the author as part of the sentence using \texttt{textcite}, when talking about the work of \textbackslash textcite\{maguire\_jr\_new\_2014\} resulting in \textcite{maguire_jr_new_2014}.\\
 This also means that you have to change the include files to include biblatex and change the way that the \texttt{reference.bib} file is included.}
-\else
-\engExpl{We use the \emph{bibtex} package to handle our references.  We, therefore,
-use the command \textbackslash cite\{farshin\_make\_2019\}. For example, Farshin, \etal described how to improve LLC
-cache performance in \parencite{farshin_make_2019} in the context of links running
-at \qty{200}{Gbps}.}
-\fi
 
 \engExpl{Use the glossaries package to help yourself and your readers.
 Add the acronyms and abbreviations to lib/acronyms.tex. Some examples are shown below:}
@@ -1276,7 +1170,7 @@ How does your thesis contribute to addressing the research questions?
 
 If you have done this work with others, clearly state what your own contributions were. If you have written a compilation thesis, give this description for each of your included publications. You might use the taxonomy defined in \gls{CReDiT}\cite{brand_beyond_2015}\footnote{See \url{https://authorservices.wiley.com/author-resources/Journal-Authors/open-access/credit.html}}.
 %%% The roles shown in the template are simply to illustrate what is possible and were not designed to be definitive.
-\IfFileExists{lib/thesis_contributions_generated.tex}{\input{lib/thesis_contributions_generated.tex}}
+\IfFileNotEmpty{lib/thesis_contributions_generated.tex}{\input{lib/thesis_contributions_generated.tex}}
 
 \section{Structure of the thesis}\sweExpl{Rapportens disposition}
 \Cref{ch:background} presents relevant background information about xxx.  \Cref{ch:methods} presents the methodology and method used to solve the problem. 
@@ -2285,20 +2179,11 @@ xxxx.
 % Print the bibliography (and make it appear in the table of contents)
 
 % Specify the title of the references page
-% This will work for both BibLaTeX and BibTeX.
-% It works for BibTeX because the thesis format is basically that of a Report.
 \renewcommand{\bibname}{References}
 
-\ifbiblatex
-    %\typeout{Biblatex current language is \currentlang}
-    %%% \nocite{*} % to cite everything, even if not cited in the document
-    \printbibliography[heading=bibintoc, title={References}]
-\else
-   
-    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
-    \addcontentsline{toc}{chapter}{References}
-    \bibliography{references}
-\fi
+%\typeout{Biblatex current language is \currentlang}
+%%% \nocite{*} % to cite everything, even if not cited in the document
+\printbibliography[heading=bibintoc, title={References}]
 
 
 % --- Include appendices as necessary --- 
@@ -2311,9 +2196,9 @@ xxxx.
 \generalExpl{Here is a place to add supporting material that can help others build upon your work. You can include files as attachments to the PDF file or indirectly via URLs. Alternatively, consider adding supporting material uploaded as separate files in DiVA.}
 
 \section{Directly: Attach files to the PDF file}
-% Attach the BibTeX for your references to make it easy for a reader to find and use them
-The BibTeX references used in this thesis are attached.
-    \IfFileExists{referencesUsed.bib}{
+% Attach the BibLaTeX for your references to make it easy for a reader to find and use them
+The BibLaTeX references used in this thesis are attached.
+    \IfFileNotEmpty{referencesUsed.bib}{
     \attachfile[description={referencesUsed.bib}]{referencesUsed.bib}}
     {\attachfile[description={references.bib}]{references.bib}}
 \engExpl{Here we have used \texttt{\textbackslash attachfile} and attached the file. There is also a mechanism for \textbf{embedding} files into PDF, but I do not use it or describe it further here -- for reasons of \first simplicity, \Second \texttt{\textbackslash attachfile} supports any type of file, \third the attached files are visible as annotations on the page where they are included, and  \fourth potential compatibility with PDF/A-3.}
@@ -2451,39 +2336,6 @@ If you used a research data repository, you should include a URL to your data (a
     \part{Included publications}
     \cleardoublepage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% set up macros for BibTeX - if necessary
-
-\ifbiblatex
-\relax
-\else    
-\makeatletter
-% Disable the back reference
-%\renewcommand*{\backref}[1]{}
-%\renewcommand*{\backrefalt}[4]{}
-\newcommand*{\backref}[1]{}
-\newcommand*{\backrefalt}[4]{}
-
-% No special openbib formatting
-\let\@openbib@code\@empty % see https://www.latex-project.org/help/documentation/classes.pdf
-
-% Turn off item's biblabel
-\renewcommand\@biblabel[1]{}
-
-% Redefine the thebibliography to format as we want
-\renewenvironment{thebibliography}[1]
-     {\list{}%
-           {\leftmargin0pt \usecounter{enumiv}}%
-      \sloppy
-      \clubpenalty4000
-      \@clubpenalty \clubpenalty
-      \widowpenalty4000%
-      \sfcode`\.\@m}
-     {\def\@noitemerr
-       {\@latex@warning{Empty `thebibliography' environment}}%
-      \endlist}
-\makeatother
-\fi % end of ifbiblatex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Make a file to put the cited information into
@@ -2604,7 +2456,7 @@ For details see \cite{10.1145/3445814.3446724}. The following pages are based on
 \fi % end the ifincludepublications conditional 
 \end{comment}
 % input the automatically generated dividers and papers
-\IfFileExists{lib/publications_dividers_generated.tex}{\input{lib/publications_dividers_generated.tex}}
+\IfFileNotEmpty{lib/publications_dividers_generated.tex}{\input{lib/publications_dividers_generated.tex}}
 
 % --- End of Main matter
 %% The following label is necessary for computing the last page number of the body of the report to include in the "For DIVA" information
@@ -2626,22 +2478,22 @@ For details see \cite{10.1145/3445814.3446724}. The following pages are based on
     \begin{flushleft}
 %\lstset{numbers=none} %% remove any list line numbering
 
-\IfFileExists{fordiva.json}{
+\IfFileNotEmpty{fordiva.json}{
 \inputminted[breaklines]{json}{fordiva.json}
 }
 {}
     % Attach the fordiva.json file
-    \IfFileExists{fordiva.json}{
+    \IfFileNotEmpty{fordiva.json}{
     \attachfile[description={fordiva.json}]{fordiva.json}
     }{}
     
     % Attach the citedtags.bib file
-    \IfFileExists{citedtags.bib}{
+    \IfFileNotEmpty{citedtags.bib}{
     \attachfile[description={cited tags bib file}]{citedtags.bib}
     }{}
 
     % If there is an acronyms.tex file, add it
-    \IfFileExists{lib/acronyms.tex}{
+    \IfFileNotEmpty{lib/acronyms.tex}{
  \attachfile[description={acronyms.tex}]{lib/acronyms.tex}
     }{}
 
