@@ -512,53 +512,8 @@ language=[LaTeX]{TeX},
   %{﻿}{{BOM}{\;}{0xfeff}}{10},
 }
 
-\usepackage{luacode}
-
-% --- LUA BACKEND ---
-\begin{luacode*}
--- Record CPU start time
-compilation_start_time = os.clock()
-
--- Function for logging an elapsed event timestamp to the log file
-function log_event(message)
-  local current_time = os.clock()
-  local elapsed = current_time - compilation_start_time
-  local log_message = string.format("[+%.3fs] %s", elapsed, message or "")
-  texio.write_nl("log", log_message)
-end
-
--- Function for logging wall-clock time directly to the log file
-function log_wall_clock_time(msg)
-  local t = os.date("%Y-%m-%d %H:%M:%S")
-  texio.write_nl("log", "[" .. t .. "] " .. (msg or ""))
-end
-\end{luacode*}
-
-% --- LATEX FRONTEND ---
-% 1. Log the start time immediately
-\directlua{
-  if log_wall_clock_time then
-    log_wall_clock_time("Compilation started")
-  end
-}
-
-% 2. Log both wall-clock and total CPU duration at the end of the run
-\AtEndDocument{%
-  \directlua{
-    if log_wall_clock_time then
-      log_wall_clock_time("Compilation finished")
-    end
-    if log_event then
-      log_event("Total CPU time to end of document")
-    end
-  }%
-}
-
-% Command for explicit, manual logging
-\newcommand{\ReportTimeStamp}[1]{\directlua{log_event("#1")}}
-
-% Use the modern, built-in hook to log a message for each page
-\AddToHook{shipout/before}{\ReportTimeStamp{Shipping out page \thepage}}
+\RequirePackage{luacode}
+\input{kth/Lua_timestamping}
 
 % Input file generators before \documentclass
 \input{lib/ext-eprint-dbx}
@@ -2192,6 +2147,7 @@ Where the colors are defined as (note that the ForestGreen lacks sufficient cont
 Note that the colors do \textbf{not} encode any essential meaning (\ie they could all be turned to black), since the citations are recognizable by their format, the URL (and URI) by linking to an external document, and the links (by linking within the document).
 
 Some additional colors are defined and used for \texttt{todonotes} – they should, of course, be removed before the thesis is finalized (as of course all of these issues should have been resolved!). The default background color for todonotes is orange (which is predefined as \#FF7F00). The other colors are shown in \Cref{lst:todonotesColors}. The KTH colors are defined in \texttt{kthcolors.tex}.
+\Needspace*{16\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, caption={Defines for todo notes}, label=lst:todonotesColors]
 %% Conventions for todo notes:
 % Informational
@@ -2208,9 +2164,9 @@ Some additional colors are defined and used for \texttt{todonotes} – they shou
 
 \subsection{Template itself}
 \label{sec:ccessibilityOfTemplateItself}
-The template itself is written in \LaTeX{}~using UTF-8 characters. The template uses packages from \textit{TeX Live version 2024}. It must be compiled with \LuaLaTeX{}  (which natively supports UTF-8 input).
+The template itself is written in \LaTeX{}~using UTF-8 characters. The template uses packages from \textit{TeX Live version 2024}\footnote{It can also be used with \textit{TeX Live version 2025}.}. It must be compiled with \LuaLaTeX{}  (which natively supports UTF-8 input).
 
-The template is designed with a set of options to generate a thesis in English or Swedish\footnote{The option names for both languages are must be given in title case, \ie with initial capital letters.} and to use either \BibTeX{} or \BibLaTeX, as explained at the top of the \fname{examplethesis.tex} file (see \Cref{lst:document}).
+The template is designed with a set of options to generate a thesis in English or Swedish\footnote{The option names for both languages must be given in title case, \ie with initial capital letters.}, as explained at the top of the \fname{examplethesis.tex} file (see \Cref{lst:document}).
 \Needspace*{8\baselineskip}
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={{\textbackslash documentclass}}, label=lst:document]
 % --- Configure the documentclass ---
@@ -2218,7 +2174,6 @@ The template is designed with a set of options to generate a thesis in English o
 %%
 \documentclass[
 English,                 % the language of the body of the document: English or Swedish
-biblatex,                % the bibliographic processor to use: biblatex or bibtex
 %includepublications,    % uncomment - if you want to include publications for a compilation thesis - also creates divider pages
 %includeExtraAbstracts, % uncomment to allow abstracts in languages beyond English & Swedish
 %nomenclature,           % add the option nomenclature
