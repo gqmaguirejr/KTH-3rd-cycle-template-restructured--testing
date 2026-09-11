@@ -42,9 +42,6 @@
     \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
 \fi
 
-% Set up to use biblatex
-\newif\ifbiblatex
-\biblatextrue
 \usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
 
 % Use the chapter* style for the heading of the bibliography
@@ -59,15 +56,22 @@
 
 \usepackage[plainpages=false, unicode=true]{hyperref}
 
-\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+% In the document preamble where glossaries-extra is loaded:
+\usepackage[
+  acronym,
+  toc=false,
+  nonumberlist,
+  nomain,
+  nopostdot=true, 
+  nohypertypes={main, acronym}, % disables link generation to targets that do not exist
+  notranslate,
+]{glossaries-extra}
 %% In overleaf, if this file is in a folder and not the root
 %% using \makeglossaries will not work, as the Overleaf latexmk
 %% will not run the program to take the output.acn file and make the output.acr file
 %\makeglossaries
 % However, you can get TeX to do the work with the following:
 \makenoidxglossaries
-% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
-%% Potentially, one could set up a latexmkrc file in the folder
 
 \input{lib/acronyms}                %load the acronyms file
 
@@ -295,7 +299,7 @@ language=[LaTeX]{TeX},
     columns=flexible,
     morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
       courseCode, courseCredits, programcode, degreeName, subjectArea,
-      nationalsubjectcategories, todo, ifbiblatex, subsection}
+      nationalsubjectcategories, todo, subsection}
 }
 
 \lstdefinestyle{latexExample}{
@@ -320,6 +324,7 @@ language=[LaTeX]{TeX},
 \date{July 2025}
 
 \begin{document}
+\pagenumbering{roman}
 \glsresetall[]
 \maketitle
 \fancypagestyle{empty}{}
@@ -334,7 +339,9 @@ This document describes some of the \LaTeX\  thesis templates that I have develo
 \tableofcontents
 \markboth{\contentsname}{}
 \cleardoublepage
- 
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\glsresetall
 \section{Introduction}
 This template evolved (radically) from an earlier \LaTeX\ thesis template that was widely used at \gls{KTH}. The start of this evolution was a DOCX template I developed over many years for use with students for whom I was the examiner and/or supervisor. The suggested structure and contents of the thesis reflect my experience as an examiner for more than 600 degree projects and the experience I have had as a teacher and examiner for the course \textit{II2202 Research Methodology and Scientific Writing}. The template also reflects my interest as a member of KTH's Language Committee in facilitating the parallel use of English and Swedish at \gls{KTH}, as well as supporting other languages. The latter aspect
 reflects my experience with double-degree students, who often need to have at least the abstract of their thesis in their home university's language(s). The thesis template also reflects my experience in entering the metadata for hundreds of theses into \gls{DiVA} and announcing a very large number of degree project seminars (with a large fraction of them having abstracts and keywords in both English and Swedish).
@@ -873,8 +880,7 @@ This version of the template has some font information, in the form of Opentype 
 \printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
 och förkortningar}]
 \else
-%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
-\printnoidxglossaries
+\printnoidxglossary[type=\acronymtype, style=mylong, title={List of Acronyms and Abbreviations}]
 \fi
 \clearpage
 
@@ -886,16 +892,8 @@ och förkortningar}]
 % It works for BibTeX because the thesis format is basically that of a Report.
 \renewcommand{\bibname}{References}
 
-\ifbiblatex
-    %\typeout{Biblatex current language is \currentlang}
-
-    \printbibliography[heading=bibintoc, title={References}]
-\else
-   
-    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
-    \addcontentsline{toc}{chapter}{References}
-    \bibliography{references}
-\fi
+%\typeout{Biblatex current language is \currentlang}
+\printbibliography[heading=bibintoc, title={References}]
 
 \end{document}
 

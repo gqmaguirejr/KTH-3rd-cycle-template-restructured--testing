@@ -44,9 +44,6 @@
 \fi
 
 
-% Set up to use biblatex
-\newif\ifbiblatex
-\biblatextrue
 
 \usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
 
@@ -55,7 +52,7 @@
 \section*{#1}%   skip \centering 
 }
   
-    \addbibresource{references.bib}    
+\addbibresource{references.bib}    
 \input{kth/kthcolors}
 
 
@@ -218,7 +215,7 @@ language=[LaTeX]{TeX},
     columns=flexible,
     morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
       courseCode, courseCredits, programcode, degreeName, subjectArea,
-      nationalsubjectcategories, todo, ifbiblatex, subsection}
+      nationalsubjectcategories, todo, subsection}
 }
 
 

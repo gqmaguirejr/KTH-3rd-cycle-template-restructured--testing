@@ -1,6 +1,6 @@
 \documentclass[12pt, twoside]{article}
 % Make it possible to conditionally depend on the TeX engine used
-\RequirePackage{ifluatex}
+\RequirePackage{iftex}
 
 %\RequirePackage{silence}
 %\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
@@ -41,10 +41,6 @@
 \else
     \usepackage[swedish, main=english, provide+=*]{babel}
 \fi
-    
-% Set up to use biblatex
-\newif\ifbiblatex
-\biblatextrue
 
 \usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
 
@@ -53,7 +49,7 @@
 \section*{#1}%   skip \centering 
 }
   
-    \addbibresource{references.bib}    
+\addbibresource{references.bib}    
 \input{kth/kthcolors}
 
 
@@ -62,15 +58,22 @@
 
 \usepackage[plainpages=false, unicode=true]{hyperref}
 
-\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+% In the document preamble where glossaries-extra is loaded:
+\usepackage[
+  acronym,
+  toc=false,
+  nonumberlist,
+  nomain,
+  nopostdot=true, 
+  nohypertypes={main, acronym}, % disables link generation to targets that do not exist
+  notranslate,
+]{glossaries-extra}
 %% In overleaf, if this file is in a folder and not the root
 %% using \makeglossaries will not work, as the Overleaf latexmk
 %% will not run the program to take the output.acn file and make the output.acr file
 %\makeglossaries
 % However, you can get TeX to do the work with the following:
 \makenoidxglossaries
-% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
-%% Potentially, one could set up a latexmkrc file in the folder
 
 \input{lib/acronyms}                %load the acronyms file
 
@@ -191,7 +194,7 @@ language=[LaTeX]{TeX},
     columns=flexible,
     morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
       courseCode, courseCredits, programcode, degreeName, subjectArea,
-      nationalsubjectcategories, todo, ifbiblatex, subsection}
+      nationalsubjectcategories, todo, subsection}
 }
 
 \lstdefinestyle{latexExample}{
@@ -275,6 +278,7 @@ language=[LaTeX]{TeX},
 \date{July 2025}
 
 \begin{document}
+\pagenumbering{roman}
 \glsresetall[]
 \maketitle
 \fancypagestyle{empty}{}
@@ -283,10 +287,13 @@ language=[LaTeX]{TeX},
 
 This document describes the thesis template that I have developed for use at \gls{KTH} and provides some background about why it is the way that it is. This document provides some information for supervisors (and possibly for administrators) about the template and especially how it can be used with some programs to help make the thesis process easier for students, faculty, and administrators.
 
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\glsresetall
 \section{Introduction}
 \label{sec:IntroForSupervisors}
 
-Each year, there are hundreds of third-cycle theses written by students at KTH Royal Institute of Technology. These are one of the core elements of graduate education, and producing high-quality theses is of interest to the faculty, students, administration, \foreignlanguage{swedish}{\gls{UKÄ}}, and the public. The reasons for the work described in this document are \first I have been a supervisor for a number of third-cycle students and I want to help students by providing them a template to start with (avoiding the ``Blank paper'' barrier) and to help facilitate the thesis process, \Second the previous \LaTeX~template had been primarily developed to support first and second-cycle theses, and \third the \foreignlanguage{swedish}{\gls{GVS}} Communications unit introduced a new DOCX template.
+Each year, there are hundreds of third-cycle theses written by students at KTH Royal Institute of Technology. These are one of the core elements of graduate education, and producing high-quality theses is of interest to the faculty, students, administration, \foreignlanguage{swedish}{\gls{UKÄ}}, and the public. The reasons for the work described in this document are \first I have been a supervisor for a number of third-cycle students and I want to help students by providing them a template to start with (avoiding the \enquote{Blank paper} barrier) and to help facilitate the thesis process, \Second the previous \LaTeX~template had been primarily developed to support first and second-cycle theses, and \third the \foreignlanguage{swedish}{\gls{GVS}} Communications unit introduced a new DOCX template.
 
 Since $\approx$2010, all KTH theses should have English and Swedish abstracts. Ideally, the thesis would also include keywords and titles in both English and Swedish. Moreover, this information is useful not only in the thesis itself but also in:
 \begin{enumerate}
@@ -362,7 +369,7 @@ Given the hypothesis stated above, the overall flow is shown in \Cref{fig:Logica
 \label{sec:makeItSimpleFromTheStart}
 
 \Needspace*{3\baselineskip}
-The key to the process shown in \Cref{fig:LogicalOverviewOfWhatIsDone} is collecting all of the necessary data in the thesis and organizing all of the data so that it is easy to extract (hence the limitations inherent to my templates). It is this information and its organization that makes the magic ``Extractor'' possible.
+The key to the process shown in \Cref{fig:LogicalOverviewOfWhatIsDone} is collecting all of the necessary data in the thesis and organizing all of the data so that it is easy to extract (hence the limitations inherent to my templates). It is this information and its organization that makes the magic \enquote{Extractor} possible.
 
 For the purposes of this third-cycle \LaTeX\  template, the extractor is simple, as the information is attached as a fordiva.json file! Therefore, it only needs to be transformed to be used by all the downstream programs.
 
@@ -452,15 +459,14 @@ In the  \fname{custom\_configuration.tex} file, information about the author(s) 
 
 In contrast, information that is known later in the process is placed prior to \texttt{\textbackslash begin\{document\}} in the \fname{examplethesis.tex} file. This information includes keywords, presentation-related information, opponent(s), \etc.
 
- 
+\cleardoublepage
 \ifinswedish
 \printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
 och förkortningar}]
 \else
-%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
-\printnoidxglossaries
+\printnoidxglossary[type=\acronymtype, style=mylong, title={List of Acronyms and Abbreviations}]
 \fi
-\clearpage
+\cleardoublepage
 
 % --- print the bibliography ---
 % Print the bibliography (and make it appear in the table of contents)
@@ -470,15 +476,7 @@ och förkortningar}]
 % It works for BibTeX because the thesis format is basically that of a Report.
 \renewcommand{\bibname}{References}
 
-\ifbiblatex
-    %\typeout{Biblatex current language is \currentlang}
-
-    \printbibliography[heading=bibintoc, title={References}]
-\else
-   
-    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
-    \addcontentsline{toc}{chapter}{References}
-    \bibliography{references}
-\fi
+%\typeout{Biblatex current language is \currentlang}
+\printbibliography[heading=bibintoc, title={References}]
 
 \end{document}

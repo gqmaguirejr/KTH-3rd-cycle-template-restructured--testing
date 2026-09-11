@@ -44,10 +44,6 @@
 \fi
 
 
-% Set up to use biblatex
-\newif\ifbiblatex
-\biblatextrue
-
 \usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
 
 % Use the chapter* style for the heading of the bibliography
@@ -55,7 +51,7 @@
 \section*{#1}%   skip \centering 
 }
   
-    \addbibresource{references.bib}    
+\addbibresource{references.bib}    
 \input{kth/kthcolors}
 
 
@@ -216,7 +212,7 @@ language=[LaTeX]{TeX},
     columns=flexible,
     morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
       courseCode, courseCredits, programcode, degreeName, subjectArea,
-      nationalsubjectcategories, todo, ifbiblatex, subsection}
+      nationalsubjectcategories, todo, subsection}
 }
 
 
@@ -236,12 +232,13 @@ language=[LaTeX]{TeX},
 \newcommand{\dname}[1]{\textbf{#1}}
 \newcommand{\fname}[1]{\texttt{#1}}
 
-\title{Notes on `Tekla''-template}
+\title{Notes on ``Tekla''-template}
 
 \author{Gerald Q. Maguire Jr.}
 \date{September 2025}
 
 \begin{document}
+\pagenumbering{roman}
 \glsresetall[]
 \maketitle
 \fancypagestyle{empty}{}
@@ -261,8 +258,11 @@ My \LaTeX{} template overcomes many of what I view as deficiencies of the Tekla-
 \tableofcontents
 \markboth{\contentsname}{}
 \cleardoublepage
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\glsresetall
 \section{Good features of the Tekla-template}
-The Tekla-template has a number of good features, these include (but are \textit{not} limited to):
+The Tekla-template has a number of good features; these include (but are \textit{not} limited to):
 \begin{itemize}[label=\color{green}\ding{51}]
 \item The \fname{my-phd-thesis.tex} file is very simple and easy to understand. It
 does have a front cover, title page, and book information page. While these will
