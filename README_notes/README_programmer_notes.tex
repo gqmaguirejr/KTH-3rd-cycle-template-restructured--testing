@@ -54,10 +54,6 @@
     \usepackage[main=english, provide+=*]{babel}
 \fi
 
-% Set up to use biblatex
-\newif\ifbiblatex
-\biblatextrue
-
 %\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
 % Input centralized biblatex configuration
 \input{lib/biblatex-and-friends}
@@ -376,7 +372,7 @@ language=[LaTeX]{TeX},
     inputencoding=utf8,
     tabsize=2,
     columns=flexible,
-    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle, courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode, nationalsubjectcategories, todo, ifbiblatex, subsection}
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle, courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode, nationalsubjectcategories, todo, subsection}
 }
 
 
@@ -554,7 +550,7 @@ This document describes the thesis template that I have developed for use at \gl
 \section{Introduction}
 \label{sec:IntroForProgrammers}
 
-The focus in the first part of this document is on how to use the information in the thesis and captured by the \LaTeX{}  template and stored in the \texttt{fordiva.json file} to do other tasks:
+The focus in the first part of this document is on how to use the information in the thesis and captured by the \LaTeX{}  template and stored in the \fname{fordiva.json file} to do other tasks:
 \begin{enumerate}
     \item The announcements and calendar events of thesis presentations or defenses. Moreover, thesis presentations and defenses are supposed to be public, so it would be useful and foster their visibility if it were easy to make such announcements (in both English and Swedish).
     
@@ -563,20 +559,20 @@ The focus in the first part of this document is on how to use the information in
     \item Both English and Swedish titles will be reported along with the decision of the grading committee in \foreignlanguage{swedish}{\gls{LADOK}}.
 \end{enumerate}
 
-A high-level overview was given in the \texttt{README\_supervisor\_notes.tex} file. This document covered ``Accuracy and Economics'', ``Make it simple from the start'' by collecting the metadata, 
-`Automating later steps in the degree project'',
-`Making an announcement'',
-`Making a cover and applying it'',
-`Can someone else use these programs?'',
-`\LaTeX{}~template in Overleaf'', and
-`Put information into \LaTeX{}~template to generate a draft or final thesis''.
+A high-level overview was given in the \fname{README\_supervisor\_notes.tex} file. This document covered \enquote{Accuracy and Economics}, \enquote{Make it simple from the start} by collecting the metadata, 
+\enquote{Automating later steps in the degree project},
+\enquote{Making an announcement},
+\enquote{Making a cover and applying it},
+\enquote{Can someone else use these programs?},
+\enquote{\LaTeX{}~template in Overleaf}, and
+\enquote{Put information into \LaTeX{}~template to generate a draft or final thesis}.
 
 \Cref{sec:someEhnahncements} discusses some enhancements. Some readers may be interested in accessibility, see \Cref{sec:accessibility}. \Cref{sec:structureOfTheTemplate} discusses the structure of the template and the report. 
 \Cref{sec:GeneratingLatexCommands} shows how one can generate \LaTeX{}  commands for use in the student’s thesis source file, specifically for the \texttt{custom\_configuration file.}
 \Cref{sec:TheBiGPicture} presents the big picture of how the different data and programs interact.
 
 \Cref{sec:copyrightOrCClicenseExaminer} presents how the copyright or Creative Commons License can be realized on the \texttt{bookinfo} page.
-\Cref{sec:acronymsInForDIVAdata} describes how one can add the  \texttt{acronyms.tex} file to the \gls{PDF} both as text and attach it to the \gls{PDF} file.
+\Cref{sec:acronymsInForDIVAdata} describes how one can add the  \fname{acronyms.tex} file to the \gls{PDF} both as text and attach it to the \gls{PDF} file.
 \Cref{sec:addingMetadataToPDFfile} presents the details of how to add additional metadata to the \gls{PDF} file, such that human readers and other tools can access this data. This is a rather expansive area, as there are those who would like to be able to mechanically extract data about the thesis and extract data from it (\eg citation data).
 Finally, \Cref{sec:futurework} suggests some future work, such as how to better exploit unicode, better math support in \gls{DiVA}, and Cora-based \gls{DiVA}.
 
@@ -584,7 +580,7 @@ I hope that this document contains sufficient information to enable someone else
 
 \section{Overall flow with an extension}
 The approach taken in the overall work was to make data readily available via the template and collect \& output it in a 
-“For DIVA” set of information at the end of the \gls{PDF} document and a \texttt{fordiva.json} file. Additionally, we try to minimize the need to manually enter information by taking information from a Canvas course room (if one is relevant).
+“For DIVA” set of information at the end of the \gls{PDF} document and a \fname{fordiva.json} file. Additionally, we try to minimize the need to manually enter information by taking information from a Canvas course room (if one is relevant).
 
 The overall flow is shown in \Cref{fig:LogicalOverviewOfWhatIsDone2}. Notice that this figure has been extended to include a JSON\_to\_Cora\_DiVA process that can use the Cora \gls{API} to directly create an entry in the new Cora-based \gls{DiVA}:
 \tikzset{
@@ -775,14 +771,14 @@ keywords & \\
 
 
 \section{Use of Lua and Babel}
-One of the major changes introduced in this template is the use of Lua and Babel. Lua is a simple programming language. This language is available to the user of \LuaLaTeX{}. Lua's tables offer a very powerful way to store structured data. We use a Lua package (\fname{dkjson.lua}) to write a Lua table containing all of the metadata to a \fname{fordiva.json} file. The format of this file is \gls{JSON}. Not only is this file generated but it is both attached to the PDF file and included in a listing on the ``For DiVA'' page.
+One of the major changes introduced in this template is the use of Lua and Babel. Lua is a simple programming language. This language is available to the user of \LuaLaTeX{}. Lua's tables offer a very powerful way to store structured data. We use a Lua package (\fname{dkjson.lua}) to write a Lua table containing all of the metadata to a \fname{fordiva.json} file. The format of this file is \gls{JSON}. Not only is this file generated but it is both attached to the PDF file and included in a listing on the \enquote{For DiVA} page.
 
-The primary use of the \fname{fordiva.json} file is to facilitate reporting the thesis in \gls{DiVA}. However, a secondary use of this information is to potentially automate many of the steps in announcing the oral presentation (as was described in the section ``Making an announcement'' in the file \texttt{README\_supervisor\_notes.tex}).
-For example, the student's organization or main supervisor's organization is used to determine which local part of the KTH calendar a calendar announcement should appear in, as the Cortina calendar is divided by the school and then by department.
+The primary use of the \fname{fordiva.json} file is to facilitate reporting the thesis in \gls{DiVA}. However, a secondary use of this information is to potentially automate many of the steps in announcing the oral presentation (as was described in the section \enquote{Making an announcement} in the file \fname{README\_supervisor\_notes.tex}).
+For example, the student's organization or main supervisor's organization is used to determine which local part of the \gls{KTH} calendar a calendar announcement should appear in, as the Cortina calendar is divided by the school and then by department.
 
 \warningExpl{Note that the department name must be in Swedish for Cortina. Ideally, this is something that a program using the JSON data should handle for the user.}
 
-In addition to the English and Swedish abstracts and keywords information, there are a number of skeleton files in the folder \texttt{Additional\_Abstracts}. While not an exhaustive list of possibilities, they represent the languages for which I found several abstracts in DiVA\footnote{Except for Estonian, which had an entry but no longer has an entry.} Since 2000, the language code `scc' (for Serbo-Croatian) is considered deprecated and has been replaced by `srp' for Serbian and `hrv' for Croatian (for which I have not implemented a skeleton). Otherwise, there is a skeleton abstract for all of the langauge codes used in one or more abstracts in this language in \gls{DiVA}.
+In addition to the English and Swedish abstracts and keywords information, there are a number of skeleton files in the folder \texttt{Additional\_Abstracts}. While not an exhaustive list of possibilities, they represent the languages for which I found several abstracts in DiVA\footnote{Except for Estonian, which had an entry but no longer has an entry.} Since 2000, the language code \enquote{scc} (for Serbo-Croatian) is considered deprecated and has been replaced by \enquote{srp} for Serbian and \enquote{hrv} for Croatian (for which I have not implemented a skeleton). Otherwise, there is a skeleton abstract for all of the language codes used in one or more abstracts in this language in \gls{DiVA}.
 
 The \texttt{\textbackslash foreignlanguage\{xxxx\}\{xxxxxxx\}} command can be used to indicate that the string xxxxxxx is in language xxxx and the use of the \texttt{\textbackslash selectlanguage\{xxxx\}} command to switch to the language xxxx. The first command makes it easy to include text in a language that is not the main language of the thesis at any point in the thesis. The second command can be used to switch to a specific language at a certain point in the text. This second command is used to facilitate the inclusion of abstracts and keywords in various languages.
 
@@ -825,7 +821,7 @@ label=lst:newunicodeForAbstracts]
 \FloatBarrier
 
 
-If the user uses characters that require fonts other than \texttt{TeX Gyre Termes} and has not configured babel with a font for this language, the contents of the abstracts in these languages may not appear on the ``For DiVA'' page but will be in the \texttt{fordiva.json} file. This will occur because the file simply contains the UTF-8 encoded unicode for the abstracts.
+If the user uses characters that require fonts other than \texttt{TeX Gyre Termes} and has not configured babel with a font for this language, the contents of the abstracts in these languages may not appear on the \enquote{For DiVA} page but will be in the \fname{fordiva.json} file. This will occur because the file simply contains the UTF-8 encoded unicode for the abstracts.
 
 \subsection{Better handling of fonts}
 \label{sec:BetterHandlingOfFonts}
@@ -848,7 +844,7 @@ Unfortunately, \texttt{luaotfload} program must still resolve the font name into
 
 \subsubsection{Babel ranges}
 
-The file \texttt{babel-data-bidi.lua} \footnote{Perhaps under \texttt{/usr/share/texmf/tex/generic/babel/}} defines the Babel table. This is shown in \Cref{lst:BabelTableandRanges}. The format of the entries is the starting codepoint of a range, the ending codepoint of a range (inclusive), and the direction. The direction is defined according to ``Table 4. Bidirectional Character Types'' in \textit{Unicode® Standard Annex \#9: The Bidirectional Algorithm}~\cite{UAX9}. Accordingly, `r' is right-to-left, `l' is is left-to-right (the default), `al' is right-to-left Arabic, and `on' is other neutrals.
+The file \texttt{babel-data-bidi.lua} \footnote{Perhaps under \texttt{/usr/share/texmf/tex/generic/babel/}} defines the Babel table. This is shown in \Cref{lst:BabelTableandRanges}. The format of the entries is the starting codepoint of a range, the ending codepoint of a range (inclusive), and the direction. The direction is defined according to \enquote{Table 4. Bidirectional Character Types} in \textit{Unicode® Standard Annex \#9: The Bidirectional Algorithm}~\cite{UAX9}. Accordingly, `r' is right-to-left, `l' is is left-to-right (the default), `al' is right-to-left Arabic, and `on' is other neutrals.
 
 \begin{lstlisting}[language={[5.2]Lua}, caption={Babel table and Babel-ranges supplemented with additional comments about Unicode blocks}, label=lst:BabelTableandRanges]
 Babel = Babel or {}
@@ -1109,7 +1105,7 @@ To understand if \LuaLaTeX{} could be used to directly emit a properly formed \g
 
 \subsubsection{Proof of concept}
 \label{sec:LuaProofOfConcept}
-\Cref{lst:luaExample1} shows an example of a Lua program that generates a JSON file named \texttt{output.json}. The idea would be to utilize Lua data tables to store the metadata, then write it out as a complete JSON file.
+\Cref{lst:luaExample1} shows an example of a Lua program that generates a JSON file named \fname{output.json}. The idea would be to utilize Lua data tables to store the metadata, then write it out as a complete JSON file.
 
 \begin{lstlisting}[language={[5.2]Lua}, caption={Using Lua code to write a JSON file}, label=lst:luaExample1] 
 \documentclass{article}
@@ -1168,8 +1164,8 @@ The JSON file has been created using a loop for the keywords.
 \subsubsection{Using Lua in practice}
 \label{sec:LuaInPractice}
 
-Expanding on the proof of concept in \Cref{sec:avoidCleanup}, \Cref{lst:luaExample2} shows how Lua can be used to write the \texttt{fordiva.json} file with abstracts and keywords.
-David Kolf's \textit{JSON module for Lua 5.1 - 5.4} from the file \texttt{dkjson.lua} handles the encoding of a Lua table into \gls{JSON}, including ordering of the top-level keys\footnote{Sorting is only done of the \textbf{top-level} keys. There is no facility for sorting the elements of the table.} and escaping of the \LaTeX{} commands. The JSON file is generated by invoking the \texttt{\textbackslash GenerateFordivaJSON} macro after filling in the table in the macro \texttt{\textbackslash divainfo}.
+Expanding on the proof of concept in \Cref{sec:avoidCleanup}, \Cref{lst:luaExample2} shows how Lua can be used to write the \fname{fordiva.json} file with abstracts and keywords.
+David Kolf's \textit{JSON module for Lua 5.1 - 5.4} from the file \fname{dkjson.lua} handles the encoding of a Lua table into \gls{JSON}, including ordering of the top-level keys\footnote{Sorting is only done of the \textbf{top-level} keys. There is no facility for sorting the elements of the table.} and escaping of the \LaTeX{} commands. The JSON file is generated by invoking the \texttt{\textbackslash GenerateFordivaJSON} macro after filling in the table in the macro \texttt{\textbackslash divainfo}.
 
 \begin{lstlisting}[language={[5.2]Lua}, caption={Lua code snippet to write fordiva.json file including abstracts and keywords}, label=lst:luaExample2] 
 %
@@ -1298,7 +1294,7 @@ Résumé en français.
 \subsubsection{Generating the For DiVA pages}
 \label{sec:generatingForDiVApage}
 
-The \texttt{\textbackslash divainfo} command generates the ``For DiVA'' information pages by putting the metadata into a Lua table and then writing the whole table out as JSON. The \fname{fordiva.json} file is subsequently read back into a listing.
+The \texttt{\textbackslash divainfo} command generates the \enquote{For DiVA} information pages by putting the metadata into a Lua table and then writing the whole table out as JSON. The \fname{fordiva.json} file is subsequently read back into a listing.
 
 \Cref{lst:setupForDiVAlistingEnv} shows how to configure the listings environment that you will put the \fname{fordiva.json} contents into. One of the tricks here is that it was essential to reduce the hyphenation penalty to enable the abstract text to wrap lines nicely on the page. As an added benefit, the \LaTeX{}~syntax highlighting is on –- so one can easily see the \LaTeX~commands that are used –- as they might need manual editing before the event is announced or the data imported into DIVA.
 
@@ -1333,7 +1329,7 @@ The \texttt{\textbackslash divainfo} command generates the ``For DiVA'' informat
 
 \subsubsection{Attach the fordiva.json file}
 \label{sec:optimizeJSONToMods}
-To facilitate making use of the \texttt{fordiva.json} file, this file is attached to the \gls{PDF} file along with the \texttt{acronyms.tex} file. Once the \texttt{fordiva.json} and \texttt{acronyms.tex} files are attached to the \gls{PDF} file, you can later extract these\linebreak[4] attached files using various existing tools or my program: \linebreak[4]\texttt{extract\_embedded\_files\_from\_PDF.py}.
+To facilitate making use of the \texttt{fordiva.json} file, this file is attached to the \gls{PDF} file along with the \fname{acronyms.tex} file. Once the \fname{fordiva.json} and \fname{acronyms.tex} files are attached to the \gls{PDF} file, you can later extract these\linebreak[4] attached files using various existing tools or my program: \linebreak[4]\texttt{extract\_embedded\_files\_from\_PDF.py}.
 
 \subsubsection{Issues due to generating proper JSON}
 \label{sec:IssuesOfDirectlyGeneratingJSON}
@@ -1368,7 +1364,7 @@ commentstyle=\color{black}, backgroundcolor=\color{white}]{lib/acronyms.tex}
 %\subsection{Cleaning up JSON should be \textit{transforming} JSON}
 \subsection{Cleaning up JSON should be transforming JSON}
 \label{sec:cleaaningUpJSON}
-If you save the \fname{fordiva.json} and \fname{acronyms.tex} files locally\footnote{Either by extracting them from the PDF file or you can download the acronyms.tex file from your project and can download the \fname{fordiva.json} with the ```Other logs and files'' button shown at the bottom of the log output window.}, then you can clean up and transform the \fname{fordiva.json} file. After having done this, you can make a \gls{MODS} file with the following commands:
+If you save the \fname{fordiva.json} and \fname{acronyms.tex} files locally\footnote{Either by extracting them from the PDF file or you can download the acronyms.tex file from your project and can download the \fname{fordiva.json} with the \enquote{Other logs and files} button shown at the bottom of the log output window.}, then you can clean up and transform the \fname{fordiva.json} file. After having done this, you can make a \gls{MODS} file with the following commands:
 \Needspace*{4\baselineskip}
 \begin{lstlisting}[language={bash}, caption={cleanup\_pseudo\_JSON-from\_LaTeX and JSON\_to\_MODS.p},label=lst:cleanPseudoJSONandConvertToMODS]
 ./cleanup_pseudo_JSON-from_LaTeX.py --json xxx_fordiva.json --acronyms acronyms.tex
@@ -1378,9 +1374,9 @@ If you save the \fname{fordiva.json} and \fname{acronyms.tex} files locally\foot
 Now all you have to do is rename the \gls{XML} file that was produced to \texttt{xxx.mods} and you are all set to upload it into \gls{DiVA}!
 
 
-In my earlier code and writing, I have referred to cleaning up the pseudo-JSON or the actual JSON. However, this is not really the correct approach to take. It would be better to talk about a transformation from \gls{JSON} that contains \LaTeX{} to JSON that contains \gls{HTML}. Doing this once would be better than putting this work into each of the different programs that take in \gls{JSON} to produce calendar entries, \gls{MODS}, or Cora-DiVA \gls{API} calls. It will also be interesting because one of the data formats that the Cora-DiVA \gls{API} calls can accept is \gls{JSON}. Logically, this transformation could take place in the magic ``Extractor'' that was shown in \Cref{fig:LogicalOverviewOfWhatIsDone2} on page \pageref{fig:LogicalOverviewOfWhatIsDone2}.
+In my earlier code and writing, I have referred to cleaning up the pseudo-JSON or the actual JSON. However, this is not really the correct approach to take. It would be better to talk about a transformation from \gls{JSON} that contains \LaTeX{} to JSON that contains \gls{HTML}. Doing this once would be better than putting this work into each of the different programs that take in \gls{JSON} to produce calendar entries, \gls{MODS}, or Cora-DiVA \gls{API} calls. It will also be interesting because one of the data formats that the Cora-DiVA \gls{API} calls can accept is \gls{JSON}. Logically, this transformation could take place in the magic \enquote{Extractor} that was shown in \Cref{fig:LogicalOverviewOfWhatIsDone2} on page \pageref{fig:LogicalOverviewOfWhatIsDone2}.
 
-\generalExpl{This transformation process has to transform the equations. While my various programs attempt to handle some simple equations, a more comprehensive and general solution is needed. At present, it is unknown if the Cora-based DIVA will support MathJax or something similar. If it were to support MathJax, then the solution is rather simple -- just pass the \LaTeX{} equation on and let MathJax render it in the browser when someone views it.}
+\generalExpl{This transformation process has to transform the equations. While my various programs attempt to handle some simple equations, a more comprehensive and general solution is needed. At present, it is unknown if the Cora-based DIVA will support MathJax or something similar. If it were to support MathJax, then the solution is rather simple --- just pass the \LaTeX{} equation on and let MathJax render it in the browser when someone views it.}
 
 \warningExpl{The programs have \textbf{not} yet been updated to move the common transformation code into an explicit JSON transformer. Moreover, doing so would simplify the maintenance of these programs, as the transformations would only need to take place in one program or perhaps in one library.}
 
@@ -1391,7 +1387,7 @@ In my earlier code and writing, I have referred to cleaning up the pseudo-JSON o
 Many administrative systems, such as LADOK, getting an ISBN, \etc, require
 plain Unicode text in UTF-8 encoding \ie \textit{without} markup. Therefore, I have developed some Lua code to enable \LuaLaTeX{} to help the author with this transformation.
 
-Compiling \fname{Generate\_titles\_in\_plain\_text.tex} will generate a file named \texttt{extra\_plaintext.tex} containing plain text versions of the \mbox{titles} and subtitles (both main and alternate). (It is named this to avoid overwriting your existing custom\_configuration\_plaintext.tex file during the process.) Additionally, the plain text is set \textit{without} ligatures.
+Compiling \fname{Generate\_titles\_in\_plain\_text.tex} will generate a file named \fname{extra\_plaintext.tex} containing plain text versions of the \mbox{titles} and subtitles (both main and alternate). (It is named this to avoid overwriting your existing custom\_configuration\_plaintext.tex file during the process.) Additionally, the plain text is set \textit{without} ligatures.
 
 There is another Overleaf project that provides more details on this and gives examples of additional testing; see \url{https://www.overleaf.com/read/dfsjdqmcjmtp#0043d3}.
 
@@ -1422,20 +1418,20 @@ Once you are happy with the JSON file’s contents, the next step is to generate
 \end{figure}
 \FloatBarrier
 
-We can produce all three outputs with the command shown in \Cref{lst:JSONtoCalendarThreeoutputs}. Note that the program was run with the \texttt{event.json} file (a JSON file containing HTML) to produce a Canvas course announcement.
+We can produce all three outputs with the command shown in \Cref{lst:JSONtoCalendarThreeoutputs}. Note that the program was run with the \fname{event.json} file (a \gls{JSON} file containing \gls{HTML}) to produce a Canvas course announcement.
 \Needspace*{3\baselineskip}
 \begin{lstlisting}[language={bash}, caption={Running JSON\_to\_calendar.py to produce all three outputs}, label=lst:JSONtoCalendarThreeoutputs]
 JSON_to_calendar.py -c 11 --config config-test.json
 \end{lstlisting}
 
-Note that in this case, the \fname{config-test.json} configuration file was used to make use of the \textbf{test} Canvas course room instance as well as the \textbf{test} Cortina instance. To use this with the production instances, you would use your usual \texttt{config.json} configuration file. In either case, your configuration file needs to include a KTH API key to access Cortina.
+Note that in this case, the \fname{config-test.json} configuration file was used to make use of the \textbf{test} Canvas course room instance as well as the \textbf{test} Cortina instance. To use this with the production instances, you would use your usual \fname{config.json} configuration file. In either case, your configuration file needs to include a KTH API key to access Cortina.
 
 
 
 \Needspace*{10\baselineskip}
 \section{Other variants of JSON\_to\_calendar.py}
 \label{sec:otherVariantsofJSONtoCalendar}
-For testing purposes, I also created functionality in \texttt{JSON\_to\_calendar.py} to insert a fixed event (this was my first test) and to take as input a \gls{MODS} file. The MODS file was created from a \gls{DiVA} feed of theses presented in 2020 through to the 25\textsuperscript{th} of April 2021. However, one limitation that I found is that, other than myself, few people have been entering the date and time for the oral presentation. Unfortunately, since I wanted to test making calendar announcements, I needed the date and time!
+For testing purposes, I also created functionality in \fname{JSON\_to\_calendar.py} to insert a fixed event (this was my first test) and to take as input a \gls{MODS} file. The MODS file was created from a \gls{DiVA} feed of theses presented in 2020 through to the 25\textsuperscript{th} of April 2021. However, one limitation that I found is that, other than myself, few people have been entering the date and time for the oral presentation. Unfortunately, since I wanted to test making calendar announcements, I needed the date and time!
 
 \Needspace*{2\baselineskip}
 \textbf{NB}: I have assumed that each degree project presentation lasts one hour. This assumption was made since the KTH Cortina calendar API needs both a starting and ending time. There is currently no support for specifying the duration of third-cycle presentations. However, looking at a calendar event for a doctoral defense on 2025-06-05, only the starting time appears in the event.
@@ -1501,7 +1497,7 @@ The program is patterned after the \texttt{JSON\_to\_calendar} program. The prog
 
 Currently, the Canvas course information is \textbf{not} used. Note also that the “—testing” flag forces the report series to be  "TRITA-ICT-EX" overriding the actual series that is in the input version of the DiVA data. This is needed for testing with the test instance of \gls{DiVA}  -- as the test instance only has the old series names.
 
-If acronyms are used in the abstracts, you can also add the ``\texttt{-\,-acronyms acronyms.tex}'' argument to the command line and the program will process the acronyms.
+If acronyms are used in the abstracts, you can also add the \enquote{\fname{-\,-acronyms acronyms.tex}} argument to the command line and the program will process the acronyms.
 
 As noted above, you will get a file named \fname{modsXML.xml} that you can manually import into \gls{DiVA}. This process is shown in \Cref{sec:importingMODSfiletoDiVA}. I seem to be able to import these files into the test instance of \gls{DiVA}:	\url{https://kth.test.diva-portal.org/dream/import/importList.jsf}. Another side-effect of the testing flag is to use the test instance of DiVA. \textbf{NB}: The organization units are different between the production and test versions of \gls{DiVA}. When run without the testing flag set, the \gls{MODS} file can be imported into the production version of \gls{DiVA}.
 
@@ -2146,7 +2142,7 @@ Where the colors are defined as (note that the ForestGreen lacks sufficient cont
 
 Note that the colors do \textbf{not} encode any essential meaning (\ie they could all be turned to black), since the citations are recognizable by their format, the URL (and URI) by linking to an external document, and the links (by linking within the document).
 
-Some additional colors are defined and used for \texttt{todonotes} – they should, of course, be removed before the thesis is finalized (as of course all of these issues should have been resolved!). The default background color for todonotes is orange (which is predefined as \#FF7F00). The other colors are shown in \Cref{lst:todonotesColors}. The KTH colors are defined in \texttt{kthcolors.tex}.
+Some additional colors are defined and used for \texttt{todonotes} – they should, of course, be removed before the thesis is finalized (as of course all of these issues should have been resolved!). The default background color for todonotes is orange (which is predefined as \#FF7F00). The other colors are shown in \Cref{lst:todonotesColors}. The KTH colors are defined in \fname{kthcolors.tex}.
 \Needspace*{16\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, caption={Defines for todo notes}, label=lst:todonotesColors]
 %% Conventions for todo notes:
@@ -2185,31 +2181,23 @@ English,                 % the language of the body of the document: English or 
 
 The template is available from Overleaf (via a share URL).
 
-The text in the template itself (\ie the \texttt{examplethesis.tex} file) is in Swedish and English. The notes regarding the \LaTeX{} class file, the various \fname{lib} files, and the various \fname{README} files are currently only in English.
+The text in the template itself (\ie the \fname{examplethesis.tex} file) is in Swedish and English. The notes regarding the \LaTeX{} class file, the various \fname{lib} files, and the various \fname{README} files are currently only in English.
 
 The default bibliographic style when using \BibTeX{} is my own adaptation of the IEEE Transactions format (\ie numbered citations, numbered references, references in order of use) with the extension of adding DOIs, URLs, and ISBNs (when relevant).
 
 \subsection{Improving accessibility}
 \label{sec:improvingAccessibility}
-One method for improving accessibility would be to include the accessibility package, \ie \textbackslash usepackage\{accessibility\} as this would include a comment in the \gls{PDF} file for each equation with the \LaTeX{} that generated the equation. However, this package is no longer maintained and is incompatible with many other packages. For an introduction to what the \LaTeX{}-project has been working on, see ``LATEX Tagged PDF -- A blueprint for a large Project''\cite{MittelbachRowley2020}. Based upon this article and the status of the \texttt{tagpdf} package, I conclude that it is too early to worry about properly tagging \gls{PDF} files; thus, doing so will have to await the release of a package designed for production use.
+One method for improving accessibility would be to include the accessibility package, \ie \textbackslash usepackage\{accessibility\} as this would include a comment in the \gls{PDF} file for each equation with the \LaTeX{} that generated the equation. However, this package is no longer maintained and is incompatible with many other packages. For an introduction to what the \LaTeX{}-project has been working on, see \enquote{LATEX Tagged PDF -- A blueprint for a large Project}~\cite{MittelbachRowley2020}. Based upon this article and the status of the \texttt{tagpdf} package, I conclude that it is too early to worry about properly tagging \gls{PDF} files; thus, doing so will have to await the release of a package designed for production use.
 
 \section{The structure of the template and the report}
 \label{sec:structureOfTheTemplate}
 The report in itself (\ie the thesis in \fname{examplethesis.tex}) has a classical \gls{IMRAD} structure. In some subject areas, such as mathematics there is a tradition for another structure.
-The files and folders in Overleaf have the form shown in \Cref{fig:overleafFoldersAndFiles}. Some students add folders per chapter and reduce the main document to a skeleton that includes the other parts of the document.
-\begin{figure}[!ht]
-  \begin{center}
-    \fbox{\includegraphics[width=0.5\textwidth]{README_notes/README-examiner-figures/Overleaf-files-and-folders-20250605.png}}
-  \end{center}
-  \caption{Files and folders in Overleaf template}
-  \label{fig:overleafFoldersAndFiles}
-\end{figure}
-\FloatBarrier
+The files and folders in Overleaf can be see by clicking the \enquote{File tree} icon. Some students add folders per chapter and reduce the main document to a skeleton that includes the other parts of the document.
 
-There are currently instructions concerning the template in the \texttt{README\_notes/README\_notes\_reduced.tex} file\footnote{You will need to compile it separately.}. 
+There are currently instructions concerning the template in the \fname{README\_notes/README\_notes\_reduced.tex} file\footnote{You will need to compile it separately.}. 
 Ideally, these instructions should be available in both English and Swedish; however, a Swedish version remains as future work.
 
-Most students will only need to add acronyms to the \texttt{acronyms.tex} file and perhaps additional packages to \texttt{includes.tex} (in some cases, these packages may need to be added to the \texttt{includes-after-hyperref.tex} file if there is a conflict with \texttt{hyperref}).
+Most students will only need to add acronyms to the \fname{acronyms.tex} file and perhaps additional packages to \fname{includes.tex} (in some cases, these packages may need to be added to the \fname{includes-after-hyperref.tex} file if there is a conflict with \texttt{hyperref}).
 
 The \texttt{school\_subjects\_3rdcycle.ins} contents were generated from the data in LADOK. Students should not have to change this file.
 
@@ -2217,11 +2205,11 @@ The \texttt{school\_subjects\_3rdcycle.ins} contents were generated from the dat
 
 \section[Generating LaTeX commands for in the student’s thesis source files]{Generating LaTeX commands for in the\linebreak[4] student’s thesis source files}
 \label{sec:GeneratingLatexCommands}
-The thesis makes use of a set of \LaTeX{} commands to collect information about the student and the supervisor(s) in the \texttt{custom\_configuration.tex} file. However, how can a student know what their KTHID and other necessary information is?
+The thesis makes use of a set of \LaTeX{} commands to collect information about the student and the supervisor(s) in the \fname{custom\_configuration.tex} file. However, how can a student know what their KTHID and other necessary information is?
 
 There are two alternatives:
 \begin{itemize}
-    \item The main supervisor or someone can use the method described in section ``Make it simple from the start'' in the file \texttt{README\_supervisor\_notes}.
+    \item The main supervisor or someone can use the method described in section \enquote{Make it simple from the start} in the file \texttt{README\_supervisor\_notes}.
 
     \item One can use the program: \texttt{whoami\_for\_latex.py} - see the command shown in \Cref{lst:swhoamiInfo}\footnote{As this version of the program only uses Canvas and does not use LADOK, it excludes program information}; as Canvas does not currently have any source for the student's program information.
 \end{itemize}
@@ -2256,7 +2244,7 @@ Note that the lowercase version of the license has to be used in the modifier, \
 ]{doclicense}
 \end{lstlisting}
 
-Note that the option ``hyphenation={RaggedRight}'' can be used with the configuration of the package to set the license information with a ragged right margin rather that as a filled and justified paragraph.
+Note that the option \enquote{hyphenation={RaggedRight}} can be used with the configuration of the package to set the license information with a ragged right margin rather that as a filled and justified paragraph.
 
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={Example configuration to have a CC BY-NC-ND license with a Euro symbol rather than a Dollar sign}, label=lst:CCBY-NC-ND-euro]
 \usepackage[
@@ -2277,7 +2265,7 @@ Note that the option ``hyphenation={RaggedRight}'' can be used with the configur
 \end{lstlisting}
 
 
-For someone who is maintaining or modifying the template, it is important to know that the \texttt{\textbackslash bookinfopageCC} command has a case statement in it that uses an internal variable (\texttt{\textbackslash doclicense@modifier}) set by \texttt{doclicense} as shown in~\Cref{lst:bookinfopageCCcaseSTMT}. This case statement will need to be modified if there is a change in the set of Creative Commons licenses. While it might be possible to replace this case statement with \texttt{\textbackslash doclicenseModifier} to directly produce the capitalized version of the license names or perhaps even \texttt{\textbackslash doclicenseName} or \texttt{\textbackslash doclicenseNameRef} to include the capitalized license name as well as the version number (the latter also including a URL to the license). However, I think that these alternatives are unnecessary given the \texttt{\textbackslash doclicenseThis} that generates the display of the license with logo(s). More importantly, using these other commands rather than the unprocessed \texttt{\textbackslash doclicense@modifier} leads to problems when writing out the \texttt{fordiva.json} file.
+For someone who is maintaining or modifying the template, it is important to know that the \texttt{\textbackslash bookinfopageCC} command has a case statement in it that uses an internal variable (\texttt{\textbackslash doclicense@modifier}) set by \texttt{doclicense} as shown in~\Cref{lst:bookinfopageCCcaseSTMT}. This case statement will need to be modified if there is a change in the set of Creative Commons licenses. While it might be possible to replace this case statement with \texttt{\textbackslash doclicenseModifier} to directly produce the capitalized version of the license names or perhaps even \texttt{\textbackslash doclicenseName} or \texttt{\textbackslash doclicenseNameRef} to include the capitalized license name as well as the version number (the latter also including a URL to the license). However, I think that these alternatives are unnecessary given the \texttt{\textbackslash doclicenseThis} that generates the display of the license with logo(s). More importantly, using these other commands rather than the unprocessed \texttt{\textbackslash doclicense@modifier} leads to problems when writing out the \fname{fordiva.json} file.
 
 Note that if the \texttt{doclicense} package is used it automatically redefines \texttt{\textbackslash bookinfopage} to be \texttt{\textbackslash bookinfopageCC}.
 
@@ -2429,7 +2417,7 @@ The use of \texttt{hyperxmp} caused a change in how the author's name is process
 
 \section[Inserting information into LADOK]{Inserting information into LADOK}
 \label{sec:JSONtoLADOK}
-As part of the effort to minimize the effort of cutting and pasting. I have made a program JSON\_to\_ladok.py that takes the extracted JSON information and uses the information about the author(s) and the title and alternative title to try to insert this information into LADOK for the module (\ie ``moment'' in Swedish) that requires a project title, \ie, '\foreignlanguage{swedish}{KravPaProjekttitel}' is True. \Cref{lst:usingExtractedJSONtoProduceLADOKentry} shows an example of using this program to try to put the title and alternative title into LADOK. Basically, the program logic should work, but I do \textbf{not} have the required permission to make entries of this sort of data for a degree project.
+As part of the effort to minimize the effort of cutting and pasting. I have made a program JSON\_to\_ladok.py that takes the extracted JSON information and uses the information about the author(s) and the title and alternative title to try to insert this information into LADOK for the module (\ie \enquote{moment} in Swedish) that requires a project title, \ie, '\foreignlanguage{swedish}{KravPaProjekttitel}' is True. \Cref{lst:usingExtractedJSONtoProduceLADOKentry} shows an example of using this program to try to put the title and alternative title into LADOK. Basically, the program logic should work, but I do \textbf{not} have the required permission to make entries of this sort of data for a degree project.
 
 Note that this program uses the \texttt{ladok3} python library but extends it with some features that are not (yet) in the library. It should be regarded as very much a work in progress.
 \begin{lstlisting}[language={bash}, caption={Using the extracted JSON to produce a LADOK entry}, label=lst:usingExtractedJSONtoProduceLADOKentry]
@@ -2501,11 +2489,11 @@ Exception: Couldn't register PRO3=P 2021-07-14: Hinder mot skapa resultat påtr�
 \label{sec:LanguageCodes}
 The US Library of Congress has a table of the language codes at \url{https://www.loc.gov/standards/iso639-2/php/code_list.php}.
 
-Based upon the US Library of Congress ``Codes for the Representation of Names of Languages: Codes arranged alphabetically by alpha-3/ISO 639-2 Code'', I have eliminated all of the rows that did not have both a three-letter \gls{ISO} 639-2 Code \textbf{and} a two-letter \gls{ISO} 639-1 Code. For the three-letter \gls{ISO} 639-2 Codes, I used only the  ``B'', \ie bibliographic codes. I split the table into two parts: Languages already implemented (\Cref{tab:languagesImplemented}) and those remaining to be implemented (\Cref{tab:languagesNotImplemented}). The term ``implemented'' means that I have considered it in the current template, at least to some extent (but do not necessarily have a skeleton abstract in the language\footnote{For example, I do not have a skeleton abstract in Belarusian - but babel supports belarusian and the template supports the use of the Cyrillic alphabet. However, I have not done an investigation of whether the font supports all of the glyphs used in Belarusian.}).  For example, babel supports northernsami and yiddish as languages you can select, and I have created skeleton abstracts for both languages. In the case of Yiddish, I added it to the language switch in the code described in \Cref{sec:newLanguagesFOrAbstracts}. For Norwegian Bokmål, one can use the ``nob'' code for an abstract and specify the babel language Norwegian. In contrast, for Norwegian Nynorsk one uses the ``nno'' code for an abstract and the babel language nynorsk. However, I have only implemented a skeleton abstract for Norwegian.
+Based upon the US Library of Congress \enquote{Codes for the Representation of Names of Languages: Codes arranged alphabetically by alpha-3/ISO 639-2 Code}, I have eliminated all of the rows that did not have both a three-letter \gls{ISO} 639-2 Code \textbf{and} a two-letter \gls{ISO} 639-1 Code. For the three-letter \gls{ISO} 639-2 Codes, I used only the  \enquote{B}, \ie bibliographic codes. I split the table into two parts: Languages already implemented (\Cref{tab:languagesImplemented}) and those remaining to be implemented (\Cref{tab:languagesNotImplemented}). The term \enquote{implemented} means that I have considered it in the current template, at least to some extent (but do not necessarily have a skeleton abstract in the language\footnote{For example, I do not have a skeleton abstract in Belarusian - but babel supports belarusian and the template supports the use of the Cyrillic alphabet. However, I have not done an investigation of whether the font supports all of the glyphs used in Belarusian.}).  For example, babel supports northernsami and yiddish as languages you can select, and I have created skeleton abstracts for both languages. In the case of Yiddish, I added it to the language switch in the code described in \Cref{sec:newLanguagesFOrAbstracts}. For Norwegian Bokmål, one can use the \enquote{nob} code for an abstract and specify the babel language Norwegian. In contrast, for Norwegian Nynorsk one uses the \enquote{nno} code for an abstract and the babel language nynorsk. However, I have only implemented a skeleton abstract for Norwegian.
 
-I have a skeleton abstract in Kurdish Sorani (babel language centralkurdish) with language code ``cbk'', I do not have any support for Kurmanji. However, as Kurmanji uses a Latin-based alphabet, it should not be a problem to add an abstract with the ``kur'' code.
+I have a skeleton abstract in Kurdish Sorani (babel language centralkurdish) with language code \enquote{cbk}, I do not have any support for Kurmanji. However, as Kurmanji uses a Latin-based alphabet, it should not be a problem to add an abstract with the \enquote{kur} code.
 
-According to SCB (\url{https://www.scb.se/contentassets/221c69e399f0424b852b21236952e300/sprakkoder.xlsx}), there are also \gls{ISO} 639-2 codes for Yiddish with regions (see \Cref{tab:SCByiddish}). For Romanian, the \gls{ISO} 639-2 B code is "rum" and the ISO 639-1 code is  "ro". However, SCB gives additional \gls{ISO} 639-2 codes (see \Cref{tab:SCBromani}). For Northern Sami (Samiska, (norra)), the \gls{ISO} 639-2 is "sme" and the ISO 639-1 code is "se", but is there a region code that should be used? (See \Cref{tab:SCBsami}) For Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}), the ISO 639-2 code is "fit", but I am unable to determine what \gls{ISO} 639-1 code should be used (see \Cref{tab:languagesMissing}). Is it "fi" with some region code? If so, what region code? 
+According to SCB (\url{https://www.scb.se/contentassets/221c69e399f0424b852b21236952e300/sprakkoder.xlsx}), there are also \gls{ISO} 639-2 codes for Yiddish with regions (see \Cref{tab:SCByiddish}). For Romanian, the \gls{ISO} 639-2 B code is \enquote{rum} and the ISO 639-1 code is  \enquote{ro}. However, SCB gives additional \gls{ISO} 639-2 codes (see \Cref{tab:SCBromani}). For Northern Sami (Samiska, (norra)), the \gls{ISO} 639-2 is "sme" and the ISO 639-1 code is \enquote{se}, but is there a region code that should be used? (See \Cref{tab:SCBsami}) For Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}), the ISO 639-2 code is \enquote{fit}, but I am unable to determine what \gls{ISO} 639-1 code should be used (see \Cref{tab:languagesMissing}). Is it \enquote{fi} with some region code? If so, what region code? 
 
 \generalExpl{I have added a skeleton abstract for Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}). It is probably incorrect, but it provides a starting point. My assumption is that the spacing, hyphenation, \etc follow that of Finnish, but that there is a difference in words.}
 
@@ -2795,10 +2783,10 @@ zul & zu & Zulu\\
 
 \section{Adding keywords and other data to PDF metadata}
 \label{sec:addingKeywordsAndMetaDataToPDF}
-In an effort to add the \gls{PDF} metadata via the \texttt{hyperref} package, I decided to add the English and Swedish keywords part of the \gls{PDF} metadata. However, in order to do this, I had to know the keywords \textit{before} the \textbackslash begin\{document\} command in the \LaTeX{}~file. To do so, I added three new commands to the \texttt{kththesis.cls} file, as shown in \Cref{lst:keywords}. The commands are used in the \texttt{examplethesis.tex} file to set up the keywords in both English and Swedish as well as include a new set of \LaTeX{} commands to store the \gls{PDF} metadata (as shown in \Cref{lst:storingkeywords}) using a file called \texttt{lib/pdf\_related\_includes.tex} (shown in \Cref{lst:informationforPDFfile}). Later, the keywords that have been stored are inserted into the \LaTeX{}~after their respective language abstracts. The title page of the thesis and the PDF metadata are shown in \Cref{fig:pdfMetadata}. Note that both the English and Swedish versions of the keywords are included in the metadata. Finally, the keywords appear (as expected) in the ``For DiVA'' data at the end of the \gls{PDF} file.
+In an effort to add the \gls{PDF} metadata via the \texttt{hyperref} package, I decided to add the English and Swedish keywords part of the \gls{PDF} metadata. However, in order to do this, I had to know the keywords \textit{before} the \textbackslash begin\{document\} command in the \LaTeX{}~file. To do so, I added three new commands to the \texttt{kththesis.cls} file, as shown in \Cref{lst:keywords}. The commands are used in the \fname{examplethesis.tex} file to set up the keywords in both English and Swedish as well as include a new set of \LaTeX{} commands to store the \gls{PDF} metadata (as shown in \Cref{lst:storingkeywords}) using a file called \fname{lib/pdf\_related\_includes.tex} (shown in \Cref{lst:informationforPDFfile}). Later, the keywords that have been stored are inserted into the \LaTeX{}~after their respective language abstracts. The title page of the thesis and the PDF metadata are shown in \Cref{fig:pdfMetadata}. Note that both the English and Swedish versions of the keywords are included in the metadata. Finally, the keywords appear (as expected) in the \enquote{For DiVA} data at the end of the \gls{PDF} file.
 
 \Needspace*{7\baselineskip}
-Note that \texttt{\textbackslash makeatlette} and \texttt{\textbackslash makeatother} are used to include the character “@” as a letter and then return “@” to being a punctuation code. This use of “@” protects the internal names from being accessed outside of these two commands. More explicitly, \texttt{\textbackslash EnglishKeywords} is a function that takes one argument, the text of the English keywords, and then stores them into ``\texttt{@EnglishKeywords}''. Later, the text can be retrieved with the command \texttt{\textbackslash InsertKeywords\{english\}} or \texttt{\textbackslash InsertKeywords\{swedish\}}.
+Note that \texttt{\textbackslash makeatlette} and \texttt{\textbackslash makeatother} are used to include the character “@” as a letter and then return “@” to being a punctuation code. This use of “@” protects the internal names from being accessed outside of these two commands. More explicitly, \texttt{\textbackslash EnglishKeywords} is a function that takes one argument, the text of the English keywords, and then stores them into \enquote{\texttt{@EnglishKeywords}}. Later, the text can be retrieved with the command \texttt{\textbackslash InsertKeywords\{english\}} or \texttt{\textbackslash InsertKeywords\{swedish\}}.
 \Needspace*{15\baselineskip}
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={New commands in kththesis.cls}, label=lst:keywords]
 % Keywords
@@ -2831,15 +2819,15 @@ Note that \texttt{\textbackslash makeatlette} and \texttt{\textbackslash makeato
 \end{lstlisting}
 
 
-The \texttt{lib/pdf\_related\_includes.tex} file contains the \LaTeX{} ~- to add information
+The \fname{lib/pdf\_related\_includes.tex} file contains the \LaTeX{} ~- to add information
 to the \gls{PDF} file (specifically, author(s), title(s), and keywords). It uses the
 \texttt{hyperref} package and should be included before the \texttt{\textbackslash begin\{document\}}.
 I want to acknowledge the inspiration of Karl Voit's template for TU Graz which inspired me to add the \gls{PDF} document information. For more information about his template, see \url{https://github.com/novoid/LaTeX-KOMA-template}
 Note that my template does not use anything from his template other than the names of the information for the \gls{PDF} meta fields, \ie \texttt{mytitle}, \texttt{myauthor}, and \texttt{mykeywords}, together with the idea of defining the corresponding \texttt{newcommand} to set the relevant \texttt{hyperref} parameters. A result of both these decisions is that these command names are visible to the rest of the \LaTeX{} file. See \Cref{lst:informationforPDFfile} for the code.
 
-In keeping with the Swedish standard (\foreignlanguage{swedish}{Svenska skrivregler [Språkrådet 1.6.3 och 12.11.5]}) a ``\foreignlanguage{swedish}{mellanslag tankstreck}'' with a space before and after, \ie `` – '' is used to separate the title and subtitle when in Swedish, this leads to a condition based on whether the document is in Swedish or not in the computation of \texttt{mytitle} and \texttt{myalttitle}.
+In keeping with the Swedish standard (\foreignlanguage{swedish}{Svenska skrivregler [Språkrådet 1.6.3 och 12.11.5]}) a \enquote{\foreignlanguage{swedish}{mellanslag tankstreck}} with a space before and after, \ie \enquote{ – } is used to separate the title and subtitle when in Swedish, this leads to a condition based on whether the document is in Swedish or not in the computation of \texttt{mytitle} and \texttt{myalttitle}.
 
-As a result of adding support for the \gls{PDF} metadata for the copyright notice, the template now uses the \texttt{hyperxmp} package. Because of this, if the author's name includes a suffix such as ``, Jr.'' or `` Jr.'', \ie the suffix can be separated with a comma or not as the author prefers to write their name; thus, there was a need to change the processing of \texttt{pdfauthor} information, as \texttt{hyperxmp} treats comma-separated strings in the author or keywords fields as being a list and converts these into a sequence of data in the metadata. This change is shown in \Cref{lst:informationforPDFfile} where the \texttt{\textbackslash hyxmp@comma} macro is used to insert something that is later replaced by a comma but is not treated as a comma when processing the \texttt{pdfauthor} information. The command \texttt{\textbackslash xmpquote} is used to wrap the whole name.
+As a result of adding support for the \gls{PDF} metadata for the copyright notice, the template now uses the \texttt{hyperxmp} package. Because of this, if the author's name includes a suffix such as \enquote{, Jr.} or \enquote{ Jr.}, \ie the suffix can be separated with a comma or not as the author prefers to write their name; thus, there was a need to change the processing of \texttt{pdfauthor} information, as \texttt{hyperxmp} treats comma-separated strings in the author or keywords fields as being a list and converts these into a sequence of data in the metadata. This change is shown in \Cref{lst:informationforPDFfile} where the \texttt{\textbackslash hyxmp@comma} macro is used to insert something that is later replaced by a comma but is not treated as a comma when processing the \texttt{pdfauthor} information. The command \texttt{\textbackslash xmpquote} is used to wrap the whole name.
 \clearpage
 
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={lib/pdf\_related\_includes.tex
@@ -3018,15 +3006,15 @@ As a result of adding support for the \gls{PDF} metadata for the copyright notic
 \label{sec:addingMetadataToPDFfile}
 Increasingly, metadata is being embedded into digital objects to provide information about the creator (author, photographer, \etc), date of creation, copyright notices, \etc. In a typical \gls{PDF} file produced by \LaTeX{}, there is both PDF-specific metadata and additional metadata. This additional metadata is stored using Adobe's \glsfirst{XMP}. \gls{XMP} is a means of embedding metadata in \gls{XMP} format into \gls{PDF} documents so that tools can extract it mechanically.
 
-An early paper about automatically extracting the title, authors(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004~\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
+An early paper about automatically extracting the title, authors(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004~\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata~\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
 
 More recently, Elsevier's Digital Commons \footnote{\url{https://www.elsevier.com/solutions/digital-commons}} uses an extension of the Dublin Core\footnote{\url{https://www.dublincore.org/}} shown in \Cref{tab:dublicCoreDigitalCommons} to collect metadata. We will see the Dublin Core elements and other metadata schema used in XMP in the remainder of this section.
 
-Bepress has written about Elsevier's Digital Commons in a webpage ``Digital Commons and OAI-PMH: Outbound Harvesting of Repository Records'' \url{https://bepress.com/reference_guide_dc/digital-commons-oai-harvesting/}. The\gls{OAI-PMH} is to foster interoperability between repositories\footnote{\url{https://www.openarchives.org/pmh/}} to enable harvesters to collect metadata from a repository. Over the last 20 years, there has been an evolution from simply having metadata in a database that is associated with a publication to an entire ecosystem of metadata and applications -- see for example, the twentieth International Conference on Dublin Core and Metadata Applications (DCMI 2022) - \url{https://www.dublincore.org/conferences/2022/programme/}.
+Bepress has written about Elsevier's Digital Commons in a webpage \enquote{Digital Commons and OAI-PMH: Outbound Harvesting of Repository Records} \url{https://bepress.com/reference_guide_dc/digital-commons-oai-harvesting/}. The\gls{OAI-PMH} is to foster interoperability between repositories\footnote{\url{https://www.openarchives.org/pmh/}} to enable harvesters to collect metadata from a repository. Over the last 20 years, there has been an evolution from simply having metadata in a database that is associated with a publication to an entire ecosystem of metadata and applications -- see for example, the twentieth International Conference on Dublin Core and Metadata Applications (DCMI 2022) - \url{https://www.dublincore.org/conferences/2022/programme/}.
 \clearpage
 
 \begin{table}[!ht]
-    \caption{Dublin Core Elements in Digital Commons\cite{digital_commons_metadata_2016} - items in bold are from the so-called ``simple Dublic Core''}
+    \caption{Dublin Core Elements in Digital Commons ~\cite{digital_commons_metadata_2016} - items in bold are from the so-called \enquote{simple Dublic Core}}
     \label{tab:dublicCoreDigitalCommons}
     \begin{scriptsize}   
     \begin{tabular}{l | l }
@@ -3107,7 +3095,7 @@ The \gls{XMP} data is in a stream indicated in the \gls{PDF} as Metadata of the 
 stream
 \end{lstlisting}
 
-In the \gls{PDF} file, the \gls{XML} encoded metadata is between \texttt{<?xpacket begin="yyyy" id="xxxx"?>} and \texttt{<?xpacket end="w"?>} (where xxxx is some unique ID). It is important to note that the value for yyyy in the previous is a so-called \gls{BOM} with the value 0xFEFF. While this character is a valid \mbox{UTF-8} character, the \texttt{lstlisting} environment cannot handle this value; therefore, it has been replaced by the string ``BOM 0xFEFF''. An example of this is shown in \Cref{lst:pdfinfoOutput}.
+In the \gls{PDF} file, the \gls{XML} encoded metadata is between \texttt{<?xpacket begin="yyyy" id="xxxx"?>} and \texttt{<?xpacket end="w"?>} (where xxxx is some unique ID). It is important to note that the value for yyyy in the previous is a so-called \gls{BOM} with the value 0xFEFF. While this character is a valid \mbox{UTF-8} character, the \texttt{lstlisting} environment cannot handle this value; therefore, it has been replaced by the string \enquote{BOM 0xFEFF}. An example of this is shown in \Cref{lst:pdfinfoOutput}.
 \clearpage
 \begin{lstlisting}[style={myXML}, caption={The first part of the XML metadata embedded in a PDF file (some reformatting has been done to fit the text in the borders)}, label={lst:pdfinfoOutput}]
 
@@ -3141,7 +3129,7 @@ In the \gls{PDF} file, the \gls{XML} encoded metadata is between \texttt{<?xpack
 
 Some of these XML elements include "rdf" elements referring to the \gls{RDF}\footnote{\url{https://www.w3.org/RDF/}}.
 
-The \gls{XMP} data utilizes a number of different schema and namespaces. These namespaces are shown as ``xmlns:xxxx''  in \Cref{lst:pdfinfoOutput}. One namespace is \texttt{xmlns:dc} and this refers to the scheme is `Dublin Core'' \footnote{see Dublin Core Metadata Initiative \url{https://www.dublincore.org/}}. The information about this namespace can be found at \url{http://purl.org/dc/elements/1.1/}. Each of the schema and namespace are described in the next part of the \gls{XML}, see \Cref{lst:pdfinfoOutputPart2}.
+The \gls{XMP} data utilizes a number of different schema and namespaces. These namespaces are shown as \enquote{xmlns:xxxx}  in \Cref{lst:pdfinfoOutput}. One namespace is \texttt{xmlns:dc} and this refers to the scheme is \enquote{Dublin Core} \footnote{see Dublin Core Metadata Initiative \url{https://www.dublincore.org/}}. The information about this namespace can be found at \url{http://purl.org/dc/elements/1.1/}. Each of the schema and namespace are described in the next part of the \gls{XML}, see \Cref{lst:pdfinfoOutputPart2}.
 
 \begin{lstlisting}[style=myXML,
 caption={Second part of the XML metadata embedded in a PDF file (some reformatting has been done to fit the text in the borders)}, label={lst:pdfinfoOutputPart2}]
@@ -3378,7 +3366,7 @@ caption={{The \texttt{pdf}-prefix metadata embedded in a PDF file (some reformat
       <pdf:Keywords>Canvas Learning Management System, Docker containers, Performance tuning, Canvas Lärplattform, Dockerbehållare, Prestandajustering</pdf:Keywords>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart4} shows the next part of the \gls{XMP} data. In this case, we see a new name prefix \texttt{xmpRights}, specifically the name \texttt{xmpRights:Marked}. This namespace is described at \url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmpRights/}. This namespace defines the following names: xmpRights:Certificate, xmpRights:Marked, xmpRights:Owner, xmpRights:UsageTerms, and xmpRights:WebStatement. In this case, xmpRights:Marked is marked as ``True'' which ``indicates that this is a rights-managed resource. When false, indicates that this is a public-domain resource. Omit if the state is unknown.''. So in this case, it is a right-managed resource.
+\Cref{lst:pdfinfoOutputPart4} shows the next part of the \gls{XMP} data. In this case, we see a new name prefix \texttt{xmpRights}, specifically the name \texttt{xmpRights:Marked}. This namespace is described at \url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmpRights/}. This namespace defines the following names: xmpRights:Certificate, xmpRights:Marked, xmpRights:Owner, xmpRights:UsageTerms, and xmpRights:WebStatement. In this case, xmpRights:Marked is marked as \enquote{True} which \enquote{indicates that this is a rights-managed resource. When false, indicates that this is a public-domain resource. Omit if the state is unknown.}. So in this case, it is a right-managed resource.
 
 \Needspace*{3\baselineskip}
 \begin{lstlisting}[style=myXML,
@@ -3395,7 +3383,7 @@ caption={{The \texttt{dc:format} metadata embedded in a PDF file}}, label={lst:p
       <dc:format>application/pdf</dc:format>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart6} shows the next part of the \gls{XMP} data. In this case, we can see another element from the \texttt{dc} namespace. More specifically, the element named \texttt{dc:title} and this contains the title of the document. This also illustrates another feature of \gls{XML} -- it is possible to have the title in several different languages. The \gls{RDF} tag \texttt{rdf:Alt} indicates that there are a list of alternatives. In this case, the items in the list are tagged with a language tag. The language tag \texttt{xml:lang="x-default"} is the default language of the document. This is followed by items that contain the English (tagged ``en'') and Swedish (tagged ``sv''). The language tags are an \gls{ISO} 639-1 two-letter language code with an
+\Cref{lst:pdfinfoOutputPart6} shows the next part of the \gls{XMP} data. In this case, we can see another element from the \texttt{dc} namespace. More specifically, the element named \texttt{dc:title} and this contains the title of the document. This also illustrates another feature of \gls{XML} -- it is possible to have the title in several different languages. The \gls{RDF} tag \texttt{rdf:Alt} indicates that there are a list of alternatives. In this case, the items in the list are tagged with a language tag. The language tag \texttt{xml:lang="x-default"} is the default language of the document. This is followed by items that contain the English (tagged \enquote{en}) and Swedish (tagged \enquote{sv}). The language tags are an \gls{ISO} 639-1 two-letter language code with an
 optional \gls{ISO} 3166-1 two-letter region code.
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{dc:title>} metadata embedded in a PDF file (some reformatting has been done to fit the text in the borders)}}, label={lst:pdfinfoOutputPart6}]
@@ -3543,7 +3531,7 @@ caption={{The \texttt{dc:source} and \texttt{dc:language} metadata embedded in a
       </dc:language>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart12} shows the \texttt{xmp}-prefix elements in the file. This namespace is supposed to be defined at \url{http://ns.adobe.com/xap/1.0/}; however, this URL is not longer valid but the Adobe XMP Basic namespace is described at url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmp/}. In this specific case, the file provides the \texttt{CreateDate}, \texttt{xmp:ModifyDate}, \texttt{xmp:MetadataDate}, and \texttt{xmp:CreatorTool}. For the last of these the value is shown as ``LaTeX with hyperref'' even though the \XeLaTeX{} engine had been used.
+\Cref{lst:pdfinfoOutputPart12} shows the \texttt{xmp}-prefix elements in the file. This namespace is supposed to be defined at \url{http://ns.adobe.com/xap/1.0/}; however, this URL is not longer valid but the Adobe XMP Basic namespace is described at url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmp/}. In this specific case, the file provides the \texttt{CreateDate}, \texttt{xmp:ModifyDate}, \texttt{xmp:MetadataDate}, and \texttt{xmp:CreatorTool}. For the last of these the value is shown as \enquote{LaTeX with hyperref} even though the \XeLaTeX{} engine had been used.
 \begin{lstlisting}[style=myXML,
 caption={The final set of metadata embedded in a PDF file}, label={lst:pdfinfoOutputPart12}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
@@ -3608,7 +3596,7 @@ For XMP, there are some specific areas that might be of interest in the future:
 \subsubsection{Adding new dc elements}
 \label{sec:newDCelements}
 In \Cref{tab:dublicCoreDigitalCommons} on \pageref{tab:dublicCoreDigitalCommons} we saw five elements that are perhaps worth adding, specifically:
-\texttt{thesis.degree}, \texttt{thesis.degree.discipline}, \linebreak[4]\texttt{thesis.degree.grantor}, \texttt{thesis.degree.level}, and \linebreak[4] \texttt{thesis.degree.name}. It may be worth adding these to the XMP data for a thesis in the future. For some discussion of these elements, please see the discussion of EDT‐MS metadata elements in the paper by Ivanović, Ivanović, and Surla entitled ``A data model of theses and dissertations compatible with {CERIF}, {Dublin} {Core} and {EDT}‐{MS}''\cite{ivanovic_data_2012}. ETD-MS is defined in ``ETD-MS v1.1: an Interoperability Metadata Standard for Electronic Theses and Dissertations''~\cite{hickey_pavani_suleman_2010} and available at \url{https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html}.
+\texttt{thesis.degree}, \texttt{thesis.degree.discipline}, \linebreak[4]\texttt{thesis.degree.grantor}, \texttt{thesis.degree.level}, and \linebreak[4] \texttt{thesis.degree.name}. It may be worth adding these to the XMP data for a thesis in the future. For some discussion of these elements, please see the discussion of EDT‐MS metadata elements in the paper by Ivanović, Ivanović, and Surla entitled \textit{A data model of theses and dissertations compatible with {CERIF}, {Dublin} {Core} and {EDT}‐{MS}}~\cite{ivanovic_data_2012}. ETD-MS is defined in \textit{ETD-MS v1.1: an Interoperability Metadata Standard for Electronic Theses and Dissertations}~\cite{hickey_pavani_suleman_2010} and available at \url{https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html}.
 
 
 
@@ -3620,7 +3608,7 @@ Increasingly, there is an interest in being able to easily know what references 
 There are several possibilities for storing information about references. One is the element \texttt{dc.relation.references}. Another possibility is to use the \texttt{dcterms:references} element refinement of \texttt{dc:relation} as proposed in 1998 by Ann Apps of the DCMI Citations Working Group (\url{https://www.dublincore.org/groups/citation/}).
 
 \Needspace*{9\baselineskip}
-More recently, a new schema was proposed by CrossRef, see \url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/}. Note that the focus of this work is to facilitate depositing with CrossRef the list of references used in a publication. Their set of elements is shown in \Cref{tab:crossRefElementsForCitationTagging}\footnote{\url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/\#00178}}. Note that while the focus seems to be on journal articles, they also have a ``Metadata best practices'' website with lots of examples of metadata for different types of documents, see \url{https://www.crossref.org/documentation/principles-practices/best-practices/}.
+More recently, a new schema was proposed by CrossRef, see \url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/}. Note that the focus of this work is to facilitate depositing with CrossRef the list of references used in a publication. Their set of elements is shown in \Cref{tab:crossRefElementsForCitationTagging}\footnote{\url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/\#00178}}. Note that while the focus seems to be on journal articles, they also have a \enquote{Metadata best practices} website with lots of examples of metadata for different types of documents, see \url{https://www.crossref.org/documentation/principles-practices/best-practices/}.
 
 \begin{table}[!ht]
     \caption{CrossRef elements for citation tagging}
@@ -3652,7 +3640,7 @@ doi\\
 
 \subsubsection{Adding citation data to the metadata}
 \label{sec:addingCitation}
-There is also a desire by many to include bibliographic citation information into the XMP so that the \gls{PDF} carries this data and one does \emph{not} need to access some other source to find this information. The element \texttt{DCTERMS.bibliographicCitation} is proposed for this purpose in a document by Ann Apps, ``Guidelines for Encoding Bibliographic Citation Information in Dublin Core™ Metadata''~\cite{Ann_Apps_2005}.
+There is also a desire by many to include bibliographic citation information into the XMP so that the \gls{PDF} carries this data and one does \emph{not} need to access some other source to find this information. The element \texttt{DCTERMS.bibliographicCitation} is proposed for this purpose in a document by Ann Apps, \textit{Guidelines for Encoding Bibliographic Citation Information in Dublin Core™ Metadata}~\cite{Ann_Apps_2005}.
 
 \Needspace*{3\baselineskip}
 Note that to include the URN and \gls{DiVA} identifiers assigned by \gls{DiVA}, you first need to create a \gls{DiVA} entry and then use the assigned values to update the \gls{XMP} information in the \gls{PDF} file \textit{before} uploading the full text to \gls{DiVA}.
@@ -3916,7 +3904,7 @@ As students may use acronyms in abstracts, there is support for the commands: \t
 \end{lstlisting}
 
 
-Additionally, the commands (from \texttt{defines.tex}) are supported in abstracts: \textbackslash ie, \textbackslash eg, \textbackslash etc, \textbackslash etal, \textbackslash first, \textbackslash second, \textbackslash third, \ldots . Now that all the acronyms are spelled out, there is no problem with them when making a calendar entry or \gls{MODS} file.
+Additionally, the commands (from \fname{lib/defines.tex}) are supported in abstracts: \textbackslash ie, \textbackslash eg, \textbackslash etc, \textbackslash etal, \textbackslash first, \textbackslash second, \textbackslash third, \ldots . Now that all the acronyms are spelled out, there is no problem with them when making a calendar entry or \gls{MODS} file.
 
 \subsection{URLs in abstracts}
 \label{sec:URLSinAbstracts}
@@ -3947,7 +3935,7 @@ To get additional information for the author and supervisors, the program uses i
 The Jupyter notebook
 \fname{Compute\_publications\_list\_from\_DiVA-Notebook-20250907.ipynb} uses data from \fname{fordiva.json} and \fname{references.bib} files to look up the student's publications in DiVA and generate the LaTeX that might be used in a list of publications in a third-cycle thesis.
 
-This could be used for the ``List of Publications'' for a compilation thesis or for a list of papers and contributions in a monograph thesis. Note that the author will need to edit the resulting list to indicate which publications are included in a compilation thesis and which papers have not been included. The author may also need to move items from one category to another.
+This could be used for the \enquote{List of Publications} for a compilation thesis or for a list of papers and contributions in a monograph thesis. Note that the author will need to edit the resulting list to indicate which publications are included in a compilation thesis and which papers have not been included. The author may also need to move items from one category to another.
 
 \subsection{Helping students find the DiVA IDs of previous publications}
 \label{sec:getdivaIDs}
@@ -3983,7 +3971,7 @@ Additionally, there is a  Bold italic, Latin, uppercase \& lowercase range, \ie 
 
 However, the above two alternatives are not actual alternatives -- as the \LaTeX{} commands do not get expanded at all. One possibility is to utilize the expanded output in the DiVA metadata for abstracts. Also note that these character ranges are for mathematics (hence, they use mathematical glyphs, \ie the block Mathematical Alphanumeric Symbols).
 
-This suggests a third alternative: have all of the contents (for titles, subtitles, keywords, and abstracts) be directly in unicode (or as characters specified as described in section ``Configure the title, subtitle, alternate title, and alternate subtitle'' in the file \texttt{README\_3rd\_cycle\_author.tex}). See also \Cref{sec:generatingPlainText}. Perhaps some limited use of some macros can be allowed, as long as they can easily be processed into \gls{HTML} with unicode contents.
+This suggests a third alternative: have all of the contents (for titles, subtitles, keywords, and abstracts) be directly in unicode (or as characters specified as described in section \enquote{Configure the title, subtitle, alternate title, and alternate subtitle} in the file \fname{README\_3rd\_cycle\_author.tex}). See also \Cref{sec:generatingPlainText}. Perhaps some limited use of some macros can be allowed, as long as they can easily be processed into \gls{HTML} with unicode contents.
 
 This third alternative does \textbf{not} address the issue of equations. As noted earlier, this will depend on whether the new Cora-based DiVA will support MathJax or similar (see \Cref{sec:betterMathsupportinDiVA}). Although perhaps just leaving the equations in place is the correct solution. However, limiting abstracts to unicode text with possible \LaTeX{} equations seems to be too limited. Therefore, some subset of \LaTeX{} has to be allowed, basically limited to what can be easily transformed to \gls{HTML}, \ie the \textit{current} solution!
 
@@ -4161,7 +4149,7 @@ end
 \fullcite{doe2025collaborative}
 \endgroup
 
-Note that this reference has a red warning \enquote{[Unresolved Placeholder: Placeholder fake reference for use in examples]} to explicitly indicate that it is \emph{not} a real reference. This markup is done via the field declaration in \texttt{ext-eprint-dbx.tex} and realized by the check \texttt{\textbackslash iffieldundef\{placeholder\}} invoked by \texttt{\textbackslash AtEveryCitekey} (executes when a citation key is processed in text, \eg \texttt{\textbackslash cite}, \texttt{\textbackslash parencite}, \texttt{\textbackslash textcite}, and \texttt{\textbackslash fullcite}) and \texttt{\textbackslash AtEveryBibitem} (executes inside the bibliography list, \ie \texttt{\textbackslash printbibliography}). Because \texttt{\textbackslash fullcite} internally expands using bibliography drivers, there is no double-printing or omission of the warning on standalone citations in the log file.
+Note that this reference has a red warning \enquote{[Unresolved Placeholder: Placeholder fake reference for use in examples]} to explicitly indicate that it is \emph{not} a real reference. This markup is done via the field declaration in \fname{ext-eprint-dbx.tex} and realized by the check \texttt{\textbackslash iffieldundef\{placeholder\}} invoked by \texttt{\textbackslash AtEveryCitekey} (executes when a citation key is processed in text, \eg \texttt{\textbackslash cite}, \texttt{\textbackslash parencite}, \texttt{\textbackslash textcite}, and \texttt{\textbackslash fullcite}) and \texttt{\textbackslash AtEveryBibitem} (executes inside the bibliography list, \ie \texttt{\textbackslash printbibliography}). Because \texttt{\textbackslash fullcite} internally expands using bibliography drivers, there is no double-printing or omission of the warning on standalone citations in the log file.
 
 \Needspace*{10\baselineskip} % to prevent just a tiny portion being shown at the bottom of a page
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example of a \LaTeX{} hook for equal contribution and ORCID icons}}, label=lst:biberHookExample1A]
@@ -4528,7 +4516,7 @@ Pattern A is the best method for \gls{KTH} doctoral thesis students because it m
 }
 \end{lstlisting}
 
-This setup allows automated Python/\gls{CI} validation pipelines to extract and cross-check contributor statements directly from \texttt{.bib} files without manual re-entry.
+This setup allows automated Python/\gls{CI} validation pipelines to extract and cross-check contributor statements directly from \fname{.bib} files without manual re-entry.
 
 Because \texttt{\textbackslash renewbibmacro*} is dynamically scoped in \LaTeX, it can be redefined specifically for the author contribution section and either restored afterward or restricted within a local group.
 
@@ -4556,7 +4544,7 @@ As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribut
 \end{lstlisting}
 
 \Needspace*{20\baselineskip}
-The following generates some example output when using Approach A for the \gls{CReDiT} information in the \texttt{.bib} file:
+The following generates some example output when using Approach A for the \gls{CReDiT} information in the \fname{.bib} file:
 \begingroup
 % 1. Helper mapping from simplified kebab-case slug to display text
 \newcommand{\formatcreditrole}[1]{%
@@ -4757,7 +4745,7 @@ When writing custom reports, contribution matrices, or diagnostic validation rou
 \begin{enumerate}
     \item Standard Built-in Key Registers
     \begin{itemize}
-        \item \textbackslash thefield\{entrykey\}: Prints or retrieves the active \texttt{.bib} entry key (\eg maguire2026pipeline).
+        \item \textbackslash thefield\{entrykey\}: Prints or retrieves the active \fname{.bib} entry key (\eg maguire2026pipeline).
 
         \item \textbackslash strfield\{entrykey\}: Returns the unexpanded string representation of the entry key.
 
@@ -4952,7 +4940,7 @@ In Swedish compilation doctoral theses (\foreignlanguage{swedish}{sammanläggnin
 }
 \end{lstlisting}
 \begin{description}
-    \item[Use in Document] A single \texttt{.bib} file can populate both the \textbf{Included Papers} section and the \textbf{Other Publications} appendix by filtering on  \texttt{\textbackslash hasentryannotation\{included\}} inside \texttt{\textbackslash defbibfilter} or \texttt{\textbackslash defbibcheck}.
+    \item[Use in Document] A single \fname{.bib} file can populate both the \textbf{Included Papers} section and the \textbf{Other Publications} appendix by filtering on  \texttt{\textbackslash hasentryannotation\{included\}} inside \texttt{\textbackslash defbibfilter} or \texttt{\textbackslash defbibcheck}.
     \item[Automated Dividers] The value \texttt{paper="Paper I"} can be dynamically fetched to typeset decorative Roman-numeral divider sheets preceding individual reprint \glspl{PDF}.
 \end{description}
 \Needspace*{20\baselineskip}
@@ -5058,7 +5046,7 @@ The landscape divides into tools that parse and preserve the raw fields versus t
 \begin{enumerate}
     \item JabRef (Best in Class, but Text-Only)
 
-Because JabRef uses the \texttt{.bib} file directly as its internal database (without converting entries into a generic internal schema), it is the most compatible tool:
+Because JabRef uses the \fname{.bib} file directly as its internal database (without converting entries into a generic internal schema), it is the most compatible tool:
 \begin{description}[labelwidth =\widthof{\textbf{Proprietary Flat Schemas}}, leftmargin = !]
     \item[Preservation] When set to \BibLaTeX{} mode, JabRef will not corrupt or strip `author+an` or `title+an` fields when saving.
     \item[UI Editing] It does not parse the sub-properties (`1:orcid="...";`) into GUI checkboxes, creator cards, or linked badges. The entire annotation block appears as an unformatted raw string in an auxiliary field text box.
@@ -5083,12 +5071,12 @@ Both tools convert bibliographic entries into an internal relational model that 
 \paragraph{Practical Recommendation}\mbox{}\par
 \smallskip
 
-Because reference managers lag behind Biber’s advanced data-model features, \textbf{managing annotations outside the GUI reference manager is the only stable design pattern}. For a KTH doctoral workflow, managing \glspl{ORCID} and \gls{CReDiT} through \texttt{publications\_map.json} and external Python/\gls{CI} scripts remains far more robust than relying on a reference manager.
+Because reference managers lag behind Biber’s advanced data-model features, \textbf{managing annotations outside the GUI reference manager is the only stable design pattern}. For a KTH doctoral workflow, managing \glspl{ORCID} and \gls{CReDiT} through \fname{publications\_map.json} and external Python/\gls{CI} scripts remains far more robust than relying on a reference manager.
 
 This means:
 \begin{enumerate}
-    \item \texttt{references.bib} as the standard citation repository (which Zotero or JabRef can export safely), and
-    \item \texttt{publications\_map.json} (managed via the Python/Streamlit wizard and GitHub Actions) as the pipeline that programmatically decorates entries with `author+an` at build time, ensuring reference managers never accidentally wipe out contributor roles or \glspl{ORCID} during library re-exports.
+    \item \fname{references.bib} as the standard citation repository (which Zotero or JabRef can export safely), and
+    \item \fname{publications\_map.json} (managed via the Python/Streamlit wizard and GitHub Actions) as the pipeline that programmatically decorates entries with `author+an` at build time, ensuring reference managers never accidentally wipe out contributor roles or \glspl{ORCID} during library re-exports.
 \end{enumerate}
 
 \paragraph{A Forward-Looking Architecture: Split-File Overlay}\mbox{}\par
@@ -5096,18 +5084,18 @@ This means:
 
 A cleaner architectural path forward is to decouple the reference management lifecycle from semantic metadata authoring by maintaining two distinct bibliographic files sharing identical citation keys:
 \begin{enumerate}
-\item \texttt{references.bib}: The upstream, GUI-managed store (exported directly from Zotero, Mendeley, or JabRef) containing canonical bibliographic descriptors (\eg \texttt{author}, \texttt{title}, \texttt{year}, \texttt{doi}).
+\item \fname{references.bib}: The upstream, GUI-managed store (exported directly from Zotero, Mendeley, or JabRef) containing canonical bibliographic descriptors (\eg \texttt{author}, \texttt{title}, \texttt{year}, \texttt{doi}).
 
-\item \texttt{references-annotations.bib}: A companion overlay containing sparse entries with matching citation keys that declare only the extended data annotations (\eg \texttt{author+an}, \texttt{title+an}, or \texttt{entry+an}).
+\item \fname{references-annotations.bib}: A companion overlay containing sparse entries with matching citation keys that declare only the extended data annotations (\eg \texttt{author+an}, \texttt{title+an}, or \texttt{entry+an}).
 \end{enumerate}
 
-Existing utilities such as \texttt{bibtool}, \texttt{bibtex-tools}, or \texttt{bibmerge} are designed to detect duplicate citation keys and discard redundant entries. In contrast, an automated Python pre-compilation step (\eg integrated into a GitHub Action or local pre-commit hook) can perform an \emph{additive, field-level unification}. By parsing both files and merging fields that share a matching key into a unified intermediate file (\eg \texttt{references-merged.bib}), reference managers can safely overwrite \texttt{references.bib} during iterative library exports without clobbering curated author roles or \glspl{ORCID}.
+Existing utilities such as \texttt{bibtool}, \texttt{bibtex-tools}, or \texttt{bibmerge} are designed to detect duplicate citation keys and discard redundant entries. In contrast, an automated Python pre-compilation step (\eg integrated into a GitHub Action or local pre-commit hook) can perform an \emph{additive, field-level unification}. By parsing both files and merging fields that share a matching key into a unified intermediate file (\eg \fname{references-merged.bib}), reference managers can safely overwrite \fname{references.bib} during iterative library exports without clobbering curated author roles or \glspl{ORCID}.
 
-Such an overlay or split-file architecture (\texttt{references.bib} alongside \texttt{references-annotations.bib}) cleanly separates concerns while providing persistent annotations. As a result, students never have to manually re-annotate files after updating their reference library.
+Such an overlay or split-file architecture (\fname{references.bib} alongside \fname{references-annotations.bib}) cleanly separates concerns while providing persistent annotations. As a result, students never have to manually re-annotate files after updating their reference library.
 
 In Biber and \BibLaTeX{}, data annotations are completely generic: \emph{any} standard or custom field can take the \enquote{+an} suffix at the item, field, or entry level.
 
-Under the split-file overlay architecture (\texttt{references.bib} + \texttt{references-annotations.bib}), an additive Python pre-processor can attach granular semantic metadata across several distinct bibliographic dimensions without reference-manager corruption. Examples of these other dimensions include:
+Under the split-file overlay architecture (\fname{references.bib} + \fname{references-annotations.bib}), an additive Python pre-processor can attach granular semantic metadata across several distinct bibliographic dimensions without reference-manager corruption. Examples of these other dimensions include:
 \begin{enumerate}
     \item Identifier Verification \& Provenance (\texttt{doi+an}, \texttt{eprint+an}, \texttt{isbn+an})
     \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
@@ -5193,24 +5181,24 @@ edition  = {2},
 edition+an = {swedish="2:a uppl."; english="2nd ed."}
 \end{lstlisting}
 
-        \item[Application] Custom formatting drivers can switch between language-sensitive labels without maintaining multiple \texttt{.bib} variants.
+        \item[Application] Custom formatting drivers can switch between language-sensitive labels without maintaining multiple \fname{.bib} variants.
         \end{description}
 \end{enumerate}
 
-Because reference managers routinely discard or corrupt non-standard fields, isolating these annotations inside \texttt{references-annotations.bib} and merging them via Python guarantees that extended provenance, venue, and licensing data remain permanently intact.
+Because reference managers routinely discard or corrupt non-standard fields, isolating these annotations inside \fname{references-annotations.bib} and merging them via Python guarantees that extended provenance, venue, and licensing data remain permanently intact.
 
 \subsubsection{Contrasting annotations with current workflows}
 \label{sec:contrastingAnnotationsWithCurrentWorkflows}
 The current design approaches publication management and thesis inclusion from an architectural standpoint that is fundamentally different from a purely in-\TeX{} data-annotation model.
 
-Rather than overloading \texttt{.bib} entries with document-assembly directives, the current workflows decouple bibliographic citation data from administrative pipeline state:
+Rather than overloading \fname{.bib} entries with document-assembly directives, the current workflows decouple bibliographic citation data from administrative pipeline state:
 \begin{description}[style=nextline, labelwidth = {1cm}, leftmargin = !]
-    \item[External Source of Truth (\texttt{publications\_map.json})]
-In the current workflow, inclusion (\texttt{status: "included"}), label assignments (\texttt{paper:A}, \texttt{techreport:A}), tab order (\texttt{tab\_index}), physical reprint paths (\texttt{file\_path}), page slices (\texttt{pdf\_pages}), scaling factors, and reproduction copyright notices (\texttt{permission\_text}) live entirely inside \texttt{publications\_map.json}. This separates immutable bibliographic facts (which belong in \texttt{references.bib}) from the mutable, student-curated decisions about how physical \gls{PDF} reprints are laid out in a compilation thesis.
+    \item[External Source of Truth (\fname{publications\_map.json})]
+In the current workflow, inclusion (\texttt{status: "included"}), label assignments (\texttt{paper:A}, \texttt{techreport:A}), tab order (\texttt{tab\_index}), physical reprint paths (\texttt{file\_path}), page slices (\texttt{pdf\_pages}), scaling factors, and reproduction copyright notices (\texttt{permission\_text}) live entirely inside \fname{publications\_map.json}. This separates immutable bibliographic facts (which belong in \fname{references.bib}) from the mutable, student-curated decisions about how physical \gls{PDF} reprints are laid out in a compilation thesis.
 
 
     \item[Two-Way Upstream Sync (\gls{DiVA} Discovery)]
-The automated workflow pulls publication metadata directly from \gls{DiVA} via the student's KTHID through GitHub Actions. In a pure in-\TeX{} annotation workflow, the candidate must hand-annotate raw \texttt{.bib} files. In the current pipeline, the GitHub Action generates \texttt{lib/publications\_generated.tex} and \texttt{lib/publications\_dividers\_generated.tex} dynamically from \gls{DiVA} and \texttt{publications\_map.json}, removing the manual editing step entirely.
+The automated workflow pulls publication metadata directly from \gls{DiVA} via the student's KTHID through GitHub Actions. In a pure in-\TeX{} annotation workflow, the candidate must hand-annotate raw \fname{.bib} files. In the current pipeline, the GitHub Action generates \fname{lib/publications\_generated.tex} and \fname{lib/publications\_dividers\_generated.tex} dynamically from \gls{DiVA} and \fname{publications\_map.json}, removing the manual editing step entirely.
 
 \smallskip\noindent
 \item[CI/CD Build-Time Validation]
@@ -5231,10 +5219,10 @@ Testing file existence, checking scaling, and enforcing page intervals are trivi
 
 
     \item[Granular Multi-Author \& Collaboration CReDiT]
-Handling of massive collaborations (such as, the BNL Multi-Particle Spectrometer example) via \texttt{specific\_contributors} demonstrates why the wizard approach (\texttt{CReDiT\_Matrix\_Wizard.py}) is cleaner than annotating \texttt{.bib} files. In large multi-author experiments, attempting to attach 14 \gls{CReDiT} part annotations to individual authors inside a standard BibTeX string quickly becomes unwieldy. Generating a standalone \texttt{lib/thesis\_contributions\_generated.tex} file keeps the bibliography clean while producing an explicit, readable contribution matrix for the defense committee.
+Handling of massive collaborations (such as, the BNL Multi-Particle Spectrometer example) via \texttt{specific\_contributors} demonstrates why the wizard approach (\texttt{CReDiT\_Matrix\_Wizard.py}) is cleaner than annotating \fname{.bib} files. In large multi-author experiments, attempting to attach 14 \gls{CReDiT} part annotations to individual authors inside a standard BibTeX string quickly becomes unwieldy. Generating a standalone \fname{lib/thesis\_contributions\_generated.tex} file keeps the bibliography clean while producing an explicit, readable contribution matrix for the defense committee.
 \end{description}
 
-The existing pipeline positions the \texttt{.bib} file as a traditional citation store, delegating document assembly, inclusion filtering, DiVA harvesting, and \gls{PDF} insertion to external Python and \gls{CI} automation where it is most maintainable.
+The existing pipeline positions the \fname{.bib} file as a traditional citation store, delegating document assembly, inclusion filtering, DiVA harvesting, and \gls{PDF} insertion to external Python and \gls{CI} automation where it is most maintainable.
 
 \subsubsection{Support for Mega-Collaborations}
 \label{sec:biberMegaCollaborations}
@@ -5267,7 +5255,7 @@ To prevent Biber and \LaTeX{} from crashing on mega-collaborations while still p
 \subsubsection{Integrating annotations with current workflows}
 \label{sec:integratingAnnotationsWithCurrentWorkflows}
 
-The challenge with handling entities like the \textbf{MPS Collaboration} in standard \texttt{.bib} files is that the individual student or researcher (\eg Gerald Q. Maguire Jr.) is not listed as an indexed name item in the \texttt{author} field (which contains only \enquote{Lindenbaum, S. J.} and \enquote{\{MPS Collaboration\}}). Consequently, Biber’s item-indexed annotations (\texttt{author+an = \{ 3:software="supporting"\}}) cannot bind to an author index (in this example \enquote{3}) that does not exist in the primary name list (or might only appear far down the list, \ie beyond the range of the authors processed).
+The challenge with handling entities like the \textbf{MPS Collaboration} in standard \fname{.bib} files is that the individual student or researcher (\eg Gerald Q. Maguire Jr.) is not listed as an indexed name item in the \texttt{author} field (which contains only \enquote{Lindenbaum, S. J.} and \enquote{\{MPS Collaboration\}}). Consequently, Biber’s item-indexed annotations (\texttt{author+an = \{ 3:software="supporting"\}}) cannot bind to an author index (in this example \enquote{3}) that does not exist in the primary name list (or might only appear far down the list, \ie beyond the range of the authors processed).
 
 Under Biber, this can be solved cleanly using one of two annotation architectures:
 
@@ -5276,7 +5264,7 @@ Under Biber, this can be solved cleanly using one of two annotation architecture
 
 Rather than attempting to attach metadata to the primary \texttt{author} field, declare an annotated dummy or user field (such as \texttt{contributors+an}). Biber allows data annotations on arbitrary fields, even when the underlying base field is sparse or virtual.
 
-In your \texttt{references-annotations.bib} overlay:
+In your \fname{references-annotations.bib} overlay:
 
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Example of non-named author collaborator inclusion}}, label=lst:biberPatternOneCollaborMetadata]
 @techreport{bnlMPS1975,
@@ -5355,19 +5343,19 @@ In your existing \texttt{creditnames} name formatting driver, when the driver pr
 
 In your Streamlit wizard and GitHub Actions workflow:
 \begin{enumerate}
-    \item \texttt{publications\_map.json} remains the interactive store holding\linebreak[4] \texttt{specific\_contributors} and \texttt{contribution\_note}.
+    \item \fname{publications\_map.json} remains the interactive store holding\linebreak[4] \texttt{specific\_contributors} and \texttt{contribution\_note}.
     
-    \item When the wizard generates or updates \texttt{references-annotations.bib}, the Python script inspects \texttt{entry.get("specific\_contributors")}.
+    \item When the wizard generates or updates \fname{references-annotations.bib}, the Python script inspects \texttt{entry.get("specific\_contributors")}.
     
     \item If \texttt{specific\_contributors} contains entries, Python matches the named collaboration in the author list and writes the corresponding \texttt{2:specific-contributor="\ldots"} and role slugs directly into the generated overlay entry.
 \end{enumerate}
 
 This preserves standard bibliography listings for external readers while enabling the defense committee to inspect candidate contributions to large institutional consortia.
 
-It should be possible to mine the \texttt{publications\_map.json} file generated by \texttt{CReDiT\_Matrix\_Wizard.py} to produce and initial \texttt{references-annotations.bib} file with the \gls{CReDiT} annotations for authors.
+It should be possible to mine the \fname{publications\_map.json} file generated by \fname{CReDiT\_Matrix\_Wizard.py} to produce and initial \fname{references-annotations.bib} file with the \gls{CReDiT} annotations for authors.
 
 \subsection{Scaling with the number of publications a student has in DiVA}
-The \texttt{publications\_map.json} file has the same number of entries as the number of publications (other than the current thesis) that an author already has in \gls{DiVA}. How large is this likely to be? \Cref{tab:histogramPriorPublications} shows how many students (from those who defended in 2025) have a given number of other publications in \gls{DiVA} (\ie not counting any third-cycle theses).
+The \fname{publications\_map.json} file has the same number of entries as the number of publications (other than the current thesis) that an author already has in \gls{DiVA}. How large is this likely to be? \Cref{tab:histogramPriorPublications} shows how many students (from those who defended in 2025) have a given number of other publications in \gls{DiVA} (\ie not counting any third-cycle theses).
 
 From this data, we see that the distribution is heavily right-skewed by outliers with 46 and 405 publications in \gls{DiVA}. Looking at these, we see that the student with 405 publications in \gls{DiVA} worked in the ATLAS consortium (thesis title: \textit{Divide and Conquer: A Fine-Grained Look at the Higgs Boson Cross Section in WW Decays Using the ATLAS Experiment}). This means that if they were to identify their contributions to specific papers, the student would have to use the method described in \Cref{sec:biberMegaCollaborations}. However, in this case, the student wrote a monograph and not a compilation-style thesis.
 In the case of the student with 46 publications in Electromagnetic Engineering (thesis title: \textit{Modeling and design of lenses combined with array antennas in the \mbox{millimetre-wave} regime}), the student chose to prune, and they included seven publications in their compilation thesis and cited five others that were related.
@@ -5464,7 +5452,7 @@ Out of the 310 total third-cycle theses presented in 2025, exactly 298 (\qty{96.
 
 \item[Licentiate Norm] Over \qty{96.3}{\percent} of licentiates incorporate either 2 or 3 papers.
 
-\item[CReDiT Tooling Workload] Even for the single extreme doctoral outlier with 12 included works, populating \texttt{publications\_map.json} and managing contributor attributions in\linebreak[4] \texttt{CReDiT\_Matrix\_Wizard.py} involves an input matrix of modest dimensions. For most doctoral candidates ($Q_1 = 4$, $Q_3 = 6$, $\mathrm{IQR} = 2$), the manual CReDiT assignment task requires processing only 4 to 6 rows.
+\item[CReDiT Tooling Workload] Even for the single extreme doctoral outlier with 12 included works, populating \fname{publications\_map.json} and managing contributor attributions in\linebreak[4] \texttt{CReDiT\_Matrix\_Wizard.py} involves an input matrix of modest dimensions. For most doctoral candidates ($Q_1 = 4$, $Q_3 = 6$, $\mathrm{IQR} = 2$), the manual CReDiT assignment task requires processing only 4 to 6 rows.
 \end{description}
 
 
@@ -5531,20 +5519,10 @@ och förkortningar}]
 % Print the bibliography (and make it appear in the table of contents)
 
 % Specify the title of the references page
-% This will work for both BibLaTeX and BibTeX.
-% It works for BibTeX because the thesis format is basically that of a Report.
 \renewcommand{\bibname}{References}
 
-\ifbiblatex
-    %\typeout{Biblatex current language is \currentlang}
-
-    \printbibliography[heading=bibintoc, title={References}]
-\else
-   
-    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
-    \addcontentsline{toc}{chapter}{References}
-    \bibliography{references}
-\fi
+%\typeout{Biblatex current language is \currentlang}
+\printbibliography[heading=bibintoc, title={References}]
 
 \end{document}
 

@@ -4,7 +4,7 @@
 
 \documentclass[12pt, twoside]{article}
 % Make it possible to conditionally depend on the TeX engine used
-\RequirePackage{ifluatex}
+\RequirePackage{iftex}
 \RequirePackage{luacode}
 \RequirePackage{verbatim} % Required for \verbatiminput
 \input{kth/Lua_timestamping}
@@ -119,7 +119,7 @@ end
 \section*{#1}%   skip \centering 
 }
   
-    \addbibresource{references.bib}    
+\addbibresource{references.bib}    
 \input{kth/kthcolors}
 \usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
 \makeglossaries
@@ -238,7 +238,7 @@ language=[LaTeX]{TeX},
     columns=flexible,
     morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
       courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode,
-      nationalsubjectcategories, todo, ifbiblatex, subsection}
+      nationalsubjectcategories, todo, subsection}
 }
 
 
@@ -287,8 +287,7 @@ One of the hardest problems an author faces is getting started writing, \ie the 
 The template also provides examples of common content types, so you can easily find examples of how to include a figure, table, code listing, \etc. These examples are not exhaustive. Quite often, the author will want or need to learn new \LaTeX{} commands in the course of writing their thesis. The need to learn additional \LaTeX{} commands depends largely on how much the author wants to control the thesis details and on their interest (or lack thereof) in \LaTeX{} programming.
 
 As an author, the first step is to make your own copy of the template.
-If you are using Overleaf and have opened the template from a \gls{URL}, click \textbf{File} in the upper left-hand corner. Then select \textbf{Make a copy}. Use a helpful project name,
-I suggest you include your name in the project name so that when you share it with your supervisor(s), they will know it is your project. If you are using GitHub, you can clone the project from \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}. You can also set up Overleaf to synchronize with your GitHub repository (using the \enquote{Integrations} $\rightarrow$ GitHub).
+If you are using Overleaf and have opened the template from a \gls{URL}, click \textbf{File} in the upper left-hand corner. Then select \textbf{Make a copy}. Use an informative project name; for example, include your name in the project title so supervisors can readily identify it. If you are using GitHub, you can clone the project from \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}. You can also set up Overleaf to synchronize with your GitHub repository (using the \enquote{Integrations} $\rightarrow$ GitHub).
 
 The second step will be to make sure that the information about you, your supervisor(s), and the degree is correct in the file \texttt{custom\_configuration.tex} - this information uses various macros as described in \Cref{sec:configuringCustomConfig}.
 
@@ -313,7 +312,7 @@ Another cause for timeouts is large images or large amounts of TikZ. One method 
 \section{Configuring custom\_configuration.tex file}
 \label{sec:configuringCustomConfig}
 
-The template is highly configurable and lets you enter data once and reuse it multiple times. Many macros have been defined. By setting values via these various macros, you can set the value once and then use this value in many places, thus reducing the work to change them, while at the same time ensuring consistency. Another reason for many of the macros is to collect the information that is needed to report the thesis, \ie to report the title(s), abstracts, keywords, and thesis in \gls{DiVA}, create an errata document (if needed), and, after the defense, to report the title(s) and grade in \gls{LADOK}.
+The template is highly configurable and lets you enter data once and reuse it. Many macros have been defined. By setting values via these macros, you can set them once and reuse them in many places, reducing the work of updating them while ensuring consistency. Another reason for many of the macros is to collect the information that is needed to report the thesis, \ie to report the title(s), abstracts, keywords, and thesis in \gls{DiVA}, create an errata document (if needed), and, after the defense, to report the title(s) and grade in \gls{LADOK}.
 For some further (technical) information about this, see \Cref{sec:cycle3authorMacros}.
 
 \Needspace*{5\baselineskip}
@@ -340,7 +339,7 @@ These macros also save the data for later use with \gls{DiVA} and \gls{LADOK}. T
 
 Although you do not need to fill in an alternative title (alttitle) and an optional alternative subtitle (altsubtitle) until later, it seems reasonable to locate them together with the title and subtitle information. You will likely revise these fields over time.
 
-\warningExpl{$☡$ The title will be set on the cover and the title page in Figtree Bold and Semibold. However, Figtree does not include Greek characters (and many other characters and symbols); thus, if you want to include such characters, you have to do a little more work. See \Cref{sec:advancedIssuesConcerningCharacters}.}
+\warningExpl{$☡$ The title will be set on the cover and the title page in Figtree Bold and Semibold. However, Figtree does not include Greek characters (and many other characters and symbols); thus, if you want to include such characters, you have to do a little more work, see \Cref{sec:advancedIssuesConcerningCharacters}.}
 
 \subsection{Author macros}
 \label{sec:cycle3authorMacros}
@@ -351,7 +350,7 @@ For the author, there are a number of macros defined to store information about 
 
 The author-related macros are:
 \begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash authorsFirstname\{\}}}]
-\item [\texttt{\textbackslash authorsLastname\{\}}] the last name of the author\footnote{Note that the author's name can include a suffix such as \enquote{, Jr.} or \enquote{ Jr.}, \ie the suffix can be separated with a comma or not --- as the author prefers to write their name.}
+\item [\texttt{\textbackslash authorsLastname\{\}}] the last name of the author\footnote{Note that the author's name can include a suffix such as \enquote{, Jr.} or \enquote{ Jr.}, \ie as the author prefers to write their name.}
 
 \item [\texttt{\textbackslash authorsFirstname\{\}}] the first name of the author
 
@@ -481,7 +480,7 @@ You can find a list of the third-cycle program codes and school acronyms in the 
 \subsection{Setting the National subject categories}
 National subject categories are a \textbf{required} field in the \gls{DiVA} record. These categories follow a definition by \foreignlanguage{swedish}{SCB} (nowadays known as \foreignlanguage{swedish}{Statistikmyndigheten} or in English: Statistics Sweden) and HSV (\foreignlanguage{swedish}{Högskoleverket} - nowadays known as  \foreignlanguage{swedish}{Universitetskanslersämbetet (UK-ämbetet)} and \foreignlanguage{swedish}{Universitets- och högskolerådet (UHR)} or in English: Swedish Higher Education Authority and Swedish Council for Higher Education).
 While these codes refer to research areas, these codes are also used at \gls{KTH} to indicate the area of the thesis. The guidance that I received from the Linköping University library was that one should try to use 5-digit codes when possible. 
-\iflabelexists{tab:cycle3nationalsubject categories}{Some examples of these codes are shown in Table~\ref{tab:cycle3nationalsubject categories}.}
+\iflabelexists{tab:examplesOfNationalSubjectCategories}{Some examples of these codes are shown in \Cref{tab:examplesOfNationalSubjectCategories}.}
 \begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash nationalsubjectcategories\{\}}}]
 \item [\texttt{\textbackslash nationalsubjectcategories\{\}}] comma-separated list of national subject category codes - each a 3 or 5 digit code
 \end{description}
@@ -493,7 +492,7 @@ An example of a thesis in Computer Science and Computer Systems:
 \end{lstlisting}
 
 \Needspace*{7\baselineskip}
-You can find examples of the subjects and their codes at in \Cref{tab:examplesOfnNationalsubjectCategories}. The complete list can be found at \url{https://www.scb.se/contentassets/3a12f556522d4bdc887c4838a37c7ec7/standard-for-svensk-indelning--av-forskningsamnen-2011-uppdaterad-aug-2016.pdf}\\
+You can find examples of the subjects and their codes in \Cref{tab:examplesOfNationalsubjectCategories}. The complete list can be found at \url{https://www.scb.se/contentassets/3a12f556522d4bdc887c4838a37c7ec7/standard-for-svensk-indelning--av-forskningsamnen-2011-uppdaterad-aug-2016.pdf}\\
 and\\
 \url{https://www.scb.se/contentassets/10054f2ef27c437884e8cde0d38b9cc4/oversattningsnyckel-forskningsamnen.pdf}
 
@@ -505,7 +504,7 @@ and\\
 
   \begin{center}
     \caption{Examples of some national subject categories and their codes}
-    \label{tab:examplesOfnNationalsubjectCategories}
+    \label{tab:examplesOfNationalSubjectCategories}
     \begin{tabular}{p{0.85cm} L{6.2cm} L{6.2cm}} % <-- Alignments: 1st column left, 2nd middle, with vertical lines in between
       \textbf{Code}  & \textbf{Category (in Swedish)} & \textbf{Category (in English)} \\
       \hline
@@ -667,7 +666,7 @@ There are two major forms of third-cycle theses at \gls{KTH}\footnote{While the 
 
 A large fraction of third-cycle theses at \gls{KTH} are compilation theses, and most of the rest are monographs.  Therefore, the template should help students using the compilation thesis form.
 
-For example, in 2024, for all of \gls{KTH}, there were about 2{\mystixmathfont \times} as many compilation theses as monographs at the licentiate level and 10{\mystixmathfont \times} as many at the doctoral level. However, there is very high variance between the schools, with some schools having no or few licentiate monographs while EECS had more licentiate monographs than compilation theses and only having 5{\mystixmathfont \times} the number of compilation theses as monographs at the doctoral level (see \Cref{tab:cycle3NumberAndTypeOfTheses}).  The variance between schools can also be seen in the results shown below.
+For example, in 2024, for all of \gls{KTH}, there were about 2{\mystixmathfont \times} as many compilation theses as monographs at the licentiate level and 10{\mystixmathfont \times} as many at the doctoral level. However, there is very high variance between the schools, with some schools having no or few licentiate monographs while EECS had more licentiate monographs than compilation theses and only having 5{\mystixmathfont \times} the number of compilation theses as monographs at the doctoral level (see \Cref{tab:cycle3NumberAndTypeOfTheses}).  The variance between schools can also be seen in \Cref{sec:advancedThesisLengths}.
 
 \begin{table}[!ht]
 \caption{Theses 2020--2024. 'C' = Compilation type thesis and 'M' = monograph type of thesis.}
@@ -840,7 +839,7 @@ The language option \enquote{Swedish} sets the conditional \texttt{\textbackslas
 The template is designed to handle a thesis written in English or Swedish\footnote{As of {\DTMsetdatestyle{iso}\DTMdisplaydate{2026}{9}{10}{-1}}, the breakdown by language according to \gls{DiVA} is: English~\num{10118},
 Swedish~\num{280},
 Spanish~\num{4},
-Danish~\num{3}[one of these is actually in English],
+Danish~\num{3} (one of these is actually in English),
 German~\num{3},
 French~\num{2},
 Italian~\num{1},
@@ -1315,7 +1314,7 @@ I take full responsibility for the content of the “kappa”/comprehensive summ
 \section{Errata}
 \label{sec:cycle3Errata}
 
-As described in \Cref{sec:cycle3BackgroundOfThesisAndDefense}, the errata have to be announced before the student starts their actual oral defense. I have not found a standard format for this, as a printed document. Looking at a number of errata that are in \gls{DiVA} for theses at \gls{KTH}, most have a title of \enquote{Errata} or `Errata for doctoral/licentiate thesis'' followed by a reference to the thesis. This reference can be as short as the title of the thesis \& the author or as long as a full reference (with ISBN). The key is that it should be possible to identify the relevant thesis from the information at the top of the errata. \textbf{NB} If you use the \texttt{errata.tex} file in this project, it will automatically include this information.
+As described in \Cref{sec:cycle3BackgroundOfThesisAndDefense}, the errata have to be announced before the student starts their actual oral defense. I have not found a standard format for this, as a printed document. Looking at a number of errata that are in \gls{DiVA} for theses at \gls{KTH}, most have a title of \enquote{Errata} or \enquote{Errata for doctoral/licentiate thesis} followed by a reference to the thesis. This reference can be as short as the title of the thesis \& the author or as long as a full reference (with ISBN). The key is that it should be possible to identify the relevant thesis from the information at the top of the errata. \textbf{NB} If you use the \texttt{errata.tex} file in this project, it will automatically include this information.
 
 \Needspace*{5\baselineskip}
 The errata can concern the thesis text and may also include text from published papers. Each item in the errata should identify where the correction should be applied and what the correction is. The identification can include a page number (or page range), section heading, figure/table/equation/$\ldots$ , publication identifier, \etc. The aim is for the reader to identify exactly where the change should be made.
@@ -1504,7 +1503,7 @@ If the second author is at the same place as the first author, then comment out 
 \subsection{Typical thesis lengths}
 \label{sec:advancedThesisLengths}
 The \href{https://www.kth.se/polopoly_fs/1.982602.1588861401!/Nationalekonomi%20ASP%20fastst%C3%A4lld%202017-02-16.pdf}{\enquote{\foreignlanguage{swedish}{Studieplan för ämne på forskarnivå: Nationalekonomi}}} 2017-02-16, dnr: V-2017-0040 says in §5, that a monograph is typically
-\qtyrange[range-units=single,range-phrase=..]{80000}{100000}{words} \ie \qtyrange[range-units=single,range-phrase=..]{220}{260}{pages} while a kappa is \qtyrange[range-units=single,range-phrase=..]{30}{50}{pages}. Some statistics about recent third-cycle theses lengths are shown in \Cref{tab:thesesxLengths2020toSpring2025}. Note that this table and \Cref{fig:ABETlen,fig:CBHTlen,fig:EECSTlen,fig:ITMTlen,fig:SCITlen} are based upon the total number of pages, \ie, the sum of the number of preface, body, and appendices pages. This data is based on \gls{DiVA} exporting a\gls{MODS}~\cite{SwePubMODS2019} file where the \gls{DiVA} public type codes ('publicationTypeCode') for third-cycle theses are: 'comprehensiveDoctoralThesis',
+\qtyrange[range-units=single,range-phrase=..]{80000}{100000}{words} \ie \qtyrange[range-units=single,range-phrase=..]{220}{260}{pages} while a kappa is \qtyrange[range-units=single,range-phrase=..]{30}{50}{pages}. Some statistics about third-cycle thesis lengths (during 2021 to 28 May 2025) are shown in \Cref{tab:thesesxLengths2020toSpring2025}. Note that this table and \Cref{fig:ABETlen,fig:CBHTlen,fig:EECSTlen,fig:ITMTlen,fig:SCITlen} are based upon the total number of pages, \ie, the sum of the number of preface, body, and appendices pages. This data is based on \gls{DiVA} exporting a \gls{MODS}~\cite{SwePubMODS2019} file where the \gls{DiVA} public type codes ('publicationTypeCode') for third-cycle theses are: 'comprehensiveDoctoralThesis',
 'comprehensiveLicentiateThesis',
 'monographDoctoralThesis', and
 'monographLicentiateThesis'.
@@ -1697,7 +1696,7 @@ Earlier in this document, several instances of Unicode values were used. It may 
 
 By looking at this table, you can better understand the earlier statement \enquote{because STIX Two Math has no bold face (or semibold face), but only bold face \textit{characters} within the font} - as the bold face version of a character is found at a different codepoint within the font -- as one can readily see when comparing the first two rows. The same occurs when considering other typefaces, such as italics (in the third row).
 
-\begin{table}[ht]
+\begin{table}[!ht]
 \setlength{\tabcolsep}{3.5pt}
  \caption{Math alphabets with their mappings to Unicode\\
    \textbullet \quad indicates that it is covered by STIX Two fonts but not directly in Unicode \ie to access these you have to utilize the StylisticSet=1 as I did when defining \textbackslash mystixmathfontSSa.

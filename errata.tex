@@ -131,21 +131,9 @@ biblatex,             % the bibliographic processor to use: biblatex or bibtex
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
 
 % Because backref is not compatible with biblatex
-\ifbiblatex
-    \usepackage{hyperref}
-\else
-    \usepackage[
-    backref=page,
-    pagebackref=false,
 
-    bookmarks=true,         % generate bookmarks in PDF files
-    bookmarksopen=false,    % Do not automatically open the bookmarks in the PDF reading program
-    pdfpagemode=UseNone,    % None, UseOutlines, UseThumbs, or FullScreen
-    destlabel,              % better naming of destinations
-    
-    ]{hyperref}
-%% Removed use of backref package as it is incompatible with using attachfile
-\fi
+\usepackage{hyperref}
+
 \hypersetup{
  plainpages=false,
                         % PDF related options
@@ -154,10 +142,7 @@ biblatex,             % the bibliographic processor to use: biblatex or bibtex
 }
 \usepackage[all]{hypcap}	%% prevents an issue related to hyperref and caption linking
 
-
-
 \input{lib/includes-after-hyperref}
-
 
 \input{lib/acronyms}                %load the acronyms file
 
@@ -191,43 +176,39 @@ biblatex,             % the bibliographic processor to use: biblatex or bibtex
     \makenomenclature
 \fi % end ifnomenclature
 
-\ifbiblatex
-  % set up the bibliography style
-  %\usepackage[language=english,bibstyle=authoryear,citestyle=authoryear, maxbibnames=99]{biblatex}
+
+% set up the bibliography style
+%\usepackage[language=english,bibstyle=authoryear,citestyle=authoryear, maxbibnames=99]{biblatex}
   
-    % Alternatively, you might use another style, such as IEEE and use citestyle=numeric-comp  to put multiple citations in a single pair of square brackets
-    % Note that the following explicitly uses biber as the backend
-    \ifinswedish
-    \usepackage[language=swedish,
-        style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
-        refsection=none,  %
-        refsegment=none,   %
-        backend=biber]{biblatex}
-    \else
-        \usepackage[language=english,
-        style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
-        refsection=none,  %
-        refsegment=none,   %
-        backend=biber]{biblatex}
-    \fi    
-
-
-    % Use the chapter* style for the heading of the bibliography
-    \defbibheading{bibliography}[\bibname]{%
-    \chapter*{#1}%   skip \centering 
-    }
-  
-    \addbibresource{references.bib}
-    %\DeclareLanguageMapping{norsk}{norwegian}
-
-    % print up to 99 of the authors' names in a \fullcite{}
-    % use with divider pages
-    \preto\fullcite{\AtNextCite{\defcounter{maxnames}{99}}}
+% Alternatively, you might use another style, such as IEEE and use citestyle=numeric-comp  to put multiple citations in a single pair of square brackets
+% Note that the following explicitly uses biber as the backend
+\ifinswedish
+\usepackage[language=swedish,
+    style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
+    refsection=none,  %
+    refsegment=none,   %
+    backend=biber]{biblatex}
 \else
-    % The line(s) below are for BibTeX
-    \bibliographystyle{bibstyle/myIEEEtran}
-    %\bibliographystyle{apalike}
-\fi
+    \usepackage[language=english,
+    style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false, 
+    refsection=none,  %
+    refsegment=none,   %
+    backend=biber]{biblatex}
+\fi    
+
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+    \chapter*{#1}%   skip \centering 
+}
+  
+\addbibresource{references.bib}
+%\DeclareLanguageMapping{norsk}{norwegian}
+
+% print up to 99 of the authors' names in a \fullcite{}
+% use with divider pages
+\preto\fullcite{\AtNextCite{\defcounter{maxnames}{99}}}
+
 
 \begin{document}
 %\selectlanguage{swedish}  %% for a thesis in Swedish
@@ -740,16 +721,10 @@ The "Acknowledgments" section appears in the thesis just before the "Bibliograph
 % It works for BibTeX because the thesis format is basically that of a Report.
 \renewcommand{\bibname}{References}
 
-\ifbiblatex
-    %\typeout{Biblatex current language is \currentlang}
-    %%% \nocite{*} % to cite everything, even if not cited in the document
-    \printbibliography[heading=bibintoc, title={References}]
-\else
-   
-    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
-    \addcontentsline{toc}{chapter}{References}
-    \bibliography{references}
-\fi
+
+%\typeout{Biblatex current language is \currentlang}
+%%% \nocite{*} % to cite everything, even if not cited in the document
+\printbibliography[heading=bibintoc, title={References}]
 
 
 %% Condition the checklist on the same flag used by the todonotes
