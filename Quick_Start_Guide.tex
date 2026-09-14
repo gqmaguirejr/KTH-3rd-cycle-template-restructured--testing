@@ -1,47 +1,63 @@
 \documentclass{article}
-\usepackage{graphicx} % Required for inserting images
-\usepackage{url}
+%\usepackage{graphicx} % Required for inserting images
+\RequirePackage{iftex}
+\RequirePackage{comment}
+\newif\ifinswedish
+\inswedishfalse
+
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+%\usepackage{url}
+\input{lib/includes}
+\usepackage{metalogo}   % for \XeLaTeX and \LuaLaTeX logos
+
+\input{lib/defines}
 \newcommand{\dname}[1]{\textbf{#1}}
 \newcommand{\fname}[1]{\texttt{#1}}
+\usepackage[a4paper, margin=2.5cm]{geometry}
 
 \title{Quick Start Guide}
 \author{Gerald Q. Maguire Jr.}
-\date{February 2026}
+\date{12 September 2026}
 
 \begin{document}
 
 \maketitle
 
-\section*{Four steps to start}
-The four most important steps are:
+\section*{Initial Steps}
+The initial steps are:
 \begin{enumerate}
-    \item Copy the Overleaf project to your own project and include your name in this new project's name (use the "Menu$\rightarrow$Actions$\rightarrow$ Copy project" -  see Figure~\ref{fig:SettngsMenu});
-    \item Fill out \texttt{custom\_configuration.tex} file - with information about yourself, your supervisors, and your working title;
-    \item  The \texttt{examplethesis.tex} file is your main thesis file. You will replace the example content within it with your own writing. I suggest you start by entering your draft abstract and configuring the \texttt{documentclass} with your choice of language, bibliographic management tool, whether you want to include papers, \ldots ; and 
-    \item Use the Overleaf "Menu" to change the settings of "Main document" to \texttt{examplethesis.tex} and choose your Compiler (you \textbf{must} select\linebreak[4]LuaLaTeX) (see Figure~\ref{fig:SettngsMenu}). Next, click the "Recompile" button. Now you have the example thesis with covers, title page, abstracts, and other preface pages, along with the body, example appendices, and examples of included papers (if you chose the \texttt{includepublications} option).
+    \item Copy the Overleaf project to your own project and include your name in this new project's name (use the \enquote{File \textrightarrow Make a copy}).
+
+    \item Use \enquote{File \textrightarrow Settings \textrightarrow Compiler} to change the settings of \enquote{Main document} to \fname{examplethesis.tex} and choose your compiler (you \textbf{must} select \LuaLaTeX{}). 
+        
+    \item Fill out the \fname{custom\_configuration.tex} file - with information about yourself, your supervisors, and your working title.
+        
+    \item The \fname{examplethesis.tex} file is your main thesis file. Replace the example content with your own writing. I suggest you start by entering your draft abstract and configuring the \texttt{documentclass} with your choice of language, whether you want to include papers, \ldots~. 
+
+    \item Next, click the \enquote{Recompile} button. Now you have the example thesis with covers, title page, abstracts, and other preface pages, along with the body, example appendices, and examples of included papers (if you chose the \texttt{includepublications} option).
 \end{enumerate}
 
+\section*{Timeouts}
+If you have just started a new session (or started working after a long idle time), you may experience a timeout. This commonly happens because the fonts that you are (or were) using are no longer in the font cache. If you think this is the case, then add an \enquote{early} \texttt{\textbackslash end\{document\}} early in your document and compile again. Once the fonts are cached, you can comment out this early \texttt{\textbackslash end\{document\}}. For a better solution, see the document \fname{Saving\_and\_restoring\_font\_cache.tex}.
+
 \section*{Using Overleaf and GitHub Integration}
-If you are used to working with GitHub, you might want to take advantage of the Overleaf and GitHub Integration. 
+If you are used to working with GitHub, you might want to use the Overleaf and GitHub Integration. 
 If you wish to use this integration or simply refer to work with a GitHub repository, see the repository \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
 Note that this means that, as step 1, you should clone the repository and then make a new Overleaf project by importing from your GitHub repository.
 
-Using the GitHub repository enables some automated functions that can help you configure the \texttt{custom\_configuration.tex} file and generate a list of included publications and even create the tab pages together with including the PDF of publications (if you have downloaded it).
-
-\begin{figure}[!ht]
-\begin{center}
-    \includegraphics[width=0.45\textwidth]{figures/Selecting_LuaLaTeX.png}
-  \caption{Settings menu}
-  \label{fig:SettngsMenu}
-\end{center}
-\end{figure}
+Using the GitHub repository enables automated functions that help you configure the \fname{custom\_configuration.tex} file, generate a list of included publications, and even create the tab pages, including the PDF of publications (if you have downloaded the publications).
 
 \section*{Tips for Writing and Navigating the Template}
-A quick way to start writing the text in your document is to go to the table of contents in Overleaf and click on a chapter or section - this will utilize a hyperlink to go to that part of the PDF file. Next, click on the left-going arrow near the top of the border between the LaTeX on the left and the PDF on the right; this will take you (close) to the correct place in the source file where you can start to modify the content and write.
+A quick way to start writing is to go to the table of contents in Overleaf and click a chapter or section; this will use a hyperlink to take you to that part of the PDF. Next, click on the left-pointing arrow near the top of the border between the \LaTeX{} on the left and the PDF on the right; this will take you (close) to the correct place in the source file where you can start to modify the content and write.
 
-Feel free to use \texttt{\textbackslash begin\{comment\}} and \texttt{\textbackslash end\{comment\}} to comment out regions of the body that you are not interested in\footnote{The comment package is one of the first packages in the \texttt{kththesis.cls} file, so you can use these two commands - almost everywhere.}.
+Feel free to use \texttt{\textbackslash begin\{comment\}} and \texttt{\textbackslash end\{comment\}} to comment out regions of the body that you are not interested in. The comment package is one of the first packages in the \fname{kththesis.cls} file, so you can use these two commands almost everywhere.
 
-As you write, you will notice "todo" notes in the template. They follow the following conventions:
+As you write, you will notice \enquote{todo} notes in the template. They follow the following conventions:
 \begin{verbatim}
 \generalExpl{Comments/directions/... in English}
 \sweExpl{Text på svenska}
@@ -49,12 +65,12 @@ As you write, you will notice "todo" notes in the template. They follow the foll
 \warningExpl{warnings}
 \end{verbatim}
 
-If you do not want to see any of these notes, you can, of course, redefine the above macros to output nothing. If you do not want to see any notes, then add the option \textbf{final} to the \texttt{\textbackslash documentclass} options.
+If you do not want to see any of these notes, you can, of course, redefine the above macros to output nothing. To suppress all notes across the thesis, pass the \texttt{final} option to \texttt{\textbackslash documentclass}.
 
 \section*{Further documentation}
-As an author, you might want to start with the document \texttt{README\_3rd\_cycle\_author}. It provides further details on how to carry out the initial steps.
+As an author, you might want to start with the document \fname{README\_3rd\_cycle\_author.tex}. It provides more details on how to proceed and will hopefully answer most of your questions.
+\medskip
 
-\section*{Timeouts}
-If you have just started a new session (or started working after a long idle time) you may experience a timeout. This commonly happens because the fonts that you are (or were) using are no longer in the font cache. If you think this is the case, then add an "early" \texttt{\textbackslash end\{document\}} early in your document and compile again. Once the fonts are cached, you can comment out this early end document. For a better solution, see the document \fname{Saving\_and\_restoring\_font\_cache.tex}.
+\textbf{A parting tip:} When in doubt about how to format a complex table, equation, algorithm, or subfigure, do not start from scratch. Inspect and copy the working examples in \fname{examplethesis.tex} and the many accompanying \fname{README} files; copying proven markup is the surest way to avoid syntax errors and unexpected layout surprises, while saving you time --- which you can spend on \textit{your} content.
 \end{document}
 
