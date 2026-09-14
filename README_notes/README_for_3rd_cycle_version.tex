@@ -302,6 +302,13 @@ Extension = .ttf,
 \setlength{\headheight}{15pt}
 \addtolength{\topmargin}{-3pt}
 
+% define a listing postbreak character to be used
+% Note that this version works safely with cmyk mode for xcolors.
+% It uses the STIX Match font to have the correct character at the LuaLaTeX engine level.
+\newsavebox{\lstbreakbox}
+\sbox{\lstbreakbox}{\textcolor{red}{\mystixmathfont ↪}\space}
+
+
 \lstdefinelanguage{BibTeX}{
  basicstyle=\footnotesize\ttfamily,
   keywordstyle=\color{blue}\bfseries,      % @InProceedings in Blue
@@ -310,7 +317,7 @@ Extension = .ttf,
   commentstyle=\color{green!50!black},
   showstringspaces=false,
   breaklines=true,
-  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+  postbreak=\usebox{\lstbreakbox},
   keywords={%
     @article,@book,@collectedbook,@conference,@electronic,@ieeetranbstctl,%
     @inbook,@incollectedbook,@incollection,@injournal,@inproceedings,%
@@ -335,7 +342,7 @@ Extension = .ttf,
 \lstdefinestyle{latexExampleForAuthors}{
 language=[LaTeX]{TeX},
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\small\tt,
     keywordstyle=\color{blue}\sf,
     identifierstyle=\color{magenta},
@@ -355,7 +362,7 @@ language=[LaTeX]{TeX},
 \lstdefinestyle{latexExample}{
 language=[LaTeX]{TeX},
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\small\tt,
     keywordstyle=\color{blue}\sf,
     identifierstyle=\color{magenta},
@@ -423,7 +430,7 @@ end
 \title{Notes on 3rd cycle version of the template}
 
 \author{Gerald Q. Maguire Jr.}
-\date{July 2025}
+\date{14 September 2026}
 
 \begin{document}
 \ReportTimeStamp{Beginning of Document}
@@ -511,13 +518,12 @@ The above are my personal comments based on my looking at the AW-template in mor
     showspaces=false,                       % Don't make spaces visible
     showtabs=false,                         % Don't make tabs visible
     breakatwhitespace=true,
-    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\ttfamily\small,
     columns=fixed,
     extendedchars=true,
     inputencoding=utf8,
     escapechar=£,
-    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
     basicstyle=\ttfamily\color{blue}\bfseries\small,
     morestring=[s][\color{black}]{"}{"},
     morestring=[s][\color{black}]{>}{<},
