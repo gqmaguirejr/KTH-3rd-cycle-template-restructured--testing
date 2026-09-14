@@ -59,35 +59,6 @@
 \input{lib/biblatex-and-friends}
 
 
-\lstdefinelanguage{BibTeX}{
- basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\color{blue}\bfseries,      % @InProceedings in Blue
-  keywordstyle=[2]\color{darkgray},       % author, title, etc. in Gray
-  stringstyle=\color{red},                 % "Values" in Red
-  commentstyle=\color{green!50!black},
-  showstringspaces=false,
-  breaklines=true,
-  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
-  keywords={%
-    @article,@book,@collectedbook,@conference,@electronic,@ieeetranbstctl,%
-    @inbook,@incollectedbook,@incollection,@injournal,@inproceedings,%
-    @manual,@mastersthesis,@misc,@patent,@periodical,@phdthesis,@preamble,%
-    @proceedings,@standard,@string,@techreport,@unpublished%
-  },
-  % Entry fields/keys (e.g., author, title)
-  keywords=[2]{%
-    address,author,booktitle,chapter,edition,editor,howpublished,institution,%
-    journal,key,month,note,number,organization,pages,publisher,school,%
-    series,title,type,volume,year%
-  },
-  comment=[l][\itshape]{@comment},
-  sensitive=false,
-  % String handling
-  morestring=[b]",      % Matches "double quotes"
-  % morestring=[s]{\{}{\}}  % The correct way to handle {balanced braces}
-  % FIX: use moredelim with a style argument and escaped braces
-  % moredelim=[s][\color{red}]{\{}{\}}
-}
 
 % Use the chapter* style for the heading of the bibliography
 \defbibheading{bibliography}[\bibname]{%
@@ -358,11 +329,46 @@ Extension = .ttf,
 \setlength{\headheight}{15pt}
 \addtolength{\topmargin}{-3pt}
 
+% define a listing postbreak character to be used
+% Note that this version works safely with cmyk mode for xcolors.
+% It uses the STIX Match font to have the correct character at the LuaLaTeX engine level.
+\newsavebox{\lstbreakbox}
+\sbox{\lstbreakbox}{\textcolor{red}{\mystixmathfont ↪}\space}
+
+\lstdefinelanguage{BibTeX}{
+ basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{blue}\bfseries,      % @InProceedings in Blue
+  keywordstyle=[2]\color{darkgray},       % author, title, etc. in Gray
+  stringstyle=\color{red},                 % "Values" in Red
+  commentstyle=\color{green!50!black},
+  showstringspaces=false,
+  breaklines=true,
+  postbreak=\usebox{\lstbreakbox},
+  keywords={%
+    @article,@book,@collectedbook,@conference,@electronic,@ieeetranbstctl,%
+    @inbook,@incollectedbook,@incollection,@injournal,@inproceedings,%
+    @manual,@mastersthesis,@misc,@patent,@periodical,@phdthesis,@preamble,%
+    @proceedings,@standard,@string,@techreport,@unpublished%
+  },
+  % Entry fields/keys (e.g., author, title)
+  keywords=[2]{%
+    address,author,booktitle,chapter,edition,editor,howpublished,institution,%
+    journal,key,month,note,number,organization,pages,publisher,school,%
+    series,title,type,volume,year%
+  },
+  comment=[l][\itshape]{@comment},
+  sensitive=false,
+  % String handling
+  morestring=[b]",      % Matches "double quotes"
+  % morestring=[s]{\{}{\}}  % The correct way to handle {balanced braces}
+  % FIX: use moredelim with a style argument and escaped braces
+  % moredelim=[s][\color{red}]{\{}{\}}
+}
 
 \lstdefinestyle{latexExampleForAuthors}{
 language=[LaTeX]{TeX},
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\small\tt,
     keywordstyle=\color{blue}\sf,
     identifierstyle=\color{magenta},
@@ -379,7 +385,7 @@ language=[LaTeX]{TeX},
 \lstdefinestyle{latexExample}{
 language=[LaTeX]{TeX},
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\small\tt,
     keywordstyle=\color{blue}\sf,
     identifierstyle=\color{magenta},
@@ -406,7 +412,7 @@ language=[LaTeX]{TeX},
     showspaces=false,
     showtabs=false,
     breaklines=true,
-    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+    postbreak=\usebox{\lstbreakbox},
     breakatwhitespace=true,
     basicstyle=\ttfamily\small,
     extendedchars=false,
@@ -443,7 +449,7 @@ language=[LaTeX]{TeX},
   identifierstyle=\color{blue},
   keywordstyle=\color{cyan},
   breaklines=true,
-  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+  postbreak=\usebox{\lstbreakbox},
   breakatwhitespace=true,
   morekeywords={xmlns,version,type}% list your attributes here
 }
@@ -454,7 +460,7 @@ language=[LaTeX]{TeX},
 \lstdefinestyle{PDF}{
 language=[LaTeX]{TeX},
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\small\tt,
     keywordstyle=\color{blue}\sf,
     identifierstyle=\color{magenta},
@@ -478,11 +484,10 @@ language=[LaTeX]{TeX},
     showspaces=false,                       % Dont make spaces visible
     showtabs=false,                         % Dont make tabs visible
     breakatwhitespace=true,
-    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\ttfamily\small,
     columns=fixed,
     escapechar = £,
-    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
     morekeywords={dc:format, dc:title, dc:date, dc:type, dc:creator, dc:description, dc:subject, dc:source, dc:language, rdf:Alt, rdf:li, rdf:Bag, rdf:Seq, rdf:Description, rdf:Description, rdf:RDF, pdfaExtension:schemas, pdfaSchema:property, pdfaSchema:valueType, pdf:Producer, pdf:Keywords, pdf:PDFVersion, pdfaSchema:schema, pdfaSchema:prefix, pdfaSchema:namespaceURI, pdfaProperty:name, pdfaProperty:valueType, pdfaProperty:category, pdfaProperty:description,  xmp:CreateDate, xmp:ModifyDate, xmp:MetadataDate, xmp:CreatorTool, xmpMM:DocumentID, xmpMM:InstanceID, xmpMM:VersionID, xmpMM:RenditionClass, Iptc4xmpCore:CreatorContactInfo, Iptc4xmpCore:CiEmailWork, prism:complianceProfile, prism:pageCount, xmpTPg:NPages,  x:xmpmeta},
     %string=[bd]{|}      % Uncommenting this line eliminates the visible spaces in strings
 % Support for Swedish, German and Portuguese umlauts

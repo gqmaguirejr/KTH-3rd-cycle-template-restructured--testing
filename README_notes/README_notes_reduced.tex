@@ -283,11 +283,16 @@
 \setlength{\headheight}{15pt}
 \addtolength{\topmargin}{-3pt}
 
+% define a listing postbreak character to be used
+% Note that this version works safely with cmyk mode for xcolors.
+% It uses the STIX Match font to have the correct character at the LuaLaTeX engine level.
+\newsavebox{\lstbreakbox}
+\sbox{\lstbreakbox}{\textcolor{red}{\mystixmathfont ↪}\space}
 
 \lstdefinestyle{latexExampleForAuthors}{
 language=[LaTeX]{TeX},
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\small\tt,
     keywordstyle=\color{blue}\sf,
     identifierstyle=\color{magenta},
@@ -305,7 +310,7 @@ language=[LaTeX]{TeX},
 \lstdefinestyle{latexExample}{
 language=[LaTeX]{TeX},
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\usebox{\lstbreakbox},
     basicstyle=\small\tt,
     keywordstyle=\color{blue}\sf,
     identifierstyle=\color{magenta},
@@ -321,7 +326,7 @@ language=[LaTeX]{TeX},
 \title{README and notes about the template}
 
 \author{Gerald Q. Maguire Jr.}
-\date{July 2025}
+\date{14 September 2026}
 
 \begin{document}
 \pagenumbering{roman}

@@ -112,7 +112,8 @@ end
     \usepackage[swedish, main=english, provide+=*]{babel}
 \fi
 
-\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+% Input centralized biblatex configuration
+\input{lib/biblatex-and-friends}
 
 % Use the chapter* style for the heading of the bibliography
 \defbibheading{bibliography}[\bibname]{%
@@ -194,6 +195,28 @@ Extension = .ttf,
 \newcommand{\dname}[1]{\textbf{#1}}
 \newcommand{\fname}[1]{\texttt{#1}}
 
+% define a listing postbreak character to be used
+% Note that this version works safely with cmyk mode for xcolors.
+% It uses the STIX Match font to have the correct character at the LuaLaTeX engine level.
+\newsavebox{\lstbreakbox}
+\sbox{\lstbreakbox}{\textcolor{red}{\mystixmathfont ↪}\space}
+
+\lstdefinestyle{latexExampleForAuthors}{
+    language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\usebox{\lstbreakbox},
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue}\sffamily,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode,
+      nationalsubjectcategories, todo, subsection}
+}
+
 
 % Set up the header and footer for plain style pages
 \fancypagestyle{plain}{%
@@ -223,23 +246,6 @@ Extension = .ttf,
 \maketitle
 
 
-\lstdefinestyle{latexExampleForAuthors}{
-language=[LaTeX]{TeX},
-    breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
-    basicstyle=\small\tt,
-    keywordstyle=\color{blue}\sf,
-    identifierstyle=\color{magenta},
-    commentstyle=\color{cyan},
-    backgroundcolor=\color{yellow!15},
-    extendedchars=true,
-    inputencoding=utf8,
-    tabsize=2,
-    columns=flexible,
-    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
-      courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode,
-      nationalsubjectcategories, todo, subsection}
-}
 
 
 \glsresetall  % Any use of an acronym will be spelled out on first use
@@ -341,7 +347,7 @@ One of the first things that the author(s) will want to do is add the working ti
 \altsubtitle{Detta är den svenska översättningen av undertiteln}
 % alternative, if the thesis is in Swedish, then give an English title
 %\alttitle{This is the English translation of the title}
-%\altsubtitle{This is the English translation of the subtitle}   
+%\altsubtitle{This is the English translation of the subtitle}
 \end{lstlisting}
 
 As mentioned earlier, the above macros configure the title, subtitle (if any), alternative title, and alternative subtitle (if any) on the cover and title page. 
@@ -411,7 +417,7 @@ Several macros are defined to handle information about each of your supervisors.
 \Cref{lst:supervisorC} shows the case for an external supervisor `C'. Note that the information about the school and department (in the case of a supervisor within \gls{KTH}) requires the user have a \gls{KTH} \gls{API} key \footnote{However, if you do \textbf{not} have an \gls{API} key, the program cannot output the school or department information. You are, of course, free to write your own program, revise the program, or manually edit the entry in the file. The program is available from \url{https://github.com/gqmaguirejr/Canvas-tools}.}.
 
 \Needspace*{10\baselineskip}
-\begin{lstlisting}[language={bash}, breaklines=true, postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, caption={Generating \LaTeX~commands for a \gls{KTH} supervisor}, label=lst:supervisor, basicstyle=\footnotesize]
+\begin{lstlisting}[language={bash}, breaklines=true, postbreak=\usebox{\lstbreakbox}, caption={Generating \LaTeX~commands for a \gls{KTH} supervisor}, label=lst:supervisor, basicstyle=\footnotesize]
 ./whoami_for_latex.py maguire@kth.se 11
 % If not the first supervisor, then replace supervisorAs with supervisorBs or supervisorCAs as appropriate
 \supervisorAsLastname{Maguire}
@@ -425,7 +431,7 @@ Several macros are defined to handle information about each of your supervisors.
 
 
 
-\begin{lstlisting}[language={bash}, breaklines=true, postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, caption={Generating \LaTeX~commands for a \gls{KTH} supervisor B}, label=lst:supervisorB, basicstyle=\footnotesize]
+\begin{lstlisting}[language={bash}, breaklines=true, postbreak=\usebox{\lstbreakbox}, caption={Generating \LaTeX~commands for a \gls{KTH} supervisor B}, label=lst:supervisorB, basicstyle=\footnotesize]
 ./whoami_for_latex.py maguire@kth.se 11 B
 \supervisorBsLastname{Maguire}
 \supervisorBsFirstname{Gerald Quentin}
@@ -436,7 +442,7 @@ Several macros are defined to handle information about each of your supervisors.
 \supervisorBsDepartment{unknown}
 \end{lstlisting}
 
-\begin{lstlisting}[language={bash}, breaklines=true, postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, caption={Generating \LaTeX~commands for an external supervisor}, label=lst:supervisorC, basicstyle=\footnotesize]
+\begin{lstlisting}[language={bash}, breaklines=true, postbreak=\usebox{\lstbreakbox}, caption={Generating \LaTeX~commands for an external supervisor}, label=lst:supervisorC, basicstyle=\footnotesize]
 ./whoami_for_latex.py json@company.com 11 C
 Could not find user with e-mail address json@company.com in course 11
 You will need to manually edit the following entry
@@ -1353,7 +1359,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode): removing 
 \end{Verbatim}
 
 Unfortunately, you cannot simply use the math expression \textbackslash mathit\{\textbackslash Gamma\}  in the title, as this generates both a warning from hyperref:
-\begin{lstlisting}[basicstyle=\scriptsize,breaklines=true, postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},]
+\begin{lstlisting}[basicstyle=\scriptsize,breaklines=true, postbreak=\usebox{\lstbreakbox}]
 Package hyperref Warning: Token not allowed in a PDF string (Unicode): removing `\Gamma' on input line 56.
 \end{lstlisting}
 \noindent and warnings:
