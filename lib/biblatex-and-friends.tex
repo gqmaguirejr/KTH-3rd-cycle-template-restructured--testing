@@ -1,19 +1,34 @@
 % lib/biblatex-and-friends.tex
 % Centralized biblatex configuration, sourcemaps, and extended identifiers
 
-\usepackage[language=english,
-    style=ieee,
-    isbn=true,
-    citestyle=numeric-comp,  
-    maxbibnames=99,      % Allow up to 99 names to be displayed
-    minbibnames=99,      % If truncated, display up to 99 names (reduces use of et al.)
-    maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
-    mincitenames=1,      % Companion for in-text citations
-    giveninits=false, 
-    refsection=none,  
-    refsegment=none,   
-    datamodel=ext-eprint, % to use the extended data model
-    backend=biber]{biblatex}
+\ifinswedish
+        \usepackage[language=swdish,
+        style=ieee,
+        isbn=true,
+        citestyle=numeric-comp,  
+        maxbibnames=99,      % Allow up to 99 names to be displayed
+        maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
+        mincitenames=1,      % Companion for in-text citations
+        giveninits=false,    % Render full given names where available
+        refsection=none,  
+        refsegment=none,   
+        datamodel=ext-eprint, % Support extended PIDs (Handles, MR, etc.)
+        backend=biber]{biblatex}
+\else
+        \usepackage[language=english,
+        style=ieee,
+        isbn=true,
+        citestyle=numeric-comp,  
+        maxbibnames=99,      % Allow up to 99 names to be displayed
+        maxcitenames=2,      % Keep in-text citations compact (e.g., Yu et al. [10])
+        mincitenames=1,      % Companion for in-text citations
+        giveninits=false,    % Render full given names where available
+        refsection=none,  
+        refsegment=none,   
+        datamodel=ext-eprint, % Support extended PIDs (Handles, MR, etc.)
+        backend=biber]{biblatex}
+\fi
+ 
 
 \usepackage{xpatch}
 
