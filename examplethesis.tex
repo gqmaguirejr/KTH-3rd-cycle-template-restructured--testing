@@ -289,64 +289,7 @@ morekeywords={begin, todo, textbf, textit, texttt}
 \fi % end ifnomenclature
 
 
-%
-% The commands below are to configure JSON listings
-% 
-% format for JSON listings
-\colorlet{punct}{red!60!black}
-\definecolor{delim}{RGB}{20,105,176}
-\definecolor{numb}{RGB}{106, 109, 32}
-\definecolor{string}{RGB}{0, 0, 0}
-
-\lstdefinelanguage{json}{
-    numbers=none,
-    numberstyle=\small,
-    frame=none,
-    rulecolor=\color{black},
-    showspaces=false,
-    showtabs=false,
-    breaklines=true,
-    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
-    breakatwhitespace=true,
-    basicstyle=\ttfamily\small,
-    extendedchars=false,
-    upquote=true,
-    morestring=[b]",
-    stringstyle=\color{string},
-    literate=
-     *{0}{{{\color{numb}0}}}{1}
-      {1}{{{\color{numb}1}}}{1}
-      {2}{{{\color{numb}2}}}{1}
-      {3}{{{\color{numb}3}}}{1}
-      {4}{{{\color{numb}4}}}{1}
-      {5}{{{\color{numb}5}}}{1}
-      {6}{{{\color{numb}6}}}{1}
-      {7}{{{\color{numb}7}}}{1}
-      {8}{{{\color{numb}8}}}{1}
-      {9}{{{\color{numb}9}}}{1}
-      {:}{{{\color{punct}{:}}}}{1}
-      {,}{{{\color{punct}{,}}}}{1}
-      {\{}{{{\color{delim}{\{}}}}{1}
-      {\}}{{{\color{delim}{\}}}}}{1}
-      {[}{{{\color{delim}{[}}}}{1}
-      {]}{{{\color{delim}{]}}}}{1}
-      {’}{{\char13}}1,
-}
-
-\lstdefinelanguage{XML}
-{
-  basicstyle=\ttfamily\color{blue}\bfseries\small,
-  morestring=[b]",
-  morestring=[s]{>}{<},
-  morecomment=[s]{<?}{?>},
-  stringstyle=\color{black},
-  identifierstyle=\color{blue},
-  keywordstyle=\color{cyan},
-  breaklines=true,
-  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
-  breakatwhitespace=true,
-  morekeywords={xmlns,xsi,noNamespaceSchemaLocation,version,type,id,x,y,source,target,tool,transRef,roleRef,objective,eventually}% list your attributes here
-}
+\input{lib/configure_listings}
 
 % If you use both listing and lstlisting environments - the following makes them both use the same counter and the same formatting in the List of Listings
 \makeatletter
@@ -497,7 +440,7 @@ morekeywords={begin, todo, textbf, textit, texttt}
 %\begin{comment}
 % such a page has no page number shown
 \thispagestyle{empty}
-\engExpl{A dedication page is optional - it has no heading. If you do \textbf{not} need a dedication page, add a percent symbol before the \textbackslash begin\{comment\} and 
+\engExpl{A dedication page is optional --- it has no heading. If you do \textbf{not} need a dedication page, add a percent symbol before the \textbackslash begin\{comment\} and 
 \textbackslash end\{comment\}. If you do want a dedication page, then add your text below the \textbackslash vspace macro.}
 \generalExpl{Keep in mind that your thesis is an archival document that will be accessible (ideally) for all time. Therefore, you should only say what you would want others to read in 1, 5, 10, \ldots\ years.}
 % set the font to a serif font 12pt in italic typeface
@@ -527,13 +470,13 @@ To xxxxx.
 
 \engExpl{Exchange students may want to include one or more abstracts in the language(s) used in their home institutions to avoid the need to write another thesis when returning to their home institution.}
 
-\generalExpl{Keep in mind that most of your potential readers are only going to read your \texttt{title} and \texttt{abstract}. This is why the abstract must give them enough information so that they can decide if this document is relevant to them or not. Otherwise, the likely default choice is to ignore the rest of your document.}
+\generalExpl{Keep in mind that most of your potential readers are only going to read your \texttt{title} and \texttt{abstract}. This is why the abstract must give them enough information to decide whether this document is relevant to them. Otherwise, they will likely ignore the rest of your document.}
 \generalExpl{An abstract should stand on its own, \ie no citations, cross-references to the body of the document, acronyms must be spelled out, \ldots\, .}
 \engExpl{Write a draft abstract \textit{early} and \textit{revise as necessary}. This will help keep you focused on what you are trying to do.}
 
 \begin{ThesisAbstract}{eng}
 \engExpl{Enter your abstract here and remove this line!}
-An abstract is (typically) about 250 and 350 words (1/2 A4-page) with the following components:
+An abstract is (typically) about 250 to 350 words (1/2 A4-page) with the following components:
 % key parts of the abstract
 
 \begin{itemize}
@@ -541,7 +484,7 @@ An abstract is (typically) about 250 and 350 words (1/2 A4-page) with the follow
   \item Short problem statement
   \item Why was this problem worth a third-cycle thesis? (\ie why is the problem both significant and of a suitable degree of difficulty for your intended degree? Why has no one else solved it yet?)
   \item How did you solve the problem? What was your method/insight?
-  \item Results/Conclusions/Consequences/Impact: What are your key results/\linebreak[4]conclusions? What will others do based on your results? What can be done now that you have finished - that could not be done before your research was completed?
+  \item Results/Conclusions/Consequences/Impact: What are your key results/\linebreak[4]conclusions? What will others do based on your results? What can be done now that you have finished --- that could not be done before your research was completed?
 \end{itemize}
 
 \end{ThesisAbstract}
@@ -551,9 +494,9 @@ Choice of typeface with \textbackslash textit, \textbackslash textbf, and \textb
 Text superscripts and subscripts with \textbackslash textsubscript and \textbackslash textsuperscript: A\textsubscript{x} and A\textsuperscript{x}.
 
 Some symbols that you might find useful are available, such as: \textbackslash textregistered, \textbackslash texttrademark, and \textbackslash textcopyright. For example, 
-the copyright symbol: \textbackslash textcopyright Maguire 2022 results in \textcopyright Maguire 2022. Additionally, here are some examples of text superscripts (which can be combined with some symbols): \textbackslash textsuperscript\{99m\}Tc, A\textbackslash textsuperscript\{*\}, A\textbackslash textsuperscript\{\textbackslash textregistered\}, and A\textbackslash texttrademark resulting in \textsuperscript{99m}Tc, A\textsuperscript{*}, A\textsuperscript{\textregistered}, and A\texttrademark. Two examples of subscripts are: H\textbackslash textsubscript\{2\}O and CO\textbackslash textsubscript\{2\} which produce  H\textsubscript{2}O and CO\textsubscript{2}.
+the copyright symbol: \textbackslash textcopyright Maguire 2022 results in \textcopyright Maguire 2022. Additionally, here are some examples of text superscripts (which can be combined with some symbols): \textbackslash textsuperscript\{99m\}Tc, A\textbackslash textsuperscript\{*\}, A\textbackslash textsuperscript\{\textbackslash textregistered\}, and A\textbackslash texttrademark, resulting in \textsuperscript{99m}Tc, A\textsuperscript{*}, A\textsuperscript{\textregistered}, and A\texttrademark. Two examples of subscripts are: H\textbackslash textsubscript\{2\}O and CO\textbackslash textsubscript\{2\} which produce  H\textsubscript{2}O and CO\textsubscript{2}.
 
-You can use simple environments with begin and end: itemize and enumerate and within these use instances of \textbackslash item.
+You can use simple environments with begin and end: itemize and enumerate, and within these use instances of \textbackslash item.
 
 The following commands can be used: \textbackslash eg, \textbackslash Eg, \textbackslash ie, \textbackslash Ie, \textbackslash etc, and \textbackslash etal: \eg, \Eg, \ie, \Ie, \etc, and \etal.
 
@@ -570,41 +513,42 @@ Note that one can include percentages, such as: 51\% or \qty{51}{\percent}.
 \begin{ThesisKeywords}{eng}
 \InsertKeywords{english}
 \end{ThesisKeywords}
+\end{abstract}
 
 \engExpl{\textbf{Choosing good keywords can help others to locate your paper, thesis, dissertation, \ldots and related work.}}
 Choose the most specific keyword from those used in your domain, see for example: the ACM Computing Classification System ({\small \url{https://www.acm.org/publications/computing-classification-system/how-to-use})},
 the IEEE Taxonomy ({\small \url{https://www.ieee.org/publications/services/thesaurus-thank-you.html}}), PhySH (Physics Subject Headings)\linebreak[4] ({\small \url{https://physh.aps.org/}}), \ldots or keyword selection tools such as the  National Library of Medicine's Medical Subject Headings (MeSH)  ({\small \url{https://www.nlm.nih.gov/mesh/authors.html}}) or Google's Keyword Tool ({\small \url{https://keywordtool.io/}})\\
 
 \warningExpl{A helpful script for those who are comfortable with Python}
-For assistance in identifying suitable keywords, a dedicated Python utility, \texttt{thesis\_keyword\_extractor.py}, has been developed. This tool processes the main textual content of the thesis (as a PDF input) and generates a list of potential keywords and specialized terminology. Crucially, it attempts to assign a linguistic proficiency level to each term, based on the Common European Framework of Reference for Languages (CEFR) scale. This analysis is intended to assist the author in selecting precise and appropriately specialized keywords for the thesis.
+To help identify suitable keywords, a dedicated Python utility, \texttt{thesis\_keyword\_extractor.py}, has been developed. This tool processes the main textual content of the thesis (as a PDF input) and generates a list of potential keywords and specialized terminology. Crucially, it attempts to assign a linguistic proficiency level to each term, based on the Common European Framework of Reference for Languages (CEFR) scale. This analysis is intended to assist the author in selecting precise and appropriately specialized keywords for the thesis.
 \footnote{The source code for the keyword extractor and supporting files can be found at \url{https://github.com/gqmaguirejr/Canvas-tools}.}
 
 \textbf{Formatting the keywords}:
 \begin{itemize}
-  \item The first letter of a keyword should be set with a capital letter and proper names should be capitalized as usual.
+  \item The first letter of a keyword should be set with a capital letter, and proper names should be capitalized as usual.
   \item Spell out acronyms and abbreviations.
-  \item Avoid "stop words" - as they generally carry little or no information.
-  \item List your keywords separated by commas (``,'').
+  \item Avoid "stop words" --- as they generally carry little or no information.
+  \item List your keywords separated by commas (\enquote{,}).
 \end{itemize}    
-Since you should have both English and Swedish keywords - you might think of ordering the keywords in corresponding order (\ie, so that the n\textsuperscript{th} word in each list correspond) - this makes it easier to mechanically find matching keywords.
-\end{abstract}
+Since you should have both English and Swedish keywords --- you might think of ordering the keywords in corresponding order (\ie, so that the n\textsuperscript{th} word in each list correspond) --- this makes it easier to mechanically find matching keywords.
+
 \cleardoublepage
 \selectlanguage{swedish}
 \begin{abstract}
     \markboth{\abstractname}{}
 
-\warningExpl{Inside the following \texttt{scontents} environment, you cannot use a \textbackslash include{filename}, as the command itself, rather than the file's contents, will end up in the for DiVA information. Additionally, you should not use a straight double quote character in the abstracts or keywords, but rather use two single quote characters instead.}
+\warningExpl{Inside the following \texttt{scontents} environment, you cannot use a \textbackslash include{filename}, as the command itself, rather than the file's contents, will end up in the \enquote{For DiVA} information. Additionally, you should not use a straight double quote character in the abstracts or keywords, but rather use two single quote characters instead.}
 \sweExpl{Alla avhandlingar vid KTH \textbf{måste ha} ett abstrakt på både \textit{engelska} och \textit{svenska}.\\
-Om du skriver din avhandling på svenska ska detta göras först (och placera det som det första abstraktet) - och du bör revidera det vid behov.}
+Om du skriver din avhandling på svenska ska detta göras först (och placera det som det första abstraktet) --- och du bör revidera det vid behov.}
 
-\engExpl{If you are writing your thesis in English, you can leave this until the draft version that goes to your internal reviewer. In this way, you can provide the English and Swedish abstract/summary information that can be used in the announcement for your oral defense.\\If you are writing your thesis in English, then this section can be a summary targeted at a more general reader. However, if you are writing your thesis in Swedish, then the reverse is true – your abstract should be for your target audience, while an English summary can be written targeted at a more general audience.\\This means that the English abstract and Swedish \foreignlanguage{swedish}{sammnfattning}  
+\engExpl{If you are writing your thesis in English, you can leave this until the draft version that goes to your internal reviewer. In this way, you can provide the English and Swedish abstract/summary information that can be used in the announcement for your oral defense.\\If you are writing your thesis in English, then this section can be a summary targeted at a more general reader. However, if you are writing your thesis in Swedish, then the reverse is true --- your abstract should be for your target audience, while an English summary can be written targeted at a more general audience.\\This means that the English abstract and Swedish \foreignlanguage{swedish}{sammanfattning}  
 or Swedish abstract and English summary need not be literal translations of each other.}
 
 \engExpl{Do not use the \texttt{\textbackslash glspl\{\}} command in an abstract that is not in English, as my programs do not know how to generate plurals in other languages. Instead, you will need to spell these terms out or give the proper plural form.}
-\engExpl{In fact, it is a good idea to \textbf{not use} the glossary commands at all in an abstract/summary in a language other than the language used in the \texttt{acronyms.tex file} - unless one is going to define a new \texttt{\textbackslash glsaddkey} for the long and short Swedish (or other languages that you are using) versions of acronyms.}
+\engExpl{In fact, it is a good idea to \textbf{not use} the glossary commands at all in an abstract/summary in a language other than the language used in the \texttt{acronyms.tex file} --- unless one is going to define a new \texttt{\textbackslash glsaddkey} for the long and short Swedish (or other languages that you are using) versions of acronyms.}
 \warningExpl{An example of this might be shown in a future version of this template.}
 
-\engExpl{The abstract in the language used for the thesis should be the first abstract, while the Summary/Sammanfattning in the other language can follow}
+\engExpl{The abstract in the language used for the thesis should be the first abstract, while the Summary/Sammanfattning in the other language can follow.}
 \begin{ThesisAbstract}{swe}
 Skriv in din svenska sammanfattning eller abstrakt här!
 \end{ThesisAbstract}
@@ -635,9 +579,9 @@ Skriv in din svenska sammanfattning eller abstrakt här!
 \generalExpl{If you are an exchange student, use the relevant language or languages for abstracts for your home university, as this will often avoid the need for writing another thesis for your home university.}
 \generalExpl{If you are fluent in other languages, feel free to add the abstracts in one or more of them.}
 
-\engExpl{The set of languages that can be easily included are based on those languages that were used in theses at KTH in the period 2018-2019, along with several others that have been used in theses since.}
+\engExpl{The set of languages that can be easily included is based on those languages that were used in theses at KTH and those that should be available.}
 \warningExpl{Note that you may need to augment the set of languages used in
-\texttt{babel} (see the file \texttt{kththesis.cls}). If you add a new language, when specifying the language for the abstract, use the three-letter ISO 639-2 Code – specifically the "B" (bibliographic) variant of these codes (note that this is the same language code used in DiVA).}
+\texttt{babel} (see the file \texttt{kththesis.cls}). If you add a new language, when specifying the language for the abstract, use the three-letter ISO 639-2 Code --- specifically the "B" (bibliographic) variant of these codes (note that this is the same language code used in DiVA).}
 \cleardoublepage
 \fi
 
@@ -874,7 +818,7 @@ En dualism som måste hanteras i hela rapporten och projektet
 I would like to thank xxxx for having yyyy. Or in the case of two authors:\\
 We would like to thank xxxx for having yyyy.
 
-\acknowlegmentssignature
+\acknowledgmentssignature
 
 % Include Table of Contents (TOC) ---
 \fancypagestyle{plain}{}
@@ -940,8 +884,8 @@ och förkortningar}]
     \chapter*{List of Publications}
     \label{chap:listOfPublications}
 
-    \engExpl{When defending a thesis, you must mention which scientific papers, patents, artifacts, datasets, … are included. Note that peer-reviewed artifacts are increasingly common, as some publications have ``badges'' for publications that include code, code that has been shown by a reviewer to be reproducible, \etc. See, for example, Artifact A.}
-    \generalExpl{The titles of the publications are to be set in Figtree; however, this may not be possible, as Figtree lacks Greek characters, math symbols, \etc., that may appear in the titles. Therefore, you may need to change the font you are using for such a title. Papers E and F show two approaches for doing this. Paper E uses math mode to get the Greek characters, while Paper F uses a font that has the Greek characters. Further note that \textbackslash mystixmathfont has been used, rather than a font such as \textbackslash NotoSansFont - as the overbar in the latter font is too low. The font could have been applied to the whole title, but this would result in serifed letters for the whole title. Both of these commands for fonts were introduced in \texttt{kththesis.cls}.}
+    \engExpl{When defending a thesis, you must mention which scientific papers, patents, artifacts, datasets, … are included. Note that peer-reviewed artifacts are increasingly common, as some publications have ``badges'' for publications that include code, code that a reviewer has shown to be reproducible, \etc. See, for example, Artifact A.}
+    \generalExpl{The titles of the publications are to be set in Figtree; however, this may not be possible, as Figtree lacks Greek characters, math symbols, \etc., that may appear in the titles. Therefore, you may need to change the font you are using for such a title. Papers E and F show two approaches for doing this. Paper E uses math mode to get the Greek characters, while Paper F uses a font that has the Greek characters. Further note that \textbackslash mystixmathfont has been used, rather than a font such as \textbackslash NotoSansFont --- as the overbar in the latter font is too low. The font could have been applied to the whole title, but this would result in serifed letters throughout. Both of these commands for fonts were introduced in \texttt{kththesis.cls}.}
     \warningExpl{The use of math mode in the title of Paper F will generate a warning "Font shape `U/stmry/m/n' in size <5.5> not available" - since scaling the 11pt math font for the superscripts and subscripts leads to 5.5pt letters - for which LaTeX substitutes 5pt letters. Both for this font scaling issue and to improve readability (see, for example, the fictitious title of Report A), I would think that the publication titles should be set in a font larger than 11pt.}
     % alternatively use \small as the size - this may be suitable if you have titles that contain characters not in Figtree
     {\FigtreeFont\fontsize{11}{13}\fontshape{n}\selectfont
@@ -955,7 +899,7 @@ och förkortningar}]
         \item \label{paper:C} Make the {Most} out of {Last} {Level} {Cache} in {Intel} {Processors}\ \cite{farshin_make_2019}
         \item \label{paper:D} Do {Small}-{Mass} {Neutrinos} {Participate} in {Gauge} {Transformations}?\,\cite{kim_small-mass_2016}
 
-        \item \label{paper:E} \citefield{verardo2023fmmheadenhancingautoencoderbasedecg}{title}
+        \item \label{paper:E} {FMM-Head}: Enhancing Autoencoder-based {ECG} anomaly detection with prior knowledge\,\cite{verardo2023fmmheadenhancingautoencoderbasedecg}
 
     \end{ListOfPapers}
 
@@ -1030,9 +974,6 @@ Networking - Artifact for ASPLOS’21\,\cite{10.5281/zenodo.4435970}
 % This command will end the preface and start the main document
 \cleardoublepage
 
-% Start of main matter - i.e., the body of the thesis itself ---
-% Mainmatter is where the actual contents of the thesis goes
-\mainmatter
 
 %% For a thesis with included publications - mark the start of the Kappa
 \ifincludepublications
@@ -1049,7 +990,7 @@ Networking - Artifact for ASPLOS’21\,\cite{10.5281/zenodo.4435970}
 % Mainmatter is where the actual contents of the thesis goes
 \mainmatter
 
-% --- Start of a monograph of the body of the kappa ---
+% --- Start of a monograph or the body of the kappa ---
 \glsresetall  % Any use of an acronym will be spelled out on first use
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \selectlanguage{english}
@@ -1067,7 +1008,7 @@ Networking - Artifact for ASPLOS’21\,\cite{10.5281/zenodo.4435970}
 
     
 
-\sweExpl{Ofta kommer problemet och problemägaren från industrin där man önskar en specifik lösning på ett specifikt problem. Detta är ofta ”för smalt” definierat och ger ofta en ”för smal” lösning för att resultatet skall vara intressant ur ett mer allmänt ingenjörsperspektiv och med ”nya” erfarenheter som resultat. Fundera tillsammans med projektets intressenter (student, problemägare och akademi) hur man skulle kunna använda det aktuella problemet/förslaget för att undersöka någon ingenjörsaspekt och vars resultat kan ge ny eller kompletterande erfarenhet till ingenjörssamfundet och vetenskapen.\\Slöser man en del eller hela delen av det ursprungliga problemet.\\Erfarenheten kommer ur en frågeställning som man i avhandling försöker besvara med tidigare och andras erfarenhet, egna eller modifierade metoder som ger ett resultat vilket kan användas för att diskutera ett svar på undersökningsfrågan.\\Detta stycke skall alltså, förutom det ursprungliga ”smala” problemet, innehålla  vad som skall undersökas för att skapa ny ingenjörserfarenhet och/eller vetenskap.}
+\sweExpl{Ofta kommer problemet och problemägaren från industrin där man önskar en specifik lösning på ett specifikt problem. Detta är ofta ”för smalt” definierat och ger ofta en ”för smal” lösning för att resultatet skall vara intressant ur ett mer allmänt ingenjörsperspektiv och med ”nya” erfarenheter som resultat. Fundera tillsammans med projektets intressenter (student, problemägare och akademi) hur man skulle kunna använda det aktuella problemet/förslaget för att undersöka någon ingenjörsaspekt och vars resultat kan ge ny eller kompletterande erfarenhet till ingenjörssamfundet och vetenskapen.\\Slöser man en del eller hela delen av det ursprungliga problemet.\\Erfarenheten kommer ur en frågeställning som man i din avhandling försöker besvara med tidigare och andras erfarenhet, egna eller modifierade metoder som ger ett resultat vilket kan användas för att diskutera ett svar på undersökningsfrågan.\\Detta stycke skall alltså, förutom det ursprungliga ”smala” problemet, innehålla  vad som skall undersökas för att skapa ny ingenjörserfarenhet och/eller vetenskap.}
 
 \engExpl{The first paragraph after a heading is not indented, all of the
   subsequent paragraphs have their first line indented.}
@@ -1098,7 +1039,7 @@ other. This also introduces the names/terms/… that you are going to use
 throughout your thesis (be consistent). This figure will also help you later
 delimit what you are going to do and what others have done or will do.}
 
-As one can find in RFC 1235\,\cite{ioannidis_coherent_1991}, multicast is useful for xxxx. A number of different \glspl{OS} have been used in this work, such as the following \glspl{OS}: UNIX, Linux, Windows, \etc. The main focus will be on one \gls{OS}, namely Linux.
+As shown in RFC 1235\,\cite{ioannidis_coherent_1991}, multicast is useful for xxxx. A number of different \glspl{OS} have been used in this work, such as the following \glspl{OS}: UNIX, Linux, Windows, \etc. The main focus is one \gls{OS}, namely Linux.
 
 \section{Problem}
 \label{sec:problem}
@@ -1132,7 +1073,7 @@ some text
 \section{Purpose}
 \sweExpl{Syfte}
 \sweExpl{Skilj på syfte och mål! Syfte är att förändra något till det bättre. I avhandling finns ofta två aspekter på detta. Dels vill problemägaren (företaget) få sitt problem löst till det bättre men akademin och ingenjörssamfundet vill också få nya erfarenheter och vetskap. Beskriv ett syfte som tillfredställer båda dessa aspekter.\\
-Det finns även ett syfte till som kan vara värt att beakta och det är att du som student skall ta examen och att du måste bevisa, i ditt avhandling, att du uppfyller examensmålen. %Dessa mål sammanfaller med kursmålen för examensarbetskursen. 
+Det finns även ett syfte till som kan vara värt att beakta och det är att du som student skall ta examen och att du måste bevisa, i din avhandling, att du uppfyller examensmålen. %Dessa mål sammanfaller med kursmålen för examensarbetskursen. 
 }
 \generalExpl{State the purpose of your thesis and the purpose of your research.\\
 Describe who benefits and how they benefit if you achieve your goals. Include anticipated ethical, sustainability, social issues, \etc related to your research. (Return to these in your reflections in \Cref{sec:reflections}.)}
@@ -1158,12 +1099,12 @@ The goal of this research is XXX. This has been divided into the following three
 
 \section{Research Methodology}\sweExpl{Undersökningsmetod}
 \sweExpl{Här anger du vilken vilken övergripande undersökningsstrategi eller metod du skall använda för att försöka besvara den akademiska frågeställning och samtidigt lösa det e v ursprungliga problemet. Ofta kan man använda ”lösandet av ursprungsproblemet” som en fallstudie kring en akademisk frågeställning. Du undersöker någon intressant fråga i ”skarpt” läge och samlar resultat och erfarenhet ur detta.\\
-Tänk på att företaget ibland måste stå tillbaka i sin önskan och förväntan på projektets resultat till förmån för ny eller kompletterande ingenjörserfarenhet och vetenskap (ditt avhandling). Det är du som student som bestämmer och löser fördelningen mellan dessa två intressen men se till att alla är informerade. }
+Tänk på att företaget ibland måste stå tillbaka i sin önskan och förväntan på projektets resultat till förmån för ny eller kompletterande ingenjörserfarenhet och vetenskap (din avhandling). Det är du som student som bestämmer och löser fördelningen mellan dessa två intressen men se till att alla är informerade. }
 \generalExpl{Introduce your choice of methodology/methodologies and method/methods – and the reason why you chose them. Contrast them with and explain why you did not choose other methodologies or methods. (The details of the actual methodology and method you have chosen will be given in \Cref{ch:methods}. Note that in \Cref{ch:methods}, the focus could be research strategies, data collection, data analysis, and quality assurance.)\\
 In this section you should present your philosophical assumption(s), research method(s), and research approach(es).}
 
 \section{Delimitations}\sweExpl{Avgränsningar}
-\generalExpl{Describe the boundary/limits of your thesis and what you are explicitly not going to do. This will help you bound your efforts – as you have clearly defined what is out of the scope of this thesis. Explain the delimitations. These are all the things that could affect the study if they were examined and included in your thesis.}
+\generalExpl{Describe the boundary/limits of your thesis and what you are explicitly not going to do. This will help you bound your efforts, as you have clearly defined what is out of scope for this thesis. Explain the delimitations. These are all the things that could affect the study if they were examined and included in your thesis.}
 
 \section{Thesis contributions}\sweExpl{Avhandlingsbidrag}
 How does your thesis contribute to addressing the research questions?
@@ -1173,7 +1114,7 @@ If you have done this work with others, clearly state what your own contribution
 \IfFileNotEmpty{lib/thesis_contributions_generated.tex}{\input{lib/thesis_contributions_generated.tex}}
 
 \section{Structure of the thesis}\sweExpl{Rapportens disposition}
-\Cref{ch:background} presents relevant background information about xxx.  \Cref{ch:methods} presents the methodology and method used to solve the problem. 
+\Cref{ch:background} presents relevant background information about xxx.  \Cref{ch:methods} presents the methodology and method(s) used to solve the problem. 
 
 
 \cleardoublepage
@@ -1183,11 +1124,11 @@ If you have done this work with others, clearly state what your own contribution
 
 \generalExpl{When you do your literature study, you should have a nearly complete Chapters 1 and 2.\\
 You may also find it convenient to introduce the future work section into your report early – so that you can put things that you think about but decide not to do now into this section.\\
-Note that later you can move things between this future work section and what you have done as you may change your mind about what to do now versus what to put off to future work.
+Note that later you can move things between this future work section and what you have done, as you may change your mind about what to do now versus what to put off to future work.
 }
 \generalExpl{What does a reader (another x student -- where x is your study line) need to know to understand your report?
 What have others already done? (This is the “related work”.) Explain what and
-how prior work/prior research will be applied on or used in your
+how prior work/prior research will be applied or used in your
 research (described in this thesis). Explain why and what is not used in
 your research and give valid reasons for rejecting the work/research.}
 
@@ -1217,13 +1158,15 @@ There are xxx characteristics that distinguish yyy from other \gls{ICT} systems,
   \begin{center}
     \caption{xxx characteristics}
     \label{tab:tablecaracteristics}
-    \begin{tabular}{l|S[table-format=4.6]} % <-- Alignments: 1st column left, 2nd middle, with vertical lines in between
-      \textbf{Characteristics} & \textbf{Description}\\
-      $\alpha$ & $\beta$ \\
-      \hline
+    \begin{tabular}{l S[table-format=4.6]} % <-- Alignments: 1st column left, 2nd decimal aligned
+    \toprule
+      {\textbf{Characteristics}} & {\textbf{Description}}\\
+      {$\alpha$} & {$\beta$} \\
+      \midrule
       1 & 1110.1\\
       2 & 10.1\\
       3 & 23.113231\\
+      \bottomrule
     \end{tabular}
   \end{center}
 \end{table}
@@ -1231,7 +1174,7 @@ There are xxx characteristics that distinguish yyy from other \gls{ICT} systems,
 \sweExpl{Beskrivning}
 
 \subsection{Subarea 1.1}
-Entangled states are an important part of quantum cryptography, but also relevant in other domains. This concept might be relevant for neutrinos, see for example \cite{kim_small-mass_2016}.
+Entangled states are an important part of quantum cryptography and are also relevant in other domains. This concept might be relevant for neutrinos; see, for example, \cite{kim_small-mass_2016}.
 
 \subsection{Subarea 1.1.2}
 Computational methods are increasingly used as a third method of carrying out
@@ -1240,7 +1183,7 @@ find the amount of wear in a polyethylene liner of a hip prosthesis in \cite{mag
 …
 
 \subsection{Subarea 1.1.2}
-Using the nearest data center may improve performance, see \cite{bogdanov_nearest_2015}
+Using the nearest data center may improve performance; see \cite{bogdanov_nearest_2015}
 
 
 \subsection{Link layer Encapsulation}
@@ -1325,7 +1268,7 @@ $c=2 \cdot \pi \cdot r$ or \[ \int_{a}^{b} x^2 \,dx \] a chemical formula: $(C_5
 
 
 \subsection{Major related work 1}\sweExpl{Relaterade arbeten 1}
-Carrier clouds have been proposed as a means to reduce the delay between users and the cloud server that provides them with content. However, there is a question of how to find the available resources in such a carrier cloud. One approach has been to disseminate resource information using an extension to OSPF-TE, see Roozbeh, Sefidcon, and Maguire \cite{roozbeh_resource_2013}.
+Carrier clouds have been proposed to reduce the delay between users and the cloud server that provides them with content. However, the question remains how to find available resources in such a carrier cloud. One approach has been to disseminate resource information using an extension to OSPF-TE, see Roozbeh, Sefidcon, and Maguire \cite{roozbeh_resource_2013}.
 
 
 \subsection{Major related work n}\sweExpl{Relaterade arbeten}
@@ -1364,7 +1307,7 @@ Carrier clouds have been proposed as a means to reduce the delay between users a
 
 
 \generalExpl{Describe the engineering-related contents (preferably with models) and the research methodology and methods that are used in your research.\\
-Give a theoretical description of the scientific or engineering methodology  you are going to use and why have you chosen this method. What other methods did you consider and why did you reject them?\\
+Give a theoretical description of the scientific or engineering methodology you are going to use and why you have chosen this method. What other methods did you consider, and why did you reject them?\\
 In this chapter, you describe what engineering-related and scientific skills you are going to apply, such as modeling, analyzing, developing, and evaluating engineering-related and scientific content. The choice of these methods should be appropriate for the problem. Additionally, you should be conscious of aspects relating to society and ethics (if applicable). The choices should also reflect your goals and what you (or someone else) should be able to do as a result of your solution - which could not be done well before you started.}
 
 The purpose of this chapter is to provide an overview of the research method
@@ -1562,11 +1505,13 @@ Vad du har gjort? Hur gjorde du det? Vilka designval gjorde du?}
     \caption{Configurations tested}
     \label{tab:configstested}
     \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{l|c} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+    \begin{tabular}{l c} % <-- Alignments: 1st column left, 2nd centered
+    \toprule
       \textbf{Configuration} & \textbf{Description} \\
-      \hline
+      \midrule
       1 & Simple test with one server\\
       2 & Simple test with two servers\\
+      \bottomrule
     \end{tabular}
     }
   \end{center}
@@ -1587,7 +1532,7 @@ Two commonly used simulators are:
 
 \subsection{Some examples of coding}
 \engExpl{This section is simply to show some example of how you can include code in your thesis - this is not a section you would have in your thesis.}
-\sweExpl{Det här avsnittet är helt enkelt för att visa ett exempel på hur du kan inkludera kod i ditt avhandling - det här är inte ett avsnitt du skulle ha i ditt avhandling.}
+\sweExpl{Det här avsnittet är helt enkelt för att visa ett exempel på hur du kan inkludera kod i din avhandling - det här är inte ett avsnitt du skulle ha i din avhandling.}
 
 
 \Needspace*{8\baselineskip}
@@ -1666,15 +1611,15 @@ def make_spreadsheet_of_differences(pds):
 \label{lst:exampleUsingMinted}
 \end{listing}
 
-\noindent In \Cref{lst:exampleUsingMinted}, we create a \texttt{ExcelWriter} function and use it to write a panda dataframe (named \texttt{comp}) to the spreadsheet. Finally, \texttt{writer.close()} closes the open spreadsheet.
+\noindent In \Cref{lst:exampleUsingMinted}, we create a \texttt{ExcelWriter} function and use it to write a panda DataFrame (named \texttt{comp}) to the spreadsheet. Finally, \texttt{writer.close()} closes the open spreadsheet.
 \FloatBarrier
 
 \subsection{Some examples of figures in tikz}
-\engExpl{This section is simply to show some example of how you can draw your own figures for in your thesis - this is not a section you would have in your thesis.}
-\sweExpl{Det här avsnittet är helt enkelt för att visa ett exempel på hur du kan rita dina egna figurer i ditt avhandling – det här är inte ett avsnitt du skulle ha i ditt avhandling.}
+\engExpl{This section is simply to show some examples of how you can draw your own figures for in your thesis --- this is not a section you would have in your thesis.}
+\sweExpl{Det här avsnittet är helt enkelt för att visa ett exempel på hur du kan rita dina egna figurer i din avhandling --- det här är inte ett avsnitt du skulle ha i din avhandling.}
 
 \Needspace*{5\baselineskip}
-These figures are just some examples to show that you can draw your own figures for in your thesis. This has two advantages: \first you do not have to worry about copyrights -- as these are your own figures and \Second the text is now readable and not simply a picture of text -- so screen readers can read the figure's contents to someone who is listening to the contents of your thesis.
+These figures are just some examples to show that you can draw your own figures for use in your thesis. This has two advantages: \first you do not have to worry about copyrights --- as these are your own figures, and \Second the text is now readable and not simply a picture of text --- so screen readers can read the figure's contents to someone who is listening to the contents of your thesis.
 
 \subsubsection{Azure's Form Recognizer}
 \Cref{fig:processAnInvoice} shows the processing of key-value extraction from a PDF document using Azure's Form Recognizer. 
@@ -1844,11 +1789,13 @@ The delay has been computed from the time the GET request is received until the 
   \begin{center}
     \caption{Delay measurement statistics}
     \label{tab:delayMeasurements}
-    \begin{tabular}{l|S[table-format=4.2]|S[table-format=3.2]} % <-- Alignments: 1st column left, 2nd middle and 3rd right, with vertical lines in between
+    \begin{tabular}{l S[table-format=4.2] S[table-format=3.2]} % <-- Alignments: 1st column left, 2nd and 3rd columns decimal aligned
+    \toprule
       \textbf{Configuration} & \textbf{Average delay (ns)} & \textbf{Median delay (ns)}\\
-      \hline
+      \midrule
       1 & 467.35 & 450.10\\
       2 & 1687.5 & 901.23\\
+      \bottomrule
     \end{tabular}
   \end{center}
 \end{table}
@@ -1860,6 +1807,7 @@ The delay has been computed from the time the GET request is received until the 
 \vspace{1em}
 \centering
 \begin{tabular}{l *{4}{S[table-format=2.3]}}
+\toprule
 {} & \multicolumn{4}{c}{host to server RTT in ms} \\
 \cmidrule{2-5}
 Host & \multicolumn{1}{c}{min}  & \multicolumn{1}{c}{avg} & \multicolumn{1}{c}{max} & \multicolumn{1}{c}{mdev} \\
@@ -1868,7 +1816,7 @@ h1 & 5.625 & 5.625 & 5.625 & 0.0 \\
 h2 & 2.909 & 2.909 & 1.909 & 0.0 \\
 h3 & 5.007 & 5.007 & 5.007 & 0.0 \\
 h4 & 2.308 & 2.308 & 2.308 & 0.0 \\
-\midrule
+\bottomrule
 \end{tabular}
 \end{table}
 \FloatBarrier
@@ -1957,7 +1905,7 @@ h4 & 2.308 & 2.308 & 2.308 & 0.0 \\
 \put(1350.0,131.0){\rule[-0.200pt]{0.400pt}{137.795pt}}
 \put(1439.0,131.0){\rule[-0.200pt]{0.400pt}{155.380pt}}
 \end{picture}
-\caption[A GNUplot figure]{Processing time vs. payload length}\vspace{0.5cm}
+\caption[A GNUplot figure]{Processing time vs. payload length}
 \label{fig:processing_vs_payload_length}
 \end{figure}
 \FloatBarrier		
@@ -1965,26 +1913,27 @@ h4 & 2.308 & 2.308 & 2.308 & 0.0 \\
 Given these measurements, we can calculate our processing bit rate as the inverse of the time it takes to process an additional byte divided by 8 bits per byte:
 
 \[
-	\text{bit rate} = \frac{1}{\frac{\text{time}_{\text{byte}}}{8}} = 20.03 \quad kb/s
+	\text{bit rate} = \frac{1}{\frac{\text{time}_{\text{byte}}}{8}} = \qty{20.03}{\kilo\bit\per\second}
 \] 
 
-\Cref{tab:majorMarkupLMDetailedResult} shows another table in which some values have been set in bold (using \textbackslash B) to emphasize them. Note how the \texttt{S} formatting has been modified so that it considers the weight of the characters and this is able to decimal align even these hold-faced numbers with the numbers in the column above them.
+\Cref{tab:majorMarkupLMDetailedResult} shows another table in which some values have been set in bold (using \textbackslash boldentry) to emphasize them. Note how the \texttt{S} formatting has been modified so that it considers the weight of the characters, enabling it to decimal-align even these bold-faced numbers with the numbers in the column above them.
 
 \begin{table}[!ht]
     \centering
     \caption{Median values of sandwich attributes}
     \label{tab:majorMarkupLMDetailedResult}
     \begin{tabular}{l *{2}{S[detect-weight,mode=text,table-format=3.2]}}
+        \toprule
         & \multicolumn{2}{c}{\textbf{sites}}\\
         \cmidrule{2-3}
         \textbf{Attribute} & \textbf{A} & \textbf{B} \\
         \midrule
         price (in SEK) & 36.5 & 71.3 \\
-        protean (g) & 97.2 & 100.0 \\
+        protein (g) & 97.2 & 100.0 \\
         salt (mg) & 9.7 & 9.3 \\
-        \hline
-        \textbf{Average customer rating in \%} & \B 82.2 & \B 89.9 \\
         \midrule
+        \textbf{Average customer rating in \%} & \boldentry 82.2 & \boldentry 89.9 \\
+        \bottomrule
     \end{tabular}
 \end{table}
 \FloatBarrier
@@ -2419,7 +2368,7 @@ This paper is unpublished but appears as an arXiv preprint.
 This publication is a U.S. Government publication; hence, it has no copyright.
 \end{dividerContent}
 \cleardoublepage
-%% Include US12111768.pdf
+%% Include US7107453.pdf
 %% can include as options pagecommand={\thispagestyle{fancy}},frame to keep pagination and running headings
 % Just include 2 pages for this example
 \includepdf[pages={1-2},scale=0.9]{Included_publications/US7107453.pdf}
@@ -2432,7 +2381,7 @@ This publication is a U.S. Government publication; hence, it has no copyright.
 \end{dividerContent}
 
 \cleardoublepage
-%% Include US7107453.pdf
+%% Include US12111768.pdf
 %% can include as options pagecommand={\thispagestyle{fancy}},frame to keep pagination and running headings
 % Just include 2 pages for this example
 \includepdf[pages={1-2},scale=0.9]{Included_publications/US12111768.pdf}

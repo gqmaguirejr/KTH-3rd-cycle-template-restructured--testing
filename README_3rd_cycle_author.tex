@@ -191,32 +191,10 @@ Extension = .ttf,
     BoldItalicFont = NotoSans-BoldItalic
     ]{NotoSansCustomA}
 
+\input{lib/configure_listings}
 
 \newcommand{\dname}[1]{\textbf{#1}}
 \newcommand{\fname}[1]{\texttt{#1}}
-
-% define a listing postbreak character to be used
-% Note that this version works safely with cmyk mode for xcolors.
-% It uses the STIX Match font to have the correct character at the LuaLaTeX engine level.
-\newsavebox{\lstbreakbox}
-\sbox{\lstbreakbox}{\textcolor{red}{\mystixmathfont ↪}\space}
-
-\lstdefinestyle{latexExampleForAuthors}{
-    language=[LaTeX]{TeX},
-    breaklines=true,
-    postbreak=\usebox{\lstbreakbox},
-    basicstyle=\small\ttfamily,
-    keywordstyle=\color{blue}\sffamily,
-    identifierstyle=\color{magenta},
-    commentstyle=\color{cyan},
-    backgroundcolor=\color{yellow!15},
-    tabsize=2,
-    columns=flexible,
-    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
-      courseCode, courseCredits, programcode, degreeName, subjectArea, educationSubjectcode,
-      nationalsubjectcategories, todo, subsection}
-}
-
 
 % Set up the header and footer for plain style pages
 \fancypagestyle{plain}{%
