@@ -30,56 +30,32 @@
     
 \fi
 \makeatother
-\hypersetup{
-     pdfsubject={\myalttitle}        % Subject field
-}
-
-\ifinswedish
-\XMPLangAlt{en}{pdfsubject={\myalttitle}}
-\else
-\XMPLangAlt{sv}{pdfsubject={\myalttitle}}
-\fi
-
 
 \ifinswedish
 \hypersetup{%
     pdflang={sv},
     pdfmetalang={sv},
-    pdftitle={\mytitle}        % Title field
+    %pdftitle={\mytitle}        % Title field
+    pdftitle = {[sv]{{\mytitle}}, [en]{{\myalttitle}}},
 }
-\XMPLangAlt{en}{pdftitle={\myalttitle}}
 \else
 \hypersetup{%
     pdflang={en},
     pdfmetalang={en},
-    pdftitle={\mytitle}        % Title field
+    %pdftitle={\mytitle}        % Title field
+    pdftitle = {[en]{{\mytitle}}, [sv]{{\myalttitle}}},
 }
-\XMPLangAlt{sv}{pdftitle={\myalttitle}}
 \fi
 
 \makeatletter
-\ltx@ifpackageloaded{hyperxmp}{
-\ifx\@secondAuthorsLastname\@empty
-% Note that \hyxmp@comma is used explicitly rather than \xmpcomma
-% As the later will simply turn into a comma in this context.
-\StrSubstitute{\@authorsLastname}{,}{\hyxmp@comma}[\@authorsLastnameXMP]
-    \newcommand{\myauthor}{\xmpquote{\@authorsFirstname\space\@authorsLastnameXMP}} 
-\else
-% Note that \hyxmp@comma is used explicitly rather than \xmpcomma
-% As the later will simply turn into a comma in this context.
-\StrSubstitute{\@authorsLastname}{,}{\hyxmp@comma}[\@authorsLastnameXMP]
-\StrSubstitute{\@secondAuthorsLastname}{,}{\hyxmp@comma}[\@secondAuthorsLastnameXMP]
-    \newcommand{\myauthor}{\xmpquote{\@authorsFirstname\space\@authorsLastnameXMP},
-\xmpquote{\@secondAuthorsFirstname\space\@secondAuthorsLastnameXMP}}
-\fi
-}{
+
 \ifx\@secondAuthorsLastname\@empty
     \newcommand{\myauthor}{\@authorsFirstname\space\@authorsLastname} 
 \else
     \newcommand{\myauthor}{\@authorsFirstname\space\@authorsLastname,
 \space\@secondAuthorsFirstname\space\@secondAuthorsLastname}
 \fi
-}% end of ifpackage conditional
+
 \makeatother
 
 \hypersetup{
@@ -87,29 +63,42 @@
 }
 
 
+\ExplSyntaxOn
 \makeatletter
-\ifx\@EnglishKeywords\@empty
-    \ifx\@SwedishKeywords\@empty
-        \newcommand{\mykeywords}{}
-    \else
-    \newcommand{\mykeywords}{\@SwedishKeywords}
-    \fi
-\else
-    \ifx\@SwedishKeywords\@empty
-        \newcommand{\mykeywords}{\@EnglishKeywords}
-    \else
-        \ifinswedish
-            \newcommand{\mykeywords}{\@SwedishKeywords, \@EnglishKeywords}
-        \else
-            \newcommand{\mykeywords}{\@EnglishKeywords, \@SwedishKeywords}
-        \fi
-    \fi
-\fi
-\makeatother
+\cs_new_protected:Npn \build_tagged_keywords: {
+  \clist_clear:N \l_tmpa_clist
 
-\hypersetup{
-     pdfkeywords={\mykeywords}        % Keywords field
-}        
+  % Add English keywords tagged with [en]
+  \tl_if_empty:NF \@EnglishKeywords {
+    \clist_map_inline:Nn \@EnglishKeywords {
+      \tl_set:Nn \l_tmpa_tl {##1}
+      \tl_trim_spaces:N \l_tmpa_tl
+      \clist_put_right:Ne \l_tmpa_clist { [en]{\exp_not:V \l_tmpa_tl} }
+    }
+  }
+
+  % Add Swedish keywords tagged with [sv]
+  \tl_if_empty:NF \@SwedishKeywords {
+    \clist_map_inline:Nn \@SwedishKeywords {
+      \tl_set:Nn \l_tmpa_tl {##1}
+      \tl_trim_spaces:N \l_tmpa_tl
+      \clist_put_right:Ne \l_tmpa_clist { [sv]{\exp_not:V \l_tmpa_tl} }
+    }
+  }
+
+  % Construct the complete argument for \hypersetup: "pdfkeywords = { ... }"
+  \tl_set:Ne \l_tmpb_tl { pdfkeywords = { \clist_use:Nn \l_tmpa_clist { ,~ } } }
+
+  % Pass the single formatted key-value pair to \hypersetup
+  \exp_args:NV \hypersetup \l_tmpb_tl
+}
+
+\cs_set_eq:NN \buildTaggedKeywords \build_tagged_keywords:
+\makeatother
+\ExplSyntaxOff
+
+
+
 % I have _not_ set the following fields:
 %    pdfcreator             % Creator field
 %    pdfproducer            % Producer field
@@ -131,28 +120,104 @@
      pdfcontactemail={\mykthids}        % Subject field
 }
 
+\ExplSyntaxOn
+\makeatletter
+\cs_new_protected:Npn \build_pdf_subject: {
+  % 1. Determine localized degree string with XXX placeholder handling
+  \ifinswedish
+    \str_case:VnF \@degreeName {
+      { Doctorate }  { \tl_set:Nn \l_tmpa_tl { Doktorsavhandling } }
+      { Licentiate } { \tl_set:Nn \l_tmpa_tl { Licentiatavhandling } }
+      { XXX }        { \tl_set:Nn \l_tmpa_tl { XXX-avhandling } }
+    } { \tl_set:Nn \l_tmpa_tl { Avhandling } }
+    \tl_set:Ne \l_tmpb_tl { \l_tmpa_tl \space inom \space \exp_not:V \@subjectArea }
+  \else
+    \str_case:VnF \@degreeName {
+      { Doctorate }  { \tl_set:Nn \l_tmpa_tl { Doctoral~Thesis } }
+      { Licentiate } { \tl_set:Nn \l_tmpa_tl { Licentiate~Thesis } }
+      { XXX }        { \tl_set:Nn \l_tmpa_tl { XXX~Thesis } }
+    } { \tl_set:Nn \l_tmpa_tl { Thesis } }
+    \tl_set:Ne \l_tmpb_tl { \l_tmpa_tl \space in \space \exp_not:V \@subjectArea }
+  \fi
+
+  % 2. Pack as a single key-value token list
+  \tl_set:Ne \l_tmpa_tl { pdfsubject = { \exp_not:V \l_tmpb_tl } }
+
+  % 3. Pass the clean key-value pair to \hypersetup
+  \exp_args:NV \hypersetup \l_tmpa_tl
+}
+
+\cs_set_eq:NN \buildPdfSubject \build_pdf_subject:
+\makeatother
+\ExplSyntaxOff
+
 % Add the TRITA number to the metadata
 % Get and store information about the series and the number within this series, i.e, TRITA numbers
 %"Series": \{
 %	"Title of series": "TRITA-ICT-EX"
 %	"No. in series": "2019:00"
+\ExplSyntaxOn
 \makeatletter
-\ifinswedish
-\hypersetup{
-        pdfvolumenum={\@thesisSeries},        % put the series in the volume field
-        pdfissuenum={\@thesisSeriesNumber},
-        pdfpublisher={Kungliga Tekniska högskolan (KTH)},
-        pdfpubtype={report}
+\cs_generate_variant:Nn \pdfmeta_xmp_add:n { e }
+
+\cs_new_protected:Npn \inject_prism_metadata: {
+  \tl_clear:N \l_tmpa_tl
+
+  % Series / Volume
+  \tl_if_empty:NF \@thesisSeries {
+    \tl_put_right:Ne \l_tmpa_tl {
+      \space\space\space\space<prism:volume>\exp_not:V \@thesisSeries</prism:volume>^^J
+    }
+  }
+
+  % Issue / Series Number
+  \tl_if_empty:NF \@thesisSeriesNumber {
+    \tl_put_right:Ne \l_tmpa_tl {
+      \space\space\space\space<prism:number>\exp_not:V \@thesisSeriesNumber</prism:number>^^J
+    }
+  }
+
+  % Publication Type (already registered as 'aggregationType' or custom property)
+  \tl_put_right:Nn \l_tmpa_tl {
+    \space\space\space\space<prism:publicationType>report</prism:publicationType>^^J
+  }
+
+  % Inject properties directly into the existing outer <rdf:Description>
+  \pdfmeta_xmp_add:e { \l_tmpa_tl }
 }
-\else
-\hypersetup{
-        pdfvolumenum={\@thesisSeries},        % put the series in the volume field
-        pdfissuenum={\@thesisSeriesNumber},
-        pdfpublisher={KTH Royal Institute of Technology},
-        pdfpubtype={report}
-}
-\fi
+
+\cs_set_eq:NN \injectPrismMetadata \inject_prism_metadata:
 \makeatother
+\ExplSyntaxOff
 
+\ExplSyntaxOn
+\makeatletter
+\cs_new_protected:Npn \inject_publisher_metadata: {
+  \tl_clear:N \l_tmpa_tl
 
+  \ifinswedish
+    \tl_set:Nn \l_tmpa_tl { Kungliga~Tekniska~högskolan~(KTH) }
+  \else
+    \tl_set:Nn \l_tmpa_tl { KTH~Royal~Institute~of~Technology }
+  \fi
+
+  % Inject directly into dc:publisher as an rdf:Bag
+  \pdfmeta_xmp_add:e {
+    \space\space\space\space<dc:publisher>^^J
+    \space\space\space\space\space\space<rdf:Bag>^^J
+    \space\space\space\space\space\space\space\space<rdf:li>\exp_not:V \l_tmpa_tl</rdf:li>^^J
+    \space\space\space\space\space\space</rdf:Bag>^^J
+    \space\space\space\space</dc:publisher>^^J
+  }
+}
+
+\cs_set_eq:NN \injectPublisherMetadata \inject_publisher_metadata:
+\makeatother
+\ExplSyntaxOff
+
+% Now that the English and Swedish keywords, subject, and TRITA number are defined, we can use them in the PDF information
+\buildTaggedKeywords
+\buildPdfSubject
+\injectPrismMetadata
+\injectPublisherMetadata
 % summary
