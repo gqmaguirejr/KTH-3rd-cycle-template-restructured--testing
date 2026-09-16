@@ -15,7 +15,7 @@
 
 \RequirePackage{expl3}
 \RequirePackage{etoolbox}
-\ifluatex
+
 % The following is to ensure that the PDF uses a recent version rather than the typical PDF 1-5
 %  This same version of PDF should be set as an option for hyperef
 
@@ -30,17 +30,21 @@
 %% testphase = phase-I, % tagging without paragraph tagging
 % testphase = phase-II % tagging with paragraph tagging and other new stuff.
 %pdfversion = 2.0 % pdfversion must be set here.
+
 %}
+\DocumentMetadata{
+    % pdfversion  = 2.0,
+    % pdfstandard = A-4,
+    pdfversion=1.7,
+    pdfstandard=A-2u,
+    lang        = en-US
+}
+
 
 % Optionally, you can set the uncompress flag to make it easier to examine the PDF
 %\pdf_uncompress: % to check the pdf
 \ExplSyntaxOff
-\else
-\ExplSyntaxOn
-%\pdf_version_gset:n{2.0}
-\pdf_version_gset:n{1.6}
-\ExplSyntaxOff
-\fi
+
 
 %% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
 \makeatletter
@@ -223,7 +227,9 @@ morekeywords={begin, todo, textbf, textit, texttt}
 
 \hypersetup{
  plainpages=false,
+ colorlinks=true,       % if colored text is acceptable in print
                         % PDF related options
+ pdfborder={0 0 0},          % Suppresses print bounding boxes
  unicode=true,          % Unicode encoded PDF strings
  pdfencoding=auto,      % for unicode in 
 }
@@ -261,17 +267,18 @@ morekeywords={begin, todo, textbf, textit, texttt}
 \IfFileExists{custom_configuration_plaintext.tex}{\input{custom_configuration_plaintext.tex}}{}
 % this file could have been created using https://www.overleaf.com/read/tcbkkbjqnkpr#ecb9da
 
-% Put the title, author, and keyword information into the PDF meta information
+% Put the title, author, keyword, and other information into the PDF meta information
 \input{lib/pdf_related_includes}
+
 
 % the custom colors and the commands are defined in defines.tex    
 \hypersetup{
 	colorlinks  = true,
-	breaklinks  = true,
+	% breaklinks  = true, % Not needed with hyperref-generic driver
 	linkcolor   = \linkscolor,
 	urlcolor    = \urlscolor,
 	citecolor   = \refscolor,
-	anchorcolor = black
+	% anchorcolor = black % Not needed with hyperref-generic driver
 }
 
 \ifnomenclature
@@ -413,6 +420,14 @@ morekeywords={begin, todo, textbf, textit, texttt}
 \makeatother
 \input{lib/check_for_placeholder_references}
 
+\makeatletter
+% Restore the standard LaTeX2e definition of \@makefntext so the tagging parser succeeds:
+\renewcommand\@makefntext[1]{%
+  \parindent 1em%
+  \noindent
+  \hb@xt@1.8em{\hss\@makefnmark}#1%
+}
+\makeatother
 \listfiles
 \begin{document}
 %\selectlanguage{swedish}  %% for a thesis in Swedish
@@ -890,9 +905,9 @@ och förkortningar}]
     % alternatively use \small as the size - this may be suitable if you have titles that contain characters not in Figtree
     {\FigtreeFont\fontsize{11}{13}\fontshape{n}\selectfont
 % Check if there was an automatically generated list of publications file.
-%\IfFileExists{lib/publications\_generated}{
-%      \input{lib/publications_generated}
-%}{
+\IfFileExists{lib/publications\_generated}{
+     \input{lib/publications_generated}
+}{
     \begin{ListOfPapers}
         \item \label{paper:A} Coherent {File} {Distribution} {Protocol}\cite{ioannidis_coherent_1991}
         \item \label{paper:B} A {New} {Automated} {Way} to {Measure}{Polyethylene} {Wear} in {THA} {Using} a {High} {Resolution} {CT} {Scanner}: {Method} and {Analysis}\,\cite{maguire_jr_new_2014}
@@ -913,7 +928,7 @@ och förkortningar}]
 Networking - Artifact for ASPLOS’21\,\cite{10.5281/zenodo.4435970}
     \end{ListOfArtifacts}
     } % end of font application
-%}
+}
     \engExpl{Those who want can also list other peer-reviewed original scientific publications not included in the thesis. I would include granted patents (relevant to the thesis) in this list.}
     \warningExpl{When using BibLaTeX, \ref{paper:F} shows an example of how you can easily include the title by simply citing the title field of a reference. \\In contrast, \ref{paper:G} shows how you can use the unicode version of the characters and explicitly control the font used to set them.}
     \section*{Scientific papers not included in the thesis}

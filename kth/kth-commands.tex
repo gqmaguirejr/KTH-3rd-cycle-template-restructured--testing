@@ -88,60 +88,58 @@
 \let\@authorCountry\@empty
 \newcommand{\authorCountry}[1]{\def\@authorCountry{#1}}
 \let\@authorCityCountryDate\@empty
-% Define the command so that if a date is not specified it will not output the comma; it only outputs the comma if there is a date.
 \ExplSyntaxOn
-\cs_set_eq:NN  \IfEmptyTF  \tl_if_blank:nTF
-\ExplSyntaxOff
 \NewDocumentCommand{\authorCityCountryDate}{m}{
-\def\@authorCityCountryDate{\ifx\@authorCity\@empty%
-    Stockholm%
-    \else%
-    \ifx\@authorCountry\@empty%
-    \@authorCity%
-    \else%
-    \@authorCity, \@authorCountry%
-    \fi%
-    \fi%
-    \IfEmptyTF{#1}{}{, #1}%
-    }%
+  \cs_set:Npn \@authorCityCountryDate {
+    \tl_if_empty:NTF \@authorCity
+      { Stockholm }
+      {
+        \@authorCity
+        \tl_if_empty:NF \@authorCountry
+          { ,~ \@authorCountry }
+      }
+    \tl_if_blank:nF {#1} { ,~ #1 }
+  }
 }
-\authorCityCountryDate{\MONTH\enspace\the\year} % default month and year for the acknowledgement signature
+\ExplSyntaxOff
+\authorCityCountryDate{\DTMmonthname{\month}\enspace\the\year}
 
 % Second author's information
-\let\@secondAuthorsLastname\@empty
+\let\@secondAuthorsLastname\@empty%
 \newcommand{\secondAuthorsLastname}[1]{\def\@secondAuthorsLastname{#1}}
-\let\@secondAuthorsFirstname\@empty
+\let\@secondAuthorsFirstname\@empty%
 \newcommand{\secondAuthorsFirstname}[1]{\def\@secondAuthorsFirstname{#1}}
-\let\@secondemail\@empty
+\let\@secondemail\@empty%
 \newcommand{\secondemail}[1]{\def\@secondemail{#1}}
-\let\@secondkthid\@empty
+\let\@secondkthid\@empty%
 \newcommand{\secondkthid}[1]{\def\@secondkthid{#1}}
-\let\@secondorcid\@empty
+\let\@secondorcid\@empty%
 \newcommand{\secondorcid}[1]{\def\@secondorcid{#1}}
-\let\@secondAuthorsSchool\@empty
+\let\@secondAuthorsSchool\@empty%
 \newcommand{\secondAuthorsSchool}[1]{\def\@secondAuthorsSchool{#1}}
-\let\@secondAuthorsDepartment\@empty
+\let\@secondAuthorsDepartment\@empty%
 \newcommand{\secondAuthorsDepartment}[1]{\def\@secondAuthorsDepartment{#1}}
 % Information about the city and country for the acknowledgement
-\let\@secondAuthorCity\@empty
+\let\@secondAuthorCity\@empty%
 \newcommand{\secondAuthorCity}[1]{\def\@secondAuthorCity{#1}}
-\let\@secondAuthorCountry\@empty
+\let\@secondAuthorCountry\@empty%
 \newcommand{\secondAuthorCountry}[1]{\def\@secondAuthorCountry{#1}}
-\let\@secondAuthorCityCountryDate\@empty
+\let\@secondAuthorCityCountryDate\@empty%
 % Define the command so if a date is not specified it will not output the comma; it only outputs the comma if there is a date.
+\ExplSyntaxOn
 \NewDocumentCommand{\secondAuthorCityCountryDate}{m}{
-\def\@secondAuthorCityCountryDate{\ifx\@secondAuthorCity\@empty%
-    Stockholm%
-    \else%
-    \ifx\@secondAuthorCountry\@empty%
-    \@secondAuthorCity%
-    \else%
-    \@secondAuthorCity, \@secondAuthorCountry%
-    \fi%
-    \fi%
-    \IfEmptyTF{#1}{}{, #1}%%
-    }%
+  \cs_set:Npn \@secondAuthorCityCountryDate {
+    \tl_if_empty:NTF \@secondAuthorCity
+      { Stockholm }
+      {
+        \@secondAuthorCity
+        \tl_if_empty:NF \@secondAuthorCountry
+          { ,~ \@secondAuthorCountry }
+      }
+    \tl_if_blank:nF {#1} { ,~ #1 }
+  }
 }
+\ExplSyntaxOff
 
 \let\@supervisorAsLastname\@empty
 \newcommand{\supervisorAsLastname}[1]{\def\@supervisorAsLastname{#1}}

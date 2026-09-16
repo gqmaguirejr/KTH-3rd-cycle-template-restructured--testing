@@ -191,7 +191,7 @@
   {\FigtreeFont\fontsize{12}{13}\selectfont 
   \IfEqCase{\@degreeName}{%
     {Doctorate}{Doktorsavhandling}%
-    {Licentiate}{Licentitatavhandling}%
+    {Licentiate}{Licentiatavhandling}%
     {XXX}{\textcolor{red}{XXXavhandling}}%
     }[\typeout{unknown degreeName}]%
 \ inom \@subjectArea\\
@@ -574,8 +574,7 @@ Stockholm, Sweden \the\year\par
 }
 \end{flushleft}
 \thesiscopyrightleft{copyright}
-% make the following code conditional upon the package hyperxmp being used
-\ltx@ifpackageloaded{hyperxmp}{
+
 % The following is only used to add the copyright notice to the metadata of the PDF file
 \newcommand{\mycopyright}{%
    {{Copyright (c)}\ \the\year\ \@authorsFirstname\ \@authorsLastname %
@@ -592,7 +591,7 @@ Stockholm, Sweden \the\year\par
 \hypersetup{
      pdfcopyright={\mycopyright} 
 }
-}{}% end of ifpackage conditional
+
 \restoregeometry
 \clearpage
 }
@@ -671,9 +670,6 @@ Stockholm, Sweden \the\year\par
    } 
 \end{flushleft}
 \thesiscopyrightleft{\doclicense@modifier}
-% make the following code conditional upon the package hyperxmp being used
-
-\ltx@ifpackageloaded{hyperxmp}{
 \let\@myCC\@empty
 \ifdefstring{\doclicense@modifier}{by}{\def\@myCC{CC BY}}{}
 \ifdefstring{\doclicense@modifier}{by-nc}{\def\@myCC{CC BY-NC}}{}
@@ -699,7 +695,7 @@ Stockholm, Sweden \the\year\par
 \hypersetup{
      pdfcopyright={\mycopyright} 
 }
-}{}% end of ifpackage conditional
+
 \restoregeometry
 \clearpage
 }

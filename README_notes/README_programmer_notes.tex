@@ -355,9 +355,11 @@ Extension = .ttf,
 \fancypagestyle{empty}{}
 \warningExpl{\textbf{This document is a work in progress.}}
 
-This document describes the thesis template that I have developed for use at \gls{KTH} and provides some background on why it is structured in this way. This document provides information for programmers about the template, particularly on how it can be utilized in conjunction with specific programs to facilitate the thesis process for students, faculty, and administrators. The document is primarily intended for readers who are comfortable with programming or who need to maintain or modify the template or the programs I have written.
+\begin{abstract}
+This document describes the thesis template I developed for use at \gls{KTH} and explains why it is structured this way. This document provides programmers with information about the template, particularly how to use it with specific programs to support the thesis process for students, faculty, and administrators. The document is primarily intended for readers who are comfortable with programming or who need to maintain or modify the template or the programs I have written.
 
 \warningExpl{{\mystixmathfont ☡} This is a very deep dive that is probably only of interest to a \textit{very} small number of readers.}
+\end{abstract}
 \cleardoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -374,6 +376,7 @@ This document describes the thesis template that I have developed for use at \gl
  
 \setcounter{page}{1}
 \pagenumbering{arabic}
+\glsresetall
 \section{Introduction}
 \label{sec:IntroForProgrammers}
 
@@ -469,7 +472,7 @@ The overall flow is shown in \Cref{fig:LogicalOverviewOfWhatIsDone2}. Notice tha
 
 \Cref{tab:inforAndItsUses} shows the relationship between the information and the scripts that use it. The sections highlighted in yellow are optional. For example, only 1\textsuperscript{st} cycle theses will have a second author. While all theses will have two supervisors, some may have more (the scripts support up to 10).
 
-Individuals can be associated with KTH, in this case, they have a Local User Id and an organization element (with the implicit top level (L0) being KTH). The organization levels of L1 == School and L2 == Department. It is possible to extend this further, but the programs currently only support L1 and L2. The Title and Alternative title fields are used to support the English and Swedish title (or visa versa) -– similarly, the abstracts and keywords must include English and Swedish versions; with additional support for abstracts and keywords in many languages. Where a school should be specified, one can use \texttt{\textbackslash schoolAcronym\{xxxx\}}.
+Individuals can be associated with \gls{KTH}, in this case, they have a Local User Id and an organization element (with the implicit top level (L0) being \gls{KTH}). The organization levels of L1 == School and L2 == Department. It is possible to extend this further, but the programs currently only support L1 and L2. The Title and Alternative title fields are used to support the English and Swedish title (or visa versa) -– similarly, the abstracts and keywords must include English and Swedish versions; with additional support for abstracts and keywords in many languages. Where a school should be specified, one can use \texttt{\textbackslash schoolAcronym\{xxxx\}}.
 
 The Canvas course room’s course\_id is often an argument to my scripts. One reason for this is to be able to use the information in the course room to translate a local user ID (\ie a kthid) to an integration ID (\ie a LADOK user ID) or to be able to look up details of an author or supervisor.
 
@@ -1218,7 +1221,7 @@ Compiling \fname{Generate\_titles\_in\_plain\_text.tex} will generate a file nam
 
 There is another Overleaf project that provides more details on this and gives examples of additional testing; see \url{https://www.overleaf.com/read/dfsjdqmcjmtp#0043d3}.
 
-I believe that this code can handle a large fraction of all of the titles and subtitles that have previously been used at KTH. 
+I believe that this code can handle a large fraction of all of the titles and subtitles that have previously been used at \gls{KTH}. 
 
 
 \section{What can we do with the JSON file?}
@@ -1251,7 +1254,7 @@ We can produce all three outputs with the command shown in \Cref{lst:JSONtoCalen
 JSON_to_calendar.py -c 11 --config config-test.json
 \end{lstlisting}
 
-Note that in this case, the \fname{config-test.json} configuration file was used to make use of the \textbf{test} Canvas course room instance as well as the \textbf{test} Cortina instance. To use this with the production instances, you would use your usual \fname{config.json} configuration file. In either case, your configuration file needs to include a KTH API key to access Cortina.
+Note that in this case, the \fname{config-test.json} configuration file was used to make use of the \textbf{test} Canvas course room instance as well as the \textbf{test} Cortina instance. To use this with the production instances, you would use your usual \fname{config.json} configuration file. In either case, your configuration file needs to include a \gls{KTH} API key to access Cortina.
 
 
 
@@ -1261,7 +1264,7 @@ Note that in this case, the \fname{config-test.json} configuration file was used
 For testing purposes, I also created functionality in \fname{JSON\_to\_calendar.py} to insert a fixed event (this was my first test) and to take as input a \gls{MODS} file. The MODS file was created from a \gls{DiVA} feed of theses presented in 2020 through to the 25\textsuperscript{th} of April 2021. However, one limitation that I found is that, other than myself, few people have been entering the date and time for the oral presentation. Unfortunately, since I wanted to test making calendar announcements, I needed the date and time!
 
 \Needspace*{2\baselineskip}
-\textbf{NB}: I have assumed that each degree project presentation lasts one hour. This assumption was made since the KTH Cortina calendar API needs both a starting and ending time. There is currently no support for specifying the duration of third-cycle presentations. However, looking at a calendar event for a doctoral defense on 2025-06-05, only the starting time appears in the event.
+\textbf{NB}: I have assumed that each degree project presentation lasts one hour. This assumption was made since the \gls{KTH} Cortina calendar API needs both a starting and ending time. There is currently no support for specifying the duration of third-cycle presentations. However, looking at a calendar event for a doctoral defense on 2025-06-05, only the starting time appears in the event.
 
 These other variants probably should \textbf{not} be kept, but rather the architecture should be similar to that shown in \Cref{fig:severalPossibleInputs}. Additionally, when taking data from other types of sources, one can take advantage of the data that is in a Canvas degree project course room to help when processing the source data.
 
@@ -1302,7 +1305,7 @@ These other variants probably should \textbf{not} be kept, but rather the archit
 \label{sec:requestISBN}
 The web page at \href{https://www.kth.se/en/biblioteket/publicera-analysera/vagledning-for-publicering/bestall-isbn-1.854778}{Create an ISBN number} and be used to request an \gls{ISBN}.
 
-This form requires the TRITA series and number, as well \first, as whether the request is for a Doctoral/licentiate thesis or Report, \Second the title of publication, and \third first authors': (a) last name, (b) first name, (c) KTH id, and (d) e-mail address. Fortunately, all of this information should be available in the \fname{fordiva.json}  file, so it should be possible to use this to request assignment of an \gls{ISBN}.
+This form requires the TRITA series and number, as well \first, as whether the request is for a Doctoral/licentiate thesis or Report, \Second the title of publication, and \third first authors': (a) last name, (b) first name, (c) \gls{KTH} id, and (d) e-mail address. Fortunately, all of this information should be available in the \fname{fordiva.json}  file, so it should be possible to use this to request assignment of an \gls{ISBN}.
 
 As all the required information is in the \fname{fordiva.json} file, the program \texttt{request-ISBN-with-JSON.py} at \url{https://github.com/gqmaguirejr/E-learning} can be used to automate the process of making a request for an ISBN. The program generates a \fname{assigned-ISBN.tex} file containing the assigned ISBN. This file can be uploaded to the project and will automatically be used rather than the placeholder in \fname{custom\_configuration.tex}.
 It can be run as shown in \Cref{lst:requestISBN}.
@@ -1739,7 +1742,7 @@ Click on “Import” again to load the file. The \gls{MODS} file is loaded and 
   \label{fig:divaImport10}
 \end{figure}
 \FloatBarrier
-\Cref{fig:divaImport11} shows the three supervisors. The first two have KTH affiliations and the third is from an external organization.
+\Cref{fig:divaImport11} shows the three supervisors. The first two have \gls{KTH} affiliations, and the third is from an external organization.
 \begin{figure}[!ht]
   \begin{center}
     \fbox{\includegraphics[width=0.6\textwidth]{README_notes/README-examiner-figures/import-g-Screenshot_20210626_235510.png}}
@@ -1760,7 +1763,7 @@ Click on “Import” again to load the file. The \gls{MODS} file is loaded and 
 
 
 \subsection{Limitations}
-I was initially unable to get the KTH affiliations correctly entered. I did not understand the description of how to do this at: \url{ https://wiki.epc.ub.uu.se/pages/viewpage.action?pageId=27466001}  where it says:
+I was initially unable to get the \gls{KTH} affiliations correctly entered. I did not understand the description of how to do this at: \url{ https://wiki.epc.ub.uu.se/pages/viewpage.action?pageId=27466001}  where it says:
 \selectlanguage{swedish}
 \begin{quote}
     För att göra en sådan koppling skall dels ”affiliation” finnas i personelementet dels ett name-element med ID i xlink:href samt ett namePart-element med samma namn som affiliation. Om man har bägge nedanstående element i exemplet kommer Urban Ericsson automatiskt att kopplas till Universitetsbiblioteket i Uppsala vid importen. Om enbart personelementet finns men inte det andra kommer Urban Ericsson att få Uppsala universitet, Universitetsbiblioteket som ”Annat lärosäte” vid imported.
@@ -1805,7 +1808,7 @@ The first limitation to be overcome was entering the particular number in the se
 \FloatBarrier
 
 \subsubsection{Including KTH affiliations}
-Earlier, those with KTH affiliations were appearing in the “Other organization” field. The error in my understanding was how the controlled fields for KTH authors was being used\footnote{These so-called "controlled" fields have specific values that are permitted and these have numeric IDs assigned by the DiVA Consortium.}. We will start by looking at the two KTH-affiliated supervisors (see \Cref{fig:twoKTHsupervisors}), the third supervisor (see \Cref{fig:thirdSupervisor}), and the examiner (see \Cref{fig:examiner}). The \gls{MODS} data for these four people is shown in \Cref{lst:reducedModesExaminerAndSupervisors} and the “magic” \textbf{corporate name} \gls{MODS} data is shown in \Cref{lst:reducedModesCorpNames}. The trick is that there needs to be corporate name \gls{MODS} data for each of the possible affiliations – as this is the way that one passes the \gls{DiVA} numeric code via the \texttt{xlink} information. Note that in the case of the examiner, two different affiliations were specified and there was a corporate name entry for each of them. Moreover, the key is just to have test extra corporate name entries, only one is needed for the publishers, as shown in \Cref{lst:reducedModesCorpNames} – with the results in \Cref{fig:twoSupervisorsReducedMODS} and shown \Cref{fig:examinerReducedMODS}.
+Earlier, those with \gls{KTH} affiliations were appearing in the “Other organization” field. The error in my understanding was how the controlled fields for \gls{KTH} authors was being used\footnote{These so-called "controlled" fields have specific values that are permitted and these have numeric IDs assigned by the DiVA Consortium.}. We will start by looking at the two \gls{KTH}-affiliated supervisors (see \Cref{fig:twoKTHsupervisors}), the third supervisor (see \Cref{fig:thirdSupervisor}), and the examiner (see \Cref{fig:examiner}). The \gls{MODS} data for these four people is shown in \Cref{lst:reducedModesExaminerAndSupervisors} and the “magic” \textbf{corporate name} \gls{MODS} data is shown in \Cref{lst:reducedModesCorpNames}. The trick is that there needs to be corporate name \gls{MODS} data for each of the possible affiliations – as this is the way that one passes the \gls{DiVA} numeric code via the \texttt{xlink} information. Note that in the case of the examiner, two different affiliations were specified and there was a corporate name entry for each of them. Moreover, the key is just to have test extra corporate name entries, only one is needed for the publishers, as shown in \Cref{lst:reducedModesCorpNames} – with the results in \Cref{fig:twoSupervisorsReducedMODS} and shown \Cref{fig:examinerReducedMODS}.
 
 \textbf{NB}: The ICT affiliations (and \gls{DiVA} codes) were used and the pictures are all from the test DiVA environment: \url{https://kth.test.diva-portal.org/dream/import/importList.jsf}.
 
@@ -1933,7 +1936,7 @@ The discussion of accessibility has been divided into accessibility of the calen
 
 \subsection{Calendar entries}
 \label{sec:accessibilityOfCalendarEntries}
-The calendar entries that are generated in the Canvas course room are as accessible as all content in Canvas (as Instructure tries to follow the W3C \gls{WCAG}). The European standard EN 301 549 V2.1.2 (based upon WACG 2.1) are the accessibility guidelines for web content that are recommended in Sweden by \gls{DIGG}, based upon the presentation by Tommy Olsson of \gls{DIGG} to the SUNET SALSA group\footnote{\url{https://wiki.sunet.se/pages/viewpage.action?pageId=30441654}} on 2021-06-03. Moreover, the contents are \gls{HTML} language-tagged, so that a text-to-speech program that has access within Canvas (such as ReaderSpaker (when run as an \gls{LTI} app)) could read the content with the correct pronunciation for each of the two languages. Note that KTH’s current screen reader solution does \textbf{not} access the \gls{HTML} of the page and hence it does not use the language tags, thus the user must manually choose the language for output.
+The calendar entries that are generated in the Canvas course room are as accessible as all content in Canvas (as Instructure tries to follow the W3C \gls{WCAG}). The European standard EN 301 549 V2.1.2 (based upon WACG 2.1) are the accessibility guidelines for web content that are recommended in Sweden by \gls{DIGG}, based upon the presentation by Tommy Olsson of \gls{DIGG} to the SUNET SALSA group\footnote{\url{https://wiki.sunet.se/pages/viewpage.action?pageId=30441654}} on 2021-06-03. Moreover, the contents are \gls{HTML} language-tagged, so that a text-to-speech program that has access within Canvas (such as ReaderSpaker (when run as an \gls{LTI} app)) could read the content with the correct pronunciation for each of the two languages. Note that \gls{KTH}’s current screen reader solution does \textbf{not} access the \gls{HTML} of the page and hence it does not use the language tags; thus, the user must manually choose the language for output.
 
 The calendar entries in the \gls{KTH} Calendar are in the same format as the current calendar entries. The structure of these entries has been developed in consultation with XXXXXX (who works with the \gls{KTH} Web) and the \gls{KTH} Calendar \gls{API} developer XXXXX, together with the additional help of XXXXXX. Note that the last of these was the original developer of the \gls{KTH} cover generator.
 
@@ -1941,7 +1944,7 @@ The calendar entries in the \gls{KTH} Calendar are in the same format as the cur
 \label{sec:ccessibilityOfCoverandPDF}
 The \gls{PDF} metadata (author(s), title(s), keywords, \etc) is accessible to any programs that use the \gls{PDF} metadata (this is a standard feature of \gls{PDF} files). Unfortunately, there are no provisions for language markup for this data.
 
-No investigation has been made of the accessibility of the KTH cover nor of the contents of the \gls{PDF} file (\ie the thesis itself). The \gls{PDF} output by Overleaf appears to be \gls{PDF} version 1.5 (\ie thus it is accessible via Acrobat version 6 or later). The \fname{examplethesis.tex} file has code to change this version.
+No investigation has been made of the accessibility of the \gls{KTH} cover nor of the contents of the \gls{PDF} file (\ie the thesis itself). The \gls{PDF} output by Overleaf appears to be \gls{PDF} version 1.5 (\ie thus it is accessible via Acrobat version 6 or later). The \fname{examplethesis.tex} file has code to change this version.
 
 The template utilizes color in conjunction with the \texttt{hyperref} colors and \texttt{todonotes}. The \texttt{hyperref} colors are defined as shown in \Cref{lst:colors}.
 \Needspace*{12\baselineskip}
@@ -1969,7 +1972,7 @@ Where the colors are defined as (note that the ForestGreen lacks sufficient cont
 
 Note that the colors do \textbf{not} encode any essential meaning (\ie they could all be turned to black), since the citations are recognizable by their format, the URL (and URI) by linking to an external document, and the links (by linking within the document).
 
-Some additional colors are defined and used for \texttt{todonotes} – they should, of course, be removed before the thesis is finalized (as of course all of these issues should have been resolved!). The default background color for todonotes is orange (which is predefined as \#FF7F00). The other colors are shown in \Cref{lst:todonotesColors}. The KTH colors are defined in \fname{kthcolors.tex}.
+Some additional colors are defined and used for \texttt{todonotes} – they should, of course, be removed before the thesis is finalized (as of course all of these issues should have been resolved!). The default background color for todonotes is orange (which is predefined as \#FF7F00). The other colors are shown in \Cref{lst:todonotesColors}. The \gls{KTH} colors are defined in \fname{kthcolors.tex}.
 \Needspace*{16\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, caption={Defines for todo notes}, label=lst:todonotesColors]
 %% Conventions for todo notes:
@@ -2032,7 +2035,7 @@ The \texttt{school\_subjects\_3rdcycle.ins} contents were generated from the dat
 
 \section[Generating LaTeX commands for in the student’s thesis source files]{Generating LaTeX commands for in the\linebreak[4] student’s thesis source files}
 \label{sec:GeneratingLatexCommands}
-The thesis makes use of a set of \LaTeX{} commands to collect information about the student and the supervisor(s) in the \fname{custom\_configuration.tex} file. However, how can a student know what their KTHID and other necessary information is?
+The thesis uses a set of \LaTeX{} commands to collect information about the student and the supervisor(s) in the \fname{custom\_configuration.tex} file. However, how can a student know what their KTHID and other necessary information is?
 
 There are two alternatives:
 \begin{itemize}
@@ -3569,7 +3572,7 @@ Add better support for the subject area (or areas in the case of a student doing
 
 \subsection{Better support for mathematical expressions in abstracts}
 \label{sec:betterSupportForMathInAbstracts}
-\LaTeX{} in the abstracts is passed through to the pseudo JSON in the “For DIVA” text at the end of the thesis. When preparing this text for Cortina calendar entries or for the announcement in the Canvas course room (and for the calendar event in the course room) some simple \LaTeX~commands are converted to \gls{HTML}. As few abstracts (in the many abstracts that I looked at in DiVA) have equations I have only done these few transformations. However, if there were to be more use of equations, then there is probably a need to support them for the different platforms (Cortina (see Appendix~\ref{sec:BetterSupportforMathinCortina}), DiVA (see Appendix~\ref{sec:SupportForMathematicsInDiVA}), and Canvas (see Appendix~\ref{sec:betterSupportMathInCortinaAndCourseCalendar})).
+\LaTeX{} in the abstracts is passed through to the pseudo-JSON in the “For DIVA” text at the end of the thesis. When preparing this text for Cortina calendar entries or for the announcement in the Canvas course room (and for the calendar event in the course room) some simple \LaTeX~commands are converted to \gls{HTML}. As few abstracts (in the many abstracts that I looked at in DiVA) have equations, I have only done these few transformations. However, if there were to be more use of equations, then there is probably a need to support them for the different platforms (Cortina (see Appendix~\ref{sec:BetterSupportforMathinCortina}), DiVA (see Appendix~\ref{sec:SupportForMathematicsInDiVA}), and Canvas (see Appendix~\ref{sec:betterSupportMathInCortinaAndCourseCalendar})).
 
 
 \subsubsection{Better support for mathematics in Canvas course announcement and course calendar}
@@ -3735,97 +3738,17 @@ Additionally, the commands (from \fname{lib/defines.tex}) are supported in abstr
 
 \subsection{URLs in abstracts}
 \label{sec:URLSinAbstracts}
-Currently, URLs in abstracts are supported in Canvas course room announcements and the Canvas calendar, but \textit{not} in the Cortina calendar – where the URL is simply shown as text.
+Currently, \glspl{URL} in abstracts are supported in Canvas course room announcements and the Canvas calendar, but \textit{not} in the Cortina calendar – where the \gls{URL} is simply shown as text.
 
-
-\section{Future work and work in progress}
-\label{sec:futurework}
-There are several areas where the template, supporting programs, and documentation can be enhanced. The programs and notebooks can be found in \fname{https://github.com/gqmaguirejr/Canvas-tools} or\linebreak[4]
-\fname{https://github.com/gqmaguirejr/E-learning}.
-
-\subsection{Automating creation of custom\_configuration.tex file}
-\label{sec:automatingConfiguration}
-
-To help collect information for the \fname{custom\_configuration.tex} file, I have written some programs.
-
-One of these programs is \fname{extract\_data\_from\_ISP.py}. It extracts some information from a PDF file of the student's \gls{ISP} and generates a JSON file. This is in an early stage, but it shows what can be done to extract data from a \gls{PDF} file of an \gls{ISP}.
-
-The program \fname{ISP\_JSON\_to\_configuration\_info.py} takes the JSON produced by \fname{extract\_data\_from\_ISP.py} and produces much of the information for the \fname{custom\_configuration.tex} file (with respect to the information available at the time the writing of the thesis starts).
-
-To get additional information for the author and supervisors, the program uses information from either a Canvas course room \textbf{or} requires Canvas administrative rights to be able to look up the user's KTHID using the Canvas \gls{API} and the user's email address. In addition, the program utilizes the KTH Profile \gls{API} to obtain further information about each person's organization, given an email address (if they are affiliated with KTH).
-
-\warningExpl{This program requires that you have a KTH API key.}
-
-\subsection{Automating creation of list of publications}
-\label{sec:automatingPublicationsList}
-
-The Jupyter notebook
-\fname{Compute\_publications\_list\_from\_DiVA-Notebook-20250907.ipynb} uses data from \fname{fordiva.json} and \fname{references.bib} files to look up the student's publications in DiVA and generate the LaTeX that might be used in a list of publications in a third-cycle thesis.
-
-This could be used for the \enquote{List of Publications} for a compilation thesis or for a list of papers and contributions in a monograph thesis. Note that the author will need to edit the resulting list to indicate which publications are included in a compilation thesis and which papers have not been included. The author may also need to move items from one category to another.
-
-\subsection{Helping students find the DiVA IDs of previous publications}
-\label{sec:getdivaIDs}
-The Jupyter notebook
-\fname{citations-to-DiVA-Notebook-20250811-all.ipynb} use data from the \fname{citedtags.bib} and \fname{fordiva.json} files look up DiVA IDs for these publications.
-
-This information is valuable when the student is entering the metadata for their thesis in DIVA.
-
-
-\subsection{JSON\_to\_Cora\_DiVA}
-\label{sec:JSONtoCoraDiVA}
-
-\warningExpl{Implemented JSON\_to\_Cora\_DiVA remains as future work.}
- 
-
-\subsection{Better exploiting unicode}
-\label{sec:betterExploitingUnicode}
-
-The current design stores the \LaTeX{} commands in abstracts \textit{without} expanding the \LaTeX{} macros. This makes it possible to post-process these commands and make content that is suited for making announcements of the oral presentation, making calendar entries for this presentation, and generating the abstracts for the \gls{MODS} file for \gls{DiVA}. However,  if one wants to take the full leap to unicode, this is perhaps not a good design choice, as it requires that all of the processing that \LaTeX{} could do of the unicode is not done and that the programs that extract the unexpanded contents will have to keep changing to keep up with what \LaTeX{} macros are used. 
-
-There might seem to be two alternatives:
-\begin{enumerate}
-    \item Keep modifying the extraction programs as needed or
-    \item Only allow the use of \LaTeX{} macros that expand into unicode; thus, not allowing environments and commands such as \textbackslash textbf\{\}, \textbackslash textif\{\}, \etc that do not translate directly into characters that can be written in unicode.
-\end{enumerate}
-
-In the second alternative, one might think about translating the string inside a \textbackslash textbf\{\} into unicode characters in the Bold, Latin, uppercase \& lowercase range, \ie U+1D400 to U+1D433 (there is a similar transformation possible for Greek). The characters are defined in the \textsc{unicode-math} package. Logically, this would be similar to redefining \textbackslash textbf\{\} as \textbackslash mathtextbf\{\}\footnote{\textbackslash mathtextbf\{\} cannot be used directly as it only works in math mode.}.  
-
-For \texttt{\textbackslash textit\{\}} one could utilize the Italic, Latin, uppercase and lowercase range, \ie U+1D434 to U+1D467 (there is a similar transformation possible for Greek). Similar transformations are possible for \textbackslash texttt\{\}
-using Typewriter, Latin, uppercase \& lowercase and for \textbackslash textsc\{\}
-
-Additionally, there is a  Bold italic, Latin, uppercase \& lowercase range, \ie U+1D468 to U+1D49B.
-
-However, the above two alternatives are not actual alternatives -- as the \LaTeX{} commands do not get expanded at all. One possibility is to utilize the expanded output in the DiVA metadata for abstracts. Also note that these character ranges are for mathematics (hence, they use mathematical glyphs, \ie the block Mathematical Alphanumeric Symbols).
-
-This suggests a third alternative: have all of the contents (for titles, subtitles, keywords, and abstracts) be directly in unicode (or as characters specified as described in section \enquote{Configure the title, subtitle, alternate title, and alternate subtitle} in the file \fname{README\_3rd\_cycle\_author.tex}). See also \Cref{sec:generatingPlainText}. Perhaps some limited use of some macros can be allowed, as long as they can easily be processed into \gls{HTML} with unicode contents.
-
-This third alternative does \textbf{not} address the issue of equations. As noted earlier, this will depend on whether the new Cora-based DiVA will support MathJax or similar (see \Cref{sec:betterMathsupportinDiVA}). Although perhaps just leaving the equations in place is the correct solution. However, limiting abstracts to unicode text with possible \LaTeX{} equations seems to be too limited. Therefore, some subset of \LaTeX{} has to be allowed, basically limited to what can be easily transformed to \gls{HTML}, \ie the \textit{current} solution!
-
-\warningExpl{One can split the text into math and text blocks - as done in my LaTeXtoHTML notebook.}
-
-\subsection{Better support for mathematical expressions in DiVA}
-\label{sec:betterMathsupportinDiVA}
-With the future introduction of the new Cora-based DiVA, there may be better support for mathematical expressions via MathJax. This should enable the \LaTeX{} expressions to just be passed through to \gls{DiVA} as MathJax runs in the user's browser.
-\warningExpl{This does raise a question of what happens to these expressions in titles and subtitles when they have to be printed on the student's diploma!}
-
-
-\subsection{Further automation to generate additional parts of the custom\_configuration.tex file}
-\label{sec:furtherAutomationForConfig}
-
-There is an open question of the extent to which the National Subject Category information, the UN's \glspl{SDG} list, and English and Swedish keywords can be automatically extracted or guessed (perhaps with the help of a large language model).
-\warningExpl{This needs further research and prototyping. Note that my earlier experiments with detecting national subject category information for first- and second-cycle theses using the University of Linköping's tool yielded good correlation with the manually assigned codes and the top 5 codes generated by the tool. The tool performed badly on theses written in Swedish; I suspect that this is because it had limited training data for such theses.}
-
-
-\subsection{Using Biber data annotations in BibLaTeX entries}
+\section[Using Biber data annotations in BibLaTeX entries]{Using Biber data annotations in BibLaTeX\linebreak[4] entries}
 \label{sec:furtherBiberAnnotation}
 
-Biber's data annotation syntax enables bibliography entries to carry rich, structured metadata attached directly to individual author or field items without modifying the underlying \BibLaTeX\ data model. \Cref{lst:biberAuthorAnnotation} shows an example with three authors, each of whom has an \gls{ORCID} identifier, \ie an ORCID iD. Additionally, the first two authors are noted as having contributed equally (\eg to designate joint first authorship).
+Biber's data annotation syntax enables bibliography entries to carry rich, structured metadata attached directly to individual author or field items without modifying the underlying \BibLaTeX{} data model. \Cref{lst:biberAuthorAnnotation} shows an example with three authors, each of whom has an \gls{ORCID} identifier, \ie an ORCID iD. Additionally, the first two authors are noted as having contributed equally (\eg to designate joint first authorship).
 
 As described in §3.7 of the \texttt{biblatex} package manual, data annotations enable an author to attach semantic information to information in a bibliography. The field name suffix \enquote{+an} is a user-definable marker that this field contains an annotation. After this marker is an optional named marker (by default \enquote{default}). For example, in \Cref{lst:biberAuthorAnnotation} one can indicate the Swedish title for a work by adding: \texttt{title+an:swedish} and the Swedish title.
 
 \Needspace*{18\baselineskip}
-\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, caption={{Example of Biber author annotations for ORCID and equal contribution}}, label=lst:biberAuthorAnnotation]
+\begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, caption={{Biber author annotations for ORCID and equal contribution}}, label=lst:biberAuthorAnnotation]
 @article{doe2025collaborative,
   author    = {Maguire, Jr., Gerald Q. and Smith, Jane and Green, Alex},
   author+an = {
@@ -3843,23 +3766,24 @@ As described in §3.7 of the \texttt{biblatex} package manual, data annotations 
   number    = {2},
   pages     = {112--128},
   doi       = {10.1000/182},
+  issn       = {0000-0000},
   placeholder={Placeholder fake reference for use in examples}
 }
 \end{lstlisting}
 
-Note that each line of the annotation has a prefix of the form `<number>:' followed by a name, equal sign (`='), and a quoted value. Internally, this information is encoded into \textit{parts} and stored by Biber into the \texttt{`.bbl'} file. Note also the use of the \texttt{placeholder} field to explicitly identify this as a fake reference to be used simply for the purposes of examples.
+Note that each line of the author annotation has a prefix of the form `<number>:' followed by a name, an equal sign (`='), and a quoted value. Internally, this information is encoded into \textit{parts} and stored by Biber in the \texttt{`.bbl'} file. Note also the use of the \texttt{placeholder} field to explicitly identify this as a fake reference to be used simply for the purposes of examples.
 
-\subsubsection{BibLaTeX Part Annotation Signature}
+\subsection{BibLaTeX Part Annotation Signature}
 Programmatic access to the annotation is done via:
-\begin{quote}
+\begin{verbatim}
 \texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
 
 \texttt{\textbackslash getpartannotation[<field>][<name>][<item>]\{<part>\}}
-\end{quote}
+\end{verbatim}
 
 The three optional brackets define the bibliographic coordinates (`[author][default][<idx>]`), while the part slug is passed as the mandatory brace argument (`\{<part>\}`). In the example above, the slug will be \enquote{orcid} or \enquote{equal}.
 
-To render these annotations in print, one can define \BibLaTeX\ formatting hooks (as shown in \Cref{lst:biberHookExample1A}). You can test for active annotations using \texttt{\textbackslash haspartannotation} and retrieve values with \texttt{\textbackslash getpartannotation}. In this code, equal authorship is indicated with a superscript asterisk, while the name gets an  \texttt{\textbackslash orcidlink} hyperlink, \ie beside the name is the official green, circular \gls{ORCID} icon as an actionable, live hyperlink targeting the author's \gls{ORCID} record page. The icon itself is drawn as a resolution-independent vector path using TikZ/PDF literals rather than a raster image.
+To render these annotations in print, one can define \BibLaTeX{} formatting hooks (as shown in \Cref{lst:biberHookExample1A} on page \pageref{lst:biberHookExample1A}). You can test for active annotations using \texttt{\textbackslash haspartannotation} and retrieve values with \texttt{\textbackslash getpartannotation}. In this code, equal authorship is indicated with a superscript asterisk, while the name gets an  \texttt{\textbackslash orcidlink} hyperlink, \ie beside the name is the official green, circular \gls{ORCID} icon as an actionable, live hyperlink targeting the author's \gls{ORCID} record page. The icon itself is drawn as a resolution-independent vector path using TikZ/PDF literals rather than a raster image.
 
 \Cref{lst:biberHookIconOrText} shows how you can generate the green, circular \gls{ORCID} icon (requires use of the \texttt{orcidlink} package) or a tiny bold font green string saying \enquote{iD}. Note that \texttt{\textbackslash orcidlink\{\}} provides its own spacing after the name and before the icon.
 
@@ -3875,11 +3799,12 @@ To render these annotations in print, one can define \BibLaTeX\ formatting hooks
 }
 \end{lstlisting}
 
-\Cref{sec:orcidlinksMethodA} and \Cref{sec:orcidlinksMethodB} demonstrate two different methods of getting an author's  ORCID iD and displaying the badge with a hyperlink to the author's \gls{ORCID} landing page. First, we shall note some common features of each method:
-both create a \TeX{} box (called \texttt{\textbackslash orcidbox}) to render text into, both feature a new command to render the \gls{ORCID} badge, each defines their own \texttt{render\_orcid\_from\_box()} Lua function, and within a group \first each defines a local \texttt{\textbackslash mkbibnamefamily}\footnote{One can also renew the command \texttt{\textbackslash mkbibnamegiven} for markup of the author's first name.} that is used when rendering a family name in a bibliography, \Second sets the values of the \texttt{maxnames} and \texttt{minnames} counters to be used for the next bibliographic citation (via 
+\Cref{sec:orcidlinksMethodA} and \Cref{sec:orcidlinksMethodB} demonstrate two different methods of getting an author's ORCID iD and displaying the badge with a hyperlink to the author's \gls{ORCID} landing page. First, we shall note some common features of each method:
+both create a \TeX{} box (called \texttt{\textbackslash orcidbox}) to render text into, both feature a new command to render the \gls{ORCID} badge, each defines their own \texttt{render\_orcid\_from\_box()} Lua function, and within a group \first each defines a local \texttt{\textbackslash mkbibnamefamily}\footnote{One can also renew the command \texttt{\textbackslash mkbibnamegiven} for markup of the author's first name. Similarly, the other parts of a name can be utilized: \texttt{\textbackslash mkbibnameprefix} and
+\texttt{\textbackslash mkbibnamesuffix}.} that is used when rendering a family name in a bibliography, \Second sets the values of the \texttt{maxnames} and \texttt{minnames} counters to be used for the next bibliographic citation (via 
 \texttt{\textbackslash AtNextCite}), and \third uses \texttt{\textbackslash fullcite\{\}} to render a given bibliographic entry.
 
-The two methods differ in their definition of the \texttt{render\_orcid\_from\_box()} or \texttt{render\_orcid\_clean()} Lua function and their own \texttt{\textbackslash renderorcidbadgeX} function. The main difference is how they walk the contents, \ie the rendered nodes in the box. So the questions that might come to mind are: Why do we need to render to a box? and Why do we need to walk the contents of this box? The answer to both questions is that the \texttt{\textbackslash getpartannotation} does not return a character string, but \texttt{\textbackslash href} or \texttt{\textbackslash orcidlink} operates in URL-string mode; hence it requires an evaluated, literal string. By setting the result of \texttt{\textbackslash getpartannotation} in a box, we can now examine its contents and turn it into a string. The code also takes advantage of the fixed format of an ORCID iD to avoid problems with hyphenation and discretionary hyphenation (this is a deep morass in the \LaTeX{} engine used, the font used, many different types of hyphens, and even ligature processing). The two methods utilize different methods of walking the nodes of the box's contents:
+The two methods differ in their definition of the \texttt{render\_orcid\_from\_box()} or \texttt{render\_orcid\_clean()} Lua function and their own \texttt{\textbackslash renderorcidbadgeX} function. The main difference is how they walk the contents, \ie the rendered nodes in the box. Some of the questions that might come to mind are: Why do we need to render to a box? and Why do we need to walk the contents of this box? The answer to both questions is that the \texttt{\textbackslash getpartannotation} does not return a character string, but \texttt{\textbackslash href} or \texttt{\textbackslash orcidlink} operate in URL-string mode; hence, it requires an evaluated, literal string. By setting the result of \texttt{\textbackslash getpartannotation} in a box, we can now examine its contents and turn it into a string. The code also takes advantage of the fixed format of an ORCID iD to avoid problems with hyphenation and discretionary hyphenation (this is a deep morass in the \LaTeX{} engine used, the font used, many different types of hyphens, and even ligature processing). The two methods utilize different methods of walking the nodes of the box's contents:
 \begin{itemize}
     \item Method A (Deep Recursive Walk): Walks into the sub-lists of discretionary nodes (\texttt{n.replace} and \texttt{n.pre}) directly, attempting to extract the literal glyphs embedded inside hyphenation alternatives.
 
@@ -3887,7 +3812,7 @@ The two methods differ in their definition of the \texttt{render\_orcid\_from\_b
 \end{itemize}
 
 
-\subsubsection{Method A for inserting ORCID links}
+\subsection{Method A for inserting ORCID links}
 \label{sec:orcidlinksMethodA}
 As an example of this for \textbackslash fullcite\{doe2025collaborative\} using the code in \Cref{lst:biberHookExample1A} is:
 \newbox\orcidbox
@@ -3975,6 +3900,7 @@ end
 
 \fullcite{doe2025collaborative}
 \endgroup
+\medskip
 
 Note that this reference has a red warning \enquote{[Unresolved Placeholder: Placeholder fake reference for use in examples]} to explicitly indicate that it is \emph{not} a real reference. This markup is done via the field declaration in \fname{ext-eprint-dbx.tex} and realized by the check \texttt{\textbackslash iffieldundef\{placeholder\}} invoked by \texttt{\textbackslash AtEveryCitekey} (executes when a citation key is processed in text, \eg \texttt{\textbackslash cite}, \texttt{\textbackslash parencite}, \texttt{\textbackslash textcite}, and \texttt{\textbackslash fullcite}) and \texttt{\textbackslash AtEveryBibitem} (executes inside the bibliography list, \ie \texttt{\textbackslash printbibliography}). Because \texttt{\textbackslash fullcite} internally expands using bibliography drivers, there is no double-printing or omission of the warning on standalone citations in the log file.
 
@@ -4070,7 +3996,7 @@ end
 
 
 
-\subsubsection{Method B for inserting ORCID links}
+\subsection{Method B for inserting ORCID links}
 \label{sec:orcidlinksMethodB}
 Another example of this for \textbackslash fullcite\{doe2025collaborative\} using the code in \Cref{lst:biberHookExample1B} is:
 \newbox\orcidbox
@@ -4241,7 +4167,7 @@ end
 \endgroup
 \end{lstlisting}
 
-\subsubsection{Using annotation to store Contributor Roles Taxonomy (CReDiT) data}
+\subsection{Using annotation to store Contributor Roles Taxonomy (CReDiT) data}
 
 Currently, there are no hardcoded built-in keyword annotations reserved specifically for \gls{CReDiT} (Contributor Roles Taxonomy, ANSI/NISO Z39.104-2022~\cite{niso_z39_104_2022}). However, standard canonical identifiers using the \enquote{Simplified Name} form can be utilized directly as annotation keys, as outlined in \Cref{tab:CReDiT_annotation}. The degree values of these can be: \enquote{lead}, \enquote{equal} (=true), or \enquote{supporting}:
 \begin{description}[labelwidth =\widthof{\textbf{supporting}}, leftmargin = !]
@@ -4321,6 +4247,7 @@ There are two primary paradigms for encoding \gls{CReDiT} roles using Biber anno
 
 Pattern A is the best method for \gls{KTH} doctoral thesis students because it makes it easy to state the values associated with a role.
 
+\Needspace*{22\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Example \LaTeX{} hook for extracting and rendering contributor roles}}, label=lst:biberHookExample2]
 \usepackage{biblatex}
 
@@ -4360,10 +4287,10 @@ As shown in \Cref{lst:biberHookExampleLocalGroupScoping}, wrapping the contribut
   \finentry%
 }
 
-\section*{Paper I}
+\textbf{Paper I}
 \fullcite{maguire2026pipeline}
 
-\section*{Paper II}
+\textbf{Paper II}
 \fullcite{doe2025collaborative}
 \endgroup
 
@@ -4434,27 +4361,27 @@ The following generates some example output when using Approach A for the \gls{C
   \usebibmacro{author:credit:roles}%
 }
 
-\section*{Paper I}
+\textbf{Paper I}\\
 \fullcite{maguire2026pipeline}
 
 \Needspace*{20\baselineskip}
-\section*{Paper II}
+\textbf{Paper II}\\
 \fullcite{doe2025collaborative}
 \endgroup
 
 
 
-\subsubsection{Architectural Takeaways for Your Pipeline}
+\subsection{Architectural Takeaways for Your Pipeline}
 \begin{itemize}
     \item \textbf{Biber `.bib` Annotation Delimiters:} Item annotations must be delimited by semicolons (`;`), not commas (`,`), with the item index explicit on each part (\eg `1:conceptualization="lead"; 1:software="lead"`).
-    \item \textbf{Kebab-Case Slugs:} Adopting the standard \gls{CReDiT} simplified names (\eg `writing-original-draft`, `data-curation`) avoids unescaped underscore collisions in TeX math mode and simplifies downstream JSON serialization.
+    \item \textbf{Kebab-Case Slugs:} Adopting the standard \gls{CReDiT} simplified names (\eg `writing-original-draft`, `data-curation`) avoids unescaped underscore collisions in TeX math mode and simplifies downstream \gls{JSON} serialization.
     \item \textbf{BibLaTeX Part Annotation Signature:}
-\begin{quote}
+\begin{verbatim}
 \texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
 
 
 \texttt{\textbackslash getpartannotation[<field>][<name>][<item>]\{<part>\}}
-\end{quote}
+\end{verbatim}
 
 
 The three optional brackets define the bibliographic coordinates (`[author][default][<idx>]`), while the part slug is passed as the mandatory brace argument (`\{<part>\}`).
@@ -4485,6 +4412,7 @@ If you prefer to redefine macros globally across document sections, redefine \te
 
 For granular control when citing individual papers with contributor details without modifying global hooks, encapsulate the scoped redefinition inside a custom macro:
 
+\Needspace*{12\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Defining a dedicated \textbackslash fullcitecredit command}}, label=lst:biberfullcitecreditCommand]
 % Dedicated command encapsulating scoped CReDiT redefinition
 \newcommand{\fullcitecredit}[1]{%
@@ -4605,7 +4533,7 @@ More commonly, \BibLaTeX\ provides \textbackslash entrydata\{<entrykey>\}\{<code
 \end{lstlisting}
 
 Usage Example: Printing the Current Entry Key Alongside Metadata
-
+\Needspace*{8\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Print current entry key with metadata}}, label=lst:biberPrintCurrentEntry]
 \newbibmacro*{print:current:entry:info}{%
   \par\noindent
@@ -4615,7 +4543,7 @@ Usage Example: Printing the Current Entry Key Alongside Metadata
 }
 \end{lstlisting}
 
-\subsubsection{Listing roles grouped by degree}
+\subsection{Listing roles grouped by degree}
 
 Whenever the \texttt{author:credit:roles} macro is invoked during bibliography rendering, \texttt{\textbackslash thefield\{entrykey\}} dynamically evaluates to whatever reference is currently being processed. \Cref{lst:biberCReDiTrolesGroupedByDegree} shows how the roles can be listed grouped by degree. If an author has no roles allocated under a specific degree (such as no Equal roles), that row is omitted entirely.
 \Needspace*{22\baselineskip}
@@ -4773,7 +4701,7 @@ In Swedish compilation doctoral theses (\foreignlanguage{swedish}{sammanläggnin
 \Needspace*{20\baselineskip}
     \item Institutional Affiliation \& Degree Eligibility Mapping
 
-For co-authored papers, evaluating committees often need to confirm whether an author was affiliated with KTH or performed the research under an external industrial partnership:
+For co-authored papers, evaluating committees often need to confirm whether an author was affiliated with \gls{KTH} or performed the research under an external industrial partnership:
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, escapechar=|, caption={{Storing thesis related metadata}}, label=lst:biberThesisAffiliationMetadata]
 @article{smith2026telecom,
   author    = {Smith, Jane and Maguire, Jr., Gerald Q. and Larsson, Sven},
@@ -4898,7 +4826,7 @@ Both tools convert bibliographic entries into an internal relational model that 
 \paragraph{Practical Recommendation}\mbox{}\par
 \smallskip
 
-Because reference managers lag behind Biber’s advanced data-model features, \textbf{managing annotations outside the GUI reference manager is the only stable design pattern}. For a KTH doctoral workflow, managing \glspl{ORCID} and \gls{CReDiT} through \fname{publications\_map.json} and external Python/\gls{CI} scripts remains far more robust than relying on a reference manager.
+Because reference managers lag behind Biber’s advanced data-model features, \textbf{managing annotations outside the GUI reference manager is the only stable design pattern}. For a \gls{KTH} doctoral workflow, managing \glspl{ORCID} and \gls{CReDiT} through \fname{publications\_map.json} and external Python/\gls{CI} scripts remains far more robust than relying on a reference manager.
 
 This means:
 \begin{enumerate}
@@ -5014,7 +4942,7 @@ edition+an = {swedish="2:a uppl."; english="2nd ed."}
 
 Because reference managers routinely discard or corrupt non-standard fields, isolating these annotations inside \fname{references-annotations.bib} and merging them via Python guarantees that extended provenance, venue, and licensing data remain permanently intact.
 
-\subsubsection{Contrasting annotations with current workflows}
+\subsection{Contrasting annotations with current workflows}
 \label{sec:contrastingAnnotationsWithCurrentWorkflows}
 The current design approaches publication management and thesis inclusion from an architectural standpoint that is fundamentally different from a purely in-\TeX{} data-annotation model.
 
@@ -5051,7 +4979,7 @@ Handling of massive collaborations (such as, the BNL Multi-Particle Spectrometer
 
 The existing pipeline positions the \fname{.bib} file as a traditional citation store, delegating document assembly, inclusion filtering, DiVA harvesting, and \gls{PDF} insertion to external Python and \gls{CI} automation where it is most maintainable.
 
-\subsubsection{Support for Mega-Collaborations}
+\subsection{Support for Mega-Collaborations}
 \label{sec:biberMegaCollaborations}
 To prevent Biber and \LaTeX{} from crashing on mega-collaborations while still providing granular \gls{CReDiT} attribution for a student, you can use \textbf{sparse target indexing}, (\ie you only need to add the relevant additional author details):
 
@@ -5079,7 +5007,7 @@ To prevent Biber and \LaTeX{} from crashing on mega-collaborations while still p
 }
 \end{lstlisting}
 
-\subsubsection{Integrating annotations with current workflows}
+\subsection{Integrating annotations with current workflows}
 \label{sec:integratingAnnotationsWithCurrentWorkflows}
 
 The challenge with handling entities like the \textbf{MPS Collaboration} in standard \fname{.bib} files is that the individual student or researcher (\eg Gerald Q. Maguire Jr.) is not listed as an indexed name item in the \texttt{author} field (which contains only \enquote{Lindenbaum, S. J.} and \enquote{\{MPS Collaboration\}}). Consequently, Biber’s item-indexed annotations (\texttt{author+an = \{ 3:software="supporting"\}}) cannot bind to an author index (in this example \enquote{3}) that does not exist in the primary name list (or might only appear far down the list, \ie beyond the range of the authors processed).
@@ -5168,7 +5096,7 @@ In your existing \texttt{creditnames} name formatting driver, when the driver pr
 \Needspace*{18\baselineskip}
 \textbf{Python Pipeline Synthesis (Connecting \texttt{CReDiT\_Matrix\_Wizard.py})}
 
-In your Streamlit wizard and GitHub Actions workflow:
+In the Streamlit wizard and GitHub Actions workflow:
 \begin{enumerate}
     \item \fname{publications\_map.json} remains the interactive store holding\linebreak[4] \texttt{specific\_contributors} and \texttt{contribution\_note}.
     
@@ -5179,7 +5107,7 @@ In your Streamlit wizard and GitHub Actions workflow:
 
 This preserves standard bibliography listings for external readers while enabling the defense committee to inspect candidate contributions to large institutional consortia.
 
-It should be possible to mine the \fname{publications\_map.json} file generated by \fname{CReDiT\_Matrix\_Wizard.py} to produce and initial \fname{references-annotations.bib} file with the \gls{CReDiT} annotations for authors.
+It should be possible to mine the \fname{publications\_map.json} file generated by \fname{CReDiT\_Matrix\_Wizard.py} to produce an initial \fname{references-annotations.bib} file with the \gls{CReDiT} annotations for authors.
 
 \subsection{Scaling with the number of publications a student has in DiVA}
 The \fname{publications\_map.json} file has the same number of entries as the number of publications (other than the current thesis) that an author already has in \gls{DiVA}. How large is this likely to be? \Cref{tab:histogramPriorPublications} shows how many students (from those who defended in 2025) have a given number of other publications in \gls{DiVA} (\ie not counting any third-cycle theses).
@@ -5330,6 +5258,86 @@ placeholder = {Placeholder fake reference for use in examples},
     Under \gls{RFC} 2606~\cite{rfc2606} and its update \gls{RFC} 6761~\cite{rfc6761}, only the reserved second-level domains (\texttt{example.com}, \texttt{example.org}, \texttt{example.edu}) or the reserved top-level domains (\texttt{.test}, \texttt{.example}, \texttt{.invalid}) should be used for \glspl{URL} and repository mirrors. For national repository handles, use zero-padded identifiers (\eg \texttt{urn:nbn:se:kth:diva-000000}).
 \end{description}
 
+
+
+\section{Future work and work in progress}
+\label{sec:futurework}
+There are several areas where the template, supporting programs, and documentation can be enhanced. The programs and notebooks can be found in \fname{https://github.com/gqmaguirejr/Canvas-tools} or\linebreak[4]
+\fname{https://github.com/gqmaguirejr/E-learning}.
+
+\subsection{Automating creation of custom\_configuration.tex file}
+\label{sec:automatingConfiguration}
+
+To help collect information for the \fname{custom\_configuration.tex} file, I have written some programs.
+
+One of these programs is \fname{extract\_data\_from\_ISP.py}. It extracts some information from a PDF file of the student's \gls{ISP} and generates a JSON file. This is in an early stage, but it shows what can be done to extract data from a \gls{PDF} file of an \gls{ISP}.
+
+The program \fname{ISP\_JSON\_to\_configuration\_info.py} takes the JSON produced by \fname{extract\_data\_from\_ISP.py} and produces much of the information for the \fname{custom\_configuration.tex} file (with respect to the information available at the time the writing of the thesis starts).
+
+To get additional information for the author and supervisors, the program uses information from either a Canvas course room \textbf{or} requires Canvas administrative rights to be able to look up the user's KTHID using the Canvas \gls{API} and the user's email address. In addition, the program utilizes the \gls{KTH} Profile \gls{API} to obtain further information about each person's organization, given an email address (if they are affiliated with \gls{KTH}).
+
+\warningExpl{This program requires that you have a \gls{KTH} API key.}
+
+\subsection{Automating creation of list of publications}
+\label{sec:automatingPublicationsList}
+
+The Jupyter notebook
+\fname{Compute\_publications\_list\_from\_DiVA-Notebook-20250907.ipynb} uses data from \fname{fordiva.json} and \fname{references.bib} files to look up the student's publications in DiVA and generate the LaTeX that might be used in a list of publications in a third-cycle thesis.
+
+This could be used for the \enquote{List of Publications} for a compilation thesis or for a list of papers and contributions in a monograph thesis. Note that the author will need to edit the resulting list to indicate which publications are included in a compilation thesis and which papers have not been included. The author may also need to move items from one category to another.
+
+\subsection{Helping students find the DiVA IDs of previous publications}
+\label{sec:getdivaIDs}
+The Jupyter notebook
+\fname{citations-to-DiVA-Notebook-20250811-all.ipynb} use data from the \fname{citedtags.bib} and \fname{fordiva.json} files look up DiVA IDs for these publications.
+
+This information is valuable when the student is entering the metadata for their thesis in DIVA.
+
+
+\subsection{JSON\_to\_Cora\_DiVA}
+\label{sec:JSONtoCoraDiVA}
+
+\warningExpl{Implemented JSON\_to\_Cora\_DiVA remains as future work.}
+ 
+
+\subsection{Better exploiting unicode}
+\label{sec:betterExploitingUnicode}
+
+The current design stores the \LaTeX{} commands in abstracts \textit{without} expanding the \LaTeX{} macros. This makes it possible to post-process these commands and make content that is suited for making announcements of the oral presentation, making calendar entries for this presentation, and generating the abstracts for the \gls{MODS} file for \gls{DiVA}. However,  if one wants to take the full leap to unicode, this is perhaps not a good design choice, as it requires that all of the processing that \LaTeX{} could do of the unicode is not done and that the programs that extract the unexpanded contents will have to keep changing to keep up with what \LaTeX{} macros are used. 
+
+There might seem to be two alternatives:
+\begin{enumerate}
+    \item Keep modifying the extraction programs as needed or
+    \item Only allow the use of \LaTeX{} macros that expand into unicode; thus, not allowing environments and commands such as \textbackslash textbf\{\}, \textbackslash textif\{\}, \etc that do not translate directly into characters that can be written in unicode.
+\end{enumerate}
+
+In the second alternative, one might think about translating the string inside a \textbackslash textbf\{\} into unicode characters in the Bold, Latin, uppercase \& lowercase range, \ie U+1D400 to U+1D433 (there is a similar transformation possible for Greek). The characters are defined in the \textsc{unicode-math} package. Logically, this would be similar to redefining \textbackslash textbf\{\} as \textbackslash mathtextbf\{\}\footnote{\textbackslash mathtextbf\{\} cannot be used directly as it only works in math mode.}.  
+
+For \texttt{\textbackslash textit\{\}} one could utilize the Italic, Latin, uppercase and lowercase range, \ie U+1D434 to U+1D467 (there is a similar transformation possible for Greek). Similar transformations are possible for \textbackslash texttt\{\}
+using Typewriter, Latin, uppercase \& lowercase and for \textbackslash textsc\{\}
+
+Additionally, there is a  Bold italic, Latin, uppercase \& lowercase range, \ie U+1D468 to U+1D49B.
+
+However, the above two alternatives are not actual alternatives -- as the \LaTeX{} commands do not get expanded at all. One possibility is to utilize the expanded output in the DiVA metadata for abstracts. Also note that these character ranges are for mathematics (hence, they use mathematical glyphs, \ie the block Mathematical Alphanumeric Symbols).
+
+This suggests a third alternative: have all of the contents (for titles, subtitles, keywords, and abstracts) be directly in unicode (or as characters specified as described in section \enquote{Configure the title, subtitle, alternate title, and alternate subtitle} in the file \fname{README\_3rd\_cycle\_author.tex}). See also \Cref{sec:generatingPlainText}. Perhaps some limited use of some macros can be allowed, as long as they can easily be processed into \gls{HTML} with unicode contents.
+
+This third alternative does \textbf{not} address the issue of equations. As noted earlier, this will depend on whether the new Cora-based DiVA will support MathJax or similar (see \Cref{sec:betterMathsupportinDiVA}). Although perhaps just leaving the equations in place is the correct solution. However, limiting abstracts to unicode text with possible \LaTeX{} equations seems to be too limited. Therefore, some subset of \LaTeX{} has to be allowed, basically limited to what can be easily transformed to \gls{HTML}, \ie the \textit{current} solution!
+
+\warningExpl{One can split the text into math and text blocks - as done in my LaTeXtoHTML notebook.}
+
+\subsection{Better support for mathematical expressions in DiVA}
+\label{sec:betterMathsupportinDiVA}
+With the future introduction of the new Cora-based DiVA, there may be better support for mathematical expressions via MathJax. This should enable the \LaTeX{} expressions to just be passed through to \gls{DiVA} as MathJax runs in the user's browser.
+\warningExpl{This does raise a question of what happens to these expressions in titles and subtitles when they have to be printed on the student's diploma!}
+
+
+\subsection{Further automation to generate additional parts of the custom\_configuration.tex file}
+\label{sec:furtherAutomationForConfig}
+
+There is an open question of the extent to which the National Subject Category information, the UN's \glspl{SDG} list, and English and Swedish keywords can be automatically extracted or guessed (perhaps with the help of a large language model).
+\warningExpl{This needs further research and prototyping. Note that my earlier experiments with detecting national subject category information for first- and second-cycle theses using the University of Linköping's tool yielded good correlation with the manually assigned codes and the top 5 codes generated by the tool. The tool performed badly on theses written in Swedish; I suspect that this is because it had limited training data for such theses.}
+
 \clearpage
 
 \ifinswedish
@@ -5350,6 +5358,7 @@ och förkortningar}]
 
 %\typeout{Biblatex current language is \currentlang}
 \printbibliography[heading=bibintoc, title={References}]
+
 
 \end{document}
 
