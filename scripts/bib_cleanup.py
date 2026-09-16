@@ -73,26 +73,38 @@ OUTPUT_BIB = 'referencesUsed.bib'
 STRIP_FIELDS = ['abstract', 'file', 'groups', 'mendeley-groups', 'keywords', 'annote', 'annotation']
 
 
+import re
+from pathlib import Path
+
 def get_cited_keys(artifact_path):
-    """Supports both .aux (BibTeX) and .bcf (BibLaTeX/Biber)."""
+    """
+    Supports:
+      - BibLaTeX .aux: \\abx@aux@cite{section}{key}
+      - Classic BibTeX .aux: \\citation{key1,key2}
+      - Biber XML .bcf: <bcf:citekey>key</bcf:citekey>
+    """
     path = Path(artifact_path)
     if not path.exists():
         raise FileNotFoundError(f"Could not find build artifact: {artifact_path}")
     
-    content = path.read_text(encoding='utf-8')
+    content = path.read_text(encoding="utf-8")
     cited = set()
     
-    if path.suffix == '.aux':
-        # Standard BibTeX format: \citation{key1,key2}
-        keys = re.findall(r'\\citation\{([^}]+)\}', content)
-        for k_group in keys:
-            for k in k_group.split(','):
+    if path.suffix == ".aux":
+        # 1. Match BibLaTeX cite commands in .aux: \abx@aux@cite{...}{key}
+        blx_keys = re.findall(r'\\abx@aux@cite\{\d+\}\{([^}]+)\}', content)
+        cited.update(k.strip() for k in blx_keys)
+        
+        # 2. Match classic BibTeX cite commands: \citation{key1,key2}
+        bibtex_keys = re.findall(r'\\citation\{([^}]+)\}', content)
+        for group in bibtex_keys:
+            for k in group.split(","):
                 cited.add(k.strip())
                 
-    elif path.suffix == '.bcf':
-        # BibLaTeX/Biber XML format: <bcf:citekey>key</bcf:citekey>
-        keys = re.findall(r'<bcf:citekey[^>]*>([^<]+)</bcf:citekey>', content)
-        cited.update(keys)
+    elif path.suffix == ".bcf":
+        # Match Biber XML citekey nodes
+        bcf_keys = re.findall(r'<bcf:citekey[^>]*>([^<]+)</bcf:citekey>', content)
+        cited.update(k.strip() for k in bcf_keys)
         
     return cited
 
