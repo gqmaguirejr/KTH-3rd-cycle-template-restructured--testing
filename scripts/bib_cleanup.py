@@ -22,6 +22,42 @@ import subprocess
 import requests
 
 import bibtexparser
+
+CACHE_FILE = ".bib_validator_cache.json"
+
+# Crossref uses the following DOIs for testing and internal use
+# from https://api.crossref.org/members?query=test%20accounts
+# and https://api.crossref.org/members?query=Crossref
+test_DOI_prefixes_Crossref = [
+    "10.18810",  # Test accounts
+    "10.5555",   # Test accounts - used frequently in examples in their documentation
+    "10.88888",  # Test accounts
+    "10.30444",
+    "10.30446",
+    "10.30447",
+    "10.30448",
+    "10.30449",
+    "10.64000",  # Crossref Blog
+    "10.13003",
+    "10.30443",
+]
+
+# ACM uses https://dl.acm.org/doi/10.5555/*
+# as a prefix when cross-listing content from another publisher,
+# such as conference papers from others, for example for a paper from the
+# Proceedings of the 33rd International Conference on Neural Information Processing Systems
+# https://dl.acm.org/doi/10.5555/3454287.3454840
+# ACM does _not_ assign DOIs to these papers, but uses the string when generating the BibTeX key when exporting bibtex
+# See also the blog post: https://nickwalker.us/blog/2024/acm-dl-fake-dois/
+
+# Configuration
+INPUT_BIB = 'references.bib'
+OUTPUT_BIB = 'referencesUsed.bib'
+STRIP_FIELDS = ['abstract', 'file', 'groups', 'mendeley-groups', 'keywords', 'annote', 'annotation']
+
+# ----------------------------------------------------------------------
+# Version-agnostic bibtexparser wrapper (supports both v1.x and v2.x)
+# ----------------------------------------------------------------------
 _IS_V2 = hasattr(bibtexparser, "__version__") and bibtexparser.__version__.startswith("2")
 
 if _IS_V2:
@@ -67,40 +103,9 @@ else:
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(writer.write(original_library))
 
+# ----------------------------------------------------------------------
 
 from isbnlib import canonical, is_isbn10, is_isbn13, meta
-
-CACHE_FILE = ".bib_validator_cache.json"
-
-# Crossref uses the following DOIs for testing and internal use
-# from https://api.crossref.org/members?query=test%20accounts
-# and https://api.crossref.org/members?query=Crossref
-test_DOI_prefixes_Crossref = [
-    "10.18810",  # Test accounts
-    "10.5555",   # Test accounts - used frequently in examples in their documentation
-    "10.88888",  # Test accounts
-    "10.30444",
-    "10.30446",
-    "10.30447",
-    "10.30448",
-    "10.30449",
-    "10.64000",  # Crossref Blog
-    "10.13003",
-    "10.30443",
-]
-
-# ACM uses https://dl.acm.org/doi/10.5555/*
-# as a prefix when cross-listing content from another publisher,
-# such as conference papers from others, for example for a paper from the
-# Proceedings of the 33rd International Conference on Neural Information Processing Systems
-# https://dl.acm.org/doi/10.5555/3454287.3454840
-# ACM does _not_ assign DOIs to these papers, but uses the string when generating the BibTeX key when exporting bibtex
-# See also the blog post: https://nickwalker.us/blog/2024/acm-dl-fake-dois/
-
-# Configuration
-INPUT_BIB = 'references.bib'
-OUTPUT_BIB = 'referencesUsed.bib'
-STRIP_FIELDS = ['abstract', 'file', 'groups', 'mendeley-groups', 'keywords', 'annote', 'annotation']
 
 
 def get_git_email():
@@ -346,12 +351,10 @@ def main():
     else:
         print("No build artifacts found (e.g., Overleaf environment). Processing all entries in references.bib...")
 
-    # 3. Load the source bibliography
-    parser = BibTexParser(common_strings=True, ignore_nonstandard_types=False)
-    with open(INPUT_BIB, 'r', encoding='utf-8') as f:
-        db = bibtexparser.load(f, parser=parser)
+    # 3. Load the source bibliography via the version-safe helper
+    db, entries = parse_bib_file(INPUT_BIB)
 
-    original_count = len(db.entries)
+    original_count = len(entries)
     used_entries = []
     warnings = []
     
@@ -359,7 +362,7 @@ def main():
     cache = load_cache()
 
     # 4. Process entries
-    for entry in db.entries:
+    for entry in entries:
         # Filter for used entries only when cited keys were extracted
         if cited_keys and entry.get('ID') not in cited_keys:
             continue
@@ -428,11 +431,8 @@ def main():
                 if str(e_year) != str(v_year):
                     warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
 
-    # 5. Final Output and Summary
-    db.entries = used_entries
-    writer = BibTexWriter()
-    with open(OUTPUT_BIB, 'w', encoding='utf-8') as f:
-        f.write(writer.write(db))
+    # 5. Final Output and Summary via the version-safe helper
+    write_bib_file(OUTPUT_BIB, db, used_entries)
 
     # Persist the cumulative cache
     save_cache(cache)
