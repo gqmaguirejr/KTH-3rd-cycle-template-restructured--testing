@@ -3,9 +3,10 @@ name: Bibliography Cleanup
 on:
   push:
     paths:
-      - 'output.bcf'
       - 'output.aux'
+      - 'output.bcf'
       - 'references.bib'
+      - 'scripts/bib_cleanup.py'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Add this line here
