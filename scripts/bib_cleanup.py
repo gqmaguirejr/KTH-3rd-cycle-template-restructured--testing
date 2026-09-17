@@ -26,8 +26,6 @@ import bibtexparser
 CACHE_FILE = ".bib_validator_cache.json"
 
 # Crossref uses the following DOIs for testing and internal use
-# from https://api.crossref.org/members?query=test%20accounts
-# and https://api.crossref.org/members?query=Crossref
 test_DOI_prefixes_Crossref = [
     "10.18810",  # Test accounts
     "10.5555",   # Test accounts - used frequently in examples in their documentation
@@ -41,14 +39,6 @@ test_DOI_prefixes_Crossref = [
     "10.13003",
     "10.30443",
 ]
-
-# ACM uses https://dl.acm.org/doi/10.5555/*
-# as a prefix when cross-listing content from another publisher,
-# such as conference papers from others, for example for a paper from the
-# Proceedings of the 33rd International Conference on Neural Information Processing Systems
-# https://dl.acm.org/doi/10.5555/3454287.3454840
-# ACM does _not_ assign DOIs to these papers, but uses the string when generating the BibTeX key when exporting bibtex
-# See also the blog post: https://nickwalker.us/blog/2024/acm-dl-fake-dois/
 
 # Configuration
 INPUT_BIB = 'references.bib'
@@ -74,18 +64,18 @@ if _IS_V2:
         return library, entries
 
     def write_bib_file(file_path, original_library, entries):
-        new_entries = []
+        # In v2, construct a new Library directly with the Entry models
+        new_library = bp.Library()
         for e in entries:
             fields = [
                 bp.model.Field(k, v)
                 for k, v in e.items()
                 if k not in {"ENTRYTYPE", "ID"}
             ]
-            new_entries.append(
+            new_library.add(
                 bp.model.Entry(e["ENTRYTYPE"], e["ID"], fields=fields)
             )
-        original_library.entries = new_entries
-        bp.write_file(str(file_path), original_library)
+        bp.write_file(str(file_path), new_library)
 
 else:
     from bibtexparser.bparser import BibTexParser
@@ -150,18 +140,15 @@ def get_cited_keys(artifact_path):
     cited = set()
     
     if path.suffix == ".aux":
-        # 1. Match BibLaTeX cite commands in .aux: \abx@aux@cite{...}{key}
         blx_keys = re.findall(r'\\abx@aux@cite\{\d+\}\{([^}]+)\}', content)
         cited.update(k.strip() for k in blx_keys)
         
-        # 2. Match classic BibTeX cite commands: \citation{key1,key2}
         bibtex_keys = re.findall(r'\\citation\{([^}]+)\}', content)
         for group in bibtex_keys:
             for k in group.split(","):
                 cited.add(k.strip())
                 
     elif path.suffix == ".bcf":
-        # Match Biber XML citekey nodes
         bcf_keys = re.findall(r'<bcf:citekey[^>]*>([^<]+)</bcf:citekey>', content)
         cited.update(k.strip() for k in bcf_keys)
         
@@ -174,11 +161,9 @@ def validate_isbn_metadata(isbn, email="unknown@example.com", verbose=False):
     if not (is_isbn10(isbn) or is_isbn13(isbn)):
         return None
 
-    # 1. Try Crossref (Excellent for academic books/proceedings)
+    # 1. Try Crossref (Polite User-Agent)
     try:
-        headers = {
-            'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'
-        }
+        headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
         r = requests.get(f"https://api.crossref.org/works?filter=isbn:{isbn}", timeout=5, headers=headers)
         if r.status_code == 200 and r.json()['message']['total-results'] > 0:
             if verbose:
@@ -240,21 +225,22 @@ def validate_isbn_metadata(isbn, email="unknown@example.com", verbose=False):
 def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
     """Checks DOI validity via Crossref."""
     try:
-        doi = doi.strip().replace("doi:", "") 
+        # Strip prefixes like https://doi.org/, http://dx.doi.org/, or doi:
+        clean_doi = re.sub(r'^(https?://(?:dx\.)?doi\.org/|doi:)', '', doi.strip(), flags=re.IGNORECASE)
 
-        # Filter out Crossref's test DOI prefixes
+        # Filter out Crossref test accounts
         for doi_prefix in test_DOI_prefixes_Crossref:
-            if doi.startswith(doi_prefix + '/'):
+            if clean_doi.startswith(doi_prefix + '/'):
                 return None
 
         headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
-        url = f"https://api.crossref.org/works/{doi}"
+        url = f"https://api.crossref.org/works/{clean_doi}"
         
         r = requests.get(url, timeout=5, headers=headers)
         
         if r.status_code != 200:
             if verbose:
-                print(f"  [!] Crossref lookup failed for {doi} (Status: {r.status_code})")
+                print(f"  [!] Crossref lookup failed for {clean_doi} (Status: {r.status_code})")
             return None
 
         item = r.json()['message']
@@ -318,13 +304,12 @@ def main():
     if args.verbose:
         print(f"Using {args.email} as the polite e-mail address for Crossref")
 
-    # 2. Extract cited keys from build artifact if available; otherwise process all entries in references.bib
+    # 2. Extract cited keys from build artifact if available; otherwise process all entries
     artifact_arg = getattr(args, "artifact", "output.aux")
     base_artifact = Path(artifact_arg)
     
     cited_keys = set()
     
-    # Check for .bcf (Biber) or .aux (BibLaTeX/BibTeX)
     if base_artifact.suffix in {".aux", ".bcf"}:
         candidates = [base_artifact.with_suffix(".bcf"), base_artifact.with_suffix(".aux")]
     else:
@@ -335,7 +320,6 @@ def main():
     if active_artifact:
         try:
             cited_keys = get_cited_keys(active_artifact)
-            # If an .aux file produced zero keys, try the .bcf sibling if available
             if not cited_keys and active_artifact.suffix == ".aux":
                 alt_bcf = active_artifact.with_suffix(".bcf")
                 if alt_bcf.is_file():
@@ -351,27 +335,23 @@ def main():
     else:
         print("No build artifacts found (e.g., Overleaf environment). Processing all entries in references.bib...")
 
-    # 3. Load the source bibliography via the version-safe helper
+    # 3. Load the source bibliography
     db, entries = parse_bib_file(INPUT_BIB)
 
     original_count = len(entries)
     used_entries = []
     warnings = []
     
-    # Mutate the existing cache directly to prevent truncating uninspected entries
     cache = load_cache()
 
     # 4. Process entries
     for entry in entries:
-        # Filter for used entries only when cited keys were extracted
         if cited_keys and entry.get('ID') not in cited_keys:
             continue
 
-        # Strip unneeded auxiliary fields
         for field in STRIP_FIELDS:
             entry.pop(field, None)
 
-        # Skip processing for placeholder references
         placeholder_val = entry.get("placeholder")
         if placeholder_val is not None:
             if isinstance(placeholder_val, str):
@@ -380,7 +360,6 @@ def main():
             elif bool(placeholder_val):
                 continue
 
-        # 4a. Metadata Validation with Hashing/Caching
         entry_hash = get_entry_hash(entry)
         
         if entry_hash in cache:
@@ -401,25 +380,20 @@ def main():
             if not validation_result and (entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')):
                 validation_result = validate_patent_url(entry['ID'])
             
-            # Persist lookup result (including None) in cache
             cache[entry_hash] = validation_result
 
-        # 4b. Inject data
         if validation_result:
             if 'url' not in entry and 'url' in validation_result:
                 entry['url'] = validation_result['url']
                 if entry_hash not in cache:
                     print(f"Added missing URL to {entry['ID']} via {validation_result['source']}")
 
-        # 4c. Check for presence of IDs (AFTER injection)
         has_id = any(k in entry for k in ['doi', 'url', 'isbn'])
         if not has_id:
             warnings.append(f"LOW METADATA: {entry['ID']} lacks DOI, URL, or ISBN.")
 
-        # 4d. Collect processed entry
         used_entries.append(entry)
 
-        # 4e. Compare published years
         e_year = entry.get('year')
         v_year = validation_result.get('year') if validation_result else None
 
@@ -431,13 +405,10 @@ def main():
                 if str(e_year) != str(v_year):
                     warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
 
-    # 5. Final Output and Summary via the version-safe helper
+    # 5. Final Output and Summary
     write_bib_file(OUTPUT_BIB, db, used_entries)
-
-    # Persist the cumulative cache
     save_cache(cache)
 
-    # Summary statistics
     count_used = len(used_entries)
     print("\n" + "=" * 30)
     print(f"Reduced {original_count} -> {count_used} entries.")
