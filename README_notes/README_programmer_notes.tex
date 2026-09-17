@@ -5260,6 +5260,63 @@ placeholder = {Placeholder fake reference for use in examples},
 
 
 
+\section{GitHub automation and workflows}
+\label{sec:GitHubAutomation}
+
+By making this template available via GitHub, we can exploit the ability of CI/CD (GitHub Actions) to automate thesis metadata management. This repository currently supports:
+
+Existing workflows:
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{Controlled Inclusion}}, leftmargin=!]
+    \item[Automate the configuration of custom_configuration.tex] Using the config_wizard.py
+
+    \item[Automated Publication Discovery] Metadata is pulled directly from DiVA based on the author's KTHID
+
+    \item[Controlled Inclusion] A JSON-based mapping system (`publications_map.json`) allows authors to curate which publications are "included" or "not included" in the thesis with custom labels (e.g., `paper:A`, `patent:B`).
+
+    \item[LaTeX Generation] Direct insertion of formatted publication lists into the document. The system supports LaTeX math mode in titles, citation validation against `references.bib`, and automatic character escaping.
+
+    \item[Bibliography Cleanup] Runs scripts/bib_cleanup.py whenever \fname{output.bcf}, \fname{output.aux}, or \fname{references.bib} changes.
+\end{description}
+
+
+\subsection{bib\_cleanup.py}
+\label{sec:bibCleanup.py}
+
+The Bibliography Cleanup is done using the \fname{bib\_cleanup.py} scripts. The purpose of \fname{bib\_cleanup.py} is to check the existence of the entries in the \fname{references.bib} file.
+If there is an \fname{output.aux} or \fname{output.bcf} file, then the checking is limited to the entries that have been used. Otherwise, all of the entries in the \fname{references.bib} file are checked.
+Previously checked entries are stored in \fname{.bib\_validator\_cache.json} to avoid repeated lookups.
+
+\warningExpl{When compiling a document in Overleaf, the \fname{output.aux} and \fname{output.bcf} files are only in the container. To move them out of the container, download the relevant file and then upload it to the project's root directory.  When you upload this to your GitHub repository, the Bibliography Cleanup workflow will run.}
+
+The program creates a \fname{referencesUsed.bib} file containing only the items from \fname{references.bib} that you have cited. It also does some checking of the \glspl{DOI}, \glspl{ISBN}, (US) patents, and computes what fraction of your references have a \gls{DOI}, \gls{ISBN}, or \gls{URL} - to encourage you to have \glspl{PID} for your references.
+
+To be able to facilitate this automation, you should add the following files to what git tracks:
+\begin{table}[!htp]
+    \caption{Files relevant to \fname{scripts/bib\_cleanup.py}}
+    \label{tab:bibCleanupFiles}
+    \begin{tabular}{L{3cm}|L{6.5cm}}
+    \toprule
+      \textbf{File} &\textbf{Role in the Workflow}\\
+    \midrule
+\fname{.bib_validator_cache.json}   &  verification cache\\
+\fname{referencesUsed.bib}  &   "Clean" output of references you have cited. The cleaning removes a number of fields (such as abstract and file) that might be sensitive or violate a copyright.\\
+\fname{output.aux}  &  Produced by \BibLaTeX{} - contains information about what references were cited. In the case of biblatex and biber this can be a stub.\\
+\fname{output.bcf}  &  Alternative list of cited references, this tells the script which references to keep.\\
+\fname{.github/workflows/bib-clean.yml }  &  The instructions that tell GitHub to automate the cleanup every time you push.\\
+\fname{scripts/bib\_cleanup.py }  &  The script that does the work.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A cache of the \gls{DOI}, \gls{ISBN\, \etc lookup is stored in \fname{.bib\_validator\_cache.json}. This helps prevent the GitHub Runner from hitting \gls{API} rate limits by reusing your local verification or previous verification results.
+
+\warningExpl{The checking that is done is that the \gls{DOI}, \gls{ISBN}, \gls{URL}, \ldots is likely to exist, not that the reference is \textbf{factually} correct.}
+At present, if there is a \gls{DOI} (or \gls{ISBN}), then a comparison is made between the year in the reference and the year returned by Crossref (in the case of a \gls{DOI}: prioritizing 'published-print' over 'issued' year; in the case of an \gls{ISBN}: prioritizing 'published-print' over 'issued' over 'published-online' year).
+Ideally, this checking should be expanded to compare author, title, and other information with the information from Crossref or other sources --- this could help reduce the probability of undetected fake/erroneous references. 
+
+\generalExpl{Since the GitHub actions for Bibliography Cleanup do an auto-commit, always run \texttt{git pull --rebase} before you start editing your \fname{.json} or \fname{.bib} files to keep your \enquote{local} and \enquote{upstream} repositories in sync.}
+ 
+
 \section{Future work and work in progress}
 \label{sec:futurework}
 There are several areas where the template, supporting programs, and documentation can be enhanced. The programs and notebooks can be found in \fname{https://github.com/gqmaguirejr/Canvas-tools} or\linebreak[4]
