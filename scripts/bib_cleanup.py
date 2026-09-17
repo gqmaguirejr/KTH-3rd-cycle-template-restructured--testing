@@ -22,8 +22,61 @@ import subprocess
 import requests
 
 import bibtexparser
-from bibtexparser.bparser import BibTexParser
-from bibtexparser.bwriter import BibTexWriter
+
+# Detect version
+_IS_V2 = hasattr(bibtexparser, "__version__") and bibtexparser.__version__.startswith("2")
+
+if _IS_V2:
+    # bibtexparser v2.x API
+    import bibtexparser as bp
+    from bibtexparser import BibtexFormat
+    from bibtexparser.middlewares import Middleware
+
+    def parse_bib_file(file_path):
+        library = bp.parse_file(file_path)
+        # Convert v2 Entry objects to a list of dicts matching v1 structure
+        entries = []
+        for entry in library.entries:
+            d = {"ENTRYTYPE": entry.entry_type, "ID": entry.key}
+            for field in entry.fields:
+                d[field.key.lower()] = field.value
+            entries.append(d)
+        return library, entries
+
+    def write_bib_file(file_path, original_library, entries):
+        # Rebuild library entries
+        new_entries = []
+        for e in entries:
+            fields = [
+                bp.model.Field(k, v) 
+                for k, v in e.items() 
+                if k not in {"ENTRYTYPE", "ID"}
+            ]
+            new_entries.append(
+                bp.model.Entry(e["ENTRYTYPE"], e["ID"], fields=fields)
+            )
+        original_library.entries = new_entries
+        bp.write_file(file_path, original_library)
+
+else:
+    # bibtexparser v1.x API
+    from bibtexparser.bparser import BibTexParser
+    from bibtexparser.bwriter import BibTexWriter
+
+    def parse_bib_file(file_path):
+        parser = BibTexParser(common_strings=True, ignore_nonstandard_types=False)
+        with open(file_path, 'r', encoding='utf-8') as f:
+            db = bibtexparser.load(f, parser=parser)
+        return db, db.entries
+
+    def write_bib_file(file_path, original_library, entries):
+        original_library.entries = entries
+        writer = BibTexWriter()
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(writer.write(original_library))
+
+
+
 from isbnlib import canonical, is_isbn10, is_isbn13, meta
 
 CACHE_FILE = ".bib_validator_cache.json"
