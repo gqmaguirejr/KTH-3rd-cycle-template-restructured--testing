@@ -5260,76 +5260,105 @@ placeholder = {Placeholder fake reference for use in examples},
 
 
 
-\section{GitHub automation and workflows}
+\section{GitHub Automation and Workflows}
 \label{sec:GitHubAutomation}
 
-By making this template available via GitHub, we can exploit the ability of CI/CD (GitHub Actions) to automate thesis metadata management. This repository currently supports:
+By hosting this template on GitHub, Continuous Integration and Continuous Delivery/Deployment (CI/CD) pipelines (GitHub Actions) automate thesis metadata management, publication ingestion, and reference verification.
 
-Existing workflows:
-\begin{description}[style=nextline, labelwidth=\widthof{\textbf{Controlled Inclusion}}, leftmargin=!]
-    \item[Automate the configuration of custom_configuration.tex] Using the config_wizard.py
+\subsection{Architectural Overview}
+\label{sec:CIArchitecture}
 
-    \item[Automated Publication Discovery] Metadata is pulled directly from DiVA based on the author's KTHID
+The repository integrates several autonomous workflows designed to eliminate manual synchronization between external institutional registries, bibliography files, and \TeX{} macros:
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{Automated Publication Discovery}}, leftmargin=!]
+    \item[Configuration Wizard] Executes \fname{scripts/config\_wizard.py} to validate and configure user options in \fname{custom\_configuration.tex}.
 
-    \item[Controlled Inclusion] A JSON-based mapping system (`publications_map.json`) allows authors to curate which publications are "included" or "not included" in the thesis with custom labels (e.g., `paper:A`, `patent:B`).
+    \item[Automated Publication Discovery] Harvests candidate publication metadata directly from \gls{DiVA} using the author's \texttt{kthid}.
 
-    \item[LaTeX Generation] Direct insertion of formatted publication lists into the document. The system supports LaTeX math mode in titles, citation validation against `references.bib`, and automatic character escaping.
+    \item[Controlled Inclusion Mapping] Ingests \fname{publications\_map.json} to resolve whether discovered records map to included papers (\eg \texttt{paper:A}) or non-included artifacts (\eg \texttt{patent:B}).
 
-    \item[Bibliography Cleanup] Runs scripts/bib_cleanup.py whenever \fname{output.bcf}, \fname{output.aux}, or \fname{references.bib} changes.
+    \item[\LaTeX{} Structural Generation] Generates publication divider pages and preface summaries dynamically, ensuring correct math-mode rendering and Unicode character escaping.
+
+    \item[Bibliography Verification and Pruning] Triggers \fname{scripts/bib\_cleanup.py} to cross-check cited works against remote \gls{PID} registries and compile an export-ready subset.
 \end{description}
 
+\subsection{Bibliography Cleanup Pipeline (\fname{bib\_cleanup.py})}
+\label{sec:bibCleanupDev}
 
-\subsection{bib\_cleanup.py}
-\label{sec:bibCleanup.py}
+The script \fname{scripts/bib\_cleanup.py} implements external bibliographic validation and metadata hygiene.
 
-The Bibliography Cleanup is done using the \fname{bib\_cleanup.py} scripts. The purpose of \fname{bib\_cleanup.py} is to check the existence of the entries in the \fname{references.bib} file.
-If there is an \fname{output.aux} or \fname{output.bcf} file, then the checking is limited to the entries that have been used. Otherwise, all of the entries in the \fname{references.bib} file are checked.
-Previously checked entries are stored in \fname{.bib\_validator\_cache.json} to avoid repeated lookups.
+\subsubsection{Execution and Artifact Resolution}
+The pipeline accepts an optional build artifact flag (\texttt{--artifact}) to restrict validation exclusively to cited sources:
+\begin{itemize}
+    \item \textbf{Artifact Mode:} The script searches for Biber control files (\fname{output.bcf}) or auxiliary logs (\fname{output.aux}). If found, it extracts citation keys matching \verb|\abx@aux@cite{<sec>}{<key>}| or standard \verb|\citation{<key>}| primitives.
+    \item \textbf{Headless / Standalone Fallback:} If no build artifacts exist (common in headless \gls{CI} runs or when committing from web environments), the script gracefully degrades to inspecting all entries present in \fname{references.bib}.
+    \item \textbf{Placeholder Bypassing:} Entries marked with \texttt{placeholder = \{true\}} (or another text string as the value) are ignored to allow template scaffolding without failing validation.
+\end{itemize}
 
-\warningExpl{When compiling a document in Overleaf, the \fname{output.aux} and \fname{output.bcf} files are only in the container. To move them out of the container, download the relevant file and then upload it to the project's root directory.  When you upload this to your GitHub repository, the Bibliography Cleanup workflow will run.}
+\subsubsection{PID Verification Hierarchy and Cross-Checking}
+For each processed entry, \fname{bib\_cleanup.py} queries external APIs:
+\begin{enumerate}
+    \item \textbf{\glspl{DOI}:} Verified through the Crossref REST API (\texttt{api.crossref.org}) using a polite \texttt{User-Agent} header. Crossref internal test prefixes (e.g., \texttt{10.18810}, \texttt{10.5555}) are recognized and handled appropriately. Fallback check via DataCite.
+    \item \textbf{\glspl{ISBN}:} Verified via a three-tier fallback: Crossref $\rightarrow$ Google Books \gls{API} $\rightarrow$ Open Library.
+    \item \textbf{Patents:} Standard patent identifiers (\eg \texttt{US\ldots}) generate direct canonical target requests against Google Patents.
+\end{enumerate}
 
-The program creates a \fname{referencesUsed.bib} file containing only the items from \fname{references.bib} that you have cited. It also does some checking of the \glspl{DOI}, \glspl{ISBN}, (US) patents, and computes what fraction of your references have a \gls{DOI}, \gls{ISBN}, or \gls{URL} - to encourage you to have \glspl{PID} for your references.
+For documents with \glspl{DOI}, the code supports fuzzy title matching via string-similarity checks (\eg Levenshtein distance or Jaro-Winkler) against the registered title.
 
-To be able to facilitate this automation, you should add the following files to what git tracks:
-\begin{table}[!htp]
-    \caption{Files relevant to \fname{scripts/bib\_cleanup.py}}
-    \label{tab:bibCleanupFiles}
-    \begin{tabular}{L{3cm}|L{6.5cm}}
-    \toprule
-      \textbf{File} &\textbf{Role in the Workflow}\\
-    \midrule
-\fname{.bib_validator_cache.json}   &  verification cache\\
-\fname{referencesUsed.bib}  &   "Clean" output of references you have cited. The cleaning removes a number of fields (such as abstract and file) that might be sensitive or violate a copyright.\\
-\fname{output.aux}  &  Produced by \BibLaTeX{} - contains information about what references were cited. In the case of biblatex and biber this can be a stub.\\
-\fname{output.bcf}  &  Alternative list of cited references, this tells the script which references to keep.\\
-\fname{.github/workflows/bib-clean.yml }  &  The instructions that tell GitHub to automate the cleanup every time you push.\\
-\fname{scripts/bib\_cleanup.py }  &  The script that does the work.\\
-\bottomrule
-\end{tabular}
-\end{table}
+When an \gls{API} hit succeeds, the script compares the record's published year against the entry's \texttt{year} field (prioritizing \texttt{published-print} over \texttt{issued} and \texttt{published-online}). Any discrepancy is flagged as an analysis warning.
 
-A cache of the \gls{DOI}, \gls{ISBN\, \etc lookup is stored in \fname{.bib\_validator\_cache.json}. This helps prevent the GitHub Runner from hitting \gls{API} rate limits by reusing your local verification or previous verification results.
+The program checks for citations of retracted works (currently limited to works with a \gls{DOI}), using Crossref's Retraction Watch Data (\url{https://gitlab.com/crossref/retraction-watch-data}, based on a dataset from Retraction Watch). 
 
-\warningExpl{The checking that is done is that the \gls{DOI}, \gls{ISBN}, \gls{URL}, \ldots is likely to exist, not that the reference is \textbf{factually} correct.}
-At present, if there is a \gls{DOI} (or \gls{ISBN}), then a comparison is made between the year in the reference and the year returned by Crossref (in the case of a \gls{DOI}: prioritizing 'published-print' over 'issued' year; in the case of an \gls{ISBN}: prioritizing 'published-print' over 'issued' over 'published-online' year).
-Ideally, this checking should be expanded to compare author, title, and other information with the information from Crossref or other sources --- this could help reduce the probability of undetected fake/erroneous references. 
+\subsubsection{Caching Infrastructure}
+To avoid exhausting \gls{API} rate limits on large bibliographies, lookup payloads are hashed and cached:
+\begin{equation*}
+    \text{hash} = \text{SHA256}(\text{JSON}(\text{entry} \setminus \mathtt{STRIP\_FIELDS}))
+\end{equation*}
+Cached results persist in \fname{.bib\_validator\_cache.json}. When entries remain unaltered, the GitHub Action bypasses network requests completely.
 
-\generalExpl{Since the GitHub actions for Bibliography Cleanup do an auto-commit, always run \texttt{git pull --rebase} before you start editing your \fname{.json} or \fname{.bib} files to keep your \enquote{local} and \enquote{upstream} repositories in sync.}
- 
+\subsubsection{Output Generation and Sanitation}
+The pipeline generates \fname{referencesUsed.bib}, which exclusively contains cited entries and strips local or sensitive metadata keys (including \texttt{abstract}, \texttt{file}, \texttt{groups}, \texttt{keywords}, and \texttt{annotation}). The sanitized file could be attached to a thesis so others can easily analyze the cited works.
+
+\subsubsection{Missing Functionality and Future Extensions}
+\label{sec:bibCleanupMissing}
+
+While the current pipeline addresses primary identifier lookup, year sanity checks, and retraction alerts, several extensions are needed to achieve more complete bibliographic hygiene:
+
+\begin{itemize}
+    \item \textbf{Fuzzy Author Matching:} The current validation only confirms that a DOI, ISBN, or patent identifier resolves; that the publication years align; and performs a string-similarity check against the registered title. However, a similar check is not made of the elements of the author list. This leaves room for \enquote{phantom} citations where a valid \gls{DOI} is accidentally paired with unrelated citation metadata
+
+    \item \textbf{Direct arXiv / eprint Resolution:} While some arXiv preprints assign a standard \gls{DOI} (\eg via the \texttt{10.48550} prefix), many citations only supply an \texttt{eprint} field without an explicit \gls{DOI}. A dedicated lookup against the arXiv REST \gls{API} is needed to validate preprint identifiers and check whether a formal journal version has since been published.
+
+    \item \textbf{Extended Persistent Identifier Registries:}
+    \begin{itemize}
+        \item \textbf{PubMed / Europe PMC:} Biomedical and bioinformatics entries indexed via \gls{PMID} or \gls{PMCID} are currently unsupported unless an accompanying \gls{DOI} is present.
+        \item \textbf{MathSciNet / zbMATH:} Mathematical reviews and standard MR numbers are not currently resolved against the American Mathematical Society's endpoints.
+        \item \textbf{Handles and URN:NBN:} National thesis and institutional repository identifiers (such as SwePub/\gls{DiVA} URN:NBN handles) lack direct resolution fallback.
+    \end{itemize}
+
+    \item \textbf{Retraction Watch Database Integration for Non-DOI Works:} Retraction checks currently rely on Crossref relationships and Crossmark metadata. Integrating direct lookups against the full Retraction Watch tabular dataset would enable detection of retracted entries that lack a registered \gls{DOI} (\eg retracted book chapters, conference papers, or preprints identified by title/author tuples).
+
+    \item \textbf{Author Disambiguation and ORCID Ingestion:} When validating entries, the script does not currently harvest or cross-reference authors' \glspl{ORCID}, nor does it check whether author names conform to the CReDiT contributor roles taxonomy.
+
+    \item \textbf{Automated \gls{DOI} / \gls{ISBN} Backfilling:} If an entry contains a valid \gls{URL} or arXiv key but omits a canonical \gls{DOI}, the pipeline could query the Crossref \texttt{/works?query.title} endpoint to suggest or automatically inject the missing persistent identifier into \fname{referencesUsed.bib}. \todoinline{Perhaps this should only be a message to the author --- rather than being silently added to \fname{referencesUsed.bib}, so that the author could add it to \fname{references.bib}.}
+
+    \item \textbf{URL Liveness and Decay Detection:} \glspl{URL} provided in \texttt{@online} or \texttt{@misc} entries that lack a \gls{DOI} or \gls{ISBN} are not actively polled via HTTP \texttt{HEAD} requests to verify liveness or catch bit rot (HTTP 404/410), nor are fallback requests routed through the Internet Archive Wayback Machine \gls{API}.
+
+    \item \textbf{Checking against known mashups/frankenreferences:} If a registry of known mashups/frankenreferences existed, it would be desirable to check against it. \todoinline{Perhaps a starting point for such a registry is those from my study of 2025 third-cycle theses.}\footnote{Unfortunately, \gls{Npof} does not maintain an open, machine-readable \gls{API} or structured database of cited references or detected frankenreferences. Their decisions are \emph{not} available in machine-readable form, but only published as \glspl{PDF} and summary press releases. Therefore, extracting these references would require manual curation or a text-extraction (or \gls{OCR}) scraping pipeline.}
+\end{itemize}
 
 \section{Future work and work in progress}
 \label{sec:futurework}
-There are several areas where the template, supporting programs, and documentation can be enhanced. The programs and notebooks can be found in \fname{https://github.com/gqmaguirejr/Canvas-tools} or\linebreak[4]
-\fname{https://github.com/gqmaguirejr/E-learning}.
+There are several areas where the template, supporting programs, and documentation can be enhanced. The programs and notebooks can be found in \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured--testing} or 
+\url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
 
 \subsection{Automating creation of custom\_configuration.tex file}
 \label{sec:automatingConfiguration}
 
 To help collect information for the \fname{custom\_configuration.tex} file, I have written some programs.
 
-One of these programs is \fname{extract\_data\_from\_ISP.py}. It extracts some information from a PDF file of the student's \gls{ISP} and generates a JSON file. This is in an early stage, but it shows what can be done to extract data from a \gls{PDF} file of an \gls{ISP}.
+One of these programs is \fname{extract\_data\_from\_ISP.py}. It extracts some information from a \gls{PDF} file of the student's \gls{ISP} and generates a \gls{JSON} file. This is in an early stage, but it shows what can be done to extract data from a \gls{PDF} file of an \gls{ISP}.
 
-The program \fname{ISP\_JSON\_to\_configuration\_info.py} takes the JSON produced by \fname{extract\_data\_from\_ISP.py} and produces much of the information for the \fname{custom\_configuration.tex} file (with respect to the information available at the time the writing of the thesis starts).
+The program \fname{ISP\_JSON\_to\_configuration\_info.py} takes the \gls{JSON} produced by \fname{extract\_data\_from\_ISP.py} and produces much of the information for the \fname{custom\_configuration.tex} file (with respect to the information available at the time the writing of the thesis starts).
 
 To get additional information for the author and supervisors, the program uses information from either a Canvas course room \textbf{or} requires Canvas administrative rights to be able to look up the user's KTHID using the Canvas \gls{API} and the user's email address. In addition, the program utilizes the \gls{KTH} Profile \gls{API} to obtain further information about each person's organization, given an email address (if they are affiliated with \gls{KTH}).
 
@@ -5339,7 +5368,7 @@ To get additional information for the author and supervisors, the program uses i
 \label{sec:automatingPublicationsList}
 
 The Jupyter notebook
-\fname{Compute\_publications\_list\_from\_DiVA-Notebook-20250907.ipynb} uses data from \fname{fordiva.json} and \fname{references.bib} files to look up the student's publications in DiVA and generate the LaTeX that might be used in a list of publications in a third-cycle thesis.
+\fname{Compute\_publications\_list\_from\_DiVA-Notebook-20250907.ipynb} uses data from \fname{fordiva.json} and \fname{references.bib} files to look up the student's publications in \gls{DiVA} and generate the \LaTeX{} that might be used in a list of publications in a third-cycle thesis.
 
 This could be used for the \enquote{List of Publications} for a compilation thesis or for a list of papers and contributions in a monograph thesis. Note that the author will need to edit the resulting list to indicate which publications are included in a compilation thesis and which papers have not been included. The author may also need to move items from one category to another.
 
@@ -5354,7 +5383,7 @@ This information is valuable when the student is entering the metadata for their
 \subsection{JSON\_to\_Cora\_DiVA}
 \label{sec:JSONtoCoraDiVA}
 
-\warningExpl{Implemented JSON\_to\_Cora\_DiVA remains as future work.}
+\warningExpl{Implementing JSON\_to\_Cora\_DiVA remains as future work.}
  
 
 \subsection{Better exploiting unicode}
