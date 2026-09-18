@@ -563,7 +563,7 @@ def main():
         if e_year and v_year:
             try:
                 if int(e_year) != int(v_year):
-                    warnings.append(f"Mismatch in years: {entry['ID']} ({e_year}) != validation_result['source'] ({v_year})")
+                    warnings.append(f"Mismatch in years: {entry['ID']} ({e_year}) != {validation_result['source']} ({v_year})")
             except (ValueError, TypeError):
                 if str(e_year) != str(v_year):
                     warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
