@@ -9,37 +9,41 @@ on:
       - 'scripts/bib_cleanup.py'
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Add this line here
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    # enable the script to write
     permissions:
       contents: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
-          # Fetch the absolute latest commit, not a cached version.
           fetch-depth: 0
           ref: main
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: Cache Bibliographic Lookups
+        uses: actions/cache@v4
+        with:
+          path: .bib_validator_cache.json
+          key: bib-validator-${{ runner.os }}-${{ hashFiles('references.bib') }}
+          restore-keys: |
+            bib-validator-${{ runner.os }}-
 
       - name: Install dependencies
         run: pip install bibtexparser isbnlib requests
 
       - name: Run Cleanup Script
-        # Added verbose flag so we can see the failure in the logs
         run: python scripts/bib_cleanup.py --verbose
         env:
-          # Use the email of the person who pushed the code
           USER_EMAIL: ${{ github.event.pusher.email }}
 
       - name: Commit and Push changes
@@ -47,16 +51,13 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Add the specific files
-          git add referencesUsed.bib .bib_validator_cache.json
+          # Only stage the sanitized generated file
+          git add referencesUsed.bib
           
-          # Only commit if there are actually changes to avoid empty commit errors
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Auto-update: Cleaned referencesUsed.bib and cache"
-            
-            # The "Magic" sequence: pull any last-second changes, then push
+            git commit -m "Auto-update: Cleaned referencesUsed.bib [skip ci]"
             git pull --rebase origin main
             git push origin main
           fi
