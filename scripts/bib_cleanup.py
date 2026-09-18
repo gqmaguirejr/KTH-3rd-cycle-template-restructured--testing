@@ -303,19 +303,31 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
 
             # Inside validate_doi_metadata when r.status_code == 200:
             item = r.json().get('message', {})
-            api_titles = item.get("title", [])
-            primary_title = api_titles[0] if api_titles else None
+
+            # Collect all candidate titles from Crossref
+            candidate_titles = []
+            for key in ('original-title', 'title', 'subtitle'):
+                vals = item.get(key, [])
+                if isinstance(vals, list):
+                    candidate_titles.extend(vals)
+                elif isinstance(vals, str):
+                    candidate_titles.append(vals)
+
+            # Primary title for display, but keep all candidates for matching
+            primary_title = candidate_titles[0] if candidate_titles else None
             container_titles = item.get("container-title", [])
             container_title = container_titles[0] if container_titles else None
 
             return {
                 "title": primary_title,
+                "all_titles": candidate_titles,
                 "container_title": container_title,
                 "year": str(final_year) if final_year else '',
                 "source": "Crossref (DOI)",
                 "updates": updates,
                 "retracted": is_retracted
             }
+
 
         elif verbose and r.status_code != 404:
             print(f"  [!] Crossref lookup returned status {r.status_code} for {clean_doi}")
@@ -543,20 +555,21 @@ def main():
         # Check title similarity
         bib_title = entry.get('title')
         if validation_result and bib_title:
-            api_title = validation_result.get('title')
-            # Skip patents or entries where API has no title
             is_patent = entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')
             
-            if api_title and not is_patent:
-                matched = titles_match(bib_title, api_title, threshold=0.6)
-                
-                # Check container title fallback (e.g. conference proceedings DOIs)
-                if not matched and validation_result.get('container_title'):
-                    matched = titles_match(bib_title, validation_result['container_title'], threshold=0.6)
+            if not is_patent:
+                # Gather all possible API titles to test against
+                api_titles_to_test = validation_result.get('all_titles', [])
+                if not api_titles_to_test and validation_result.get('title'):
+                    api_titles_to_test = [validation_result['title']]
+                if validation_result.get('container_title'):
+                    api_titles_to_test.append(validation_result['container_title'])
 
-                if not matched:
-                    warnings.append(f"Title mismatch for {entry['ID']}: '{bib_title}' vs API '{api_title}'")
-
+                if api_titles_to_test:
+                    matched = any(titles_match(bib_title, t, threshold=0.6) for t in api_titles_to_test)
+                    if not matched:
+                        display_title = validation_result.get('title', '')
+                        warnings.append(f"Title mismatch for {entry['ID']}: '{bib_title}' vs API '{display_title}'")
 
     # 5. Final Output and Summary
     write_bib_file(OUTPUT_BIB, db, used_entries)
