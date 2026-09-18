@@ -1284,11 +1284,63 @@ As increasing use is made of Generative AI tools, some institutions have an offi
 
 I take full responsibility for the content of the “kappa”/comprehensive summary of the thesis.} 
 
+
+\section{Managing Your Bibliography and Automated Checks}
+\label{sec:UserBibManagement}
+
+Complementing the academic declaration above, this template provides automated verification to ensure bibliographic integrity, proper attribution, and standard-compliant persistent identifiers (\glspl{PID}). Every time you commit updates to \fname{references.bib} or the document source, GitHub Actions inspects your references against external registries and generates an archival subset (stripping unnecessary metadata).
+
+\subsection{What the Automated Workflow Does}
+When you push your work to GitHub, the automated script:
+\begin{enumerate}
+    \item Identifies the works you actually cited in the thesis.
+    \item Checks whether your \glspl{DOI}, \glspl{ISBN}, or patent numbers exist in international databases (Crossref, Google Books, and Open Library).
+    \item Flags potential errors, such as a mismatch between the publication year in your \fname{.bib} file and the official registered date.
+    \item Calculates the percentage of your references equipped with a \gls{PID} (\gls{DOI}, \gls{ISBN}, or permanent \gls{URL}).
+    \item Generates a clean bibliography file named \fname{referencesUsed.bib} containing only cited works, stripping internal notes, abstracts, and local file paths.
+\end{enumerate}
+
+\warningExpl{The automated verification confirms that a \gls{DOI}, \gls{ISBN}, or link \textbf{exists and resolves}, but it cannot verify whether the cited work factually supports the claims made in your text.}
+
+\subsection{Files Tracked by Git}
+To ensure the automated cleanup functions smoothly, your repository tracks the files listed in \Cref{tab:bibCleanupFiles}.
+
+\begin{table}[!htp]
+    \centering
+    \caption{Files associated with automated bibliography cleanup}
+    \label{tab:bibCleanupFiles}
+    \footnotesize
+    \begin{tabular}{L{5.2cm}|L{7cm}}
+    \toprule
+    \textbf{File} & \textbf{Role in the Workflow} \\
+    \midrule
+    \fname{references.bib} & Your master bibliography file containing all candidate entries. \\
+    \fname{referencesUsed.bib} & Clean, generated bibliography containing only cited entries, safe for distribution and archiving. \\
+    \fname{.bib\_validator\_cache.json} & Local lookup cache. Commit this file to avoid triggering \gls{API} rate limits during automated builds. \\
+    \fname{output.aux} \emph{or} \fname{output.bcf} & Auxiliary compilation logs indicating which keys were cited in the text. \\
+    \fname{.github/workflows/bib-clean.yml} & The GitHub Actions workflow specification. \\
+    \fname{scripts/bib\_cleanup.py} & The processing script that validates identifiers and prunes entries. \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Working with Overleaf}
+\warningExpl{When compiling in Overleaf, build artifacts like \fname{output.aux} and \fname{output.bcf} remain inside Overleaf's internal container. If you commit directly from Overleaf to GitHub, the automated workflow will simply check \textbf{all} entries in \fname{references.bib}.\\
+If you want the workflow to prune \fname{referencesUsed.bib} down strictly to the references you cited, download \fname{output.aux} (or \fname{output.bcf}) from Overleaf's \enquote{Logs and output files} panel, place it into the project root directory, and push it to GitHub.}
+
+\subsection{Avoiding Merge Conflicts with Auto-Commits}
+\generalExpl{Because the GitHub Actions runner automatically commits updates to \fname{referencesUsed.bib} and \fname{.bib\_validator\_cache.json}, always pull changes before starting a new editing session with \texttt{git pull --rebase}. This prevents merge conflicts between your local work and the runner's automated commits.}
+
+\begin{lstlisting}[language=bash]
+# Fetch and rebase before starting local edits
+git pull --rebase
+\end{lstlisting}
+
 \Needspace*{9\baselineskip}
 \section{Errata}
 \label{sec:cycle3Errata}
 
-As described in \Cref{sec:cycle3BackgroundOfThesisAndDefense}, the errata have to be announced before the student starts their actual oral defense. I have not found a standard format for this, as a printed document. Looking at a number of errata that are in \gls{DiVA} for theses at \gls{KTH}, most have a title of \enquote{Errata} or \enquote{Errata for doctoral/licentiate thesis} followed by a reference to the thesis. This reference can be as short as the title of the thesis \& the author or as long as a full reference (with ISBN). The key is that it should be possible to identify the relevant thesis from the information at the top of the errata. \textbf{NB} If you use the \fname{errata.tex} file in this project, it will automatically include this information.
+As described in \Cref{sec:cycle3BackgroundOfThesisAndDefense}, the errata have to be announced before the student starts their actual oral defense. I have not found a standard printed format for this. Looking at a number of errata that are in \gls{DiVA} for theses at \gls{KTH}, most have a title of \enquote{Errata} or \enquote{Errata for doctoral/licentiate thesis} followed by a reference to the thesis. This reference can be as short as the title of the thesis \& the author or as long as a full reference (with ISBN). The key is that it should be possible to identify the relevant thesis from the information at the top of the errata. \textbf{NB} If you use the \fname{errata.tex} file in this project, it will automatically include this information.
 
 \Needspace*{5\baselineskip}
 The errata can concern the thesis text and may also include text from published papers. Each item in the errata should identify where the correction should be applied and what the correction is. The identification can include a page number (or page range), section heading, figure/table/equation/$\ldots$ , publication identifier, \etc. The aim is for the reader to identify exactly where the change should be made.
