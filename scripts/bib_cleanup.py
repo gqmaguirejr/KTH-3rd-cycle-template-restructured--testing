@@ -24,6 +24,7 @@ import requests
 import bibtexparser
 from difflib import SequenceMatcher
 
+
 CACHE_FILE = ".bib_validator_cache.json"
 
 # Crossref uses the following DOIs for testing and internal use
@@ -299,14 +300,22 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
                 elif updates:
                     print(f"  [*] Notice: {clean_doi} has updates/errata: {updates}")
 
-            result = {
-                "title": item.get("title", [None])[0],
+
+            # Inside validate_doi_metadata when r.status_code == 200:
+            item = r.json().get('message', {})
+            api_titles = item.get("title", [])
+            primary_title = api_titles[0] if api_titles else None
+            container_titles = item.get("container-title", [])
+            container_title = container_titles[0] if container_titles else None
+
+            return {
+                "title": primary_title,
+                "container_title": container_title,
                 "year": str(final_year) if final_year else '',
                 "source": "Crossref (DOI)",
                 "updates": updates,
                 "retracted": is_retracted
             }
-            return result
 
         elif verbose and r.status_code != 404:
             print(f"  [!] Crossref lookup returned status {r.status_code} for {clean_doi}")
@@ -347,16 +356,55 @@ def validate_patent_url(patent_id):
     """Checks if a Google Patents page exists and returns the URL."""
     clean_id = patent_id.replace(" ", "").upper()
     url = f"https://patents.google.com/patent/{clean_id}/en"
-    
     try:
         headers = {'User-Agent': 'Mozilla/5.0'}
         r = requests.head(url, headers=headers, timeout=5, allow_redirects=True)
         if r.status_code == 200:
-            return {"title": f"Patent {clean_id}", "url": url, "source": "Google Patents"}
+            return {"url": url, "source": "Google Patents", "title": None}
     except Exception:
         pass
     return None
 
+def clean_title(title: str) -> str:
+    """Strips TeX commands, math mode, braces, and non-alphanumeric noise for robust comparison."""
+    if not title:
+        return ""
+    # Remove LaTeX math mode ($...$)
+    t = re.sub(r'\$.*?\$', '', title)
+    # Remove LaTeX control words like \bar, \textbf, etc.
+    t = re.sub(r'\\[a-zA-Z]+', '', t)
+    # Remove TeX grouping braces and standard punctuation
+    t = re.sub(r'[{}"\'`~^]', '', t)
+    # Replace any non-alphanumeric characters with spaces
+    t = re.sub(r'[^a-zA-Z0-9\s]', ' ', t)
+    # Collapse multiple whitespaces
+    return ' '.join(t.lower().split())
+
+def titles_match(bib_title: str, api_title: str, threshold: float = 0.6) -> bool:
+    c_bib = clean_title(bib_title)
+    c_api = clean_title(api_title)
+    
+    if not c_bib or not c_api:
+        return True  # Avoid false alarms on empty strings
+    
+    # 1. Direct character ratio
+    ratio = SequenceMatcher(None, c_bib, c_api).ratio()
+    if ratio >= threshold:
+        return True
+    
+    # 2. Substring match (handles cases where API includes subtitle or volume name)
+    if len(c_bib) > 15 and (c_bib in c_api or c_api in c_bib):
+        return True
+    
+    # 3. Token set overlap (Jaccard) to tolerate reordered or truncated titles
+    words_bib = set(c_bib.split())
+    words_api = set(c_api.split())
+    if words_bib and words_api:
+        overlap = len(words_bib & words_api) / min(len(words_bib), len(words_api))
+        if overlap >= 0.7:
+            return True
+
+    return False
 
 def main():
     git_fallback = get_git_email() or "your-backup-contact@example.com"
@@ -492,12 +540,21 @@ def main():
                 if str(e_year) != str(v_year):
                     warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
 
+        # Check title similarity
         bib_title = entry.get('title')
-        if validation_result:
-            api_title = validation_result.get('title', None)
-            if api_title:
-                ratio = SequenceMatcher(None, bib_title.lower(), api_title.lower()).ratio()
-                if ratio < 0.6:
+        if validation_result and bib_title:
+            api_title = validation_result.get('title')
+            # Skip patents or entries where API has no title
+            is_patent = entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')
+            
+            if api_title and not is_patent:
+                matched = titles_match(bib_title, api_title, threshold=0.6)
+                
+                # Check container title fallback (e.g. conference proceedings DOIs)
+                if not matched and validation_result.get('container_title'):
+                    matched = titles_match(bib_title, validation_result['container_title'], threshold=0.6)
+
+                if not matched:
                     warnings.append(f"Title mismatch for {entry['ID']}: '{bib_title}' vs API '{api_title}'")
 
 
