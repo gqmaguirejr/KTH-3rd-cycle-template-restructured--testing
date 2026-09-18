@@ -23,7 +23,7 @@ import requests
 
 import bibtexparser
 from difflib import SequenceMatcher
-
+import urllib.parse
 
 CACHE_FILE = ".bib_validator_cache.json"
 
@@ -230,7 +230,7 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
     falling back to DataCite REST API.
     """
     try:
-        # Strip common URL prefixes and leading schemes
+        # Strip scheme prefixes cleanly without touching trailing segments
         clean_doi = re.sub(r'^(https?://(?:dx\.)?doi\.org/|doi:)', '', doi.strip(), flags=re.IGNORECASE)
 
         # Filter out Crossref test accounts
@@ -238,15 +238,35 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
             if clean_doi.startswith(doi_prefix + '/'):
                 return None
 
+        # Quote the DOI so slashes and special characters don't break the path
+        # safe='' ensures '/' is escaped as %2F if needed, but Crossref prefers literal slashes:
+        # Crossref expects /works/10.1145/3445814.3446724
+        encoded_doi = urllib.parse.quote(clean_doi, safe='/:')
+
         # -------------------------------------------------------------
         # 1. Primary Check: Crossref REST API
         # -------------------------------------------------------------
         headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
-        url = f"https://api.crossref.org/works/{clean_doi}"
+        url = f"https://api.crossref.org/works/{encoded_doi}"
         r = requests.get(url, timeout=5, headers=headers)
 
         if r.status_code == 200:
-            item = r.json().get('message', {})
+            res_json = r.json()
+            msg_type = res_json.get('message-type')
+            
+            # Handle direct work vs search work-list
+            if msg_type == 'work':
+                item = res_json.get('message', {})
+            elif msg_type == 'work-list':
+                items = res_json.get('message', {}).get('items', [])
+                if not items:
+                    return None
+                # Try to find exact DOI match in the returned items
+                exact_items = [it for it in items if it.get('DOI', '').lower() == clean_doi.lower()]
+                item = exact_items[0] if exact_items else items[0]
+            else:
+                item = res_json.get('message', {})
+
 
             # --- Year Resolution ---
             def get_cr_year(date_field):
@@ -300,9 +320,6 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
                 elif updates:
                     print(f"  [*] Notice: {clean_doi} has updates/errata: {updates}")
 
-
-            # Inside validate_doi_metadata when r.status_code == 200:
-            item = r.json().get('message', {})
 
             # Collect all candidate titles from Crossref
             candidate_titles = []
