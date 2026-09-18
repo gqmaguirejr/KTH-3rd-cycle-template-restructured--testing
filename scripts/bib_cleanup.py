@@ -309,25 +309,23 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
             for key in ('original-title', 'title', 'subtitle'):
                 vals = item.get(key, [])
                 if isinstance(vals, list):
-                    candidate_titles.extend(vals)
+                    candidate_titles.extend([v for v in vals if v])
                 elif isinstance(vals, str):
                     candidate_titles.append(vals)
 
-            # Primary title for display, but keep all candidates for matching
-            primary_title = candidate_titles[0] if candidate_titles else None
             container_titles = item.get("container-title", [])
-            container_title = container_titles[0] if container_titles else None
+            if isinstance(container_titles, str):
+                container_titles = [container_titles]
 
             return {
-                "title": primary_title,
+                "title": candidate_titles[0] if candidate_titles else None,
                 "all_titles": candidate_titles,
-                "container_title": container_title,
+                "container_titles": container_titles,
                 "year": str(final_year) if final_year else '',
                 "source": "Crossref (DOI)",
                 "updates": updates,
                 "retracted": is_retracted
             }
-
 
         elif verbose and r.status_code != 404:
             print(f"  [!] Crossref lookup returned status {r.status_code} for {clean_doi}")
