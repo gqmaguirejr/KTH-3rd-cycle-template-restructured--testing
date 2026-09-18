@@ -223,6 +223,126 @@ def validate_isbn_metadata(isbn, email="unknown@example.com", verbose=False):
 
 
 def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
+    """
+    Checks DOI validity via Crossref first (with retraction/update checks),
+    falling back to DataCite REST API.
+    """
+    try:
+        # Strip common URL prefixes and leading schemes
+        clean_doi = re.sub(r'^(https?://(?:dx\.)?doi\.org/|doi:)', '', doi.strip(), flags=re.IGNORECASE)
+
+        # Filter out Crossref test accounts
+        for doi_prefix in test_DOI_prefixes_Crossref:
+            if clean_doi.startswith(doi_prefix + '/'):
+                return None
+
+        # -------------------------------------------------------------
+        # 1. Primary Check: Crossref REST API
+        # -------------------------------------------------------------
+        headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
+        url = f"https://api.crossref.org/works/{clean_doi}"
+        r = requests.get(url, timeout=5, headers=headers)
+
+        if r.status_code == 200:
+            item = r.json().get('message', {})
+
+            # --- Year Resolution ---
+            def get_cr_year(date_field):
+                if date_field:
+                    parts = date_field.get('date-parts', [])
+                    if parts and len(parts[0]) >= 1:
+                        return parts[0][0]
+                return None
+
+            final_year = get_cr_year(item.get('published-print')) or get_cr_year(item.get('issued'))
+
+            # --- Retraction and Update Detection ---
+            updates = []
+            is_retracted = False
+
+            # Check Crossref relation field: is-updated-by
+            relations = item.get('relation', {})
+            updated_by_list = relations.get('is-updated-by', [])
+            for upd in updated_by_list:
+                upd_doi = upd.get('id')
+                if upd_doi:
+                    updates.append(upd_doi)
+
+            # Check Crossmark updates array (contains explicit update types)
+            crossmark_updates = item.get('update-to', []) or item.get('updates', [])
+            for entry in crossmark_updates:
+                upd_type = entry.get('type', '').lower()
+                label = entry.get('label', upd_type)
+                upd_doi = entry.get('doi') or entry.get('id')
+                
+                if 'retract' in upd_type or 'retract' in label.lower():
+                    is_retracted = True
+
+                if upd_doi and upd_doi not in updates:
+                    updates.append(upd_doi)
+
+            # If there are updates, check if any updating entity declares a retraction
+            if updated_by_list and not is_retracted:
+                for upd in updated_by_list:
+                    sub_doi = upd.get('id')
+                    # If the relation asserts retraction explicitly
+                    rel_type = str(upd.get('relationship-type', '')).lower()
+                    if 'retract' in rel_type:
+                        is_retracted = True
+                        break
+
+            if verbose:
+                print(f"  [+] Crossref Found: {final_year=}")
+                if is_retracted:
+                    print(f"  [!] CRITICAL: {clean_doi} has been RETRACTED by: {updates}")
+                elif updates:
+                    print(f"  [*] Notice: {clean_doi} has updates/errata: {updates}")
+
+            result = {
+                "title": item.get("title", [None])[0],
+                "year": str(final_year) if final_year else '',
+                "source": "Crossref (DOI)",
+                "updates": updates,
+                "retracted": is_retracted
+            }
+            return result
+
+        elif verbose and r.status_code != 404:
+            print(f"  [!] Crossref lookup returned status {r.status_code} for {clean_doi}")
+
+        # -------------------------------------------------------------
+        # 2. Fallback: DataCite REST API (Datasets, Software, Zenodo)
+        # -------------------------------------------------------------
+        datacite_url = f"https://api.datacite.org/dois/{clean_doi}"
+        dc_headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
+        r_dc = requests.get(datacite_url, timeout=5, headers=dc_headers)
+
+        if r_dc.status_code == 200:
+            dc_data = r_dc.json().get('data', {}).get('attributes', {})
+            titles = dc_data.get('titles', [])
+            dc_title = titles[0].get('title') if titles else None
+            dc_year = dc_data.get('publicationYear')
+
+            if verbose:
+                print(f"  [+] DataCite Found: publicationYear={dc_year}")
+
+            return {
+                "title": dc_title,
+                "year": str(dc_year) if dc_year else '',
+                "source": "DataCite (DOI)",
+                "updates": [],
+                "retracted": False
+            }
+        elif verbose:
+            print(f"  [!] Both Crossref and DataCite failed for {clean_doi} (DataCite Status: {r_dc.status_code})")
+
+    except Exception as e:
+        if verbose:
+            print(f"  [!] Error in validate_doi_metadata: {e}")
+
+    return None
+
+def old_validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
     """Checks DOI validity via Crossref first, then falls back to DataCite REST API."""
     try:
         clean_doi = re.sub(r'^(https?://(?:dx\.)?doi\.org/|doi:)', '', doi.strip(), flags=re.IGNORECASE)
@@ -451,6 +571,18 @@ def main():
                 entry['url'] = validation_result['url']
                 if entry_hash not in cache:
                     print(f"Added missing URL to {entry['ID']} via {validation_result['source']}")
+
+        # Check for Retractions or Updates
+        if validation_result:
+            if validation_result.get("retracted"):
+                warnings.append(
+                    f"RETRACTED PAPER: {entry['ID']} ({entry.get('doi')}) has been retracted! "
+                    f"Update DOIs: {', '.join(validation_result.get('updates', []))}"
+                )
+            elif validation_result.get("updates"):
+                if args.verbose:
+                    print(f"  [*] Notice: {entry['ID']} has subsequent errata/corrections: "
+                          f"{', '.join(validation_result['updates'])}")
 
         has_id = any(k in entry for k in ['doi', 'url', 'isbn'])
         if not has_id:
