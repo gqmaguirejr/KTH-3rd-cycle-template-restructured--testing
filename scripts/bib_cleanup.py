@@ -493,10 +493,12 @@ def main():
                     warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
 
         bib_title = entry.get('title')
-        api_title = validation_result.get('title') if validation_result else None
-        ratio = SequenceMatcher(None, bib_title.lower(), api_title.lower()).ratio()
-        if ratio < 0.6:
-            warnings.append(f"Title mismatch for {entry['ID']}: '{bib_title}' vs API '{api_title}'")
+        if validation_result:
+            api_title = validation_result.get('title', None)
+            if api_title:
+                ratio = SequenceMatcher(None, bib_title.lower(), api_title.lower()).ratio()
+                if ratio < 0.6:
+                    warnings.append(f"Title mismatch for {entry['ID']}: '{bib_title}' vs API '{api_title}'")
 
 
     # 5. Final Output and Summary
