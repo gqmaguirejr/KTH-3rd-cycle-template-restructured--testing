@@ -22,6 +22,7 @@ import subprocess
 import requests
 
 import bibtexparser
+from difflib import SequenceMatcher
 
 CACHE_FILE = ".bib_validator_cache.json"
 
@@ -342,116 +343,6 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
 
     return None
 
-def old_validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
-    """Checks DOI validity via Crossref first, then falls back to DataCite REST API."""
-    try:
-        clean_doi = re.sub(r'^(https?://(?:dx\.)?doi\.org/|doi:)', '', doi.strip(), flags=re.IGNORECASE)
-
-        for doi_prefix in test_DOI_prefixes_Crossref:
-            if clean_doi.startswith(doi_prefix + '/'):
-                return None
-
-        # 1. Primary Check: Crossref REST API
-        headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
-        url = f"https://api.crossref.org/works/{clean_doi}"
-        r = requests.get(url, timeout=5, headers=headers)
-
-        if r.status_code == 200:
-            item = r.json().get('message', {})
-
-            def get_cr_year(date_field):
-                if date_field:
-                    parts = date_field.get('date-parts', [])
-                    if parts and len(parts[0]) >= 1:
-                        return parts[0][0]
-                return None
-
-            final_year = get_cr_year(item.get('published-print')) or get_cr_year(item.get('issued'))
-            if verbose:
-                print(f"  [+] Crossref Found: {final_year=}")
-
-            return {
-                "title": item.get("title", [None])[0],
-                "year": str(final_year) if final_year else '',
-                "source": "Crossref (DOI)"
-            }
-        elif verbose and r.status_code != 404:
-            print(f"  [!] Crossref lookup returned status {r.status_code} for {clean_doi}")
-
-        # 2. Fallback: DataCite REST API (Datasets, Software, Zenodo, Figshare)
-        datacite_url = f"https://api.datacite.org/dois/{clean_doi}"
-        dc_headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
-        r_dc = requests.get(datacite_url, timeout=5, headers=dc_headers)
-
-        if r_dc.status_code == 200:
-            dc_data = r_dc.json().get('data', {}).get('attributes', {})
-            titles = dc_data.get('titles', [])
-            dc_title = titles[0].get('title') if titles else None
-            dc_year = dc_data.get('publicationYear')
-
-            if verbose:
-                print(f"  [+] DataCite Found: publicationYear={dc_year}")
-
-            return {
-                "title": dc_title,
-                "year": str(dc_year) if dc_year else '',
-                "source": "DataCite (DOI)"
-            }
-        elif verbose:
-            print(f"  [!] Both Crossref and DataCite failed for {clean_doi} (DataCite Status: {r_dc.status_code})")
-
-    except Exception as e:
-        if verbose:
-            print(f"  [!] Error in validate_doi_metadata: {e}")
-
-    return None
-
-# def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
-#     """Checks DOI validity via Crossref."""
-#     try:
-#         # Strip prefixes like https://doi.org/, http://dx.doi.org/, or doi:
-#         clean_doi = re.sub(r'^(https?://(?:dx\.)?doi\.org/|doi:)', '', doi.strip(), flags=re.IGNORECASE)
-
-#         # Filter out Crossref test accounts
-#         for doi_prefix in test_DOI_prefixes_Crossref:
-#             if clean_doi.startswith(doi_prefix + '/'):
-#                 return None
-
-#         headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
-#         url = f"https://api.crossref.org/works/{clean_doi}"
-        
-#         r = requests.get(url, timeout=5, headers=headers)
-        
-#         if r.status_code != 200:
-#             if verbose:
-#                 print(f"  [!] Crossref lookup failed for {clean_doi} (Status: {r.status_code})")
-#             return None
-
-#         item = r.json()['message']
-        
-#         def get_year(date_field):
-#             if date_field:
-#                 parts = date_field.get('date-parts', [])
-#                 if parts and len(parts[0]) >= 1:
-#                     return parts[0][0]
-#             return None
-
-#         final_year = get_year(item.get('published-print')) or get_year(item.get('issued'))
-
-#         if verbose:
-#             print(f"  [+] Crossref Found: {final_year=}")
-
-#         return {
-#             "title": item.get("title", [None])[0], 
-#             "year": str(final_year) if final_year else '',
-#             "source": "Crossref (DOI)"
-#         }
-#     except Exception as e:
-#         if verbose:
-#             print(f"  [!] Error in validate_doi_metadata: {e}")
-#     return None
-
-
 def validate_patent_url(patent_id):
     """Checks if a Google Patents page exists and returns the URL."""
     clean_id = patent_id.replace(" ", "").upper()
@@ -600,6 +491,13 @@ def main():
             except (ValueError, TypeError):
                 if str(e_year) != str(v_year):
                     warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
+
+        bib_title = entry.get('title')
+        api_title = validation_result.get('title') if validation_result else None
+        ratio = SequenceMatcher(None, bib_title.lower(), api_title.lower()).ratio()
+        if ratio < 0.6:
+            warnings.append(f"Title mismatch for {entry['ID']}: '{bib_title}' vs API '{api_title}'")
+
 
     # 5. Final Output and Summary
     write_bib_file(OUTPUT_BIB, db, used_entries)
