@@ -24,6 +24,9 @@ import requests
 import bibtexparser
 from difflib import SequenceMatcher
 import urllib.parse
+import time
+from isbnlib import canonical, is_isbn10, is_isbn13, meta, to_isbn10
+
 
 CACHE_FILE = ".bib_validator_cache.json"
 
@@ -96,9 +99,6 @@ else:
             f.write(writer.write(original_library))
 
 # ----------------------------------------------------------------------
-
-from isbnlib import canonical, is_isbn10, is_isbn13, meta
-
 
 def get_git_email():
     """Retrieves the global or local git user email as a fallback."""
@@ -209,18 +209,52 @@ def validate_isbn_metadata(isbn, email="unknown@example.com", verbose=False):
         if verbose:
             print(f"  [!] Error in validate_isbn_metadata (Google Books): {e}")
 
-    # 3. Try Open Library
-    try:
-        data = meta(isbn, service='openl')
-        if data:
-            return {
-                "title": data.get("Title"),
-                "year": str(data.get("Year", "")),
-                "source": "Open Library"
-            }
-    except Exception as e:
-        if verbose:
-            print(f"  [!] Error in validate_isbn_metadata (Open Library): {e}")
+    # 3. Try Open Library (try ISBN-13 first, then fallback to ISBN-10)
+    for lookup_code in filter(None, [isbn, to_isbn10(isbn) if is_isbn13(isbn) else None]):
+        try:
+            data = meta(lookup_code, service='openl')
+            if data:
+                return {
+                    "title": data.get("Title"),
+                    "year": str(data.get("Year", "")),
+                    "source": "Open Library"
+                }
+        except Exception as e:
+            if verbose:
+                print(f"  [!] Error in validate_isbn_metadata (Open Library for {lookup_code}): {e}")
+
+    # 4. Try Wikipedia/Wikidata citation index via isbnlib
+    for lookup_code in filter(None, [isbn, to_isbn10(isbn) if is_isbn13(isbn) else None]):
+        try:
+            data = meta(lookup_code, service='wiki')
+            if data:
+                return {
+                    "title": data.get("Title"),
+                    "year": str(data.get("Year", "")),
+                    "source": "Wikidata (ISBN)"
+                }
+        except Exception as e:
+            if verbose:
+                print(f"  [!] Error in validate_isbn_metadata (wiki for {lookup_code}): {e}")
+
+    # 5. Open Library Search API fallback
+    for lookup_code in filter(None, [isbn, to_isbn10(isbn) if is_isbn13(isbn) else None]):
+        try:
+            ol_url = f"https://openlibrary.org/search.json?isbn={lookup_code}&limit=1"
+            headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
+            r_ol = requests.get(ol_url, headers=headers, timeout=5)
+            if r_ol.status_code == 200:
+                docs = r_ol.json().get('docs', [])
+                if docs:
+                    doc = docs[0]
+                    return {
+                        "title": doc.get("title"),
+                        "year": str(doc.get("first_publish_year", "")),
+                        "source": "Open Library Search (ISBN)"
+                    }
+        except Exception as e:
+            if verbose:
+                print(f"  [!] Error in Open Library Search API for {lookup_code}: {e}")
 
     return None
 
@@ -277,7 +311,12 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
                         return parts[0][0]
                 return None
 
-            final_year = get_cr_year(item.get('published-print')) or get_cr_year(item.get('issued'))
+            final_year = (
+                get_cr_year(item.get('published-print')) or 
+                get_cr_year(item.get('issued')) or 
+                get_cr_year(item.get('published-online')) or 
+                get_cr_year(item.get('created'))
+            )
 
             # --- Retraction and Update Detection ---
             updates = []
@@ -434,6 +473,155 @@ def titles_match(bib_title: str, api_title: str, threshold: float = 0.6) -> bool
 
     return False
 
+def check_wayback_machine(url, timeout=5, verbose=False):
+    """Queries the Wayback Machine Availability API for an archived snapshot."""
+    try:
+        api_url = f"https://archive.org/wayback/available?url={urllib.parse.quote(url, safe='')}"
+        headers = {'User-Agent': 'BibCleanupScript/1.0'}
+        r = requests.get(api_url, headers=headers, timeout=timeout)
+        if r.status_code == 200:
+            data = r.json()
+            closest = data.get("archived_snapshots", {}).get("closest", {})
+            if closest.get("available"):
+                snapshot_url = closest.get("url")
+                timestamp = closest.get("timestamp")
+                if verbose:
+                    print(f"  [+] Found Wayback Machine snapshot for {url}: {snapshot_url}")
+                return {
+                    "available": True,
+                    "snapshot_url": snapshot_url,
+                    "timestamp": timestamp
+                }
+    except Exception as e:
+        if verbose:
+            print(f"  [!] Wayback Machine query failed for {url}: {e}")
+    return {"available": False}
+
+
+def validate_url_liveness(url, timeout=10, verbose=False):
+    """
+    Checks if a URL is reachable. Tries HEAD first, falling back to GET
+    (streamed to prevent downloading large bodies) if HEAD is forbidden or unsupported.
+    Falls back to the Internet Archive Wayback Machine if the live URL is dead.
+    """
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+    }
+    
+    status_code = None
+    error_msg = None
+    is_live = False
+
+    try:
+        r = requests.head(url, headers=headers, timeout=timeout, allow_redirects=True)
+        if r.status_code in {403, 405, 501}:
+            r = requests.get(url, headers=headers, timeout=timeout, stream=True, allow_redirects=True)
+        
+        status_code = r.status_code
+        # 2xx, 3xx are live. 401/403 are restricted but host exists.
+        if status_code < 400 or status_code in {401, 403}:
+            is_live = True
+            if verbose:
+                msg = "reachable" if status_code < 400 else "server alive, crawler restricted"
+                print(f"  [+] URL {msg} ({status_code}): {url}")
+            return {
+                "url": url,
+                "status_code": status_code,
+                "source": "URL Liveness Check",
+                "valid": True
+            }
+        else:
+            error_msg = f"HTTP {status_code}"
+            if verbose:
+                print(f"  [!] URL returned error {status_code}: {url}")
+    except Exception as e:
+        error_msg = str(e)
+        if verbose:
+            print(f"  [!] URL request failed: {e}")
+
+    # Fallback to Wayback Machine if the live URL failed
+    if not is_live:
+        if verbose:
+            print(f"  [*] Checking Wayback Machine fallback for: {url}")
+        wb = check_wayback_machine(url, timeout=timeout, verbose=verbose)
+        if wb.get("available"):
+            return {
+                "url": url,
+                "status_code": status_code,
+                "source": "Wayback Machine",
+                "valid": True,
+                "archived_url": wb.get("snapshot_url"),
+                "timestamp": wb.get("timestamp"),
+                "error": error_msg
+            }
+        else:
+            return {
+                "url": url,
+                "status_code": status_code,
+                "source": "URL Liveness Check",
+                "valid": False,
+                "error": error_msg
+            }
+
+
+def suggest_crossref_doi(entry, email="unknown@example.com", verbose=False):
+    """
+    Searches Crossref by title (and optionally author) to find a potential
+    matching DOI for entries missing persistent identifiers.
+    """
+    title = entry.get('title')
+    if not title:
+        return None
+
+    # Clean the title query for the Crossref API
+    query_title = clean_title(title)
+    if len(query_title) < 10:
+        return None
+
+    params = {
+        'query.bibliographic': query_title,
+        'rows': 3
+    }
+    
+    # Add author surname if available to narrow down results
+    author = entry.get('author')
+    if author:
+        first_author = author.split(' and ')[0].split(',')[0].strip()
+        params['query.author'] = first_author
+
+    headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
+    
+    try:
+        r = requests.get("https://api.crossref.org/works", params=params, headers=headers, timeout=5)
+        if r.status_code == 200:
+            items = r.json().get('message', {}).get('items', [])
+            for item in items:
+                candidate_doi = item.get('DOI')
+                api_titles = item.get('title', [])
+                
+                # Verify match against primary paper title
+                if candidate_doi and api_titles:
+                    if any(titles_match(title, t, threshold=0.75) for t in api_titles):
+                        # Extract published year for reference
+                        date_parts = (item.get('published-print', {}) or item.get('issued', {})).get('date-parts', [[]])
+                        year = date_parts[0][0] if date_parts and date_parts[0] else None
+                        
+                        return {
+                            "doi": candidate_doi,
+                            "title": api_titles[0],
+                            "year": str(year) if year else '',
+                            "score": item.get('score', 0)
+                        }
+    except Exception as e:
+        if verbose:
+            print(f"  [!] Error in suggest_crossref_doi for {entry.get('ID')}: {e}")
+
+    return None
+
+
 def main():
     git_fallback = get_git_email() or "your-backup-contact@example.com"
     default_email = os.environ.get('USER_EMAIL', git_fallback)
@@ -512,9 +700,11 @@ def main():
                 continue
 
         entry_hash = get_entry_hash(entry)
+        is_cache_hit = False
         
         if entry_hash in cache:
             validation_result = cache[entry_hash]
+            is_cache_hit = True
             if args.verbose:
                 print(f"CACHE HIT: Using stored metadata for {entry['ID']}")
         else:
@@ -522,24 +712,76 @@ def main():
                 print(f"CACHE MISS: Re-checking metadata for {entry['ID']}...")
             validation_result = None
             
-            if 'doi' in entry:
-                validation_result = validate_doi_metadata(entry.get('doi'), args.email, args.verbose)
-            
+            # 1. DOI Check
+            doi_candidate = entry.get('doi')
+            if not doi_candidate and entry['ID'].startswith('10.'):
+                doi_candidate = entry['ID']
+            if not doi_candidate and 'url' in entry and 'doi.org/10.' in entry['url']:
+                m = re.search(r'10\.\d{4,9}/[-._;()/:A-Za-z0-9]+', entry['url'])
+                if m:
+                    doi_candidate = m.group(0)
+
+            if doi_candidate:
+                validation_result = validate_doi_metadata(doi_candidate, args.email, args.verbose)
+                
+            # 2. ISBN Check
             if not validation_result and 'isbn' in entry:
                 validation_result = validate_isbn_metadata(entry.get('isbn'), args.email, args.verbose)
 
+            # 3. Patent Check
             if not validation_result and (entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')):
                 validation_result = validate_patent_url(entry['ID'])
-            
-            cache[entry_hash] = validation_result
 
+            # 4. URL Liveness check (for entries lacking PIDs OR where PID lookup failed)
+            if not validation_result and 'url' in entry:
+                validation_result = validate_url_liveness(entry.get('url'), timeout=10, verbose=args.verbose)
+                
+            # 5. Suggest missing DOI for entries lacking DOI/ISBN
+            has_pid = any(k in entry for k in ['doi', 'isbn'])
+            if not has_pid and entry.get('ENTRYTYPE') not in {'patent', 'standard'}:
+                sug = suggest_crossref_doi(entry, args.email, args.verbose)
+                if sug:
+                    if not validation_result:
+                        validation_result = {"source": "Crossref Suggestion", "valid": True}
+                        validation_result["suggested_doi"] = sug
+
+            # Only cache if validation succeeded, or if it wasn't a broken URL
+            if validation_result and validation_result.get("valid") is not False:
+                cache[entry_hash] = validation_result
+            elif validation_result and validation_result.get("source") != "URL Liveness Check":
+                cache[entry_hash] = validation_result
+
+        # 4b. Inject data and notify on first discovery
         if validation_result:
             if 'url' not in entry and 'url' in validation_result:
                 entry['url'] = validation_result['url']
-                if entry_hash not in cache:
+                if not is_cache_hit:
                     print(f"Added missing URL to {entry['ID']} via {validation_result['source']}")
 
-        # Check for Retractions or Updates
+        # 4c. Check URL Liveness failure (runs on BOTH fresh lookups and cached hits)
+        if validation_result and validation_result.get("source") in {"URL Liveness Check", "Wayback Machine"}:
+            if validation_result.get("source") == "Wayback Machine":
+                snap_url = validation_result.get("archived_url")
+                warnings.append(
+                    f"DECAYED URL (Archived in Wayback): {entry['ID']} ({entry.get('url')}) "
+                    f"is dead, but archived copy found: {snap_url}"
+                )
+            elif not validation_result.get("valid"):
+                status = validation_result.get("status_code")
+                err_info = f"HTTP {status}" if status else validation_result.get("error", "Connection error")
+                warnings.append(f"BROKEN URL: {entry['ID']} ({entry.get('url')}) unreachable: {err_info}")
+
+        # 4d. Report Suggested DOIs (Placed before retractions)
+        if validation_result and validation_result.get("suggested_doi"):
+            sug = validation_result["suggested_doi"]
+            sug_doi = sug['doi']
+            sug_yr = f" ({sug['year']})" if sug.get('year') else ""
+            warnings.append(
+                f"SUGGESTION: {entry['ID']} lacks a DOI, but Crossref matched {sug_doi}{sug_yr}. "
+                f"Consider adding 'doi = {{{sug_doi}}}' to references.bib"
+            )
+
+        # 4e. Check for Retractions or Updates
         if validation_result:
             if validation_result.get("retracted"):
                 warnings.append(
@@ -557,7 +799,7 @@ def main():
 
         used_entries.append(entry)
 
-        e_year = entry.get('year')
+        e_year = entry.get('year') or (entry.get('date', '')[:4] if entry.get('date') else None)
         v_year = validation_result.get('year') if validation_result else None
 
         if e_year and v_year:
@@ -570,19 +812,31 @@ def main():
 
         # Check title similarity
         bib_title = entry.get('title')
-        if validation_result and bib_title:
+        bib_booktitle = entry.get('booktitle')
+        if validation_result and (bib_title or bib_booktitle):
             is_patent = entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')
             
             if not is_patent:
-                # Gather all possible API titles to test against
-                api_titles_to_test = validation_result.get('all_titles', [])
+                api_titles_to_test = list(validation_result.get('all_titles', []))
                 if not api_titles_to_test and validation_result.get('title'):
-                    api_titles_to_test = [validation_result['title']]
+                    api_titles_to_test.append(validation_result['title'])
+                
+                # Check container titles (both singular and plural)
+                for ct in validation_result.get('container_titles', []):
+                    if ct and ct not in api_titles_to_test:
+                        api_titles_to_test.append(ct)
                 if validation_result.get('container_title'):
-                    api_titles_to_test.append(validation_result['container_title'])
+                    ct = validation_result['container_title']
+                    if ct not in api_titles_to_test:
+                        api_titles_to_test.append(ct)
 
                 if api_titles_to_test:
-                    matched = any(titles_match(bib_title, t, threshold=0.6) for t in api_titles_to_test)
+                    matched = False
+                    if bib_title:
+                        matched = any(titles_match(bib_title, t, threshold=0.6) for t in api_titles_to_test)
+                    if not matched and bib_booktitle:
+                        matched = any(titles_match(bib_booktitle, t, threshold=0.6) for t in api_titles_to_test)
+
                     if not matched:
                         display_title = validation_result.get('title', '')
                         warnings.append(f"Title mismatch for {entry['ID']}: '{bib_title}' vs API '{display_title}'")
