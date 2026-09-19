@@ -12,7 +12,7 @@
         "updates": [],
         "retracted": false
     },
-    "d607140f6dc1222cdbcad0574628366a197c854caf26ef7bbaff2409ea77ab07": {
+    "457aef48dae43bc8cefca84f981577b8886814312bafcc6215bf423f7439bb90": {
         "title": "Coherent File Distribution Protocol",
         "all_titles": [
             "Coherent File Distribution Protocol"
@@ -62,7 +62,7 @@
         "updates": [],
         "retracted": false
     },
-    "ef2a5bdb8857742c3415235a67072e2a3f402c723bf1406aa83ea7ee477e556a": {
+    "b6e46a022b9f8314d03c8f50df2454689b060246dc7761c103bf32f0754f9de9": {
         "title": "Resource Monitoring in a Network Embedded Cloud: An Extension to OSPF-TE",
         "all_titles": [
             "Resource Monitoring in a Network Embedded Cloud: An Extension to OSPF-TE"
@@ -75,12 +75,37 @@
         "updates": [],
         "retracted": false
     },
-    "129a8acc8dce9cd11dd7377ea385d7e79ce5408ec570a711911302cda2b4c43c": null,
-    "948805c2fe9f8411aa54a9994d0028f3c45926ba9fc1eb489eacae45302ad1a1": null,
-    "9426a1e6ef4ffb449dbf060fcfca5a42ac002a41ba65804b4aa884e6eadaa7b5": null,
-    "95298ebafe0b9ef444f0006097f4fe13963c34e2d02c0580972d28a386b1eed4": null,
-    "3eacb63863c8e742268021ec777998d9ff62a66a60b052b99f67ade1435f9af1": null,
-    "7fd3f8f56a026ce018a3da69c927dff65be6b0a6a82b53bb18c5c2b50d3de067": {
+    "129a8acc8dce9cd11dd7377ea385d7e79ce5408ec570a711911302cda2b4c43c": {
+        "url": "https://ils.unc.edu/MSpapers/2997.pdf",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "05026b85c6687da4de7500508039793a18c8275dd0f8c8161de19612918f4b26": {
+        "url": "https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "792a9010efdcc7355c54fd5b308895578dae6123e1db5fd4abce52df92ceb2a6": {
+        "url": "https://bepress.com/wp-content/uploads/2016/12/Dublin-Core-Elements-in-Digital-Commons.pdf",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "95298ebafe0b9ef444f0006097f4fe13963c34e2d02c0580972d28a386b1eed4": {
+        "url": "https://bepress.com/reference_guide_dc/digital-commons-oai-harvesting/",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "0327bfe238433fc2e2d5b02b86be40fd8284f3d08b50a595f0f6cccabdb47b47": {
+        "url": "https://www.dublincore.org/specifications/dublin-core/dc-citation-guidelines/",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "5c8040837752858b6563ee5781c5722128044319157464f65ea93a6d6d1ac8aa": {
         "title": "A data model of theses and dissertations compatible with CERIF, Dublin Core and EDT\u2010MS",
         "all_titles": [
             "A data model of theses and dissertations compatible with CERIF, Dublin Core and EDT\u2010MS"
@@ -93,7 +118,7 @@
         "updates": [],
         "retracted": false
     },
-    "729897aa0758738ec386425da3df6a724e98b14f2ee84d0b90bea3f06f9b34e3": {
+    "af3a287c22cdf4edcb49a877ee1720ba0bf0b8bb6f41ff2b150768e2b3571adb": {
         "title": "Humor as a protective factor against anxiety and depression",
         "all_titles": [
             "Humor as a protective factor against anxiety and depression"
@@ -106,121 +131,27 @@
         "updates": [],
         "retracted": false
     },
-    "b219f83fb82bfbb4ffa1098464734765868cc4061933bad1340942d6efda23e3": {
+    "d8d88d69a15ca56332965c89c8c905ad9458fd4831154babf3bcc34eac1137c8": {
         "url": "https://patents.google.com/patent/US7107453B2/en",
         "source": "Google Patents",
         "title": null
     },
-    "d9c24fe0bb373779a5e4fb64d315bce324de1c29af23dfa28f742f9447a05034": {
+    "c0c80639e28309284aa1272806780f4fdd7690da7df66bda144758c6a5406dfe": {
         "url": "https://patents.google.com/patent/US12111768B2/en",
         "source": "Google Patents",
         "title": null
     },
-    "43e3774daddbc0508d231436b56c24dce11df88936ff461f97f1848f79414aad": null,
-    "1043055bdb06f256d8278cae964e12860588ba19ecfe8f3b8b981eb8d6815208": null,
-    "d7c225ee7985a9988ddf308bfaacd9ea2de9956f5e6980e22cf4de6ac4f27c25": {
-        "title": "Proceedings of the 26th ACM International Conference on Architectural Support for Programming Languages and Operating Systems",
-        "year": "2021",
-        "source": "Crossref (ISBN)"
+    "cb08a57af5ad7feb2501e07593bbcf4f2e206ffa1ec4e66149f0a1de63382bd7": {
+        "title": "Proceedings of the 19th USENIX Symposium on Networked System Design and Implementation: April 4-6, 2022, Renton, WA, USA",
+        "year": "2022",
+        "source": "Wikidata (ISBN)"
     },
-    "06f7bfde8552837b4cf0f885b77849f06e8405d986912a75e465d6187689211f": null,
-    "409794149704d3567fc61d6ec40ccb19d4d1a9ad19256db6323044ed762e4958": {
-        "title": "Calculation of , \u0393 and",
-        "all_titles": [
-            "Calculation of , \u0393 and"
-        ],
-        "container_titles": [
-            "The International Journal of Applied Radiation and Isotopes"
-        ],
-        "year": "1975",
-        "source": "Crossref (DOI)",
-        "updates": [],
-        "retracted": false
+    "1043055bdb06f256d8278cae964e12860588ba19ecfe8f3b8b981eb8d6815208": {
+        "url": "https://github.com/hamidgh09/Reframer",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
     },
-    "4f1be68140736e95774ba147cc03b9cc7f53b17d4455af6f42bbca786367ba74": {
-        "title": "What We Don't Know About Spreadsheet Errors Today: The Facts, Why We Don't Believe Them, and What We Need to Do",
-        "year": "2016",
-        "source": "DataCite (DOI)",
-        "updates": [],
-        "retracted": false
-    },
-    "e0499bc5ebfe3a845e0f15b93732e4308acf9d9b3be469c04bd1b4db82d796d9": {
-        "title": "FMM-Head: Enhancing Autoencoder-based ECG anomaly detection with prior knowledge",
-        "year": "2023",
-        "source": "DataCite (DOI)",
-        "updates": [],
-        "retracted": false
-    },
-    "103a8aad7c2296fcd428722e0bdf0ef7b037be7d1a8957e7978e632a7a6a8f3c": {
-        "title": "Google's hybrid approach to research",
-        "all_titles": [
-            "Google's hybrid approach to research"
-        ],
-        "container_titles": [
-            "Communications of the ACM"
-        ],
-        "year": "2012",
-        "source": "Crossref (DOI)",
-        "updates": [],
-        "retracted": false
-    },
-    "e2c60ed41decb8f25d4d29abe03db6f3425dadc8e33e069a1ead3871cc6eb1e6": null,
-    "771a6337ef9c60ea9e6b20cd27abe837d9cdcd9d9764b7375c97b19383153a2d": null,
-    "d30cb297359ab1787faf4554b4fa32ab294563313e4a1b8222322a1d0b0438df": null,
-    "03aa0905c2820ff106b1d4fce1865a44050c182f441fdd1022b07cd6c22b0acb": null,
-    "9e3d750cb5c60be51f9c34b3592c03e5dfa19ee14f5db0d2d83c12f157938c19": null,
-    "55ddc071b8bb9a85b5ad70b3a97fe3f88513db79559d1a0d5241822527346b6e": null,
-    "4b7e07d65dbe95b3c770d5a15b938c48e643aacf681277ec0fb49a6744338789": {
-        "title": "Beyond authorship: attribution, contribution, collaboration, and credit",
-        "all_titles": [
-            "Beyond authorship: attribution, contribution, collaboration, and credit"
-        ],
-        "container_titles": [
-            "Learned Publishing"
-        ],
-        "year": "2015",
-        "source": "Crossref (DOI)",
-        "updates": [],
-        "retracted": false
-    },
-    "b94450473843c1374aa17c9504b26054ebdc62ea0c719ae0aefd2581dd71fbbb": null,
-    "45a5f8cf35c086e27e1b6fd9b795f07a90899910461330ff75cc7d981274c671": null,
-    "2311e7993dd4f66bfff6c674035a41a54b0bbf931edbdd5eb7aeee04259714b1": null,
-    "8c73a11601a5ff7dc2c64630369b2fcf103f323e1e0235f46f545bb57ca75c86": {
-        "title": "ANSI/NISO Z39.104-2022, CRediT, Contributor Roles Taxonomy",
-        "all_titles": [
-            "ANSI/NISO Z39.104-2022, CRediT, Contributor Roles Taxonomy"
-        ],
-        "container_titles": [],
-        "year": "",
-        "source": "Crossref (DOI)",
-        "updates": [],
-        "retracted": false
-    },
-    "e2f7521b1b7b3a6099d0a1387815e607b742f8780458577f9e85c88719d5f2c3": {
-        "title": "Reserved Top Level DNS Names",
-        "all_titles": [
-            "Reserved Top Level DNS Names"
-        ],
-        "container_titles": [],
-        "year": "1999",
-        "source": "Crossref (DOI)",
-        "updates": [],
-        "retracted": false
-    },
-    "9febe098e108b62120fe23da5816a5be54670d241f2510d4d29128256acaab8b": {
-        "title": "Special-Use Domain Names",
-        "all_titles": [
-            "Special-Use Domain Names"
-        ],
-        "container_titles": [],
-        "year": "2013",
-        "source": "Crossref (DOI)",
-        "updates": [],
-        "retracted": false
-    },
-    "47266d5294f8e5b2533c75ce60516f7cda7c5494f3e11d5b93ad3f8b6a63733b": null,
-    "e7332ff222ddb11e79ed523f8328ce2359de3a56f2da87855045812beab9d5ae": null,
     "fbd95d705fd41bd008336f9bfd2367a391c4b425e8b47644aea58f258ce575a0": {
         "title": "PacketMill: toward per-Core 100-Gbps networking",
         "all_titles": [
@@ -234,11 +165,162 @@
         "updates": [],
         "retracted": false
     },
+    "61498c8c4f65436b655f3555490c47dc89b498a3023e68fb8a42007fda7a057b": {
+        "title": "PacketMill: Toward per-core 100-Gbps Networking - Artifact for ASPLOS'21",
+        "year": "2021",
+        "source": "DataCite (DOI)",
+        "updates": [],
+        "retracted": false
+    },
+    "409794149704d3567fc61d6ec40ccb19d4d1a9ad19256db6323044ed762e4958": {
+        "title": "Calculation of , \u0393 and",
+        "all_titles": [
+            "Calculation of , \u0393 and"
+        ],
+        "container_titles": [
+            "The International Journal of Applied Radiation and Isotopes"
+        ],
+        "year": "1975",
+        "source": "Crossref (DOI)",
+        "updates": [],
+        "retracted": false
+    },
     "35f2b04e0b435393c4547a1144e54ca4249a576467a4dcfe688b55632af79db9": {
         "title": "What We Don't Know About Spreadsheet Errors Today: The Facts, Why We Don't Believe Them, and What We Need to Do",
         "year": "2016",
         "source": "DataCite (DOI)",
         "updates": [],
         "retracted": false
+    },
+    "e0499bc5ebfe3a845e0f15b93732e4308acf9d9b3be469c04bd1b4db82d796d9": {
+        "title": "FMM-Head: Enhancing Autoencoder-based ECG anomaly detection with prior knowledge",
+        "year": "2023",
+        "source": "DataCite (DOI)",
+        "updates": [],
+        "retracted": false
+    },
+    "30bb37411c7cd14e08d70f9ccc3c2e9af0eddc96fec08210329183c555b93dbc": {
+        "title": "Google's hybrid approach to research",
+        "all_titles": [
+            "Google's hybrid approach to research"
+        ],
+        "container_titles": [
+            "Communications of the ACM"
+        ],
+        "year": "2012",
+        "source": "Crossref (DOI)",
+        "updates": [],
+        "retracted": false
+    },
+    "c49cb9fd0b2ac0921d802741f2cb5b0d41a79731244d307f4d2d6289e238be57": {
+        "url": "https://kb.se/namespace/swepub/mods-format-specification/SWP_MODS_4.pdf",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "95355534d4a288a03e94d55f17bb8afc664e578156e504ee3451d37acc096cfe": {
+        "url": "https://www.kb.se/namespace/swepub/mods-format-specification/SWP_MODS_3.pdf",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "d30cb297359ab1787faf4554b4fa32ab294563313e4a1b8222322a1d0b0438df": {
+        "url": "https://urn.kb.se/resolve?urn=urn%3Anbn%3Ase%3Akth%3Adiva-230996",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "500375298e606396d4814d487b3cc533913fa0e1645b5361396b0e745a924732": {
+        "url": "https://www.latex-project.org/publications/2020-FMi-TUB-tb129mitt-tagpdf.pdf",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "dd77e3ccbfc85eeb0252107dffd71000c2983c850bc7c44a77de33509474cc60": {
+        "url": "http://www.unicode.org/unicode/reports/tr9/",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "55ddc071b8bb9a85b5ad70b3a97fe3f88513db79559d1a0d5241822527346b6e": {
+        "url": "https://www.iso.org/standard/71691.html",
+        "status_code": 403,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "98010402678eff2c3ee4a771688d2c192773cd6cd8623598ebed6a6e4a54e06b": {
+        "title": "Beyond authorship: attribution, contribution, collaboration, and credit",
+        "all_titles": [
+            "Beyond authorship: attribution, contribution, collaboration, and credit"
+        ],
+        "container_titles": [
+            "Learned Publishing"
+        ],
+        "year": "2015",
+        "source": "Crossref (DOI)",
+        "updates": [],
+        "retracted": false
+    },
+    "b94450473843c1374aa17c9504b26054ebdc62ea0c719ae0aefd2581dd71fbbb": {
+        "url": "http://yann.lecun.com/exdb/mnist/",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "45a5f8cf35c086e27e1b6fd9b795f07a90899910461330ff75cc7d981274c671": {
+        "title": "The Chicago manual of style: for authors, editors, and copywriters",
+        "year": "1982",
+        "source": "Wikidata (ISBN)"
+    },
+    "11eefb7814d39e998eb651aff57de72b40006b20b897c992c70d17a4dd2cbb4f": {
+        "url": "https://cds.cern.ch/record/1018903",
+        "status_code": 200,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "8c73a11601a5ff7dc2c64630369b2fcf103f323e1e0235f46f545bb57ca75c86": {
+        "title": "ANSI/NISO Z39.104-2022, CRediT, Contributor Roles Taxonomy",
+        "all_titles": [
+            "ANSI/NISO Z39.104-2022, CRediT, Contributor Roles Taxonomy"
+        ],
+        "container_titles": [],
+        "year": "2022",
+        "source": "Crossref (DOI)",
+        "updates": [],
+        "retracted": false
+    },
+    "63cfafdfb57fdb8f781cd923e64e638f7f6620fe6dbb83de9efb441adce0a56f": {
+        "title": "Reserved Top Level DNS Names",
+        "all_titles": [
+            "Reserved Top Level DNS Names"
+        ],
+        "container_titles": [],
+        "year": "1999",
+        "source": "Crossref (DOI)",
+        "updates": [],
+        "retracted": false
+    },
+    "0eb614e47ebb26382abd330cf23b5a9d7d2e6ad4c0790a569546d8f592a471af": {
+        "title": "Special-Use Domain Names",
+        "all_titles": [
+            "Special-Use Domain Names"
+        ],
+        "container_titles": [],
+        "year": "2013",
+        "source": "Crossref (DOI)",
+        "updates": [],
+        "retracted": false
+    },
+    "47266d5294f8e5b2533c75ce60516f7cda7c5494f3e11d5b93ad3f8b6a63733b": {
+        "url": "https://www.iso.org/standard/65483.html",
+        "status_code": 403,
+        "source": "URL Liveness Check",
+        "valid": true
+    },
+    "e7332ff222ddb11e79ed523f8328ce2359de3a56f2da87855045812beab9d5ae": {
+        "url": "https://www.iso.org/standard/87177.html",
+        "status_code": 403,
+        "source": "URL Liveness Check",
+        "valid": true
     }
 }
