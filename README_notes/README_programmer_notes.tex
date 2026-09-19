@@ -5295,18 +5295,30 @@ The pipeline accepts an optional build artifact flag (\texttt{--artifact}) to re
 \end{itemize}
 
 \subsubsection{PID Verification Hierarchy and Cross-Checking}
-For each processed entry, \fname{bib\_cleanup.py} queries external APIs:
+For each processed entry, \fname{bib\_cleanup.py} queries external \glspl{API} to establish cryptographic and authoritative resolution:
 \begin{enumerate}
-    \item \textbf{\glspl{DOI}:} Verified through the Crossref REST API (\texttt{api.crossref.org}) using a polite \texttt{User-Agent} header. Crossref internal test prefixes (e.g., \texttt{10.18810}, \texttt{10.5555}) are recognized and handled appropriately. Fallback check via DataCite.
-    \item \textbf{\glspl{ISBN}:} Verified via a three-tier fallback: Crossref $\rightarrow$ Google Books \gls{API} $\rightarrow$ Open Library.
-    \item \textbf{Patents:} Standard patent identifiers (\eg \texttt{US\ldots}) generate direct canonical target requests against Google Patents.
+    \item \textbf{\glspl{DOI}:} Verified through the Crossref REST \gls{API} (\texttt{api.crossref.org}) using a polite \texttt{User-Agent} header. Crossref internal test prefixes (\eg\ \texttt{10.18810}, \texttt{10.5555}) are recognized and bypassed. Datasets, software releases, and Zenodo artifacts unresolved by Crossref fall back to the DataCite REST \gls{API}.
+    
+    \item \textbf{\glspl{ISBN}:} Verified via a multi-tier fallback: Crossref $\rightarrow$ Google Books \gls{API} $\rightarrow$ Open Library (with automatic ISBN-13 to ISBN-10 normalization) $\rightarrow$ Wikidata citation index.
+    
+    \item \textbf{Patents:} Standard patent identifiers (\eg\ \texttt{US\ldots}) generate direct canonical target requests against Google Patents.
+    
+    \item \textbf{Direct \glspl{URL} and Liveness:} Entries lacking persistent identifiers (\eg\ \texttt{@online}, \texttt{@misc}, \texttt{@report}) are polled via HTTP \texttt{HEAD} requests (falling back to streamed \texttt{GET} for servers restricting \texttt{HEAD}) to confirm availability. Endpoints returning HTTP 401/403 are treated as live but crawler-restricted. If an endpoint is dead (HTTP 4xx/5xx or connection failure), the script queries the Internet Archive Wayback Machine Availability \gls{API}; if an archived snapshot exists, a \enquote{\texttt{DECAYED URL (Archived in Wayback)}} notice is surfaced.
 \end{enumerate}
 
-For documents with \glspl{DOI}, the code supports fuzzy title matching via string-similarity checks (\eg Levenshtein distance or Jaro-Winkler) against the registered title.
+\paragraph{Cross-Field Sanity and Heuristic Checks}
+Once a record resolves, secondary heuristics validate metadata consistency:
+\begin{itemize}
+    \item \textbf{Fuzzy Title and Container Matching:} \gls{API}-returned work titles and container/proceedings titles are checked against the entry's \texttt{title} and \texttt{booktitle} using normalized token similarity to avoid false alerts on conference proceedings.
+    
+    \item \textbf{Extended Publication Date Resolution:} The pipeline extracts publication dates prioritizing \texttt{published-print} over \texttt{issued}, \texttt{published-online}, and \texttt{created} to properly handle online-first works and standards. Any year discrepancies against the entry's \texttt{year} or ISO \texttt{date} fields are reported.
+    
+    \item \textbf{Retraction and Errata Detection:} Direct Crossref relations (\texttt{is-updated-by}) and Crossmark metadata arrays are parsed to flag retracted literature and surfaced corrections.
+    
+    \item \textbf{Automated \gls{DOI} Discovery:} Entries lacking a \gls{DOI} or \gls{ISBN} are cross-referenced against Crossref's bibliographic search \gls{API}. If a high-confidence match ($>0.75$ similarity) is identified, the script emits an actionable suggestion for the author to add the canonical identifier to \fname{references.bib}.
+\end{itemize}
 
-When an \gls{API} hit succeeds, the script compares the record's published year against the entry's \texttt{year} field (prioritizing \texttt{published-print} over \texttt{issued} and \texttt{published-online}). Any discrepancy is flagged as an analysis warning.
 
-The program checks for citations of retracted works (currently limited to works with a \gls{DOI}), using Crossref's Retraction Watch Data (\url{https://gitlab.com/crossref/retraction-watch-data}, based on a dataset from Retraction Watch). 
 
 \subsubsection{Caching Infrastructure}
 To avoid exhausting \gls{API} rate limits on large bibliographies, lookup payloads are hashed and cached:
@@ -5338,10 +5350,6 @@ While the current pipeline addresses primary identifier lookup, year sanity chec
     \item \textbf{Retraction Watch Database Integration for Non-DOI Works:} Retraction checks currently rely on Crossref relationships and Crossmark metadata. Integrating direct lookups against the full Retraction Watch tabular dataset would enable detection of retracted entries that lack a registered \gls{DOI} (\eg retracted book chapters, conference papers, or preprints identified by title/author tuples).
 
     \item \textbf{Author Disambiguation and ORCID Ingestion:} When validating entries, the script does not currently harvest or cross-reference authors' \glspl{ORCID}, nor does it check whether author names conform to the CReDiT contributor roles taxonomy.
-
-    \item \textbf{Automated \gls{DOI} / \gls{ISBN} Backfilling:} If an entry contains a valid \gls{URL} or arXiv key but omits a canonical \gls{DOI}, the pipeline could query the Crossref \texttt{/works?query.title} endpoint to suggest or automatically inject the missing persistent identifier into \fname{referencesUsed.bib}. \todoinline{Perhaps this should only be a message to the author --- rather than being silently added to \fname{referencesUsed.bib}, so that the author could add it to \fname{references.bib}.}
-
-    \item \textbf{URL Liveness and Decay Detection:} \glspl{URL} provided in \texttt{@online} or \texttt{@misc} entries that lack a \gls{DOI} or \gls{ISBN} are not actively polled via HTTP \texttt{HEAD} requests to verify liveness or catch bit rot (HTTP 404/410), nor are fallback requests routed through the Internet Archive Wayback Machine \gls{API}.
 
     \item \textbf{Checking against known mashups/frankenreferences:} If a registry of known mashups/frankenreferences existed, it would be desirable to check against it. \todoinline{Perhaps a starting point for such a registry is those from my study of 2025 third-cycle theses.}\footnote{Unfortunately, \gls{Npof} does not maintain an open, machine-readable \gls{API} or structured database of cited references or detected frankenreferences. Their decisions are \emph{not} available in machine-readable form, but only published as \glspl{PDF} and summary press releases. Therefore, extracting these references would require manual curation or a text-extraction (or \gls{OCR}) scraping pipeline.}
 \end{itemize}
