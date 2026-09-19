@@ -19,12 +19,13 @@ import os
 from pathlib import Path
 import re
 import subprocess
-import requests
-
-import bibtexparser
-from difflib import SequenceMatcher
-import urllib.parse
 import time
+import urllib.parse
+import xml.etree.ElementTree as ET
+from difflib import SequenceMatcher
+
+import requests
+import bibtexparser
 from isbnlib import canonical, is_isbn10, is_isbn13, meta, to_isbn10
 
 
@@ -100,6 +101,7 @@ else:
 
 # ----------------------------------------------------------------------
 
+
 def get_git_email():
     """Retrieves the global or local git user email as a fallback."""
     try:
@@ -158,7 +160,7 @@ def get_cited_keys(artifact_path):
 
 
 def validate_isbn_metadata(isbn, email="unknown@example.com", verbose=False):
-    """Tiered metadata check: Crossref -> Google (via isbnlib) -> Open Library."""
+    """Tiered metadata check: Crossref -> Google (via isbnlib) -> Open Library -> Wikidata."""
     isbn = canonical(isbn)
     if not (is_isbn10(isbn) or is_isbn13(isbn)):
         return None
@@ -274,8 +276,6 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
                 return None
 
         # Quote the DOI so slashes and special characters don't break the path
-        # safe='' ensures '/' is escaped as %2F if needed, but Crossref prefers literal slashes:
-        # Crossref expects /works/10.1145/3445814.3446724
         encoded_doi = urllib.parse.quote(clean_doi, safe='/:')
 
         # -------------------------------------------------------------
@@ -296,12 +296,10 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
                 items = res_json.get('message', {}).get('items', [])
                 if not items:
                     return None
-                # Try to find exact DOI match in the returned items
                 exact_items = [it for it in items if it.get('DOI', '').lower() == clean_doi.lower()]
                 item = exact_items[0] if exact_items else items[0]
             else:
                 item = res_json.get('message', {})
-
 
             # --- Year Resolution ---
             def get_cr_year(date_field):
@@ -346,8 +344,6 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
             # If there are updates, check if any updating entity declares a retraction
             if updated_by_list and not is_retracted:
                 for upd in updated_by_list:
-                    sub_doi = upd.get('id')
-                    # If the relation asserts retraction explicitly
                     rel_type = str(upd.get('relationship-type', '')).lower()
                     if 'retract' in rel_type:
                         is_retracted = True
@@ -359,7 +355,6 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
                     print(f"  [!] CRITICAL: {clean_doi} has been RETRACTED by: {updates}")
                 elif updates:
                     print(f"  [*] Notice: {clean_doi} has updates/errata: {updates}")
-
 
             # Collect all candidate titles from Crossref
             candidate_titles = []
@@ -419,6 +414,7 @@ def validate_doi_metadata(doi, email="unknown@example.com", verbose=False):
 
     return None
 
+
 def validate_patent_url(patent_id):
     """Checks if a Google Patents page exists and returns the URL."""
     clean_id = patent_id.replace(" ", "").upper()
@@ -432,38 +428,32 @@ def validate_patent_url(patent_id):
         pass
     return None
 
+
 def clean_title(title: str) -> str:
     """Strips TeX commands, math mode, braces, and non-alphanumeric noise for robust comparison."""
     if not title:
         return ""
-    # Remove LaTeX math mode ($...$)
     t = re.sub(r'\$.*?\$', '', title)
-    # Remove LaTeX control words like \bar, \textbf, etc.
     t = re.sub(r'\\[a-zA-Z]+', '', t)
-    # Remove TeX grouping braces and standard punctuation
     t = re.sub(r'[{}"\'`~^]', '', t)
-    # Replace any non-alphanumeric characters with spaces
     t = re.sub(r'[^a-zA-Z0-9\s]', ' ', t)
-    # Collapse multiple whitespaces
     return ' '.join(t.lower().split())
+
 
 def titles_match(bib_title: str, api_title: str, threshold: float = 0.6) -> bool:
     c_bib = clean_title(bib_title)
     c_api = clean_title(api_title)
     
     if not c_bib or not c_api:
-        return True  # Avoid false alarms on empty strings
+        return True
     
-    # 1. Direct character ratio
     ratio = SequenceMatcher(None, c_bib, c_api).ratio()
     if ratio >= threshold:
         return True
     
-    # 2. Substring match (handles cases where API includes subtitle or volume name)
     if len(c_bib) > 15 and (c_bib in c_api or c_api in c_bib):
         return True
     
-    # 3. Token set overlap (Jaccard) to tolerate reordered or truncated titles
     words_bib = set(c_bib.split())
     words_api = set(c_api.split())
     if words_bib and words_api:
@@ -472,6 +462,7 @@ def titles_match(bib_title: str, api_title: str, threshold: float = 0.6) -> bool
             return True
 
     return False
+
 
 def check_wayback_machine(url, timeout=5, verbose=False):
     """Queries the Wayback Machine Availability API for an archived snapshot."""
@@ -521,7 +512,6 @@ def validate_url_liveness(url, timeout=10, verbose=False):
             r = requests.get(url, headers=headers, timeout=timeout, stream=True, allow_redirects=True)
         
         status_code = r.status_code
-        # 2xx, 3xx are live. 401/403 are restricted but host exists.
         if status_code < 400 or status_code in {401, 403}:
             is_live = True
             if verbose:
@@ -569,28 +559,33 @@ def validate_url_liveness(url, timeout=10, verbose=False):
 
 def suggest_crossref_doi(entry, email="unknown@example.com", verbose=False):
     """
-    Searches Crossref by title (and optionally author) to find a potential
-    matching DOI for entries missing persistent identifiers.
+    Searches Crossref by bibliographic query to find a potential matching DOI.
+    Enforces strict title ratio (>=0.85), primary author alignment, and publication
+    year proximity to eliminate false suggestions on successor works.
     """
     title = entry.get('title')
     if not title:
         return None
 
-    # Clean the title query for the Crossref API
-    query_title = clean_title(title)
-    if len(query_title) < 10:
+    c_bib_title = clean_title(title)
+    if len(c_bib_title) < 10:
         return None
 
     params = {
-        'query.bibliographic': query_title,
+        'query.bibliographic': c_bib_title,
         'rows': 3
     }
     
-    # Add author surname if available to narrow down results
-    author = entry.get('author')
-    if author:
-        first_author = author.split(' and ')[0].split(',')[0].strip()
-        params['query.author'] = first_author
+    entry_author = entry.get('author', '')
+    first_author_family = ""
+    if entry_author:
+        first_token = entry_author.split(' and ')[0].strip()
+        if ',' in first_token:
+            first_author_family = clean_title(first_token.split(',')[0])
+        else:
+            first_author_family = clean_title(first_token.split()[-1])
+        if first_author_family:
+            params['query.author'] = first_author_family
 
     headers = {'User-Agent': f'BibCleanupScript/1.0 (mailto:{email})'}
     
@@ -601,24 +596,117 @@ def suggest_crossref_doi(entry, email="unknown@example.com", verbose=False):
             for item in items:
                 candidate_doi = item.get('DOI')
                 api_titles = item.get('title', [])
+                if not (candidate_doi and api_titles):
+                    continue
+
+                # 1. Strict title matching (ratio only, no broad substring fallback)
+                c_api_title = clean_title(api_titles[0])
+                sim = SequenceMatcher(None, c_bib_title, c_api_title).ratio()
+                if sim < 0.85:
+                    continue
+
+                # 2. Check author alignment if available
+                if first_author_family:
+                    cr_authors = item.get('author', [])
+                    # Check first author or any author in Crossref
+                    author_matched = any(
+                        first_author_family in clean_title(a.get('family', ''))
+                        for a in cr_authors
+                    )
+                    if not author_matched:
+                        continue
+
+                # 3. Year proximity check
+                date_parts = (item.get('published-print', {}) or item.get('issued', {})).get('date-parts', [[]])
+                cand_year = date_parts[0][0] if date_parts and date_parts[0] else None
                 
-                # Verify match against primary paper title
-                if candidate_doi and api_titles:
-                    if any(titles_match(title, t, threshold=0.75) for t in api_titles):
-                        # Extract published year for reference
-                        date_parts = (item.get('published-print', {}) or item.get('issued', {})).get('date-parts', [[]])
-                        year = date_parts[0][0] if date_parts and date_parts[0] else None
-                        
-                        return {
-                            "doi": candidate_doi,
-                            "title": api_titles[0],
-                            "year": str(year) if year else '',
-                            "score": item.get('score', 0)
-                        }
+                entry_year = entry.get('year') or (entry.get('date', '')[:4] if entry.get('date') else None)
+                if entry_year and cand_year:
+                    try:
+                        # Allow at most 2 years drift between preprint / draft year and formal publication
+                        if abs(int(entry_year) - int(cand_year)) > 2:
+                            continue
+                    except (ValueError, TypeError):
+                        pass
+
+                return {
+                    "doi": candidate_doi,
+                    "title": api_titles[0],
+                    "year": str(cand_year) if cand_year else '',
+                    "score": item.get('score', 0)
+                }
     except Exception as e:
         if verbose:
             print(f"  [!] Error in suggest_crossref_doi for {entry.get('ID')}: {e}")
 
+    return None
+
+def validate_arxiv_metadata(eprint_id, verbose=False):
+    """
+    Queries the arXiv Atom API for a given preprint identifier.
+    Extracts title, publication year, official journal DOI (if published),
+    formal journal reference, authors, primary category, and comments.
+    """
+    raw_id = re.sub(r'^arxiv:\s*', '', eprint_id.strip(), flags=re.IGNORECASE)
+    clean_id = re.sub(r'v\d+$', '', raw_id)
+    canonical_doi = f"10.48550/arXiv.{clean_id}"
+
+    url = f"http://export.arxiv.org/api/query?id_list={clean_id}"
+    try:
+        r = requests.get(url, timeout=5)
+        if r.status_code == 200:
+            root = ET.fromstring(r.text)
+            ns = {
+                'atom': 'http://www.w3.org/2005/Atom',
+                'arxiv': 'http://arxiv.org/schemas/atom'
+            }
+            entry_node = root.find('atom:entry', ns)
+            if entry_node is not None:
+                title_node = entry_node.find('atom:title', ns)
+                title = title_node.text.strip().replace('\n', ' ') if title_node is not None else None
+                if title and title.lower() == "error":
+                    return None
+                
+                published_node = entry_node.find('atom:published', ns)
+                pub_year = published_node.text[:4] if published_node is not None else ""
+                
+                journal_doi_node = entry_node.find('arxiv:doi', ns)
+                journal_doi = journal_doi_node.text.strip() if journal_doi_node is not None else None
+                
+                journal_ref_node = entry_node.find('arxiv:journal_ref', ns)
+                journal_ref = journal_ref_node.text.strip() if journal_ref_node is not None else None
+
+                author_nodes = entry_node.findall('atom:author/atom:name', ns)
+                authors = [a.text.strip() for a in author_nodes if a.text]
+
+                primary_cat_node = entry_node.find('arxiv:primary_category', ns)
+                primary_cat = primary_cat_node.attrib.get('term') if primary_cat_node is not None else None
+
+                comment_node = entry_node.find('arxiv:comment', ns)
+                comment = comment_node.text.strip() if comment_node is not None else None
+
+                if verbose:
+                    print(f"  [+] arXiv DOI Found: {canonical_doi} ({pub_year})")
+                    if journal_doi:
+                        print(f"  [*] Notice: {clean_id} has formal journal DOI: {journal_doi}")
+
+                return {
+                    "title": title,
+                    "year": str(pub_year),
+                    "doi": canonical_doi,
+                    "authors": authors,
+                    "primary_class": primary_cat,
+                    "comment": comment,
+                    "source": "arXiv API",
+                    "journal_doi": journal_doi,
+                    "journal_ref": journal_ref,
+                    "valid": True
+                }
+
+    except Exception as e:
+        if verbose:
+            print(f"  [!] Error querying arXiv API for {clean_id}: {e}")
+            
     return None
 
 
@@ -723,27 +811,57 @@ def main():
 
             if doi_candidate:
                 validation_result = validate_doi_metadata(doi_candidate, args.email, args.verbose)
-                
-            # 2. ISBN Check
+
+            # 2. Extract potential arXiv ID from entry fields or key
+            arxiv_id = entry.get('eprint')
+            if not arxiv_id:
+                if entry.get('archiveprefix', '').lower() == 'arxiv' or 'arxiv.org' in entry.get('url', '').lower():
+                    m = re.search(r'(\d{4}\.\d{4,5}(v\d+)?|[a-z\-]+(\.[A-Z]{2})?/\d{7})', entry.get('url', ''))
+                    if m:
+                        arxiv_id = m.group(1)
+            if not arxiv_id and doi_candidate and '10.48550/arxiv.' in doi_candidate.lower():
+                arxiv_id = re.sub(r'^10\.48550/arxiv\.', '', doi_candidate, flags=re.IGNORECASE)
+            if not arxiv_id:
+                m_key = re.search(r'\b\d{4}\.\d{4,5}(v\d+)?\b', entry['ID'])
+                if m_key:
+                    arxiv_id = m_key.group(0)
+
+            # 2b. arXiv Resolution and Formal Publication Upgrade Detection
+            if arxiv_id:
+                is_arxiv_doi = doi_candidate and '10.48550/arxiv.' in doi_candidate.lower()
+                if not validation_result or is_arxiv_doi:
+                    arxiv_meta = validate_arxiv_metadata(arxiv_id, args.verbose)
+                    if arxiv_meta:
+                        if not validation_result:
+                            validation_result = arxiv_meta
+                        else:
+                            validation_result["journal_doi"] = arxiv_meta.get("journal_doi")
+                            validation_result["journal_ref"] = arxiv_meta.get("journal_ref")
+                            if arxiv_meta.get("authors"):
+                                validation_result["authors"] = arxiv_meta["authors"]
+                            if arxiv_meta.get("doi"):
+                                validation_result["doi"] = arxiv_meta["doi"]
+
+            # 3. ISBN Check
             if not validation_result and 'isbn' in entry:
                 validation_result = validate_isbn_metadata(entry.get('isbn'), args.email, args.verbose)
 
-            # 3. Patent Check
+            # 4. Patent Check
             if not validation_result and (entry.get('ENTRYTYPE') == 'patent' or entry['ID'].startswith('US')):
                 validation_result = validate_patent_url(entry['ID'])
 
-            # 4. URL Liveness check (for entries lacking PIDs OR where PID lookup failed)
+            # 5. URL Liveness check (for entries lacking PIDs OR where PID lookup failed)
             if not validation_result and 'url' in entry:
                 validation_result = validate_url_liveness(entry.get('url'), timeout=10, verbose=args.verbose)
                 
-            # 5. Suggest missing DOI for entries lacking DOI/ISBN
+            # 6. Suggest missing DOI for entries lacking DOI/ISBN
             has_pid = any(k in entry for k in ['doi', 'isbn'])
             if not has_pid and entry.get('ENTRYTYPE') not in {'patent', 'standard'}:
                 sug = suggest_crossref_doi(entry, args.email, args.verbose)
                 if sug:
                     if not validation_result:
                         validation_result = {"source": "Crossref Suggestion", "valid": True}
-                        validation_result["suggested_doi"] = sug
+                    validation_result["suggested_doi"] = sug
 
             # Only cache if validation succeeded, or if it wasn't a broken URL
             if validation_result and validation_result.get("valid") is not False:
@@ -771,15 +889,44 @@ def main():
                 err_info = f"HTTP {status}" if status else validation_result.get("error", "Connection error")
                 warnings.append(f"BROKEN URL: {entry['ID']} ({entry.get('url')}) unreachable: {err_info}")
 
-        # 4d. Report Suggested DOIs (Placed before retractions)
-        if validation_result and validation_result.get("suggested_doi"):
-            sug = validation_result["suggested_doi"]
-            sug_doi = sug['doi']
-            sug_yr = f" ({sug['year']})" if sug.get('year') else ""
-            warnings.append(
-                f"SUGGESTION: {entry['ID']} lacks a DOI, but Crossref matched {sug_doi}{sug_yr}. "
-                f"Consider adding 'doi = {{{sug_doi}}}' to references.bib"
-            )
+        # 4d. Preprint Publication Notices and DOI Suggestions
+        if validation_result:
+            # Check if formal journal DOI was discovered
+            if validation_result.get("journal_doi"):
+                entry_doi = entry.get("doi", "")
+                # Only warn if the entry doesn't already have this formal DOI
+                if validation_result["journal_doi"].lower() not in entry_doi.lower():
+                    j_ref = f" in '{validation_result['journal_ref']}'" if validation_result.get("journal_ref") else ""
+                    warnings.append(
+                        f"PUBLISHED PREPRINT: {entry['ID']} has a formal publication DOI{j_ref}: "
+                        f"{validation_result['journal_doi']}. Consider updating references.bib"
+                    )
+            elif validation_result.get("journal_ref"):
+                # Only warn if references.bib is missing publication venue details
+                has_venue = any(k in entry for k in ['journal', 'booktitle', 'isbn'])
+                if not has_venue or entry.get('ENTRYTYPE') in {'misc', 'online', 'unpublished'}:
+                    warnings.append(
+                        f"PUBLISHED PREPRINT: {entry['ID']} has a formal publication reference: "
+                        f"'{validation_result['journal_ref']}'. Consider updating references.bib"
+                    )
+
+            # Suggest adding canonical arXiv-minted DOI if entry lacks a 'doi' field
+            if 'doi' not in entry and validation_result.get("doi"):
+                cand_doi = validation_result["doi"]
+                warnings.append(
+                    f"SUGGESTION: {entry['ID']} lacks a DOI field, but arXiv minted canonical DOI: {cand_doi}. "
+                    f"Consider adding 'doi = {{{cand_doi}}}' to references.bib"
+                )
+
+            # Suggest adding Crossref-matched DOI
+            if validation_result.get("suggested_doi"):
+                sug = validation_result["suggested_doi"]
+                sug_doi = sug['doi']
+                sug_yr = f" ({sug['year']})" if sug.get('year') else ""
+                warnings.append(
+                    f"SUGGESTION: {entry['ID']} lacks a DOI, but Crossref matched {sug_doi}{sug_yr}. "
+                    f"Consider adding 'doi = {{{sug_doi}}}' to references.bib"
+                )
 
         # 4e. Check for Retractions or Updates
         if validation_result:
@@ -810,7 +957,7 @@ def main():
                 if str(e_year) != str(v_year):
                     warnings.append(f"Potential mismatch in years: {entry['ID']} {e_year} vs {v_year}")
 
-        # Check title similarity
+        # Check title and container similarity
         bib_title = entry.get('title')
         bib_booktitle = entry.get('booktitle')
         if validation_result and (bib_title or bib_booktitle):
@@ -821,7 +968,6 @@ def main():
                 if not api_titles_to_test and validation_result.get('title'):
                     api_titles_to_test.append(validation_result['title'])
                 
-                # Check container titles (both singular and plural)
                 for ct in validation_result.get('container_titles', []):
                     if ct and ct not in api_titles_to_test:
                         api_titles_to_test.append(ct)
