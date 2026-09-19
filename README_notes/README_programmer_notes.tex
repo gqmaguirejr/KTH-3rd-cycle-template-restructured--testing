@@ -5304,6 +5304,8 @@ For each processed entry, \fname{bib\_cleanup.py} queries external \glspl{API} t
     \item \textbf{Patents:} Standard patent identifiers (\eg\ \texttt{US\ldots}) generate direct canonical target requests against Google Patents.
     
     \item \textbf{Direct \glspl{URL} and Liveness:} Entries lacking persistent identifiers (\eg\ \texttt{@online}, \texttt{@misc}, \texttt{@report}) are polled via HTTP \texttt{HEAD} requests (falling back to streamed \texttt{GET} for servers restricting \texttt{HEAD}) to confirm availability. Endpoints returning HTTP 401/403 are treated as live but crawler-restricted. If an endpoint is dead (HTTP 4xx/5xx or connection failure), the script queries the Internet Archive Wayback Machine Availability \gls{API}; if an archived snapshot exists, a \enquote{\texttt{DECAYED URL (Archived in Wayback)}} notice is surfaced.
+
+    \item \textbf{Direct arXiv / eprint Resolution:} While some arXiv preprints assign a standard \gls{DOI} (\eg via the \texttt{10.48550} prefix), many citations only supply an \texttt{eprint} field without an explicit \gls{DOI}. A dedicated lookup against the arXiv REST \gls{API} is used to validate preprint identifiers and check whether a formal journal version has since been published. The program produces suggestions for additions to the \fname{references.bib} file.
 \end{enumerate}
 
 \paragraph{Cross-Field Sanity and Heuristic Checks}
@@ -5315,7 +5317,7 @@ Once a record resolves, secondary heuristics validate metadata consistency:
     
     \item \textbf{Retraction and Errata Detection:} Direct Crossref relations (\texttt{is-updated-by}) and Crossmark metadata arrays are parsed to flag retracted literature and surfaced corrections.
     
-    \item \textbf{Automated \gls{DOI} Discovery:} Entries lacking a \gls{DOI} or \gls{ISBN} are cross-referenced against Crossref's bibliographic search \gls{API}. If a high-confidence match ($>0.75$ similarity) is identified, the script emits an actionable suggestion for the author to add the canonical identifier to \fname{references.bib}.
+    \item \textbf{Automated \gls{DOI} Discovery:} Entries lacking a \gls{DOI} or \gls{ISBN} are cross-referenced against Crossref's bibliographic search \gls{API}. If a high-confidence match ($>0.85$ similarity) is identified, the script emits an actionable suggestion for the author to add the canonical identifier to \fname{references.bib}.
 \end{itemize}
 
 
@@ -5337,8 +5339,6 @@ While the current pipeline addresses primary identifier lookup, year sanity chec
 
 \begin{itemize}
     \item \textbf{Fuzzy Author Matching:} The current validation only confirms that a DOI, ISBN, or patent identifier resolves; that the publication years align; and performs a string-similarity check against the registered title. However, a similar check is not made of the elements of the author list. This leaves room for \enquote{phantom} citations where a valid \gls{DOI} is accidentally paired with unrelated citation metadata
-
-    \item \textbf{Direct arXiv / eprint Resolution:} While some arXiv preprints assign a standard \gls{DOI} (\eg via the \texttt{10.48550} prefix), many citations only supply an \texttt{eprint} field without an explicit \gls{DOI}. A dedicated lookup against the arXiv REST \gls{API} is needed to validate preprint identifiers and check whether a formal journal version has since been published.
 
     \item \textbf{Extended Persistent Identifier Registries:}
     \begin{itemize}
