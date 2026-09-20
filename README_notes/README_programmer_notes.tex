@@ -38,6 +38,8 @@
 
 % include a variety of packages that are useful
 \input{lib/includes}
+
+\usepackage{minted}
 \RequirePackage{fancyhdr} % Take control of headers and footers
 
 
@@ -303,6 +305,13 @@ Extension = .ttf,
 
 \newfontfamily{\DejaVuSansFont}[Ligatures=TeX,]{DejaVu Sans}
 
+% A font to be used in minted listings
+\newfontfamily{\ListingMono}{Noto Sans Mono}[Ligatures=ResetAll]
+
+% Phonetic Extensions, U+1D00 - U+1D7F
+\input{unicode_blocks/U+1D00-U+1D7F-Phonetic-Extensions}
+% Superscripts and Subscripts, U+2070 - U+209F
+\input{unicode_blocks/U+2070-U+209F-Superscripts-and-Subscripts}
 
 % Set up the header and footer for plain style pages
 \fancypagestyle{plain}{%
@@ -330,6 +339,11 @@ Extension = .ttf,
 \addtolength{\topmargin}{-3pt}
 
 \input{lib/configure_listings}
+% If you use both listing and lstlisting environments - the following makes them both use the same counter and the same formatting in the List of Listings
+\makeatletter
+\AtBeginDocument{\let\c@listing\c@lstlisting}
+\AtBeginDocument{\let\l@listing\l@lstlisting}
+\makeatother
 
 \newcommand{\dname}[1]{\textbf{#1}}
 \newcommand{\fname}[1]{\texttt{#1}}
@@ -4788,9 +4802,60 @@ Because doctoral theses are frequently submitted while papers are in various sta
     \item[Automated Guardrails] Build hooks can emit compiler warnings if a student attempts to build a final dissertation (\texttt{\textbackslash finaltrue}) while citations contain \texttt{peerreview="submitted"}.
 \end{description}
 
-Before attempting this, more thought is needed --- as this would seem difficult to maintain \textbf{and} many of the manuscripts will not be accepted (except as preprints) before the thesis is finalized and printed. However, one might think of a script based workflow that could check the relevant \gls{DiVA} entry for updated information.
+Before attempting this, more thought is needed --- as this would seem difficult to maintain \textbf{and} many of the manuscripts will not be accepted (except as preprints) before the thesis is finalized and printed. However, one might consider a script-based workflow that checks the relevant \gls{DiVA} entry for updated information.
 \end{enumerate}
 
+\subsection{Using annotations for math in titles}
+\label{sec:annotationForMathInTitles}
+
+Some bibliographic titles contain \LaTeX{} math expressions. \BibLaTeX{} provides built-in literal fields for sorting and indexing, specifically \texttt{sorttitle} and \texttt{indextitle}, as illustrated in \Cref{lst:biberSorttitle}. These fields decouple sorting and indexing strings from complex typesetting commands.
+
+\begin{listing}[!ht]
+\begin{minted}[breaklines, escapeinside=||]{bibtex}
+@article{Noz_1975,
+  author        = {Noz, Marilyn E. and Maguire, Jr., Gerald Q.},
+  title         = {{Calculation of $\bar{E}_{\beta}$, $\Gamma$ and $\Delta_{i}$ for $^{99m}$Tc}},
+  sorttitle     = {Calculation of E_beta, Gamma and Delta_i for 99mTc},
+  |\dots|
+}
+\end{minted}
+\caption{Using sorttitle}
+\label{lst:biberSorttitle}
+\end{listing}
+\FloatBarrier
+
+While \texttt{sorttitle} normalizes the title into plain ASCII for alphabetical ordering, external ingest pipelines (\eg\ automated bibliography validators, metadata scrapers, or repository systems such as SwePub and \gls{DiVA}) frequently require a clean UTF-8 plain-text representation. We can use \BibLaTeX{} data annotations to store a canonical UTF-8 version of the title, as shown in \Cref{lst:biberMathInTitles}. Note that the leading \enquote{\texttt{=}} (equal sign) instructs Biber to treat the annotation value as a literal string rather than a key-value or boolean flag.
+
+\begin{listing}[!ht]
+\begin{minted}[breaklines, escapeinside=||]{bibtex}
+@article{Noz_1975,
+  author        = {Noz, Marilyn E. and Maguire, Jr., Gerald Q.},
+  title         = {{Calculation of $\bar{E}_{\beta}$, $\Gamma$ and $\Delta_{i}$ for $^{99m}$Tc}},
+  title+an:utf8 = {=Calculation of Ēᵦ, Γ and Δᵢ for ⁹⁹ᵐTc},
+  |\dots|
+}
+\end{minted}
+\caption{Using data annotations to represent math in titles}
+\label{lst:biberMathInTitles}
+\end{listing}
+\FloatBarrier
+
+Both approaches can be combined, as shown in \Cref{lst:biberMathInTitlesCombined}. This allows \texttt{sorttitle} to govern internal Biber sorting while \texttt{title+an:utf8} supplies external validation pipelines and metadata harvesters with an authoritative UTF-8 string.
+
+\begin{listing}[!ht]
+\begin{minted}[breaklines, escapeinside=||]{bibtex}
+@article{Noz_1975,
+  author        = {Noz, Marilyn E. and Maguire, Jr., Gerald Q.},
+  title         = {{Calculation of $\bar{E}_{\beta}$, $\Gamma$ and $\Delta_{i}$ for $^{99m}$Tc}},
+  sorttitle     = {Calculation of E_beta, Gamma and Delta_i for 99mTc},
+  title+an:utf8 = {=Calculation of Ēᵦ, Γ and Δᵢ for ⁹⁹ᵐTc},
+  |\dots|
+}
+\end{minted}
+\caption{Combining data annotations with sorttitle}
+\label{lst:biberMathInTitlesCombined}
+\end{listing}
+\FloatBarrier
 
 \subsubsection{Can annotations be used in conjunction with reference managers}
 \label{sec:usingAnnotationsWithReferenceManagers}

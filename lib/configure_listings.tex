@@ -34,7 +34,7 @@
   morestring=[b]",      % Matches "double quotes"
   % morestring=[s]{\{}{\}}  % The correct way to handle {balanced braces}
   % FIX: use moredelim with a style argument and escaped braces
-  % moredelim=[s][\color{red}]{\{}{\}}
+  % moredelim=[s][\color{red}]{\{}{\}},
 }
 
 \lstdefinestyle{latexExampleForAuthors}{
@@ -182,3 +182,32 @@ language=[LaTeX]{TeX},
   {…}{{\ldots}}1,
   %{﻿}{{BOM}{\;}{0xfeff}}{10},
 }
+
+
+\setminted{
+  fontsize        = \ListingMono\small,
+  %bgcolor         = listingBackground,
+  breaklines      = true,
+  breakanywhere   = true,
+  breakindent     = 2em
+}
+
+% to remove the rules above and below the listing heading, keep heading at the top
+\floatstyle{plaintop}
+\restylefloat{listing}
+
+
+% To put all minted listings in a mdframe with a light yellow background
+% Wrap minted in a borderless, padded mdframed box with the custom background
+\BeforeBeginEnvironment{minted}{%
+  \begin{mdframed}[
+    backgroundcolor   = listingBackground,
+    hidealllines      = true,
+    linewidth         = 0pt,
+    innertopmargin    = 6pt,
+    innerbottommargin = 6pt,
+    innerleftmargin   = 6pt,
+    innerrightmargin  = 6pt
+  ]%
+}
+\AfterEndEnvironment{minted}{\end{mdframed}}
