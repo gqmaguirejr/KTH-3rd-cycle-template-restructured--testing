@@ -1,0 +1,1080 @@
+\documentclass[12pt, twoside]{article}
+% Emit local LDF shims before packages load
+\input{lib/datatool-ldf}
+
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+
+\RequirePackage{comment}
+
+% To access the \captionof{} functionality
+\RequirePackage{caption}
+
+%\RequirePackage{silence}
+%\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
+%\WarningFilter{latexfont}{Font shape}
+
+\newif\ifinswedish
+\inswedishfalse
+
+\RequirePackage{etoolbox}
+
+% The following toggles are needed because of kth/kthcolors.tex and lib/includes.tex
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+% include a variety of packages that are useful
+\input{lib/includes}
+
+\usepackage{minted}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+
+%\usepackage{luatexja-fontspec}
+%\ltjdefcharrange{8}{"2190-"21FF} % Define range 8 as Arrows
+%\ltjsetparameter{jacharrange={-8}} % Treat range 8 as Western characters (ALChar)
+
+%\ltjsetparameter{jacharrange={-3}} % Treat range 3 as Western characters (ALChar)
+
+\begin{comment}
+\ifinswedish
+    \usepackage[english, main=swedish, bidi=basic]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+\fi
+\end{comment}
+\ifinswedish
+    \usepackage[main=swedish]{babel}
+\else
+    \usepackage[main=english, provide+=*]{babel}
+\fi
+%\setmainjfont{Noto Sans CJK JP}
+
+%\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+% Input centralized biblatex configuration
+\input{lib/biblatex-and-friends}
+
+
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\section*{#1}%   skip \centering 
+}
+  
+\addbibresource{references.bib}    
+\input{kth/kthcolors}
+
+
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+\input{lib/includes-after-hyperref}
+\usepackage{orcidlink}  %% to provide ORCID icons and links
+
+%\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+% In the document preamble where glossaries-extra is loaded:
+\usepackage[
+  acronym,
+  toc=false,
+  nonumberlist,
+  nomain,
+  nopostdot=true, 
+  nohypertypes={main, acronym}, % disables link generation to targets that do not exist
+  notranslate,
+]{glossaries-extra}
+%% In overleaf, if this file is in a folder and not the root
+%% using \makeglossaries will not work, as the Overleaf latexmk
+%% will not run the program to take the output.acn file and make the output.acr file
+%\makeglossaries
+% However, you can get TeX to do the work with the following:
+\makenoidxglossaries
+% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
+%% Potentially, one could set up a latexmkrc file in the folder
+
+\input{lib/acronyms}                %load the acronyms file
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+ 
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \LuaLaTeX logo
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+
+
+
+    \babelfont{rm}{TeX Gyre Termes}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+  
+    %\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+    \babelfont{sf}{TeX Gyre Heros}
+    %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+    %% Turn off ligature for tt font
+    \babelfont{tt}[Ligatures={ResetAll}]{TeX Gyre Cursor}
+ \begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+ %  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+ \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \newfontfamily\mystixtextfont{STIX Two Text}
+  
+    % To access the Stylistic Set 1 <ss01> such as ℋ
+    \newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+    % use english as a fallback when in other languages
+    \babelprovide[import, onchar=ids fonts]{english}
+
+    
+  % for new KTH cover
+  % Load the Figtree font as it is used for the new KTH graphical profile
+  % 
+
+    \newfontfamily{\FigtreeFont}[Ligatures=TeX,
+        Path=./Figtree/static/,
+        Extension = .ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        BoldItalicFont=*-BoldItalic,
+        ItalicFont=*-Italic,
+        %FontFace={l}{n}{*-Light},
+        %FontFace={l}{it}{*-LightItalic},
+        FontFace={md}{n}{*-Medium},
+        FontFace={md}{it}{*-MediumItalic},
+        FontFace={sb}{n}{*-Semibold},
+        FontFace={sb}{it}{*-SemiBoldItalic},
+        %FontFace={k}{n}{*-Black},
+        %FontFace={k}{it}{*-BlackItalic},
+        %FontFace={eb}{n}{Font=*-ExtraBold},
+        %FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+        ]{Figtree}
+
+
+\newfontfamily\pageNumberFont{Figtree} %% set the font to use for page numbering
+
+\newfontfamily{\NotoEmojiFont}[Ligatures=TeX,
+    Path=./Noto_Emoji/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    FontFace={l}{n}{*-Light.ttf},
+    FontFace={md}{n}{*-Medium},
+    FontFace={sb}{n}{*-SemiBold},
+    ]{NotoEmoji}
+
+
+
+\begin{comment}
+   % To set the abstract headings in Figtree, we redefine the abstract environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Polyglossia or Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the sans serif font.
+   % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
+
+      \babelprovide[import, onchar=ids fonts]{greek}
+      \babelprovide[import, onchar=ids fonts]{russian}
+      \babelprovide[import, onchar=ids fonts]{vietnamese}
+      \babelfont[greek, russian, vietnamese]{rm}{Noto Serif}
+      \babelfont[greek, russian, vietnamese]{sf}{Noto Sans}
+      \babelfont[greek, russian, vietnamese]{tt}{Noto Mono}
+
+  
+    \babelprovide[import, onchar=ids fonts]{hindi}
+    \babelfont[hindi]{rm}{Noto Serif Devanagari}
+    \babelfont[hindi]{sf}{Noto Sans Devanagari}
+    \babelfont[hindi]{tt}{Noto Sans Devanagari} % Noto Mono does not have the glyphs
+
+    %\babelprovide[import, onchar=ids fonts]{russian}
+    %\babelfont[russian]{rm}{Noto Serif}
+    %\babelfont[russian]{sf}{Noto Sans}
+    %\babelfont[russian]{tt}{Noto Mono}
+
+    \babelprovide[import, onchar=ids fonts]{chinese-simplified}
+    \babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+    \babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+    \babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+    
+    \babelfont[chinese-traditional]{rm}{Noto Serif CJK TC}
+    \babelfont[chinese-traditional]{sf}{Noto Sans CJK TC}
+    \babelfont[chinese-traditional]{tt}{Noto Sans Mono CJK TC}
+  
+    \babelprovide[import, onchar=ids fonts]{japanese}
+    \babelfont[japanese]{rm}{Noto Serif CJK JP}
+    \babelfont[japanese]{sf}{Noto Sans CJK JP}
+    \babelfont[japanese]{tt}{Noto Sans Mono CJK JP}
+  
+  % If you are going to use Arabic
+
+    \babelprovide[import, onchar=ids fonts]{arabic}
+    \babelprovide[import, onchar=ids fonts]{centralkurdish}
+    \babelfont[arabic, centralkurdish]{rm}{Noto Naskh Arabic}
+    \babelfont[arabic, centralkurdish]{sf}{Noto Sans Arabic}
+    \babelfont[arabic, centralkurdish]{tt}{Noto Sans Arabic}
+    % If one really needs a monospaced font, one might try Kawkab Mono
+    % However, it seems that it is a work in progress - see https://makkuk.com/kawkab-mono/ and https://github.com/aiaf/kawkab-mono/tree/master
+
+    %\babelprovide[import, onchar=ids fonts]{centralkurdish}
+    %\babelfont[centralkurdish]{rm}{Noto Naskh Arabic}
+    %\babelfont[centralkurdish]{sf}{Noto Sans Arabic}
+    %\babelfont[centralkurdish]{tt}{Noto Sans Arabic}
+
+      
+  % If you are going to use Hebrew or Yiddish
+\babelprovide[import, onchar=ids fonts]{hebrew}
+\babelprovide[import, onchar=ids fonts]{yiddish}
+\babelfont[hebrew, yiddish]{rm}{Noto Serif Hebrew}
+\babelfont[hebrew, yiddish]{sf}{Noto Sans Hebrew}
+\babelfont[hebrew, yiddish]{tt}{Noto Sans Hebrew}
+
+
+    %\babelprovide[import, onchar=ids fonts]{vietnamese}
+    %\babelfont[vietnamese]{rm}{Noto Serif}
+    %\babelfont[vietnamese]{sf}{Noto Sans}
+    %\babelfont[vietnamese]{tt}{Noto Mono}
+
+\end{comment}
+  
+    % The Overleaf TeX Live includes these fonts, so there is little you have to do!
+    % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
+    %
+\newfontfamily{\NotoSansJPMonoFont}[Ligatures=TeX,
+    ]{Noto Sans Mono CJK JP Regular}
+
+
+\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
+    ]{Noto Sans CJK JP}
+
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSans-Regular,
+    BoldFont = NotoSans-Bold,
+    ItalicFont = NotoSans-Italic,
+    BoldItalicFont = NotoSans-BoldItalic
+    ]{NotoSansCustomA}
+    
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSerif-Regular,
+    BoldFont = NotoSerif-Bold,
+    ItalicFont = NotoSerif-Italic,
+    BoldItalicFont = NotoSerif-BoldItalic
+    ]{NotoSerifCustomA}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,]{DejaVu Sans}
+
+% A font to be used in minted listings
+\newfontfamily{\ListingMono}{Noto Sans Mono}[Ligatures=ResetAll]
+
+% fonts for various symbols
+\newfontfamily{\NotoSansSymbolsFont}{Noto Sans Symbols}[Ligatures=ResetAll]
+\newfontfamily{\NotoSansSymbolsTwoFont}{Noto Sans Symbols 2}[Ligatures=ResetAll]
+
+
+
+% color symbols - this would require changes in the font used in the U+2600-U+26FF-Miscellaneous-Symbols.tex file
+% for example for characters: ☕, ⚽, ⛄, and ✈
+%\newfontfamily{\NotoColorEmojiFont}{Noto Color Emoji}[Renderer=Harfbuzz]
+
+% Phonetic Extensions, U+1D00 - U+1D7F
+\input{unicode_blocks/U+1D00-U+1D7F-Phonetic-Extensions}
+% Superscripts and Subscripts, U+2070 - U+209F
+\input{unicode_blocks/U+2070-U+209F-Superscripts-and-Subscripts}
+% Miscellaneous Symbols, U+2600 - U+26FF
+\input{unicode_blocks/U+2600-U+26FF-Miscellaneous-Symbols}
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\pageNumberFont\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\pageNumberFont\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\pageNumberFont\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{%
+\markboth{#1}{}}
+
+
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+
+\input{lib/configure_listings}
+% If you use both listing and lstlisting environments - the following makes them both use the same counter and the same formatting in the List of Listings
+\makeatletter
+\AtBeginDocument{\let\c@listing\c@lstlisting}
+\AtBeginDocument{\let\l@listing\l@lstlisting}
+\makeatother
+
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+
+\RequirePackage{luacode}
+\input{kth/Lua_timestamping}
+
+% Input file generators before \documentclass
+\input{lib/ext-eprint-dbx}
+
+\input{lib/check_for_placeholder_references}
+
+\title{README and notes about the template for programmers --- Appendix}
+
+\author{Gerald Q. Maguire Jr.}
+\date{September 2026}
+
+\begin{document}
+\pagenumbering{roman}
+\glsresetall
+\maketitle
+\fancypagestyle{empty}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+\begin{abstract}
+This document contains an appendix for use with \fname{README\_programmer\_notes.tex}.
+
+
+\warningExpl{{\mystixmathfont ☡} This is a very deep dive that is probably only of interest to a \textit{very} small number of readers.}
+\end{abstract}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Enable the following command the first time you compile this in a new session to give all of the time quanta to set up the font cache.
+%% If the font cache is not built, you are likely to get a timeout.
+%\end{document}
+
+% Include Table of Contents (TOC) ---
+\fancypagestyle{plain}{}
+\renewcommand{\sectionmark}[1]{ \markboth{#1}{}}
+\tableofcontents
+\markboth{\contentsname}{}
+\cleardoublepage
+ 
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\glsresetall
+
+This document provides a set of appendices for~\cite{maguire2026programmersguide_testing}.
+
+\appendix
+\section{Language codes}
+\label{sec:LanguageCodes}
+The US Library of Congress has a table of the language codes at \url{https://www.loc.gov/standards/iso639-2/php/code_list.php}.
+
+Based upon the US Library of Congress \enquote{Codes for the Representation of Names of Languages: Codes arranged alphabetically by alpha-3/ISO 639-2 Code}, I have eliminated all of the rows that did not have both a three-letter \gls{ISO} 639-2 Code \textbf{and} a two-letter \gls{ISO} 639-1 Code. For the three-letter \gls{ISO} 639-2 Codes, I used only the  \enquote{B}, \ie bibliographic codes. I split the table into two parts: Languages already implemented (\Cref{tab:languagesImplemented}) and those remaining to be implemented (\Cref{tab:languagesNotImplemented}). The term \enquote{implemented} means that I have considered it in the current template, at least to some extent (but do not necessarily have a skeleton abstract in the language\footnote{For example, I do not have a skeleton abstract in Belarusian - but babel supports belarusian and the template supports the use of the Cyrillic alphabet. However, I have not done an investigation of whether the font supports all of the glyphs used in Belarusian.}).  For example, babel supports northernsami and yiddish as languages you can select, and I have created skeleton abstracts for both languages. In the case of Yiddish, I added it to the language switch in the code described in \textit{Extending the set of languages supported for abstracts} in \fname{README\_programmer\_notes}. For Norwegian Bokmål, one can use the \enquote{nob} code for an abstract and specify the babel language Norwegian. In contrast, for Norwegian Nynorsk one uses the \enquote{nno} code for an abstract and the babel language nynorsk. However, I have only implemented a skeleton abstract for Norwegian.
+
+I have a skeleton abstract in Kurdish Sorani (babel language centralkurdish) with language code \enquote{cbk}, I do not have any support for Kurmanji. However, as Kurmanji uses a Latin-based alphabet, it should not be a problem to add an abstract with the \enquote{kur} code.
+
+According to SCB (\url{https://www.scb.se/contentassets/221c69e399f0424b852b21236952e300/sprakkoder.xlsx}), there are also \gls{ISO} 639-2 codes for Yiddish with regions (see \Cref{tab:SCByiddish}). For Romanian, the \gls{ISO} 639-2 B code is \enquote{rum} and the ISO 639-1 code is  \enquote{ro}. However, SCB gives additional \gls{ISO} 639-2 codes (see \Cref{tab:SCBromani}). For Northern Sami (Samiska, (norra)), the \gls{ISO} 639-2 is "sme" and the ISO 639-1 code is \enquote{se}, but is there a region code that should be used? (See \Cref{tab:SCBsami}) For Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}), the ISO 639-2 code is \enquote{fit}, but I am unable to determine what \gls{ISO} 639-1 code should be used (see \Cref{tab:languagesMissing}). Is it \enquote{fi} with some region code? If so, what region code? 
+
+\generalExpl{I have added a skeleton abstract for Tornedalen Finnish (\foreignlanguage{swedish}{Meänkieli}). It is probably incorrect, but it provides a starting point. My assumption is that the spacing, hyphenation, \etc follow that of Finnish, but that there is a difference in words.}
+
+\begin{table}[!htp]
+    \caption{SCB table - Yiddish with regions}
+    \label{tab:SCByiddish}
+    \begin{tabular}{L{3cm}|L{6.5cm}}
+      \textbf{\gls{ISO} 639-2 Code} &\textbf{Swedish name of Language}\\
+      \hline
+YIH  &  Jiddisch (Väst)\\
+YDD  &  Jiddisch (Öst)\\
+\end{tabular}
+\end{table}
+
+\begin{table}[!htp]
+    \caption{SCB table - Romainian with regions}
+    \label{tab:SCBromani}
+    \begin{tabular}{L{3cm}|L{6.5cm}}
+      \textbf{\gls{ISO} 639-2 Code} &\textbf{Swedish name of Language}\\
+      \hline
+ROM &   Romani chib\\
+RMO &   Romani, Abbruzzesi, Serbisk romani, Slovensk-kroatisk romani\\
+RMN &   Romani, Arli, Dzambasi, Gurbeti\\
+RMC &   Romani, Bashaldo, Ungersk-slovakisk romani, Romungro\\
+RMF &   Romani, Kale, Kalo\\
+RMY &   Romani, Lovara, Kalderash\\
+RML &   Romani, Polsk romani, Estnisk, Lettisk, Nordrysk, Vitrysk\\
+RMU &   Romani, resande romani, Svensk romani, Romani tavringer\\
+RMW &   Romani, Walesisk\\
+\end{tabular}
+\end{table}
+
+\begin{table}[!htp]
+    \caption{SCB table - Sami with regions}
+    \label{tab:SCBsami}
+    \begin{tabular}{L{3cm}|L{6.5cm}}
+      \textbf{\gls{ISO} 639-2 Code} &\textbf{Swedish name of Language}\\
+      \hline
+SMI &   Samiska\\
+SIA &   Samiska, Akkalasamiska\\
+SMN &   Samiska, Enaresamiska\\
+SJK &   Samiska, Kemisamiska\\
+SJD &   Samiska, Kildinsamiska\\
+SMJ &   Samiska, Lulesamiska(Luleå)\\
+SJE &   Samiska, Pitesamiska\\
+SMS &   Samiska, Skoltsamiska\\
+SMA &  Samiska, sydsamiska (södra)\\
+SJT &  Samiska, Tersamiska\\
+SJU &  Umesamiska\\
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}[!htp]
+    \caption{Languages already implemented}
+    \label{tab:languagesImplemented}
+    \begin{footnotesize}
+
+    \begin{tabular}{L{3cm}|L{3cm}|L{6.5cm}}
+      \textbf{\gls{ISO} 639-2 Code} & \textbf{\gls{ISO} 639-1 Code} & \textbf{English name of Language}\\
+      \hline
+alb & sq & Albanian\\
+ara & ar & Arabic\\
+bel & be & Belarusian\\
+bul & bg & Bulgarian\\
+cat & ca & Catalan; Valencian\\
+chi & zh & Chinese\\
+cze & cs & Czech\\
+dan & da & Danish\\
+dut & nl & Dutch; Flemish\\
+eng & en & English\\
+est & et & Estonian\\
+fin & fi & Finnish\\
+fre & fr & French\\
+ger & de & German\\
+gre & el & Greek, Modern (1453-)\\
+heb & he & Hebrew\\
+hin & hi & Hindi\\
+hun & hu & Hungarian\\
+ice & is & Icelandic\\
+ita & it & Italian\\
+jpn & ja & Japanese\\
+lat & la & Latin\\
+lav & lv & Latvian\\
+lit & lt & Lithuanian\\
+nno & nn & Norwegian Nynorsk; Nynorsk, Norwegian\\
+nob & nb & Bokmål, Norwegian; Norwegian Bokmål\\
+nor & no & Norwegian\\
+per & fa & Persian\\
+pol & pl & Polish\\
+por & pt & Portuguese\\
+rum & ro & Romanian; Moldavian; Moldovan\\
+rus & ru & Russian\\
+sme & se & Northern Sami\\
+srp & sr & Serbian\\
+slo & sk & Slovak\\
+spa & es & Spanish; Castilian\\
+swe & sv & Swedish\\
+swa & sw & Swahili\\
+tur & tr & Turkish\\
+ukr & uk & Ukrainian\\
+vie & vi & Vietnamese\\
+yid & yi & Yiddish\\
+\hline
+   \end{tabular}  
+    \end{footnotesize}
+\end{table}
+\FloatBarrier
+
+\begin{table}[!ht]
+    \caption{Missing \gls{ISO} 639-1 Code from the Library of Congress list}
+    \label{tab:languagesMissing}
+    \begin{tabular}{L{3cm}|L{3cm}|L{6.5cm}}
+      \textbf{\gls{ISO} 639-2 Code} & \textbf{\gls{ISO} 639-1 Code} & \textbf{English name of Language}\\
+      \hline
+fit & ??? & Meänkieli\\
+\hline
+   \end{tabular}
+\end{table}
+\FloatBarrier
+
+As to the language tag to use for Meänkieli, one can simply skip the \gls{ISO} 639-1 Code and use "fit" - as done in \url{https://www.msb.se/sv/om-msb/information-pa-andra-sprak/meankieli/om-msb/}.
+However, it seems strange that there is no \gls{ISO} 639-1 Code. Interestingly, they use 'smi' for Lule Sami (\foreignlanguage{swedish}{lulesamiska}) in \url{https://www.msb.se/sv/om-msb/information-pa-andra-sprak/lulesamiska/om-msb/}.
+\generalExpl{I have added a skeleton abstract for \foreignlanguage{swedish}{Meänkieli}. I had help from a former professor at Stockholm's university and sprakcentrummeankieli@isof.se for the abstract and keywords in Meänkieli (although there is a small difference between their spellings of two words).}
+
+\begin{longtable}{|L{3cm}|L{3cm}|L{5cm}|}
+\caption{Remaining languages to implement}
+\label{tab:languagesNotImplemented}\\
+\hline \multicolumn{1}{|c|}{\textbf{\gls{ISO} 639-2 Code}} & \multicolumn{1}{c|}{\textbf{\gls{ISO} 639-1 Code}} & \multicolumn{1}{c|}{\textbf{English name of Language}} \\
+\endfirsthead
+\multicolumn{3}{c}%
+{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+\hline \multicolumn{1}{|c|}{\textbf{\gls{ISO} 639-2 Code}} & \multicolumn{1}{c|}{\textbf{\gls{ISO} 639-1 Code}} & \multicolumn{1}{c|}{\textbf{English name of Language}} \\
+\hline 
+\endhead
+\hline \multicolumn{3}{|r|}{{Continued on next page}} \\
+\hline
+\endfoot
+\hline
+\hline
+\endlastfoot
+aar & aa & Afar\\
+abk & ab & Abkhazian\\
+afr & af & Afrikaans\\
+aka & ak & Akan\\
+amh & am & Amharic\\
+arg & an & Aragonese\\
+arm & hy & Armenian\\
+asm & as & Assamese\\
+ava & av & Avaric\\
+ave & ae & Avestan\\
+aym & ay & Aymara\\
+aze & az & Azerbaijani\\
+bak & ba & Bashkir\\
+bam & bm & Bambara\\
+baq & eu & Basque\\
+ben & bn & Bengali\\
+bih & bh & Bihari languages\\
+bis & bi & Bislama\\
+bos & bs & Bosnian\\
+bre & br & Breton\\
+bur & my & Burmese\\
+cha & ch & Chamorro\\
+che & ce & Chechen\\
+chu & cu & Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic\\
+chv & cv & Chuvash\\
+cor & kw & Cornish\\
+cos & co & Corsican\\
+cre & cr & Cree\\
+div & dv & Divehi; Dhivehi; Maldivian\\
+dzo & dz & Dzongkha\\
+epo & eo & Esperanto\\
+ewe & ee & Ewe\\
+fao & fo & Faroese\\
+fij & fj & Fijian\\
+fry & fy & Western Frisian\\
+ful & ff & Fulah\\
+geo & ka & Georgian\\
+gla & gd & Gaelic; Scottish\\
+gle & ga & Irish\\
+glg & gl & Galician\\
+glv & gv & Manx\\
+grn & gn & Guarani\\
+guj & gu & Gujarati\\
+hat & ht & Haitian; Haitian\\
+hau & ha & Hausa\\
+her & hz & Herero\\
+hmo & ho & Hiri Motu\\
+hrv & hr & Croatian\\
+ibo & ig & Igbo\\
+ido & io & Ido\\
+iii & ii & Sichuan Yi; Nuosu\\
+iku & iu & Inuktitut\\
+ile & ie & Interlingue; Occidental\\
+ina & ia & Interlingua (International Auxiliary Language Association)\\
+ind & id & Indonesian\\
+ipk & ik & Inupiaq\\
+jav & jv & Javanese\\
+kal & kl & Kalaallisut; Greenlandic\\
+kan & kn & Kannada\\
+kas & ks & Kashmiri\\
+kau & kr & Kanuri\\
+kaz & kk & Kazakh\\
+khm & km & Central Khmer\\
+kik & ki & Kikuyu; Gikuyu\\
+kin & rw & Kinyarwanda\\
+kir & ky & Kirghiz; Kyrgyz\\
+kom & kv & Komi\\
+kon & kg & Kongo\\
+kor & ko & Korean\\
+kua & kj & Kuanyama; Kwanyama\\
+kur & ku & Kurdish\\
+lao & lo & Lao\\
+lim & li & Limburgan; Limburger; Limburgish\\
+lin & ln & Lingala\\
+ltz & lb & Luxembourgish; Letzeburgesch\\
+lub & lu & Luba-Katanga\\
+lug & lg & Ganda\\
+mac & mk & Macedonian\\
+mah & mh & Marshallese\\
+mal & ml & Malayalam\\
+mao & mi & Maori\\
+mar & mr & Marathi\\
+may & ms & Malay\\
+mlg & mg & Malagasy\\
+mlt & mt & Maltese\\
+mon & mn & Mongolian\\
+nau & na & Nauru\\
+nav & nv & Navajo; Navaho\\
+nbl & nr & Ndebele, South; South Ndebele\\
+nde & nd & Ndebele, North; North Ndebele\\
+ndo & ng & Ndonga\\
+nep & ne & Nepali\\
+nya & ny & Chichewa; Chewa; Nyanja\\
+oci & oc & Occitan (post 1500)\\
+oji & oj & Ojibwa\\
+ori & or & Oriya\\
+orm & om & Oromo\\
+oss & os & Ossetian; Ossetic\\
+pan & pa & Panjabi; Punjabi\\
+pli & pi & Pali\\
+pus & ps & Pushto; Pashto\\
+que & qu & Quechua\\
+roh & rm & Romansh\\
+run & rn & Rundi\\
+sag & sg & Sango\\
+san & sa & Sanskrit\\
+sin & si & Sinhala; Sinhalese\\
+slv & sl & Slovenian\\
+smo & sm & Samoan\\
+sna & sn & Shona\\
+snd & sd & Sindhi\\
+som & so & Somali\\
+sot & st & Sotho, Southern\\
+srd & sc & Sardinian\\
+ssw & ss & Swati\\
+sun & su & Sundanese\\
+tah & ty & Tahitian\\
+tam & ta & Tamil\\
+tat & tt & Tatar\\
+tel & te & Telugu\\
+tgk & tg & Tajik\\
+tgl & tl & Tagalog\\
+tha & th & Thai\\
+tib & bo & Tibetan\\
+tir & ti & Tigrinya\\
+ton & to & Tonga (Tonga Islands)\\
+tsn & tn & Tswana\\
+tso & ts & Tsonga\\
+tuk & tk & Turkmen\\
+twi & tw & Twi\\
+uig & ug & Uighur; Uyghur\\
+urd & ur & Urdu\\
+uzb & uz & Uzbek\\
+ven & ve & Venda\\
+vol & vo & Volapük\\
+wel & cy & Welsh\\
+wln & wa & Walloon\\
+wol & wo & Wolof\\
+xho & xh & Xhosa\\
+yor & yo & Yoruba\\
+zha & za & Zhuang; Chuang\\
+zul & zu & Zulu\\
+\end{longtable}
+\FloatBarrier
+\clearpage
+
+\section{Miscellaneous Unicode symbols}
+\label{sec:unicodeSymbols}
+A great reference that helped identify the relevant fonts was \url{https://codepoints.net/}; see, for example, \url{https://codepoints.net/U+26FF}.
+\noindent
+\begingroup
+\captionsetup{type=listing,hypcap=false}
+\caption{U+2600--U+26FF Miscellaneous Symbols}
+\label{lst:unicodeSymbols}
+\vspace{\abovecaptionskip}
+\begin{minted}[breaklines, escapeinside=||]{tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Miscellaneous Symbols, U+2600 - U+26FF
+% The characters below had been used in a title, subtitle, abstract, or keywords on or before 2025-05-28
+\DeclareUnicodeFallback{2600}{\mystixmathfont}{^^^^2600} % Black Sun with Rays - ☀
+\DeclareUnicodeFallback{2601}{\mystixmathfont}{^^^^2601} % Cloud - ☁
+\DeclareUnicodeFallback{2602}{\mystixmathfont}{^^^^2602} % Umbrella - ☂
+\DeclareUnicodeFallback{2603}{\mystixmathfont}{^^^^2603} % Snowman - ☃
+\DeclareUnicodeFallback{2604}{\mystixmathfont}{^^^^2604} % Comet - ☄
+\DeclareUnicodeFallback{2605}{\mystixmathfont}{^^^^2605} % Black Star - ★
+\DeclareUnicodeFallback{2606}{\mystixmathfont}{^^^^2606} % White Star - ☆
+\DeclareUnicodeFallback{2607}{\mystixmathfont}{^^^^2607} % Lightning - ☇
+\DeclareUnicodeFallback{2608}{\mystixmathfont}{^^^^2608} % Thunderstorm - ☈
+\DeclareUnicodeFallback{2609}{\mystixmathfont}{^^^^2609} % Sun - ☉
+\DeclareUnicodeFallback{260A}{\mystixmathfont}{^^^^260a} % Ascending Node - ☊
+\DeclareUnicodeFallback{260B}{\mystixmathfont}{^^^^260b} % Descending Node - ☋
+\DeclareUnicodeFallback{260C}{\mystixmathfont}{^^^^260c} % Conjunction - ☌
+\DeclareUnicodeFallback{260D}{\mystixmathfont}{^^^^260d} % Opposition - ☍
+\DeclareUnicodeFallback{260E}{\mystixmathfont}{^^^^260e} % Black Telephone - ☎
+\DeclareUnicodeFallback{260F}{\mystixmathfont}{^^^^260f} % White Telephone - ☏
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2610}{\mystixmathfont}{^^^^2610} % Ballot Box - ☐
+\DeclareUnicodeFallback{2611}{\mystixmathfont}{^^^^2611} % Ballot Box with Check - ☑
+\DeclareUnicodeFallback{2612}{\mystixmathfont}{^^^^2612} % Ballot Box with X - ☒
+\DeclareUnicodeFallback{2613}{\mystixmathfont}{^^^^2613} % Saltire - ☓
+\DeclareUnicodeFallback{2614}{\NotoSansSymbolsTwoFont}{^^^^2614} % Umbrella with Rain Drops - ☔
+\DeclareUnicodeFallback{2615}{\NotoEmojiFont}{^^^^2615} % Hot Beverage - ☕
+\DeclareUnicodeFallback{2616}{\NotoSansJPFont}{^^^^2616} % White Shogi Piece - ☖
+\DeclareUnicodeFallback{2617}{\NotoSansJPFont}{^^^^2617} % Black Shogi Piece - ☗
+\DeclareUnicodeFallback{2618}{\NotoEmojiFont}{^^^^2618} % Shamrock - ☘
+\DeclareUnicodeFallback{2619}{\NotoSansSymbolsTwoFont}{^^^^2619} % Reversed Rotated Floral Heart Bullet - ☙
+\DeclareUnicodeFallback{261A}{\mystixmathfont}{^^^^261a} % Black Left Pointing Index - ☚
+\DeclareUnicodeFallback{261B}{\mystixmathfont}{^^^^261b} % Black Right Pointing Index - ☛
+\DeclareUnicodeFallback{261C}{\mystixmathfont}{^^^^261c} % White Left Pointing Index - ☜
+\DeclareUnicodeFallback{261D}{\mystixmathfont}{^^^^261d} % White Up Pointing Index - ☝
+\DeclareUnicodeFallback{261E}{\mystixmathfont}{^^^^261e} % White Right Pointing Index - ☞
+\DeclareUnicodeFallback{261F}{\mystixmathfont}{^^^^261f} % White Down Pointing Index - ☟
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2620}{\mystixmathfont}{^^^^2620} % Skull and Crossbones - ☠
+\DeclareUnicodeFallback{2621}{\mystixmathfont}{^^^^2621} % Caution Sign - ☡
+\DeclareUnicodeFallback{2622}{\mystixmathfont}{^^^^2622} % Radioactive Sign - ☢
+\DeclareUnicodeFallback{2623}{\mystixmathfont}{^^^^2623} % Biohazard Sign - ☣
+\DeclareUnicodeFallback{2624}{\mystixmathfont}{^^^^2624} % Caduceus - ☤
+\DeclareUnicodeFallback{2625}{\mystixmathfont}{^^^^2625} % Ankh - ☥
+\DeclareUnicodeFallback{2626}{\mystixmathfont}{^^^^2626} % Orthodox Cross - ☦
+\DeclareUnicodeFallback{2627}{\mystixmathfont}{^^^^2627} % Chi Rho - ☧
+\DeclareUnicodeFallback{2628}{\mystixmathfont}{^^^^2628} % Cross of Lorraine - ☨
+\DeclareUnicodeFallback{2629}{\mystixmathfont}{^^^^2629} % Cross of Jerusalem - ☩
+\DeclareUnicodeFallback{262A}{\mystixmathfont}{^^^^262a} % Star and Crescent - ☪
+\DeclareUnicodeFallback{262B}{\mystixmathfont}{^^^^262b} % Farsi Symbol - ☫
+\DeclareUnicodeFallback{262C}{\mystixmathfont}{^^^^262c} % Adi Shakti - ☬
+\DeclareUnicodeFallback{262D}{\mystixmathfont}{^^^^262d} % Hammer and Sickle - ☭
+\DeclareUnicodeFallback{262E}{\mystixmathfont}{^^^^262e} % Peace Symbol - ☮
+\DeclareUnicodeFallback{262F}{\mystixmathfont}{^^^^262f} % Yin Yang - ☯
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2630}{\mystixmathfont}{^^^^2630} % Trigram For Heaven - ☰
+\DeclareUnicodeFallback{2631}{\mystixmathfont}{^^^^2631} % Trigram For Lake - ☱
+\DeclareUnicodeFallback{2632}{\mystixmathfont}{^^^^2632} % Trigram For Fire - ☲
+\DeclareUnicodeFallback{2633}{\mystixmathfont}{^^^^2633} % Trigram For Thunder - ☳
+\DeclareUnicodeFallback{2634}{\mystixmathfont}{^^^^2634} % Trigram For Wind - ☴
+\DeclareUnicodeFallback{2635}{\mystixmathfont}{^^^^2635} % Trigram For Water- ☵
+\DeclareUnicodeFallback{2636}{\mystixmathfont}{^^^^2636} % Trigram For Mountain - ☶
+\DeclareUnicodeFallback{2637}{\mystixmathfont}{^^^^2637} % Trigram For Earth - ☷
+\DeclareUnicodeFallback{2638}{\mystixmathfont}{^^^^2638} % Wheel of Dharma - ☸
+\DeclareUnicodeFallback{2639}{\mystixmathfont}{^^^^2639} % White Frowning Face - ☹
+\DeclareUnicodeFallback{263A}{\NotoEmojiFont}{^^^^263a} % White Smiling Face - ☺
+\DeclareUnicodeFallback{263B}{\mystixmathfont}{^^^^263b} % Black Smiling Face - ☻
+\DeclareUnicodeFallback{263C}{\mystixmathfont}{^^^^263c} % White Sun with Rays - ☼
+\DeclareUnicodeFallback{263D}{\mystixmathfont}{^^^^263d} % First Quarter Moon- ☽
+\DeclareUnicodeFallback{263E}{\mystixmathfont}{^^^^263e} % PLast Quarter Moon - ☾
+\DeclareUnicodeFallback{263F}{\mystixmathfont}{^^^^263f} % Mercur - ☿
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2640}{\mystixmathfont}{^^^^2640} % female symbol - ♀
+\DeclareUnicodeFallback{2641}{\mystixmathfont}{^^^^2641} % Earth - ♁
+\DeclareUnicodeFallback{2642}{\mystixmathfont}{^^^^2642} % Male symbol - ♂
+\DeclareUnicodeFallback{2643}{\mystixmathfont}{^^^^2643} % Jupiter - ♃
+\DeclareUnicodeFallback{2644}{\mystixmathfont}{^^^^2644} % Saturn - ♄
+\DeclareUnicodeFallback{2645}{\mystixmathfont}{^^^^2645} % Uranus- ♅
+\DeclareUnicodeFallback{2646}{\mystixmathfont}{^^^^2646} % Neptune - ♆
+\DeclareUnicodeFallback{2647}{\mystixmathfont}{^^^^2647} % Pluto - ♇
+\DeclareUnicodeFallback{2648}{\mystixmathfont}{^^^^2648} % Aries - ♈
+\DeclareUnicodeFallback{2649}{\mystixmathfont}{^^^^2649} % Taurus - ♉
+\DeclareUnicodeFallback{264A}{\mystixmathfont}{^^^^264a} % Gemini - ♊
+\DeclareUnicodeFallback{264B}{\mystixmathfont}{^^^^264b} % Cancer - ♋
+\DeclareUnicodeFallback{264C}{\mystixmathfont}{^^^^264c} % Leo - ♌
+\DeclareUnicodeFallback{264D}{\mystixmathfont}{^^^^264d} % Virgo - ♍
+\DeclareUnicodeFallback{264E}{\mystixmathfont}{^^^^264e} % Libra - ♎
+\DeclareUnicodeFallback{264F}{\mystixmathfont}{^^^^264f} % Scorpiu - ♏
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2650}{\mystixmathfont}{^^^^2650} % Sagittarius - ♐
+\DeclareUnicodeFallback{2651}{\mystixmathfont}{^^^^2651} % Capricorn - ♑
+\DeclareUnicodeFallback{2652}{\mystixmathfont}{^^^^2652} % Aquarius - ♒
+\DeclareUnicodeFallback{2653}{\mystixmathfont}{^^^^2653} % Pisces - ♓
+\DeclareUnicodeFallback{2654}{\mystixmathfont}{^^^^2654} % White Chess King - ♔
+\DeclareUnicodeFallback{2655}{\mystixmathfont}{^^^^2655} % White Chess Queen- ♕
+\DeclareUnicodeFallback{2656}{\mystixmathfont}{^^^^2656} % White Chess Rook - ♖
+\DeclareUnicodeFallback{2657}{\mystixmathfont}{^^^^2657} % White Chess Bishop - ♗
+\DeclareUnicodeFallback{2658}{\mystixmathfont}{^^^^2658} % White Chess Knight - ♘
+\DeclareUnicodeFallback{2659}{\mystixmathfont}{^^^^2659} % White Chess Pawn - ♙
+\DeclareUnicodeFallback{265A}{\mystixmathfont}{^^^^265a} % Black Chess King - ♚
+\DeclareUnicodeFallback{265B}{\mystixmathfont}{^^^^265b} % Black Chess Queen - ♛
+\DeclareUnicodeFallback{265C}{\mystixmathfont}{^^^^265c} % Black Chess Rook - ♜
+\DeclareUnicodeFallback{265D}{\mystixmathfont}{^^^^265d} % Black Chess Bishop - ♝
+\DeclareUnicodeFallback{265E}{\mystixmathfont}{^^^^265e} % Black Chess Knight - ♞
+\DeclareUnicodeFallback{265F}{\mystixmathfont}{^^^^265f} % Black Chess Pawn - ♟
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2660}{\mystixmathfont}{^^^^2660} % Black Spade Suit - ♠
+\DeclareUnicodeFallback{2661}{\mystixmathfont}{^^^^2661} % White Heart Suit - ♡
+\DeclareUnicodeFallback{2662}{\mystixmathfont}{^^^^2662} % White Diamond Suit - ♢
+\DeclareUnicodeFallback{2663}{\mystixmathfont}{^^^^2663} % Black Club Suit - ♣
+\DeclareUnicodeFallback{2664}{\mystixmathfont}{^^^^2664} % White Spade Suit - ♤
+\DeclareUnicodeFallback{2665}{\mystixmathfont}{^^^^2665} % Black Heart Suit- ♥
+\DeclareUnicodeFallback{2666}{\mystixmathfont}{^^^^2666} % Black Diamond Suit - ♦
+\DeclareUnicodeFallback{2667}{\mystixmathfont}{^^^^2667} % White Club Suit - ♧
+\DeclareUnicodeFallback{2668}{\mystixmathfont}{^^^^2668} % Hot Springs - ♨
+\DeclareUnicodeFallback{2669}{\mystixmathfont}{^^^^2669} % Quarter Note - ♩
+\DeclareUnicodeFallback{266A}{\mystixmathfont}{^^^^266a} % Eighth Note - ♪
+\DeclareUnicodeFallback{266B}{\mystixmathfont}{^^^^266b} % Beamed Eighth Notes - ♫
+\DeclareUnicodeFallback{266C}{\mystixmathfont}{^^^^266c} % Beamed Sixteenth Notes - ♬
+\DeclareUnicodeFallback{266D}{\mystixmathfont}{^^^^266d} % Music Flat Sign - ♭
+\DeclareUnicodeFallback{266E}{\mystixmathfont}{^^^^266e} % Music Natural Sign - ♮
+\DeclareUnicodeFallback{266F}{\mystixmathfont}{^^^^266f} % Music Sharp Sign - ♯
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2670}{\mystixmathfont}{^^^^2670} % West Syriac Cross - ♰
+\DeclareUnicodeFallback{2671}{\mystixmathfont}{^^^^2671} % East Syriac Cross - ♱
+\DeclareUnicodeFallback{2672}{\NotoSansSymbolsFont}{^^^^2672} % Universal Recycling Symbol - ♲
+\DeclareUnicodeFallback{2673}{\NotoSansSymbolsFont}{^^^^2673} % Recycling Symbol For Type-1 Plastics - ♳
+\DeclareUnicodeFallback{2674}{\NotoSansSymbolsFont}{^^^^2674} % Recycling Symbol For Type-2 Plastics - ♴
+\DeclareUnicodeFallback{2675}{\NotoSansSymbolsFont}{^^^^2675} % Recycling Symbol For Type-3 Plastics- ♵
+\DeclareUnicodeFallback{2676}{\NotoSansSymbolsFont}{^^^^2676} % Recycling Symbol For Type-4 Plastics - ♶
+\DeclareUnicodeFallback{2677}{\NotoSansSymbolsFont}{^^^^2677} % Recycling Symbol For Type-5 Plastics - ♷
+\DeclareUnicodeFallback{2678}{\NotoSansSymbolsFont}{^^^^2678} % Recycling Symbol For Type-6 Plastics - ♸
+\DeclareUnicodeFallback{2679}{\NotoSansSymbolsFont}{^^^^2679} % Recycling Symbol For Type-7 Plastics - ♹
+\DeclareUnicodeFallback{267A}{\mystixmathfont}{^^^^267a} % Recycling Symbol For Generic Materials - ♺
+\DeclareUnicodeFallback{267B}{\mystixmathfont}{^^^^267b} % Black Universal Recycling Symbol - ♻
+\DeclareUnicodeFallback{267C}{\NotoSansSymbolsFont}{^^^^267c} % Recycled Paper Symbol - ♼
+\DeclareUnicodeFallback{267D}{\NotoSansSymbolsFont}{^^^^267d} % Partially-Recycled Paper Symbol - ♽
+\DeclareUnicodeFallback{267E}{\mystixmathfont}{^^^^267e} % Permanent Paper Sign - ♾
+\DeclareUnicodeFallback{267F}{\NotoEmojiFont}{^^^^267f} % Wheelchair Symbol - ♿
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2680}{\mystixmathfont}{^^^^2680} % Die Face-1 - ⚀
+\DeclareUnicodeFallback{2681}{\mystixmathfont}{^^^^2681} % Die Face-2 - ⚁
+\DeclareUnicodeFallback{2682}{\mystixmathfont}{^^^^2682} % Die Face-3 - ⚂
+\DeclareUnicodeFallback{2683}{\mystixmathfont}{^^^^2683} % Die Face-4 - ⚃
+\DeclareUnicodeFallback{2684}{\mystixmathfont}{^^^^2684} % Die Face-5 - ⚄
+\DeclareUnicodeFallback{2685}{\mystixmathfont}{^^^^2685} % Die Face-6- ⚅
+\DeclareUnicodeFallback{2686}{\mystixmathfont}{^^^^2686} % White Circle with Dot Right - ⚆
+\DeclareUnicodeFallback{2687}{\mystixmathfont}{^^^^2687} % White Circle with Two Dots - ⚇
+\DeclareUnicodeFallback{2688}{\mystixmathfont}{^^^^2688} % Black Circle with White Dot Right - ⚈
+\DeclareUnicodeFallback{2689}{\mystixmathfont}{^^^^2689} % Black Circle with Two White Dots - ⚉
+\DeclareUnicodeFallback{268A}{\mystixmathfont}{^^^^268a} % Monogram For Yang - ⚊
+\DeclareUnicodeFallback{268B}{\mystixmathfont}{^^^^268b} % Monogram For Yin - ⚋
+\DeclareUnicodeFallback{268C}{\mystixmathfont}{^^^^268c} % Digram For Greater Yang - ⚌
+\DeclareUnicodeFallback{268D}{\mystixmathfont}{^^^^268d} % Digram For Lesser Yin - ⚍
+\DeclareUnicodeFallback{268E}{\mystixmathfont}{^^^^268e} % Digram For Lesser Yang - ⚎
+\DeclareUnicodeFallback{268F}{\mystixmathfont}{^^^^268f} % Digram For Greater Yin - ⚏
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{2690}{\mystixmathfont}{^^^^2690} % White Flag - ⚐
+\DeclareUnicodeFallback{2691}{\mystixmathfont}{^^^^2691} % Black Flag - ⚑
+\DeclareUnicodeFallback{2692}{\NotoSansSymbolsFont}{^^^^2692} % Hammer and Pick - ⚒
+\DeclareUnicodeFallback{2693}{\NotoSansSymbolsFont}{^^^^2693} % Anchor - ⚓
+\DeclareUnicodeFallback{2694}{\NotoSansSymbolsFont}{^^^^2694} % Crossed Swords - ⚔
+\DeclareUnicodeFallback{2695}{\NotoSansSymbolsFont}{^^^^2695} % Staff of Aesculapius - ⚕
+\DeclareUnicodeFallback{2696}{\NotoSansSymbolsFont}{^^^^2696} % Scales - ⚖
+\DeclareUnicodeFallback{2697}{\NotoSansSymbolsFont}{^^^^2697} % Alembic - ⚗
+\DeclareUnicodeFallback{2698}{\NotoSansSymbolsFont}{^^^^2698} % Flower - ⚘
+\DeclareUnicodeFallback{2699}{\NotoSansSymbolsFont}{^^^^2699} % Gear - ⚙
+\DeclareUnicodeFallback{269A}{\mystixmathfont}{^^^^269a} % Staff of Hermes - ⚚
+\DeclareUnicodeFallback{269B}{\mystixmathfont}{^^^^269b} % Atom Symbol - ⚛
+\DeclareUnicodeFallback{269C}{\mystixmathfont}{^^^^269c} % Fleur-De-Lis - ⚜
+\DeclareUnicodeFallback{269D}{\mystixmathfont}{^^^^269d} % Outlined White Star - ⚝
+\DeclareUnicodeFallback{269E}{\NotoSansSymbolsTwoFont}{^^^^269e} % Three Lines Converging Right - ⚞
+\DeclareUnicodeFallback{269F}{\NotoSansSymbolsTwoFont}{^^^^269f} % Three Lines Converging Left - ⚟
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{26A0}{\mystixmathfont}{^^^^26a0} % Warning Sign - ⚠
+\DeclareUnicodeFallback{26A1}{\mystixmathfont}{^^^^26a1} % High Voltage Sign - ⚡
+\DeclareUnicodeFallback{26A2}{\mystixmathfont}{^^^^26a2} % Doubled Female Sign - ⚢
+\DeclareUnicodeFallback{26A3}{\mystixmathfont}{^^^^26a3} % Doubled Male Sign - ⚣
+\DeclareUnicodeFallback{26A4}{\mystixmathfont}{^^^^26a4} % Interlocked Female and Male Sign - ⚤
+\DeclareUnicodeFallback{26A5}{\mystixmathfont}{^^^^26a5} % Male and Female Sign - ⚥
+\DeclareUnicodeFallback{26A6}{\mystixmathfont}{^^^^26a6} % Male with Stroke Sign - ⚦
+\DeclareUnicodeFallback{26A7}{\mystixmathfont}{^^^^26a7} % Male with Stroke and Male and Female Sign - ⚧
+\DeclareUnicodeFallback{26A8}{\mystixmathfont}{^^^^26a8} % Vertical Male with Stroke Sign - ⚨
+\DeclareUnicodeFallback{26A9}{\mystixmathfont}{^^^^26a9} % Horizontal Male with Stroke Sign - ⚩
+\DeclareUnicodeFallback{26AA}{\mystixmathfont}{^^^^26aa} % Medium White Circle - ⚪
+\DeclareUnicodeFallback{26AB}{\mystixmathfont}{^^^^26ab} % Medium Black Circle - ⚫
+\DeclareUnicodeFallback{26AC}{\mystixmathfont}{^^^^26ac} % Medium Small White Circle - ⚬
+\DeclareUnicodeFallback{26AD}{\mystixmathfont}{^^^^26ad} % Marriage Symbol - ⚭
+\DeclareUnicodeFallback{26AE}{\mystixmathfont}{^^^^26ae} % Divorce Symbol - ⚮
+\DeclareUnicodeFallback{26AF}{\mystixmathfont}{^^^^26af} % Unmarried Partnership Symbol - ⚯
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{26B0}{\NotoEmojiFont}{^^^^26b0} % Coffin - ⚰
+\DeclareUnicodeFallback{26B1}{\NotoEmojiFont}{^^^^26b1} % Funeral Urn - ⚱
+\DeclareUnicodeFallback{26B2}{\mystixmathfont}{^^^^26b2} % Neuter - ⚲
+\DeclareUnicodeFallback{26B3}{\mystixmathfont}{^^^^26b3} % Ceres - ⚳
+\DeclareUnicodeFallback{26B4}{\mystixmathfont}{^^^^26b4} % Pallas - ⚴
+\DeclareUnicodeFallback{26B5}{\mystixmathfont}{^^^^26b5} % Juno - ⚵
+\DeclareUnicodeFallback{26B6}{\mystixmathfont}{^^^^26b6} % Vesta - ⚶
+\DeclareUnicodeFallback{26B7}{\mystixmathfont}{^^^^26b7} % Chiron - ⚷
+\DeclareUnicodeFallback{26B8}{\mystixmathfont}{^^^^26b8} % Black Moon Lilith - ⚸
+\DeclareUnicodeFallback{26B9}{\mystixmathfont}{^^^^26b9} % Sextile - ⚹
+\DeclareUnicodeFallback{26BA}{\mystixmathfont}{^^^^26ba} % Semisextile - ⚺
+\DeclareUnicodeFallback{26BB}{\mystixmathfont}{^^^^26bb} % Quincunx - ⚻
+\DeclareUnicodeFallback{26BC}{\mystixmathfont}{^^^^26bc} % Sesquiquadrate - ⚼
+\DeclareUnicodeFallback{26BD}{\NotoEmojiFont}{^^^^26bd} % Soccer Ball - ⚽
+\DeclareUnicodeFallback{26BE}{\NotoEmojiFont}{^^^^26be} % Baseball - ⚾
+\DeclareUnicodeFallback{26BF}{\NotoSansSymbolsTwoFont}{^^^^26bf} % Squared Key - ⚿
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{26C0}{\NotoSansSymbolsTwoFont}{^^^^26c0} % White Draughts Man - ⛀
+\DeclareUnicodeFallback{26C1}{\NotoSansSymbolsTwoFont}{^^^^26c1} % White Draughts King - ⛁
+\DeclareUnicodeFallback{26C2}{\NotoSansSymbolsTwoFont}{^^^^26c2} % Black Draughts Man - ⛂
+\DeclareUnicodeFallback{26C3}{\NotoSansSymbolsTwoFont}{^^^^26c3} % Black Draughts King - ⛃
+\DeclareUnicodeFallback{26C4}{\NotoEmojiFont}{^^^^26c4} % Snowman Without Snow - ⛄
+\DeclareUnicodeFallback{26C5}{\NotoEmojiFont}{^^^^26c5} % Sun Behind Cloud - ⛅
+\DeclareUnicodeFallback{26C6}{\NotoSansSymbolsTwoFont}{^^^^26c6} % Rain - ⛆
+\DeclareUnicodeFallback{26C7}{\NotoSansSymbolsTwoFont}{^^^^26c7} % Black Snowman - ⛇
+\DeclareUnicodeFallback{26C8}{\NotoEmojiFont}{^^^^26c8} % Thunder Cloud and Rain - ⛈
+\DeclareUnicodeFallback{26C9}{\NotoSansSymbolsTwoFont}{^^^^26c9} % Turned White Shogi Piece - ⛉
+\DeclareUnicodeFallback{26CA}{\NotoSansSymbolsTwoFont}{^^^^26ca} % Turned Black Shogi Piece - ⛊
+\DeclareUnicodeFallback{26CB}{\mystixmathfont}{^^^^26cb} % White Diamond In Square - ⛋
+\DeclareUnicodeFallback{26CC}{\mystixmathfont}{^^^^26cc} % Crossing Lanes - ⛌
+\DeclareUnicodeFallback{26CD}{\NotoSansSymbolsTwoFont}{^^^^26cd} % Disabled Car - ⛍
+\DeclareUnicodeFallback{26CE}{\NotoEmojiFont}{^^^^26ce} % Ophiuchus - ⛎
+\DeclareUnicodeFallback{26CF}{\NotoSansSymbolsTwoFont}{^^^^26cf} % Pick - ⛏
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{26D0}{\NotoSansSymbolsTwoFont}{^^^^26d0} % Car Sliding - ⛐
+\DeclareUnicodeFallback{26D1}{\NotoSansSymbolsTwoFont}{^^^^26d1} % Helmet with White Cross - ⛑
+\DeclareUnicodeFallback{26D2}{\NotoSansSymbolsTwoFont}{^^^^26d2} % Circled Crossing Lanes - ⛒
+\DeclareUnicodeFallback{26D3}{\NotoSansSymbolsTwoFont}{^^^^26d3} % Chains - ⛓
+\DeclareUnicodeFallback{26D4}{\NotoSansSymbolsTwoFont}{^^^^26d4} % No Entry - ⛔
+\DeclareUnicodeFallback{26D5}{\NotoSansSymbolsTwoFont}{^^^^26d5} % Alternate One-Way Left Way Traffic - ⛕
+\DeclareUnicodeFallback{26D6}{\NotoSansSymbolsTwoFont}{^^^^26d6} % Black Two-Way Left Way Traffic - ⛖
+\DeclareUnicodeFallback{26D7}{\NotoSansSymbolsTwoFont}{^^^^26d7} % White Two-Way Left Way Traffic - ⛗
+\DeclareUnicodeFallback{26D8}{\NotoSansSymbolsTwoFont}{^^^^26d8} % Black Left Lane Merge - ⛘
+\DeclareUnicodeFallback{26D9}{\NotoSansSymbolsTwoFont}{^^^^26d9} % White Left Lane Merge - ⛙
+\DeclareUnicodeFallback{26DA}{\NotoSansSymbolsTwoFont}{^^^^26da} % Drive Slow Sign - ⛚
+\DeclareUnicodeFallback{26DB}{\NotoSansSymbolsTwoFont}{^^^^26db} % Heavy White Down-Pointing Triangle - ⛛
+\DeclareUnicodeFallback{26DC}{\NotoSansSymbolsTwoFont}{^^^^26dc} % Left Closed Entry - ⛜
+\DeclareUnicodeFallback{26DD}{\NotoSansSymbolsTwoFont}{^^^^26dd} % Squared Saltire - ⛝
+\DeclareUnicodeFallback{26DE}{\NotoSansSymbolsTwoFont}{^^^^26de} % Falling Diagonal In White Circle In Black Square - ⛞
+\DeclareUnicodeFallback{26DF}{\NotoSansSymbolsTwoFont}{^^^^26df} % Black Truck - ⛟
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{26E0}{\mystixmathfont}{^^^^26e0} % Restricted Left Entry-1 - ⛠
+\DeclareUnicodeFallback{26E1}{\mystixmathfont}{^^^^26e1} % Restricted Left Entry-2 - ⛡
+\DeclareUnicodeFallback{26E2}{\mystixmathfont}{^^^^26e2} % Astronomical Symbol For Uranus - ⛢
+\DeclareUnicodeFallback{26E3}{\mystixmathfont}{^^^^26e3} % Heavy Circle with Stroke and Two Dots Above - ⛣
+\DeclareUnicodeFallback{26E4}{\mystixmathfont}{^^^^26e4} % Pentagram - ⛤
+\DeclareUnicodeFallback{26E5}{\mystixmathfont}{^^^^26e5} % Right-Handed Interlaced Pentagram - ⛥
+\DeclareUnicodeFallback{26E6}{\mystixmathfont}{^^^^26e6} % Left-Handed Interlaced Pentagram - ⛦
+\DeclareUnicodeFallback{26E7}{\mystixmathfont}{^^^^26e7} % Inverted Pentagram - ⛧
+\DeclareUnicodeFallback{26E8}{\NotoSansSymbolsFont}{^^^^26e8} % Black Cross On Shield - ⛨
+\DeclareUnicodeFallback{26E9}{\NotoEmojiFont}{^^^^26e9} % Shinto Shrine - ⛩
+\DeclareUnicodeFallback{26EA}{\NotoEmojiFont}{^^^^26ea} % Church - ⛪
+\DeclareUnicodeFallback{26EB}{\mystixmathfont}{^^^^26eb} % Castle - ⛫
+\DeclareUnicodeFallback{26EC}{\NotoSansSymbolsFont}{^^^^26ec} % Historic Site - ⛬
+\DeclareUnicodeFallback{26ED}{\NotoSansSymbolsFont}{^^^^26ed} % Gear Without Hub - ⛭
+\DeclareUnicodeFallback{26EE}{\NotoSansSymbolsFont}{^^^^26ee} % Gear with Handles - ⛮
+\DeclareUnicodeFallback{26EF}{\NotoSansSymbolsFont}{^^^^26ef} % Map Symbol For Lighthouse - ⛯
+
+\end{minted}
+\newpage
+\begin{minted}[breaklines, escapeinside=||]{tex}
+\DeclareUnicodeFallback{26F0}{\NotoEmojiFont}{^^^^26f0} % Mountain - ⛰
+\DeclareUnicodeFallback{26F1}{\NotoEmojiFont}{^^^^26f1} % Umbrella On Ground - ⛱
+\DeclareUnicodeFallback{26F2}{\NotoEmojiFont}{^^^^26f2} % Fountain - ⛲
+\DeclareUnicodeFallback{26F3}{\NotoEmojiFont}{^^^^26f3} % Flag In Hole - ⛳
+\DeclareUnicodeFallback{26F4}{\NotoEmojiFont}{^^^^26f4} % Ferry - ⛴
+\DeclareUnicodeFallback{26F5}{\NotoEmojiFont}{^^^^26f5} % Sailboat - ⛵
+\DeclareUnicodeFallback{26F6}{\NotoSansSymbolsFont}{^^^^26f6} % Square Four Corners - ⛶
+\DeclareUnicodeFallback{26F7}{\NotoEmojiFont}{^^^^26f7} % Skier - ⛷
+\DeclareUnicodeFallback{26F8}{\NotoEmojiFont}{^^^^26f8} % Ice Skate - ⛸
+\DeclareUnicodeFallback{26F9}{\NotoEmojiFont}{^^^^26f9} % Person with Ball - ⛹
+\DeclareUnicodeFallback{26FA}{\NotoEmojiFont}{^^^^26fa} % Tent - ⛺
+\DeclareUnicodeFallback{26FB}{\NotoSansSymbolsFont}{^^^^26fb} % Japanese Bank Symbol - ⛻
+\DeclareUnicodeFallback{26FC}{\NotoSansSymbolsFont}{^^^^26fc} % Headstone Graveyard Symbol - ⛼
+\DeclareUnicodeFallback{26FD}{\NotoEmojiFont}{^^^^26fd} % Fuel Pump - ⛽
+\DeclareUnicodeFallback{26FE}{\NotoSansSymbolsFont}{^^^^26fe} % Cup On Black Square - ⛾
+\DeclareUnicodeFallback{26FF}{\NotoSansSymbolsFont}{^^^^26ff} % White Flag with Horizontal Middle Black Stripe - ⛿
+\end{minted}
+\endgroup
+
+
+\clearpage
+
+\ifinswedish
+\printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
+och förkortningar}]
+\else
+%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+%\printnoidxglossaries% Replace \printglossary[type=\acronymtype, ...] with:
+\printnoidxglossary[type=\acronymtype, style=mylong, title={List of Acronyms and Abbreviations}]
+\fi
+\clearpage
+
+
+% --- print the bibliography ---
+% Print the bibliography (and make it appear in the table of contents)
+
+% Specify the title of the references page
+\renewcommand{\bibname}{References}
+
+%\typeout{Biblatex current language is \currentlang}
+\printbibliography[heading=bibintoc, title={References}]
+
+
+\end{document}
+

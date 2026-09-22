@@ -85,6 +85,7 @@
 \RequirePackage{newunicodechar}
 
 % Robust unicode character fallback without self-recursion
+\begin{comment}
 \newcommand{\DeclareUnicodeFallback}[3]{% #1: Hex code, #2: Fallback font switch, #3: Primary char
   \newunicodechar{#3}{%
     \iffontchar\font"#1
@@ -92,6 +93,20 @@
     \else
       {#2\Uchar"#1}%
     \fi
+  }%
+}
+\end{comment}
+
+\newcommand{\DeclareUnicodeFallback}[3]{% #1: Hex code, #2: Fallback font switch, #3: Primary char
+  \newunicodechar{#3}{%
+    \begingroup
+      \upshape
+      \uppercase{\iffontchar\font"#1}%
+        \uppercase{\Uchar"#1}%
+      \else
+        {#2\upshape\uppercase{\Uchar"#1}}%
+      \fi
+    \endgroup
   }%
 }
 
