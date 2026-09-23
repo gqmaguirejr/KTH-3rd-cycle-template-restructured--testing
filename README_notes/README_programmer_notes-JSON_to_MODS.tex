@@ -1,0 +1,1059 @@
+\documentclass[12pt, twoside]{article}
+% Emit local LDF shims before packages load
+\input{lib/datatool-ldf}
+
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifluatex}
+
+\RequirePackage{comment}
+
+% To access the \captionof{} functionality
+\RequirePackage{caption}
+
+%\RequirePackage{silence}
+%\WarningFilter{latexfont}{Font shape `U/stmry/m/n' in size <5.5> not available}
+%\WarningFilter{latexfont}{Font shape}
+
+\newif\ifinswedish
+\inswedishfalse
+
+\RequirePackage{etoolbox}
+
+% The following toggles are needed because of kth/kthcolors.tex and lib/includes.tex
+\newif\ifnomenclature
+\nomenclaturefalse
+
+\newif\ifdigitaloutput
+\digitaloutputfalse
+
+\makeatletter
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\disablepackage{transparent}{}
+
+% include a variety of packages that are useful
+\input{lib/includes}
+
+\usepackage{minted}
+\RequirePackage{fancyhdr} % Take control of headers and footers
+
+\usepackage{luatexja-fontspec}
+%\ltjdefcharrange{8}{"2190-"21FF} % Define range 8 as Arrows
+%\ltjsetparameter{jacharrange={-8}} % Treat range 8 as Western characters (ALChar)
+
+\ltjsetparameter{jacharrange={-3}} % Treat range 3 as Western characters (ALChar)
+
+\begin{comment}
+\ifinswedish
+    \usepackage[english, main=swedish, bidi=basic]{babel}
+\else
+    \usepackage[swedish, main=english, provide+=*, bidi=basic]{babel}
+\fi
+\end{comment}
+\ifinswedish
+    \usepackage[main=swedish]{babel}
+\else
+    \usepackage[main=english, provide+=*]{babel}
+\fi
+\setmainjfont{Noto Sans CJK JP}
+
+%\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
+% Input centralized biblatex configuration
+\input{lib/biblatex-and-friends}
+
+
+
+% Use the chapter* style for the heading of the bibliography
+\defbibheading{bibliography}[\bibname]{%
+\section*{#1}%   skip \centering 
+}
+  
+\addbibresource{references.bib}    
+\input{kth/kthcolors}
+
+
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+\usepackage[plainpages=false, unicode=true]{hyperref}
+\input{lib/includes-after-hyperref}
+\usepackage{orcidlink}  %% to provide ORCID icons and links
+
+%\usepackage[acronym, style=super, toc=false, nonumberlist, nomain, nopostdot=true, notranslate]{glossaries-extra}
+% In the document preamble where glossaries-extra is loaded:
+\usepackage[
+  acronym,
+  toc=false,
+  nonumberlist,
+  nomain,
+  nopostdot=true, 
+  nohypertypes={main, acronym}, % disables link generation to targets that do not exist
+  notranslate,
+]{glossaries-extra}
+%% In overleaf, if this file is in a folder and not the root
+%% using \makeglossaries will not work, as the Overleaf latexmk
+%% will not run the program to take the output.acn file and make the output.acr file
+%\makeglossaries
+% However, you can get TeX to do the work with the following:
+\makenoidxglossaries
+% For details of the Overleaf make process, see https://www.overleaf.com/learn/how-to/How_does_Overleaf_compile_my_project%3F
+%% Potentially, one could set up a latexmkrc file in the folder
+
+\input{lib/acronyms}                %load the acronyms file
+
+% Include Glossary ---
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+ 
+% define a left-aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{cleveref}           %% Replace Section with a symbol
+\usepackage{metalogo}   % for \LuaLaTeX logo
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
+
+
+
+
+    \babelfont{rm}{TeX Gyre Termes}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{n}{<->ssub * TeXGyreTermes(0)/b/n}{}
+    \DeclareFontShape{TU}{TeXGyreTermes(0)}{sb}{it}{<->ssub * TeXGyreTermes(0)/b/it}{}
+  
+    %\setsansfont{TeX Gyre Heros}   %% Helvetica like font
+    \babelfont{sf}{TeX Gyre Heros}
+    %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
+    %% Turn off ligature for tt font
+    \babelfont{tt}[Ligatures={ResetAll}]{TeX Gyre Cursor}
+ \begin{comment}
+    \babelfont[english]{rm}{TeX Gyre Termes}
+    \babelfont[english]{sf}{TeX Gyre Heros}
+    \babelfont[english]{tt}{TeX Gyre Cursor}
+\end{comment}
+
+ %  \setmathfont{TeX Gyre Termes Math} %% a math font
+    \usepackage{mathtools}
+ \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+  % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
+  \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=normal]
+  %\setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
+  % For both XeLaTeX and LuaLatex for getting access to unicode symbols
+  %\newfontfamily\myfont[CharacterVariant=1]{NewCM10-Regular.otf}
+  % STIX Project (Scientific and Technical Information Exchange)
+  % STIX Two Math does not have bold face - so we fake it
+  %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
+  \newfontfamily\mystixmathfont{STIX Two Math}
+  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % and this will return the bold serif version of the character
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+  \newfontfamily\mystixtextfont{STIX Two Text}
+  
+    % To access the Stylistic Set 1 <ss01> such as ℋ
+    \newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+    % use english as a fallback when in other languages
+    \babelprovide[import, onchar=ids fonts]{english}
+
+    
+  % for new KTH cover
+  % Load the Figtree font as it is used for the new KTH graphical profile
+  % 
+
+    \newfontfamily{\FigtreeFont}[Ligatures=TeX,
+        Path=./Figtree/static/,
+        Extension = .ttf,
+        UprightFont=*-Regular,
+        BoldFont=*-Bold,
+        BoldItalicFont=*-BoldItalic,
+        ItalicFont=*-Italic,
+        %FontFace={l}{n}{*-Light},
+        %FontFace={l}{it}{*-LightItalic},
+        FontFace={md}{n}{*-Medium},
+        FontFace={md}{it}{*-MediumItalic},
+        FontFace={sb}{n}{*-Semibold},
+        FontFace={sb}{it}{*-SemiBoldItalic},
+        %FontFace={k}{n}{*-Black},
+        %FontFace={k}{it}{*-BlackItalic},
+        %FontFace={eb}{n}{Font=*-ExtraBold},
+        %FontFace={eb}{it}{Font=*-ExtraBoldItalic}
+        ]{Figtree}
+
+
+\newfontfamily\pageNumberFont{Figtree} %% set the font to use for page numbering
+
+\newfontfamily{\NotoEmojiFont}[Ligatures=TeX,
+    Path=./Noto_Emoji/static/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    FontFace={l}{n}{*-Light.ttf},
+    FontFace={md}{n}{*-Medium},
+    FontFace={sb}{n}{*-SemiBold},
+    ]{NotoEmoji}
+
+
+
+\begin{comment}
+   % To set the abstract headings in Figtree, we redefine the abstract environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Polyglossia or Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the sans serif font.
+   % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
+
+      \babelprovide[import, onchar=ids fonts]{greek}
+      \babelprovide[import, onchar=ids fonts]{russian}
+      \babelprovide[import, onchar=ids fonts]{vietnamese}
+      \babelfont[greek, russian, vietnamese]{rm}{Noto Serif}
+      \babelfont[greek, russian, vietnamese]{sf}{Noto Sans}
+      \babelfont[greek, russian, vietnamese]{tt}{Noto Mono}
+
+  
+    \babelprovide[import, onchar=ids fonts]{hindi}
+    \babelfont[hindi]{rm}{Noto Serif Devanagari}
+    \babelfont[hindi]{sf}{Noto Sans Devanagari}
+    \babelfont[hindi]{tt}{Noto Sans Devanagari} % Noto Mono does not have the glyphs
+
+    %\babelprovide[import, onchar=ids fonts]{russian}
+    %\babelfont[russian]{rm}{Noto Serif}
+    %\babelfont[russian]{sf}{Noto Sans}
+    %\babelfont[russian]{tt}{Noto Mono}
+
+    \babelprovide[import, onchar=ids fonts]{chinese-simplified}
+    \babelfont[chinese-simplified]{rm}{Noto Serif CJK SC}
+    \babelfont[chinese-simplified]{sf}{Noto Sans CJK SC}
+    \babelfont[chinese-simplified]{tt}{Noto Sans Mono CJK SC}
+    
+    \babelfont[chinese-traditional]{rm}{Noto Serif CJK TC}
+    \babelfont[chinese-traditional]{sf}{Noto Sans CJK TC}
+    \babelfont[chinese-traditional]{tt}{Noto Sans Mono CJK TC}
+  
+    \babelprovide[import, onchar=ids fonts]{japanese}
+    \babelfont[japanese]{rm}{Noto Serif CJK JP}
+    \babelfont[japanese]{sf}{Noto Sans CJK JP}
+    \babelfont[japanese]{tt}{Noto Sans Mono CJK JP}
+  
+  % If you are going to use Arabic
+
+    \babelprovide[import, onchar=ids fonts]{arabic}
+    \babelprovide[import, onchar=ids fonts]{centralkurdish}
+    \babelfont[arabic, centralkurdish]{rm}{Noto Naskh Arabic}
+    \babelfont[arabic, centralkurdish]{sf}{Noto Sans Arabic}
+    \babelfont[arabic, centralkurdish]{tt}{Noto Sans Arabic}
+    % If one really needs a monospaced font, one might try Kawkab Mono
+    % However, it seems that it is a work in progress - see https://makkuk.com/kawkab-mono/ and https://github.com/aiaf/kawkab-mono/tree/master
+
+    %\babelprovide[import, onchar=ids fonts]{centralkurdish}
+    %\babelfont[centralkurdish]{rm}{Noto Naskh Arabic}
+    %\babelfont[centralkurdish]{sf}{Noto Sans Arabic}
+    %\babelfont[centralkurdish]{tt}{Noto Sans Arabic}
+
+      
+  % If you are going to use Hebrew or Yiddish
+\babelprovide[import, onchar=ids fonts]{hebrew}
+\babelprovide[import, onchar=ids fonts]{yiddish}
+\babelfont[hebrew, yiddish]{rm}{Noto Serif Hebrew}
+\babelfont[hebrew, yiddish]{sf}{Noto Sans Hebrew}
+\babelfont[hebrew, yiddish]{tt}{Noto Sans Hebrew}
+
+
+    %\babelprovide[import, onchar=ids fonts]{vietnamese}
+    %\babelfont[vietnamese]{rm}{Noto Serif}
+    %\babelfont[vietnamese]{sf}{Noto Sans}
+    %\babelfont[vietnamese]{tt}{Noto Mono}
+
+\end{comment}
+  
+    % The Overleaf TeX Live includes these fonts, so there is little you have to do!
+    % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
+    %
+\newfontfamily{\NotoSansJPMonoFont}[Ligatures=TeX,
+    ]{Noto Sans Mono CJK JP Regular}
+
+
+\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
+    ]{Noto Sans CJK JP}
+
+
+\newfontfamily{\NotoSansFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSans-Regular,
+    BoldFont = NotoSans-Bold,
+    ItalicFont = NotoSans-Italic,
+    BoldItalicFont = NotoSans-BoldItalic
+    ]{NotoSansCustomA}
+    
+\newfontfamily{\NotoSerifFont}[Ligatures=TeX,
+Extension = .ttf,
+    UprightFont = NotoSerif-Regular,
+    BoldFont = NotoSerif-Bold,
+    ItalicFont = NotoSerif-Italic,
+    BoldItalicFont = NotoSerif-BoldItalic
+    ]{NotoSerifCustomA}
+
+\newfontfamily{\DejaVuSansFont}[Ligatures=TeX,]{DejaVu Sans}
+
+% A font to be used in minted listings
+\newfontfamily{\ListingMono}{Noto Sans Mono}[Ligatures=ResetAll]
+
+% fonts for various symbols
+\newfontfamily{\NotoSansSymbolsFont}{Noto Sans Symbols}[Ligatures=ResetAll]
+\newfontfamily{\NotoSansSymbolsTwoFont}{Noto Sans Symbols 2}[Ligatures=ResetAll]
+
+
+
+% color symbols - this would require changes in the font used in the U+2600-U+26FF-Miscellaneous-Symbols.tex file
+% for example for characters: ☕, ⚽, ⛄, and ✈
+%\newfontfamily{\NotoColorEmojiFont}{Noto Color Emoji}[Renderer=Harfbuzz]
+
+% Phonetic Extensions, U+1D00 - U+1D7F
+\input{unicode_blocks/U+1D00-U+1D7F-Phonetic-Extensions}
+% Superscripts and Subscripts, U+2070 - U+209F
+\input{unicode_blocks/U+2070-U+209F-Superscripts-and-Subscripts}
+% Miscellaneous Symbols, U+2600 - U+26FF
+\input{unicode_blocks/U+2600-U+26FF-Miscellaneous-Symbols}
+
+% Set up the header and footer for plain style pages
+\fancypagestyle{plain}{%
+\fancyhf{}% clear all header and footer fields
+\fancyfoot[C]{\pageNumberFont\small\selectfont\thepage}
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}%
+}
+% Set up the header and footer
+\fancyhead{}
+%\fancyhead[RO]{\sffamily\small\leftmark\thinspace|\thinspace\thepage}
+%\fancyhead[LE]{\sffamily\small\thepage\thinspace|\thinspace\leftmark}
+% Without conversion to uppercase
+% Note that we need to switch to the familydefault for the page numbers
+\fancyhead[RO]{{\sffamily\small\nouppercase\leftmark}{\pageNumberFont\small\selectfont \thinspace|\thinspace \thepage}}
+\fancyhead[LE]{{\pageNumberFont\small\selectfont\thepage \thinspace|\thinspace}{\sffamily\small\nouppercase\leftmark}}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{%
+\markboth{#1}{}}
+
+
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+
+\input{lib/configure_listings}
+% If you use both listing and lstlisting environments - the following makes them both use the same counter and the same formatting in the List of Listings
+\makeatletter
+\AtBeginDocument{\let\c@listing\c@lstlisting}
+\AtBeginDocument{\let\l@listing\l@lstlisting}
+\makeatother
+
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+
+\RequirePackage{luacode}
+\input{kth/Lua_timestamping}
+
+% Input file generators before \documentclass
+\input{lib/ext-eprint-dbx}
+
+\input{lib/check_for_placeholder_references}
+
+\title{README and notes about the template for programmers -- JSON to MODS}
+
+\author{Gerald Q. Maguire Jr.}
+\date{September 2026}
+
+\begin{document}
+\pagenumbering{roman}
+\glsresetall
+\maketitle
+\fancypagestyle{empty}{}
+\warningExpl{\textbf{This document is a work in progress.}}
+
+\begin{abstract}
+This document describes how to convert \gls{JSON} data to \gls{MODS} for import into \gls{DiVA}.
+
+\warningExpl{{\mystixmathfont ☡} This is a very deep dive that is probably only of interest to a \textit{very} small number of readers.}
+\end{abstract}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Enable the following command the first time you compile this in a new session to give all of the time quanta to set up the font cache.
+%% If the font cache is not built, you are likely to get a timeout.
+%\end{document}
+
+% Include Table of Contents (TOC) ---
+\fancypagestyle{plain}{}
+\renewcommand{\sectionmark}[1]{ \markboth{#1}{}}
+\tableofcontents
+\markboth{\contentsname}{}
+\cleardoublepage
+ 
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\glsresetall
+
+\section{JSON to MODS file}
+\label{sec:JSONtoMODSfile}
+In keeping with the idea of using the JSON file to drive other applications, the program \texttt{JSON\_to\_MODS.py} creates a \gls{MODS} file using the information from the arguments and a \gls{JSON} file.
+The program is patterned after the \texttt{JSON\_to\_calendar} program. The program outputs a \gls{MODS} file called: \texttt{modsXML.xml}. The program is run as shown in \Cref{lst:jsonToMods}.
+\Needspace*{5\baselineskip}
+\begin{lstlisting}[language={bash}, caption={Example of using JSON\_to\_MODS.py}, label=lst:jsonToMods]
+./JSON_to_MODS.py -c 11   --json test12.json --trita "TRITA-EECS-EX-2021:219" --testing
+\end{lstlisting}
+
+
+Currently, the Canvas course information is \textbf{not} used. Note also that the “—testing” flag forces the report series to be  "TRITA-ICT-EX" overriding the actual series that is in the input version of the DiVA data. This is needed for testing with the test instance of \gls{DiVA}  -- as the test instance only has the old series names.
+
+If acronyms are used in the abstracts, you can also add the \enquote{\fname{-\,-acronyms acronyms.tex}} argument to the command line and the program will process the acronyms.
+
+As noted above, you will get a file named \fname{modsXML.xml} that you can manually import into \gls{DiVA}. This process is shown in \Cref{sec:importingMODSfiletoDiVA}. I seem to be able to import these files into the test instance of \gls{DiVA}:	\url{https://kth.test.diva-portal.org/dream/import/importList.jsf}. Another side-effect of the testing flag is to use the test instance of DiVA. \textbf{NB}: The organization units are different between the production and test versions of \gls{DiVA}. When run without the testing flag set, the \gls{MODS} file can be imported into the production version of \gls{DiVA}.
+
+This program has been extended to take the TRITA number information from the \gls{MODS} file.
+
+\subsection{Example of JSON to MODS}
+The process of importing the \gls{MODS} data into \gls{DiVA} begins with the extracted \gls{JSON} file (note that I have changed some of the formatting of the pseudo-JSON information and added the export of the program code). An example of the \gls{JSON} information is shown in \Cref{lst:test12.json}. The resulting \gls{MODS} file is shown in \Cref{lst:test12.mods}. [Note that there are errors in the order of unicode characters due to the use of \texttt{lstlisting}.]
+
+\begin{lstlisting}[language={json}, caption={test12.json (manually reformatted)}, label=lst:test12.json]
+{"Author1": {"Last name": "Student", "First name": "Fake A.", "Local User Id": "u100001", "E-mail": "a@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science "}}, 
+"Author2": {"Last name": "Student", "First name": "Fake B.", "Local User Id": "u100002", "E-mail": "b@kth.se", "organisation": {"L1": "School of Architecture and the Built Environment "}}, 
+"Degree": {"Educational program": "Bachelor’s Programme in Information and Communication Technology", "programcode": "TCOMK", "Level": "1", "Course code": "IA150X", "Credits": "15.0", "Exam": "Bachelors degree", "subjectArea": "Information and Communication Technology"},
+"Title": {"Main title": "This is the title in the language of the thesis", "Subtitle": "An subtitle in the language of the thesis", "Language": "eng"},
+"Alternative title": {"Main title": "Detta är den svenska översättningen av titeln", "Subtitle": "Detta är den svenska översättningen av undertiteln", "Language": "swe"},
+"Supervisor1": {"Last name": "Supervisor", "First name": "A. Busy", "Local User Id": "u100003", "E-mail": "sa@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science ", "L2": "Computer Science"}},
+"Supervisor2": {"Last name": "Supervisor", "First name": "Another Busy", "Local User Id": "u100003", "E-mail": "sb@kth.se", "organisation": {"L1": "School of Architecture and the Built Environment ", "L2": "Public Buildings"}}, 
+"Supervisor3": {"Last name": "Supervisor", "First name": "Third Busy", "E-mail": "sc@tu.va", "Other organisation": "Timbuktu University, Department of Pseudoscience"},
+"Examiner1": {"Last name": "Maguire Jr.", "First name": "Gerald Q.", "Local User Id": "u1d13i2c", "E-mail": "maguire@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science ", "L2": "Computer Science"}},
+"Cooperation": {"Partner_name": "Företaget AB"}, "National Subject Categories": "10201, 10206", "Other information": {"Year": "2021", "Number of pages": "xxxiii,35"}, "Opponents": {"Name": "A. B. Normal & A. X. E. Normalè"}, "Presentation": {"Date": "2021-03-15 13:00", "Language": "eng", "Room": "via Zoom https://kth-se.zoom.us/j/ddddddddddd", "Address": "Isafjordsgatan 22 (Kistagången 16)", "City": "Stockholm"},
+"Number of lang instances": "10", "abstracts": {"eng": "<p>All theses at KTH are <bold>required</bold> to have an abstract in both <i>English</i> and <i>Swedish</i>.</p><p>Exchange students many want to include one or more abstracts in the language(s) used in their home institutions to avoid the need to write another thesis when returning to their home institution.</p><p>Keep in mind that most of your potential readers are only going to read your <tt>title</tt> and <tt>abstract</tt>. This is why it is important that the abstract give them enough information that they can decide is this document relevant to them or not. Otherwise the likely default choice is to ignore the rest of your document.</p><p>A abstract should stand on its own, i.e., no citations, cross references to the body of the document, acronyms must be spelled out, … .</p><p>Write this early and revise as necessary. This will help keep you focused on what you are trying to do.</p><p>Write an abstract with the following components: </p><ul><li> What is the topic area? (optional) Introduces the subject area for the project. </li><li> Short problem statement </li><li> Why was this problem worth a Bachelor’s/’Masters thesis project? (i.e., why is the problem both significant and of a suitable degree of difficulty for a Bachelor’s/’Masters thesis project? Why has no one else solved it yet?) </li><li> How did you solve the problem? What was your method/insight? </li><li> Results/Conclusions/Consequences/Impact: What are your key results/conclusions? What will others do based upon your results? What can be done now that you have finished - that could not be done before your thesis project was completed?</li></ul><p>announcement of the oral presentation and for entering data into DiVA</p><p>\\pi \\cdot r$ or \\[ \\int_{a}^{b} x^2 \\,dx \\]</p><p></p><p> A<sup>*</sup>, A<sup>&reg;</sup>, and A&trade;.</p><p> first chemical formula can be handled, while the second will require hand editing</p>",
+"swe": "<p>Alla avhandlingar vid KTH <bold>måste ha</bold> ett abstrakt på både <i>engelska</i> och <i>svenska</i>.</p><p>Om du skriver din avhandling på svenska ska detta göras först (och placera det som det första abstraktet) - och du bör revidera det vid behov.</p><p>If you are writing your thesis in English, you can leave this until the draft version that goes to your opponent for the written opposition. In this way you can provide the English and Swedish abstract/summary information that can be used in the announcement for your oral presentation.</p><p>If you are writing your thesis in English, then this section can be a summary targeted at a more general reader. However, if you are writing your thesis in Swedish, then the reverse is true – your abstract should be for your target audience, while an English summary can be written targeted at a more general audience.</p><p>This means that the English abstract and Swedish sammnfattning or Swedish abstract and English summary need not be literal translations of each other.</p><p>The abstract in the language used for the thesis should be the first abstract, while the Summary/Sammanfattning in the other language can follow.</p>",
+"fre": "<p>Résumé en français.</p>", "spa": "<p>Résumé en espagnol.</p>", "ita": "<p>Sommario in italiano.</p>",
+"nor": "<p>Sammendrag på norsk.</p>", "ger": "", "dan": "<p>Abstrakt på dansk.</p>",
+"dut": "<p>Zusammenfassung in Deutsch.</p><p>Samenvatting in het Nederlands.</p><p>Eesti keeles kokkuvõte.</p>", "est": ""},
+"keywords": {"eng": "Canvas Learning Management System, Docker containers, Performance tuning ",
+"swe": "Canvas Lärplattform, Dockerbehållare, Prestandajustering\nNyckelord som beskriver innehållet i uppsatsrapporten\n",
+"fre": "5-6 mots-clés ", "spa": "5-6 Palabras claves ", "ita": "5-6 parole chiave ",
+"nor": "5-6 nøkkelord ", "ger": "5-6 Schlüsselwörter ", "dan": "5-6 Søgeord ",
+"dut": "5-6 trefwoorden ", "est": "5-6 Märksõnad "}}
+\end{lstlisting}
+
+\clearpage
+
+\begin{lstlisting}[language={XML}, caption={test12.mods (reformatted in EMACS using XML mode)}, label=lst:test12.mods]
+<modsCollection xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-2.xsd">
+  <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" version="3.2" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-2.xsd">
+    <genre authority="diva" type="publicationTypeCode">studentThesis
+    </genre>
+    <genre authority="diva" type="publicationType" lang="swe">Studentuppsats (Examensarbete)
+    </genre>
+    <genre authority="diva" type="publicationType" lang="eng">Student thesis
+    </genre>
+    <genre authority="diva" type="publicationType" lang="nor">Oppgave
+    </genre>
+    <name type="personal" authority="kth" xlink:href="u100001">
+      <namePart type="family">Student
+      </namePart>
+      <namePart type="given">Fake A.
+      </namePart>
+      <description>email=a@kth.se
+      </description>
+      <role>
+	<roleTerm type="code" authority="marcrelator">aut
+	</roleTerm>
+      </role>
+    </name>
+    <name type="personal" authority="kth" xlink:href="u100002">
+      <namePart type="family">Student
+      </namePart>
+      <namePart type="given">Fake B.
+      </namePart>
+      <description>email=b@kth.se
+      </description>
+      <role>
+	<roleTerm type="code" authority="marcrelator">aut
+	</roleTerm>
+      </role>
+    </name>
+    <name type="personal" authority="kth" xlink:href="u1d13i2c">
+      <namePart type="family">Maguire Jr.
+      </namePart>
+      <namePart type="given">Gerald Q.
+      </namePart>
+      <description>email=maguire@kth.se
+      </description>
+      <affiliation>KTH, School of Electrical Engineering and Computer Science, Computer Science
+      </affiliation>
+      <role>
+	<roleTerm type="code" authority="marcrelator">mon
+	</roleTerm>
+      </role>
+    </name>
+    <name type="personal" authority="kth" xlink:href="u100003">
+      <namePart type="family">Supervisor
+      </namePart>
+      <namePart type="given">A. Busy
+      </namePart>
+      <affiliation>School of Electrical Engineering and Computer Science, Computer Science
+      </affiliation>
+      <description>email=sa@kth.se
+      </description>
+      <role>
+	<roleTerm type="code" authority="marcrelator">ths
+	</roleTerm>
+      </role>
+    </name>
+    <name type="personal" authority="kth" xlink:href="u100003">
+      <namePart type="family">Supervisor
+      </namePart>
+      <namePart type="given">Another Busy
+      </namePart>
+      <affiliation>School of Architecture and the Built Environment, Public Buildings
+      </affiliation>
+      <description>email=sb@kth.se
+      </description>
+      <role>
+	<roleTerm type="code" authority="marcrelator">ths
+	</roleTerm>
+      </role>
+    </name>
+    <name type="personal">
+      <namePart type="family">Supervisor
+      </namePart>
+      <namePart type="given">Third Busy
+      </namePart>
+      <affiliation>Timbuktu University, Department of Pseudoscience
+      </affiliation>
+      <description>email=sc@tu.va
+      </description>
+      <role>
+	<roleTerm type="code" authority="marcrelator">ths
+	</roleTerm>
+      </role>
+    </name>
+    <name>
+      <namePart>KTH
+      </namePart>
+      <namePart> School of Electrical Engineering and Computer Science
+      </namePart>
+      <namePart> Computer Science
+      </namePart>
+      <role>
+	<roleTerm type="code" authority="marcrelator">pbl
+	</roleTerm>
+      </role>
+    </name>
+    <titleInfo  lang="eng">
+      <title>This is the title in the language of the thesis
+      </title>
+      <subTitle>An subtitle in the language of the thesis
+      </subTitle>
+    </titleInfo >
+    <titleInfo  lang="swe" type="alternative">
+      <title>Detta är den svenska översättningen av titeln
+      </title>
+      <subTitle>Detta är den svenska översättningen av undertiteln
+      </subTitle>
+    </titleInfo >
+    <subject  lang="eng">
+      <topic>Canvas Learning Management System
+      </topic>
+      <topic>Docker containers
+      </topic>
+      <topic>Performance tuning
+      </topic>
+    </subject >
+    <subject  lang="swe">
+      <topic>Canvas Lärplattform
+      </topic>
+      <topic>Dockerbehållare
+      </topic>
+      <topic>Prestandajustering Nyckelord som beskriver innehållet i uppsatsrapporten
+      </topic>
+    </subject >
+    <subject  lang="fre">
+      <topic>5-6 mots-clés
+      </topic>
+    </subject >
+    <subject  lang="spa">
+      <topic>5-6 Palabras claves
+      </topic>
+    </subject >
+    <subject  lang="ita">
+      <topic>5-6 parole chiave
+      </topic>
+    </subject >
+    <subject  lang="nor">
+      <topic>5-6 nøkkelord
+      </topic>
+    </subject >
+    <subject  lang="ger">
+      <topic>5-6 Schlüsselwörter
+      </topic>
+    </subject >
+    <subject  lang="dan">
+      <topic>5-6 Søgeord
+      </topic>
+    </subject >
+    <subject  lang="dut">
+      <topic>5-6 trefwoorden
+      </topic>
+    </subject >
+    <subject  lang="est">
+      <topic>5-6 Märksõnad
+      </topic>
+    </subject >
+    <abstract  lang="eng">&lt;p&gt;All theses at KTH are &lt;bold&gt;required&lt;/bold&gt; to have an abstract in both &lt;i&gt;English&lt;/i&gt; and &lt;i&gt;Swedish&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Exchange students many want to include one or more abstracts in the language(s) used in their home institutions to avoid the need to write another thesis when returning to their home institution.&lt;/p&gt;&lt;p&gt;Keep in mind that most of your potential readers are only going to read your &lt;tt&gt;title&lt;/tt&gt; and &lt;tt&gt;abstract&lt;/tt&gt;. This is why it is important that the abstract give them enough information that they can decide is this document relevant to them or not. Otherwise the likely default choice is to ignore the rest of your document.&lt;/p&gt;&lt;p&gt;A abstract should stand on its own, i.e., no citations, cross references to the body of the document, acronyms must be spelled out, … .&lt;/p&gt;&lt;p&gt;Write this early and revise as necessary. This will help keep you focused on what you are trying to do.&lt;/p&gt;&lt;p&gt;Write an abstract with the following components: &lt;/p&gt;&lt;ul&gt;&lt;li&gt; What is the topic area? (optional) Introduces the subject area for the project. &lt;/li&gt;&lt;li&gt; Short problem statement &lt;/li&gt;&lt;li&gt; Why was this problem worth a Bachelor’s/’Masters thesis project? (i.e., why is the problem both significant and of a suitable degree of difficulty for a Bachelor’s/’Masters thesis project? Why has no one else solved it yet?) &lt;/li&gt;&lt;li&gt; How did you solve the problem? What was your method/insight? &lt;/li&gt;&lt;li&gt; Results/Conclusions/Consequences/Impact: What are your key results/conclusions? What will others do based upon your results? What can be done now that you have finished - that could not be done before your thesis project was completed?&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;announcement of the oral presentation and for entering data into DiVA&lt;/p&gt;&lt;p&gt;\pi \cdot r$ or &lt;span class='math-tex'&gt;\[ \int_{a}^{b} x^2 \,dx \]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt; A&lt;sup&gt;*&lt;/sup&gt;, A&lt;sup&gt;&amp;reg;&lt;/sup&gt;, and A&amp;trade;.&lt;/p&gt;&lt;p&gt; first chemical formula can be handled, while the second will require hand editing&lt;/p&gt;
+    </abstract >
+    <abstract  lang="swe">&lt;p&gt;Alla avhandlingar vid KTH &lt;bold&gt;måste ha&lt;/bold&gt; ett abstrakt på både &lt;i&gt;engelska&lt;/i&gt; och &lt;i&gt;svenska&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Om du skriver din avhandling på svenska ska detta göras först (och placera det som det första abstraktet) - och du bör revidera det vid behov.&lt;/p&gt;&lt;p&gt;If you are writing your thesis in English, you can leave this until the draft version that goes to your opponent for the written opposition. In this way you can provide the English and Swedish abstract/summary information that can be used in the announcement for your oral presentation.&lt;/p&gt;&lt;p&gt;If you are writing your thesis in English, then this section can be a summary targeted at a more general reader. However, if you are writing your thesis in Swedish, then the reverse is true – your abstract should be for your target audience, while an English summary can be written targeted at a more general audience.&lt;/p&gt;&lt;p&gt;This means that the English abstract and Swedish sammnfattning or Swedish abstract and English summary need not be literal translations of each other.&lt;/p&gt;&lt;p&gt;The abstract in the language used for the thesis should be the first abstract, while the Summary/Sammanfattning in the other language can follow.&lt;/p&gt;
+    </abstract >
+    <abstract  lang="fre">&lt;p&gt;Résumé en français.&lt;/p&gt;
+    </abstract >
+    <abstract  lang="spa">&lt;p&gt;Résumé en espagnol.&lt;/p&gt;
+    </abstract >
+    <abstract  lang="ita">&lt;p&gt;Sommario in italiano.&lt;/p&gt;
+    </abstract >
+    <abstract  lang="nor">&lt;p&gt;Sammendrag på norsk.&lt;/p&gt;
+    </abstract >
+    <abstract  lang="ger" />
+    <abstract  lang="dan">&lt;p&gt;Abstrakt på dansk.&lt;/p&gt;
+    </abstract >
+    <abstract  lang="dut">&lt;p&gt;Zusammenfassung in Deutsch.&lt;/p&gt;&lt;p&gt;Samenvatting in het Nederlands.&lt;/p&gt;&lt;p&gt;Eesti keeles kokkuvõte.&lt;/p&gt;
+    </abstract >
+    <abstract  lang="est" />
+    <physicalDescription>
+      <form authority="marcform">electronic
+      </form>
+      <extent>xxxiii,35
+      </extent>
+    </physicalDescription>
+    <originInfo>
+      <place>
+	<placeTerm>Stockholm
+	</placeTerm>
+      </place>
+      <publisher>KTH Royal Institute of Technology
+      </publisher>
+      <dateIssued>2021
+      </dateIssued>
+      <dateOther type="defence">2021-03-15T13:00:00
+      </dateOther>
+    </originInfo>
+    <typeOfResource>text
+    </typeOfResource>
+    <relatedItem  type="series">
+      <titleInfo>
+	<title>TRITA-ICT-EX
+	</title>
+	<identifier type="local">5952
+	</identifier>
+	<identifier type="issue number">2021:219
+	</identifier>
+      </titleInfo>
+    </relatedItem >
+    <note lang="swe" type="level">Självständigt arbete på grundnivå (kandidatexamen)
+    </note>
+    <note lang="eng" type="degree">Bachelors degree
+    </note>
+    <note lang="swe" type="universityCredits">10 poäng / 15 hp
+    </note>
+    <subject lang="swe" xlink:href="10329">
+      <topic>Informations- och kommunikationsteknik
+      </topic>
+      <genre>Subject/course
+      </genre>
+    </subject>
+    <subject lang="eng" xlink:href="10329">
+      <topic>Information and Communication Technology
+      </topic>
+      <genre>Subject/course
+      </genre>
+    </subject>
+    <subject lang="swe" xlink:href="9925">
+      <topic>Teknologie kandidatexamen - Informations- och kommunikationsteknik
+      </topic>
+      <genre>Educational program
+      </genre>
+    </subject>
+    <subject lang="eng" xlink:href="9925">
+      <topic>Bachelor of Science - Information and Communication Technology
+      </topic>
+      <genre>Educational program
+      </genre>
+    </subject>
+    <language objectPart="defence">
+      <languageTerm type="code" authority="iso639-2b">eng
+      </languageTerm>
+    </language>
+    <note type="venue">via Zoom https://kth-se.zoom.us/j/ddddddddddd,Isafjordsgatan 22 (Kistagången 16),Stockholm
+    </note>
+    <note type="cooperation">Företaget AB
+    </note>
+    <subject lang="eng" authority="hsv" xlink:href="10201">
+      <topic>Natural Sciences
+      </topic>
+      <topic>Computer and Information Sciences
+      </topic>
+      <topic>Computer Sciences
+      </topic>
+    </subject>
+    <subject lang="swe" authority="hsv" xlink:href="10201">
+      <topic>Naturvetenskap
+      </topic>
+      <topic>Data- och informationsvetenskap
+      </topic>
+      <topic>Datavetenskap (datalogi)
+      </topic>
+    </subject>
+    <subject lang="eng" authority="hsv" xlink:href="10206">
+      <topic>Natural Sciences
+      </topic>
+      <topic>Computer and Information Sciences
+      </topic>
+      <topic>Computer Engineering
+      </topic>
+    </subject>
+    <subject lang="swe" authority="hsv" xlink:href="10206">
+      <topic>Naturvetenskap
+      </topic>
+      <topic>Data- och informationsvetenskap
+      </topic>
+      <topic>Datorteknik
+      </topic>
+    </subject>
+  </mods>
+</modsCollection>
+\end{lstlisting}
+	
+\subsection{Importing MODS file to DiVA}
+\label{sec:importingMODSfiletoDiVA}
+
+\Cref{fig:divaImport1} to \Cref{fig:divaImport4} show the process of importing the \gls{MODS} file into \gls{DiVA}. Note that it skips the first user interface form (as this differs between users).
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/README-examiner-figures/import-1-Screenshot_20210626_234259.png}}
+  \end{center}
+  \caption[The import process – step 1]{The import process – step 1 – click on the “Import from external database” button on the upper right corner}
+  \label{fig:divaImport1}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.9\textwidth]{README_notes/README-examiner-figures/import-2-Screenshot_20210626_234414.png}}
+  \end{center}
+  \caption[The import process – step 2]{The import process – step 2 – choose the MODV3 format and select a file to import}
+  \label{fig:divaImport2}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.95\textwidth]{README_notes/README-examiner-figures/import-3-Screenshot_20210626_234447.png}}
+  \end{center}
+  \caption[The import process – step 3]{The import process – step 3 – after clicking “Import” – it says that the file was successfully uploaded
+Click on “Import” again to load the file. The \gls{MODS} file is loaded and shown in \Cref{fig:divaImport4}.}
+  \label{fig:divaImport3}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/README-examiner-figures/import-4-Screenshot_20210626_234519.png}}
+  \end{center}
+  \caption[The import process – step 4]{The import process – step 4 – after clicking “Import” once more – you can see the file has been added to the list of imported files The imported document is shown in \Cref{fig:divaImport5} to \Cref{fig:divaImport12}.}
+  \label{fig:divaImport4}
+\end{figure}
+\FloatBarrier
+\clearpage
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.75\textwidth]{README_notes/README-examiner-figures/import-a-Screenshot_20210626_234606.png}}
+  \end{center}
+  \caption[Imported document (part 1)]{Imported document (part 1)}
+  \label{fig:divaImport5}
+\end{figure}
+\FloatBarrier
+\clearpage
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.55\textwidth]{README_notes/README-examiner-figures/import-b-Screenshot_20210626_234640.png}}
+  \end{center}
+  \caption[Imported document (part 2)]{Imported document (part 2) – Note that both the English and Swedish titles are shown as well as the information about which level, the number of university credits, the educational program, and the subject.- Additionally, the year and number of pages are shown.}
+  \label{fig:divaImport6}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.6\textwidth]{README_notes/README-examiner-figures/import-c-Screenshot_20210626_234710.png}}
+  \end{center}
+  \caption[Imported document (part 3)]{Imported document (part 3) – Note that the number in the series is not being shown. The nation subject catergies specified in the JSON file are shown. Additionally, a number of the keyoards in different languages are shown.}
+  \label{fig:divaImport7}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.55\textwidth]{README_notes/README-examiner-figures/import-d-Screenshot_20210626_234735.png}}
+  \end{center}
+  \caption[Imported document (part 4)]{Imported document (part 4) – more keywords are shown as well as the abstract in English}
+  \label{fig:divaImport8}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.6\textwidth]{README_notes/README-examiner-figures/import-e-Screenshot_20210626_235408.png}}
+  \end{center}
+  \caption{[Imported document (part 5)]Imported document (part 5) – the bottom of the Engish abstract is shown .- showing some of the formatted information that can be shown. Additionally, the Swedish and other abstracts are shown.}
+  \label{fig:divaImport9}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.6\textwidth]{README_notes/README-examiner-figures/import-f-Screenshot_20210626_235447.png}}
+  \end{center}
+  \caption[Imported document (part 6)]{Imported document (part 6) – yet more abstracts}
+  \label{fig:divaImport10}
+\end{figure}
+\FloatBarrier
+\Cref{fig:divaImport11} shows the three supervisors. The first two have \gls{KTH} affiliations, and the third is from an external organization.
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.6\textwidth]{README_notes/README-examiner-figures/import-g-Screenshot_20210626_235510.png}}
+  \end{center}
+  \caption[Imported document (part 7)]{Imported document (part 7) – the supervisors are shown}
+  \label{fig:divaImport11}
+\end{figure}
+\newpage
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/README-examiner-figures/import-h-Screenshot_20210626_235557.png}}
+  \end{center}
+  \caption[Imported document (part 8)]{Imported document (part 8) – the examiner is shown along with the information about the oral presentation}
+  \label{fig:divaImport12}
+\end{figure}
+\clearpage
+
+
+\subsection{Limitations}
+I was initially unable to get the \gls{KTH} affiliations correctly entered. I did not understand the description of how to do this at: \url{ https://wiki.epc.ub.uu.se/pages/viewpage.action?pageId=27466001}  where it says:
+\selectlanguage{swedish}
+\begin{quote}
+    För att göra en sådan koppling skall dels ”affiliation” finnas i personelementet dels ett name-element med ID i xlink:href samt ett namePart-element med samma namn som affiliation. Om man har bägge nedanstående element i exemplet kommer Urban Ericsson automatiskt att kopplas till Universitetsbiblioteket i Uppsala vid importen. Om enbart personelementet finns men inte det andra kommer Urban Ericsson att få Uppsala universitet, Universitetsbiblioteket som ”Annat lärosäte” vid imported.
+\end{quote}
+
+\selectlanguage{english}
+I did not find any examples of how to do what they describe. The result is that all of my affiliation information ended up in the "Other university" field.
+
+I was also unable to get the issue number to appear, even though it seems to be set, since if you click on the box after the \gls{MODS} import, it knows the value.  Note that for testing, I forced the TRITA series to be "TRITA-ICT-EX" since this is the actual series that is in the earlier (test) version of DiVA.
+
+Finally, it seems that DiVA does not import the cooperation data at all: according to \url{https://wiki.epc.ub.uu.se/display/divainfo/Externt+samarbete}.
+
+The first two limitations were overcome as described in \Cref{sec:limitationsOvercome}.
+
+\warningExpl{The current version of the program does not support the UN's Sustainable Development Goals (SDGs) metadata (as this metadata field was introduced after the program was written).}
+
+\subsection{Limitations overcome}
+\label{sec:limitationsOvercome}
+This section describes how two of the limitations were overcome.
+
+\subsubsection{Entering number in series}
+The first limitation to be overcome was entering the particular number in the series for a TRITA number. \Cref{fig:numberInSeriesCorrectlyEntered} shows the value being entered. The error was in the structure of the object, the working version is shown in \Cref{lst:seriesNumber}. My earlier error was due to having the \texttt{<identifier type="issue number">2021:00</identifier>} \textit{within} the \texttt{<titleInfo>}.
+ 
+ 
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/README-examiner-figures/Number_in_series_correctly_entered.png}}
+  \end{center}
+  \caption{Number in series correctly entered}
+  \label{fig:numberInSeriesCorrectlyEntered}
+\end{figure}
+\Needspace*{8\baselineskip}
+\begin{lstlisting}[language={XML}, caption={MODS data for series}, label=lst:seriesNumber]
+<relatedItem  type="series">
+	      <titleInfo><title>TRITA-EECS-EX</title>
+		<identifier type="local">16855</identifier>
+	      </titleInfo>
+	      <identifier type="issue number">2021:00</identifier>
+</relatedItem >
+\end{lstlisting}
+
+\FloatBarrier
+
+\subsubsection{Including KTH affiliations}
+Earlier, those with \gls{KTH} affiliations were appearing in the “Other organization” field. The error in my understanding was how the controlled fields for \gls{KTH} authors was being used\footnote{These so-called "controlled" fields have specific values that are permitted and these have numeric IDs assigned by the DiVA Consortium.}. We will start by looking at the two \gls{KTH}-affiliated supervisors (see \Cref{fig:twoKTHsupervisors}), the third supervisor (see \Cref{fig:thirdSupervisor}), and the examiner (see \Cref{fig:examiner}). The \gls{MODS} data for these four people is shown in \Cref{lst:reducedModesExaminerAndSupervisors} and the “magic” \textbf{corporate name} \gls{MODS} data is shown in \Cref{lst:reducedModesCorpNames}. The trick is that there needs to be corporate name \gls{MODS} data for each of the possible affiliations – as this is the way that one passes the \gls{DiVA} numeric code via the \texttt{xlink} information. Note that in the case of the examiner, two different affiliations were specified and there was a corporate name entry for each of them. Moreover, the key is just to have test extra corporate name entries, only one is needed for the publishers, as shown in \Cref{lst:reducedModesCorpNames} – with the results in \Cref{fig:twoSupervisorsReducedMODS} and shown \Cref{fig:examinerReducedMODS}.
+
+\textbf{NB}: The ICT affiliations (and \gls{DiVA} codes) were used and the pictures are all from the test DiVA environment: \url{https://kth.test.diva-portal.org/dream/import/importList.jsf}.
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.85\textwidth]{README_notes/README-examiner-figures/two_KTH_supervisors_in_different_schools.png}}
+  \end{center}
+  \caption{Two KTH supervisors in different schools}
+  \label{fig:twoKTHsupervisors}
+\end{figure}
+\FloatBarrier
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/README-examiner-figures/third_supervisor.png}}
+  \end{center}
+  \caption{Third supervisor}
+  \label{fig:thirdSupervisor}
+\end{figure}
+\FloatBarrier
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/README-examiner-figures/examiner_affiliation.png}}
+  \end{center}
+  \caption{Examiner}
+  \label{fig:examiner}
+\end{figure}
+\clearpage
+
+\begin{lstlisting}[language={XML}, caption={MODS data for the supervisors and examiners}, label=lst:reducedModesExaminerAndSupervisors]
+<name type="personal" authority="kth" xlink:href="u1d13i2c">
+      <namePart type="family">Maguire Jr.</namePart>
+      <namePart type="given">Gerald Q.</namePart>
+      <description>email=maguire@kth.se</description>
+      <affiliation>KTH, Skolan för informations- och kommunikationsteknik (ICT), Kommunikationssystem, CoS</affiliation>
+      <affiliation>KTH, Skolan för informations- och kommunikationsteknik (ICT)</affiliation>
+      <role><roleTerm type="code" authority="marcrelator">mon</roleTerm></role>
+</name>
+
+<name type="personal" authority="kth" xlink:href="u100003">
+      <namePart type="family">Supervisor</namePart>
+      <namePart type="given">A. Busy</namePart>
+      <affiliation>KTH, Skolan för informations- och kommunikationsteknik (ICT)</affiliation>
+      <description>email=sa@kth.se</description>
+      <role><roleTerm type="code" authority="marcrelator">ths</roleTerm></role>
+</name>
+
+<name type="personal" authority="kth" xlink:href="u100003">
+      <namePart type="family">Supervisor</namePart>
+      <namePart type="given">Another Busy</namePart>
+      <affiliation>KTH, Skolan för arkitektur och samhällsbyggnad (ABE)</affiliation>
+      <description>email=sb@kth.se</description>
+      <role><roleTerm type="code" authority="marcrelator">ths</roleTerm></role>
+</name>
+
+<name type="personal">
+      <namePart type="family">Supervisor</namePart>
+      <namePart type="given">Third Busy</namePart>
+      <affiliation>Timbuktu University, Department of Pseudoscience</affiliation>
+      <description>email=sc@tu.va</description>
+      <role><roleTerm type="code" authority="marcrelator">ths</roleTerm></role>
+</name>
+\end{lstlisting}
+\clearpage
+
+\begin{lstlisting}[language={XML}, caption={Corporate name data in MODS data for the affiliations}, label=lst:reducedModesCorpNames]
+<name type="corporate" authority="kth" xlink:href="5994">
+      <namePart>KTH</namePart>
+      <namePart>Skolan för informations- och kommunikationsteknik (ICT)</namePart>
+      <role><roleTerm type="code" authority="marcrelator">pbl</roleTerm></role>
+</name>
+
+<name type="corporate" authority="kth" xlink:href="5998">
+      <namePart>KTH</namePart>
+      <namePart>Skolan för informations- och kommunikationsteknik (ICT)</namePart>
+      <namePart>Kommunikationssystem, CoS</namePart>
+      <role><roleTerm type="code" authority="marcrelator">pbl</roleTerm></role>
+</name>
+
+<name type="corporate" authority="kth" xlink:href="5850">
+      <namePart>KTH</namePart>
+      <namePart>Skolan för arkitektur och samhällsbyggnad (ABE)</namePart>
+      <role><roleTerm type="code" authority="marcrelator">pbl</roleTerm></role>
+</name>
+\end{lstlisting}
+
+\begin{lstlisting}[language={XML}, caption={Reduced MODS for corporate names more}, label=lst:reducedModesCorpNamesMore]
+<name type="corporate" authority="kth" xlink:href="5994">
+      <namePart>KTH</namePart>
+      <namePart>Skolan för informations- och kommunikationsteknik (ICT)</namePart>
+      <role><roleTerm type="code" authority="marcrelator">pbl</roleTerm></role>
+</name>
+<name type="corporate" authority="kth" xlink:href="5998">
+      <namePart>KTH</namePart>
+      <namePart>Skolan för informations- och kommunikationsteknik (ICT)</namePart>
+      <namePart>Kommunikationssystem, CoS</namePart>
+</name>
+<name type="corporate" authority="kth" xlink:href="5850">
+      <namePart>KTH</namePart>
+      <namePart>Skolan för arkitektur och samhällsbyggnad (ABE)</namePart>
+</name>
+\end{lstlisting}
+\clearpage
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.9\textwidth]{README_notes/README-examiner-figures/two_supervisors_reduced_mods.png}}
+  \end{center}
+  \caption{The two supervisors with the reduced MODS for corporate names}
+  \label{fig:twoSupervisorsReducedMODS}
+\end{figure}
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.9\textwidth]{README_notes/README-examiner-figures/examiner_with_reduced_mods.png}}
+  \end{center}
+  \caption{The examiner with the reduced MODS for corporate names}
+  \label{fig:examinerReducedMODS}
+\end{figure}
+\clearpage
+
+\ifinswedish
+\printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
+och förkortningar}]
+\else
+%\printglossary[style=mylong, type=\acronymtype, title={List of Acronyms and abbreviations}]
+%\printnoidxglossaries% Replace \printglossary[type=\acronymtype, ...] with:
+\printnoidxglossary[type=\acronymtype, style=mylong, title={List of Acronyms and Abbreviations}]
+\fi
+\clearpage
+
+% --- print the bibliography ---
+% Print the bibliography (and make it appear in the table of contents)
+
+% Specify the title of the references page
+\renewcommand{\bibname}{References}
+
+%\typeout{Biblatex current language is \currentlang}
+\printbibliography[heading=bibintoc, title={References}]
+
+
+\end{document}
+
