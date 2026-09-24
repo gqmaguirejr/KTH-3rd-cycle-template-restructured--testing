@@ -144,19 +144,6 @@ end
 \usepackage{cleveref}           %% Replace Section with a symbol
 \usepackage{metalogo}   % for \LuaLaTeX logo
 
-%% Conventions for todo notes:
-% Informational
-%% \generalExpl{Comments/directions/... in English}
-\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
-
-% Language-specific information (currently in English or Swedish)
-\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
-\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
-
-% warnings
-\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
-
-
 
   \RequirePackage{fontspec}
   \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
@@ -191,6 +178,16 @@ Extension = .ttf,
     BoldItalicFont = NotoSans-BoldItalic
     ]{NotoSansCustomA}
 
+\makeatletter
+% Suppress missing bold font shape warnings across all STIX Two Math font instances
+\@for\idx:={0,1,2,3,4,5,6}\do{%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+}
+\makeatother
+
 \input{lib/configure_listings}
 
 \newcommand{\dname}[1]{\textbf{#1}}
@@ -218,7 +215,7 @@ Extension = .ttf,
 \title{README third-cycle author}
 
 \author{Gerald Q. Maguire Jr.}
-\date{14 September 2026}
+\date{24 September 2026}
 
 \begin{document}
 \maketitle
