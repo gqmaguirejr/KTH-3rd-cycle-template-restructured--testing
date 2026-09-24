@@ -106,19 +106,6 @@ biblatex,             % the bibliographic processor to use: biblatex or bibtex
 \usepackage{cleveref}           %% Replace Section with a symbol
 \usepackage{metalogo}   % for \LuaLaTeX logo
 
-
-%% Conventions for todo notes:
-% Informational
-%% \generalExpl{Comments/directions/... in English}
-\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
-
-% Language-specific information (currently in English or Swedish)
-\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
-\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
-
-% warnings
-\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
-
 % --- Load the warning filters  ---
 % For filtering out warnings that the user is not interested in
 %\input{lib/filter-warnings.tex}

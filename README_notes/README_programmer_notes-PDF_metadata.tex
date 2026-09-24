@@ -46,11 +46,11 @@
 \usepackage{minted}
 \RequirePackage{fancyhdr} % Take control of headers and footers
 
-\usepackage{luatexja-fontspec}
+%\usepackage{luatexja-fontspec}
 %\ltjdefcharrange{8}{"2190-"21FF} % Define range 8 as Arrows
 %\ltjsetparameter{jacharrange={-8}} % Treat range 8 as Western characters (ALChar)
 
-\ltjsetparameter{jacharrange={-3}} % Treat range 3 as Western characters (ALChar)
+%\ltjsetparameter{jacharrange={-3}} % Treat range 3 as Western characters (ALChar)
 
 \begin{comment}
 \ifinswedish
@@ -64,7 +64,7 @@
 \else
     \usepackage[main=english, provide+=*]{babel}
 \fi
-\setmainjfont{Noto Sans CJK JP}
+%\setmainjfont{Noto Sans CJK JP}
 
 %\usepackage[style=ieee,citestyle=numeric-comp, maxbibnames=99, giveninits=false]{biblatex}
 % Input centralized biblatex configuration
@@ -125,18 +125,6 @@
 \usepackage{cleveref}           %% Replace Section with a symbol
 \usepackage{metalogo}   % for \LuaLaTeX logo
 
-%% Conventions for todo notes:
-% Informational
-%% \generalExpl{Comments/directions/... in English}
-\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
-
-% Language-specific information (currently in English or Swedish)
-\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
-\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
-
-% warnings
-\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
-
 
   \RequirePackage{fontspec}
   \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
@@ -176,8 +164,15 @@
   \newfontfamily\mystixmathfont{STIX Two Math}
   % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
   % and this will return the bold serif version of the character
-  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
-  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+\makeatletter
+% Suppress missing bold font shape warnings across all STIX Two Math font instances
+\@for\idx:={0,1,2,3,4,5,6}\do{%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+}
+\makeatother
   \newfontfamily\mystixtextfont{STIX Two Text}
   
     % To access the Stylistic Set 1 <ss01> such as ℋ
@@ -400,9 +395,8 @@ Extension = .ttf,
 
 \begin{abstract}
 This document describes how metadata can be added to the \gls{PDF} file.
-
-\warningExpl{{\mystixmathfont ☡} This is a very deep dive that is probably only of interest to a \textit{very} small number of readers.}
 \end{abstract}
+\warningExpl{{\mystixmathfont ☡} This is a very deep dive that is probably only of interest to a \textit{very} small number of readers.}
 \cleardoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -423,10 +417,10 @@ This document describes how metadata can be added to the \gls{PDF} file.
 
 \section{Adding keywords and other data to PDF metadata}
 \label{sec:addingKeywordsAndMetaDataToPDF}
-In an effort to add the \gls{PDF} metadata via the \texttt{hyperref} package, I decided to add the English and Swedish keywords part of the \gls{PDF} metadata. However, in order to do this, I had to know the keywords \textit{before} the \textbackslash begin\{document\} command in the \LaTeX{}~file. To do so, I added three new commands to the \texttt{kththesis.cls} file, as shown in \Cref{lst:keywords}. The commands are used in the \fname{examplethesis.tex} file to set up the keywords in both English and Swedish as well as include a new set of \LaTeX{} commands to store the \gls{PDF} metadata (as shown in \Cref{lst:storingkeywords}) using a file called \fname{lib/pdf\_related\_includes.tex} (shown in \Cref{lst:informationforPDFfile}). Later, the keywords that have been stored are inserted into the \LaTeX{}~after their respective language abstracts. The title page of the thesis and the PDF metadata are shown in \Cref{fig:pdfMetadata}. Note that both the English and Swedish versions of the keywords are included in the metadata. Finally, the keywords appear (as expected) in the \enquote{For DiVA} data at the end of the \gls{PDF} file.
+The \texttt{hyperref} package is used to add \gls{PDF} metadata. However, to add the English and Swedish keywords as part of the \gls{PDF} metadata, you must know the keywords \textit{before} the \textbackslash begin\{document\} command in the \LaTeX{}~file. To do so, I added three new commands to the \texttt{kththesis.cls} file, as shown in \Cref{lst:keywords}. The commands are used in the \fname{examplethesis.tex} file to set up the keywords in both English and Swedish. Additionally, a new set of \LaTeX{} commands are used to store the \gls{PDF} metadata (as shown in \Cref{lst:storingkeywords}) using a file called \fname{lib/pdf\_related\_includes.tex} (shown in \Cref{lst:informationforPDFfile}). Later, the stored keywords are inserted into the \LaTeX{}~after their respective language abstracts. The title page of the thesis and the PDF metadata are shown in \Cref{fig:pdfMetadata}. Note that both the English and Swedish versions of the keywords are included in the metadata. Finally, the keywords appear (as expected) in the \enquote{For DiVA} data at the end of the \gls{PDF} file.
 
 \Needspace*{7\baselineskip}
-Note that \texttt{\textbackslash makeatlette} and \texttt{\textbackslash makeatother} are used to include the character “@” as a letter and then return “@” to being a punctuation code. This use of “@” protects the internal names from being accessed outside of these two commands. More explicitly, \texttt{\textbackslash EnglishKeywords} is a function that takes one argument, the text of the English keywords, and then stores them into \enquote{\texttt{@EnglishKeywords}}. Later, the text can be retrieved with the command \texttt{\textbackslash InsertKeywords\{english\}} or \texttt{\textbackslash InsertKeywords\{swedish\}}.
+Note that \texttt{\textbackslash makeatletter} and \texttt{\textbackslash makeatother} are used to include the character “@” as a letter and then return “@” to being a punctuation code. This use of “@” protects the internal names from being accessed outside of these two commands. More explicitly, \texttt{\textbackslash EnglishKeywords} is a function that takes one argument, the text of the English keywords, and then stores them into \enquote{\texttt{@EnglishKeywords}}. Later, the text can be retrieved with the command \texttt{\textbackslash InsertKeywords\{english\}} or \texttt{\textbackslash InsertKeywords\{swedish\}}.
 \Needspace*{15\baselineskip}
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={New commands in kththesis.cls}, label=lst:keywords]
 % Keywords
@@ -459,15 +453,17 @@ Note that \texttt{\textbackslash makeatlette} and \texttt{\textbackslash makeato
 \end{lstlisting}
 
 
-The \fname{lib/pdf\_related\_includes.tex} file contains the \LaTeX{} ~- to add information
+The \fname{lib/pdf\_related\_includes.tex} file contains the \LaTeX{} ~-- to add information
 to the \gls{PDF} file (specifically, author(s), title(s), and keywords). It uses the
 \texttt{hyperref} package and should be included before the \texttt{\textbackslash begin\{document\}}.
-I want to acknowledge the inspiration of Karl Voit's template for TU Graz which inspired me to add the \gls{PDF} document information. For more information about his template, see \url{https://github.com/novoid/LaTeX-KOMA-template}
-Note that my template does not use anything from his template other than the names of the information for the \gls{PDF} meta fields, \ie \texttt{mytitle}, \texttt{myauthor}, and \texttt{mykeywords}, together with the idea of defining the corresponding \texttt{newcommand} to set the relevant \texttt{hyperref} parameters. A result of both these decisions is that these command names are visible to the rest of the \LaTeX{} file. See \Cref{lst:informationforPDFfile} for the code.
+I want to acknowledge the inspiration from Karl Voit's template for TU Graz, which inspired me to add the \gls{PDF} document information. For more information about his template, see \url{https://github.com/novoid/LaTeX-KOMA-template}
+Note that my template does not use anything from his template other than the names of the information for the \gls{PDF} meta fields, \ie \texttt{mytitle}, \texttt{myauthor}, and \texttt{mykeywords}, together with the idea of defining the corresponding \texttt{newcommand} to set the relevant \texttt{hyperref} parameters. As a result, these command names are visible to the rest of the \LaTeX{} file. See \Cref{lst:informationforPDFfile} for the code.
 
-In keeping with the Swedish standard (\foreignlanguage{swedish}{Svenska skrivregler [Språkrådet 1.6.3 och 12.11.5]}) a \enquote{\foreignlanguage{swedish}{mellanslag tankstreck}} with a space before and after, \ie \enquote{ – } is used to separate the title and subtitle when in Swedish, this leads to a condition based on whether the document is in Swedish or not in the computation of \texttt{mytitle} and \texttt{myalttitle}.
+In keeping with the Swedish standard (\foreignlanguage{swedish}{Svenska skrivregler [Språkrådet 1.6.3 och 12.11.5]}) a \enquote{\foreignlanguage{swedish}{mellanslag tankstreck}} with a space before and after, \ie \enquote{\hbox{ – }} is used to separate the title and subtitle when in Swedish, this leads to a condition based on whether the document is in Swedish or not in the computation of \texttt{mytitle} and \texttt{myalttitle}.
 
-As a result of adding support for the \gls{PDF} metadata for the copyright notice, the template now uses the \texttt{hyperxmp} package. Because of this, if the author's name includes a suffix such as \enquote{, Jr.} or \enquote{ Jr.}, \ie the suffix can be separated with a comma or not as the author prefers to write their name; thus, there was a need to change the processing of \texttt{pdfauthor} information, as \texttt{hyperxmp} treats comma-separated strings in the author or keywords fields as being a list and converts these into a sequence of data in the metadata. This change is shown in \Cref{lst:informationforPDFfile} where the \texttt{\textbackslash hyxmp@comma} macro is used to insert something that is later replaced by a comma but is not treated as a comma when processing the \texttt{pdfauthor} information. The command \texttt{\textbackslash xmpquote} is used to wrap the whole name.
+Initially, the template used the \texttt{hyperxmp} package to add support for the \gls{PDF} metadata for the copyright notice. Because of this, if the author's name includes a suffix such as \enquote{, Jr.} or \enquote{ Jr.}, \ie the suffix can be separated with a comma or not as the author prefers to write their name; thus, there was a need to change the processing of \texttt{pdfauthor} information, as \texttt{hyperxmp} treats comma-separated strings in the author or keywords fields as being a list and converts these into a sequence of data in the metadata. This change is shown in \Cref{lst:informationforPDFfile} where the \texttt{\textbackslash hyxmp@comma} macro is used to insert something that is later replaced by a comma but is not treated as a comma when processing the \texttt{pdfauthor} information. The command \texttt{\textbackslash xmpquote} is used to wrap the whole name.
+
+\noindent \textbf{NB} The \texttt{hyperxmp} package is no longer used, as \texttt{\textbackslash DocumentMetadata} and \texttt{hyperref} now natively support \gls{PDF} metadata.
 \clearpage
 
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={lib/pdf\_related\_includes.tex
@@ -646,11 +642,11 @@ As a result of adding support for the \gls{PDF} metadata for the copyright notic
 \label{sec:addingMetadataToPDFfile}
 Increasingly, metadata is being embedded into digital objects to provide information about the creator (author, photographer, \etc), date of creation, copyright notices, \etc. In a typical \gls{PDF} file produced by \LaTeX{}, there is both PDF-specific metadata and additional metadata. This additional metadata is stored using Adobe's \glsfirst{XMP}. \gls{XMP} is a means of embedding metadata in \gls{XMP} format into \gls{PDF} documents so that tools can extract it mechanically.
 
-An early paper about automatically extracting the title, authors(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004~\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata~\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
+An early paper about automatically extracting the title, author(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004~\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata~\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
 
-More recently, Elsevier's Digital Commons \footnote{\url{https://www.elsevier.com/solutions/digital-commons}} uses an extension of the Dublin Core\footnote{\url{https://www.dublincore.org/}} shown in \Cref{tab:dublicCoreDigitalCommons} to collect metadata. We will see the Dublin Core elements and other metadata schema used in XMP in the remainder of this section.
+More recently, Elsevier's Digital Commons \footnote{\url{https://www.elsevier.com/solutions/digital-commons}} uses an extension of the Dublin Core\footnote{\url{https://www.dublincore.org/}} shown in \Cref{tab:dublicCoreDigitalCommons} to collect metadata. We will see the Dublin Core elements and other metadata schema used in \gls{XMP} in the remainder of this section.
 
-Bepress has written about Elsevier's Digital Commons in a webpage \enquote{Digital Commons and OAI-PMH: Outbound Harvesting of Repository Records} \url{https://bepress.com/reference_guide_dc/digital-commons-oai-harvesting/}. The\gls{OAI-PMH} is to foster interoperability between repositories\footnote{\url{https://www.openarchives.org/pmh/}} to enable harvesters to collect metadata from a repository. Over the last 20 years, there has been an evolution from simply having metadata in a database that is associated with a publication to an entire ecosystem of metadata and applications -- see for example, the twentieth International Conference on Dublin Core and Metadata Applications (DCMI 2022) - \url{https://www.dublincore.org/conferences/2022/programme/}.
+Bepress has written about Elsevier's Digital Commons on a webpage \enquote{Digital Commons and OAI-PMH: Outbound Harvesting of Repository Records} \url{https://bepress.com/reference_guide_dc/digital-commons-oai-harvesting/}. \gls{OAI-PMH} fosters interoperability between repositories\footnote{\url{https://www.openarchives.org/pmh/}} by enabling harvesters to collect metadata from a repository. Over the last 20 years, there has been an evolution from simply having metadata in a database that is associated with a publication to an entire ecosystem of metadata and applications; see, for example, the twentieth International Conference on Dublin Core and Metadata Applications (DCMI 2022) \url{https://www.dublincore.org/conferences/2022/programme/}.
 \clearpage
 
 \begin{table}[!ht]
@@ -709,7 +705,7 @@ dc.relation.requires\\
 \FloatBarrier
 \clearpage
 
-\Cref{fig:fileProperties} shows the properties of a \gls{PDF} file when using an old version of Adobe Acrobat with the command: File$→$Properties. This figure shows the Title, Author, Subject, and Keyword fields (among other properties of this \gls{PDF} file). Because this file was generated in PDF 2.0 format, Acrobat says that you cannot edit the information, and it indicates this by displaying the information in gray.
+\Cref{fig:fileProperties} shows the properties of a \gls{PDF} file when using an old version of Adobe Acrobat with the command: \texttt{File$→$Properties}. This figure shows the Title, Author, Subject, and Keyword fields (among other properties of this \gls{PDF} file). Because this file was generated in PDF 2.0 format, Acrobat says you cannot edit the information and indicates this by displaying it in gray.
 \begin{figure}[!ht]
   \begin{center}
     \fbox{\includegraphics[width=0.9\textwidth]{README_notes/README-examiner-figures/New_thesis_template_document_properties-Screenshot_20221227_115745.png}}
@@ -719,7 +715,7 @@ dc.relation.requires\\
 \end{figure}
 \FloatBarrier
 
-\Cref{fig:fileProperties2} shows similar data for another \gls{PDF} file generated with an earlier \gls{PDF} version. Because this \gls{PDF} file uses PDF-1.5, Acrobat displays the information in dark letters, and it is possible to edit the metadata using Acrobat.
+\Cref{fig:fileProperties2} shows similar data for another \gls{PDF} file generated with an earlier \gls{PDF} version. Because this \gls{PDF} file uses PDF-1.5, Acrobat displays the information in dark text, and you can edit the metadata in Acrobat.
 \begin{figure}[!ht]
   \begin{center}
     \fbox{\includegraphics[width=0.9\textwidth]{README_notes/README-examiner-figures/File-properties-Screenshot_20221225_135914.png}}
@@ -735,7 +731,7 @@ The \gls{XMP} data is in a stream indicated in the \gls{PDF} as Metadata of the 
 stream
 \end{lstlisting}
 
-In the \gls{PDF} file, the \gls{XML} encoded metadata is between \texttt{<?xpacket begin="yyyy" id="xxxx"?>} and \texttt{<?xpacket end="w"?>} (where xxxx is some unique ID). It is important to note that the value for yyyy in the previous is a so-called \gls{BOM} with the value 0xFEFF. While this character is a valid \mbox{UTF-8} character, the \texttt{lstlisting} environment cannot handle this value; therefore, it has been replaced by the string \enquote{BOM 0xFEFF}. An example of this is shown in \Cref{lst:pdfinfoOutput}.
+In the \gls{PDF} file, the \gls{XML} encoded metadata is between \texttt{<?xpacket begin="yyyy" id="xxxx"?>} and \texttt{<?xpacket end="w"?>} (where xxxx is some unique ID). Note that yyyy in the previous example is a so-called \gls{BOM} with the value 0xFEFF. While this character is a valid \mbox{UTF-8} character, the \texttt{lstlisting} environment cannot handle this value; therefore, it has been replaced by the string \enquote{BOM 0xFEFF}. An example of this is shown in \Cref{lst:pdfinfoOutput}.
 \clearpage
 \begin{lstlisting}[style={myXML}, caption={The first part of the XML metadata embedded in a PDF file (some reformatting has been done to fit the text in the borders)}, label={lst:pdfinfoOutput}]
 
@@ -769,7 +765,7 @@ In the \gls{PDF} file, the \gls{XML} encoded metadata is between \texttt{<?xpack
 
 Some of these XML elements include "rdf" elements referring to the \gls{RDF}\footnote{\url{https://www.w3.org/RDF/}}.
 
-The \gls{XMP} data utilizes a number of different schema and namespaces. These namespaces are shown as \enquote{xmlns:xxxx}  in \Cref{lst:pdfinfoOutput}. One namespace is \texttt{xmlns:dc} and this refers to the scheme is \enquote{Dublin Core} \footnote{see Dublin Core Metadata Initiative \url{https://www.dublincore.org/}}. The information about this namespace can be found at \url{http://purl.org/dc/elements/1.1/}. Each of the schema and namespace are described in the next part of the \gls{XML}, see \Cref{lst:pdfinfoOutputPart2}.
+The \gls{XMP} data utilizes a number of different schemas and namespaces. These namespaces are shown as \enquote{xmlns:xxxx}  in \Cref{lst:pdfinfoOutput}. One namespace is \texttt{xmlns:dc}, and this refers to the scheme \enquote{Dublin Core} \footnote{see Dublin Core Metadata Initiative \url{https://www.dublincore.org/}}. The information about this namespace can be found at \url{http://purl.org/dc/elements/1.1/}. Each schema and namespace is described in the next part of the \gls{XML}; see \Cref{lst:pdfinfoOutputPart2}.
 
 \begin{lstlisting}[style=myXML,
 caption={Second part of the XML metadata embedded in a PDF file (some reformatting has been done to fit the text in the borders)}, label={lst:pdfinfoOutputPart2}]
@@ -1006,7 +1002,7 @@ caption={{The \texttt{pdf}-prefix metadata embedded in a PDF file (some reformat
       <pdf:Keywords>Canvas Learning Management System, Docker containers, Performance tuning, Canvas Lärplattform, Dockerbehållare, Prestandajustering</pdf:Keywords>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart4} shows the next part of the \gls{XMP} data. In this case, we see a new name prefix \texttt{xmpRights}, specifically the name \texttt{xmpRights:Marked}. This namespace is described at \url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmpRights/}. This namespace defines the following names: xmpRights:Certificate, xmpRights:Marked, xmpRights:Owner, xmpRights:UsageTerms, and xmpRights:WebStatement. In this case, xmpRights:Marked is marked as \enquote{True} which \enquote{indicates that this is a rights-managed resource. When false, indicates that this is a public-domain resource. Omit if the state is unknown.}. So in this case, it is a right-managed resource.
+\Cref{lst:pdfinfoOutputPart4} shows the next part of the \gls{XMP} data. Here, we see a new name prefix, \texttt{xmpRights}, specifically \texttt{xmpRights:Marked}. This namespace is described at \url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmpRights/}. This namespace defines the following names: \texttt{xmpRights:Certificate}, \texttt{xmpRights:Marked}, \texttt{xmpRights:Owner}, \texttt{xmpRights:UsageTerms}, and \texttt{xmpRights:WebStatement}. In this case, \texttt{xmpRights:Marked} is marked as \enquote{True} which \enquote{indicates that this is a rights-managed resource. When false, it indicates that this is a public-domain resource. Omit if the state is unknown.}. So in this case, it is a rights-managed resource.
 
 \Needspace*{3\baselineskip}
 \begin{lstlisting}[style=myXML,
@@ -1015,7 +1011,7 @@ caption={{The \texttt{xmpRights:Marked} metadata embedded in a PDF file}}, label
       <xmpRights:Marked>True</xmpRights:Marked>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart5} shows the next part of the \gls{XMP} data. In this case, we can see an element from the \texttt{dc} namespace. The name \texttt{dc:format} indicates the format of the document. As per \url{https://www.dublincore.org/specifications/dublin-core/format-element/} in the case of an electronic document, the format is described using the Internet Media Types (\ie MIME values).
+\Cref{lst:pdfinfoOutputPart5} shows the next part of the \gls{XMP} data. Here, we see an element from the \texttt{dc} namespace. The name \texttt{dc:format} indicates the format of the document. As per \url{https://www.dublincore.org/specifications/dublin-core/format-element/} in the case of an electronic document, the format is described using the Internet Media Types (\ie MIME values).
 \Needspace*{3\baselineskip}
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{dc:format} metadata embedded in a PDF file}}, label={lst:pdfinfoOutputPart5}]
@@ -1023,7 +1019,7 @@ caption={{The \texttt{dc:format} metadata embedded in a PDF file}}, label={lst:p
       <dc:format>application/pdf</dc:format>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart6} shows the next part of the \gls{XMP} data. In this case, we can see another element from the \texttt{dc} namespace. More specifically, the element named \texttt{dc:title} and this contains the title of the document. This also illustrates another feature of \gls{XML} -- it is possible to have the title in several different languages. The \gls{RDF} tag \texttt{rdf:Alt} indicates that there are a list of alternatives. In this case, the items in the list are tagged with a language tag. The language tag \texttt{xml:lang="x-default"} is the default language of the document. This is followed by items that contain the English (tagged \enquote{en}) and Swedish (tagged \enquote{sv}). The language tags are an \gls{ISO} 639-1 two-letter language code with an
+\Cref{lst:pdfinfoOutputPart6} shows the next part of the \gls{XMP} data. Here, we see another element from the \texttt{dc} namespace. More specifically, the element \texttt{dc:title} contains the document title. This also illustrates another feature of \gls{XML} -- it is possible to have the title in several different languages. The \gls{RDF} tag \texttt{rdf:Alt} indicates that there is a list of alternatives. In this case, the list items are tagged with a language tag. The language tag \texttt{xml:lang="x-default"} is the default language of the document. This is followed by items that contain English (tagged \enquote{en}) and Swedish (tagged \enquote{sv}). The language tags are an \gls{ISO} 639-1 two-letter language code with an
 optional \gls{ISO} 3166-1 two-letter region code.
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{dc:title>} metadata embedded in a PDF file (some reformatting has been done to fit the text in the borders)}}, label={lst:pdfinfoOutputPart6}]
@@ -1083,7 +1079,7 @@ or Swedish abstract and English summary need not be literal translations of each
 \end{comment}
 
 \Needspace*{32\baselineskip}
-\Cref{lst:pdfinfoOutputPart8} shows the \texttt{dc:rights}, \texttt{dc:publisher}, \texttt{dc:date}, and \texttt{dc:type} elements. The \textbackslash bookinfomacro was extended to put the copyright information into the metadata. This metadata and the \texttt{xmpRights:Marked} value being \textbf{True} enables the display of the copyright data as shown in \Cref{fig:exampleCopyrightXMPdisplayed}.
+\Cref{lst:pdfinfoOutputPart8} shows the \texttt{dc:rights}, \texttt{dc:publisher}, \texttt{dc:date}, and \texttt{dc:type} elements. The \texttt{\textbackslash bookinfomacro} was extended to put the copyright information into the metadata. This metadata and the \texttt{xmpRights:Marked} value being \textbf{True} enables the display of the copyright data as shown in \Cref{fig:exampleCopyrightXMPdisplayed}.
 
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{dc:rights}, \texttt{dc:publisher}, \texttt{dc:date}, and \texttt{dc:type} metadata embedded in a PDF file (some reformatting has been done to fit the text in the boarders)}}, label={lst:pdfinfoOutputPart8}]
@@ -1119,7 +1115,7 @@ caption={{The \texttt{dc:rights}, \texttt{dc:publisher}, \texttt{dc:date}, and \
   \label{fig:exampleCopyrightXMPdisplayed}
 \end{figure}
 
-\Cref{lst:pdfinfoOutputPart9} shows the \texttt{dc:creator} metadata. In this case the comma separated list of authors has been rendered as an \texttt{rdf:Seq} which is an \textbf{ordered} list of items.
+\Cref{lst:pdfinfoOutputPart9} shows the \texttt{dc:creator} metadata. In this case, the comma-separated list of authors is rendered as an \texttt{rdf:Seq}, an \textbf{ordered} list of items.
 
 \Needspace*{8\baselineskip}
 \begin{lstlisting}[style=myXML,
@@ -1134,7 +1130,7 @@ caption={{The \texttt{dc:creator} metadata embedded in a PDF file}}, label={lst:
 \end{lstlisting}
 \clearpage
 
-\Cref{lst:pdfinfoOutputPart10} shows the \texttt{dc:subject} metadata. In this case the comma separated list of keywords has been rendered as an \texttt{rdf:Bag} which is an \textbf{unordered} list of items.
+\Cref{lst:pdfinfoOutputPart10} shows the \texttt{dc:subject} metadata. In this case, the comma-separated list of keywords is rendered as an \texttt{rdf:Bag}, an \textbf{unordered} list of items.
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{dc:subject} metadata embedded in a PDF file}}, label={lst:pdfinfoOutputPart10}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
@@ -1171,7 +1167,7 @@ caption={{The \texttt{dc:source} and \texttt{dc:language} metadata embedded in a
       </dc:language>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart12} shows the \texttt{xmp}-prefix elements in the file. This namespace is supposed to be defined at \url{http://ns.adobe.com/xap/1.0/}; however, this URL is not longer valid but the Adobe XMP Basic namespace is described at url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmp/}. In this specific case, the file provides the \texttt{CreateDate}, \texttt{xmp:ModifyDate}, \texttt{xmp:MetadataDate}, and \texttt{xmp:CreatorTool}. For the last of these the value is shown as \enquote{LaTeX with hyperref} even though the \XeLaTeX{} engine had been used.
+\Cref{lst:pdfinfoOutputPart12} shows the \texttt{xmp}-prefix elements in the file. This namespace is supposed to be defined at \url{http://ns.adobe.com/xap/1.0/}; however, this URL is no longer valid, but the Adobe XMP Basic namespace is described at https://developer.adobe.com/xmp/docs/XMPNamespaces/xmp/. In this specific case, the file provides the \texttt{CreateDate}, \texttt{xmp:ModifyDate}, \texttt{xmp:MetadataDate}, and \texttt{xmp:CreatorTool}. For the last of these, the value is shown as \enquote{LaTeX with hyperref} even though the \XeLaTeX{} engine had been used.
 \begin{lstlisting}[style=myXML,
 caption={The final set of metadata embedded in a PDF file}, label={lst:pdfinfoOutputPart12}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
@@ -1181,7 +1177,7 @@ caption={The final set of metadata embedded in a PDF file}, label={lst:pdfinfoOu
       <xmp:CreatorTool>LaTeX with hyperref</xmp:CreatorTool>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart13} shows the \texttt{xmpMM}-prefix metadata. The information about this namespace should be at \url{http://ns.adobe.com/xap/1.0/mm/}, however, this URL is no longer valid but the description of the XMP Media Management namespace is available at \url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmpMM/}.
+\Cref{lst:pdfinfoOutputPart13} shows the \texttt{xmpMM}-prefix metadata. The information about this namespace should be at http://ns.adobe.com/xap/1.0/mm/; however, this URL is no longer valid, but the description of the XMP Media Management namespace is available at \url{https://developer.adobe.com/xmp/docs/XMPNamespaces/xmpMM/}.
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{xmpMM}-prefix metadata embedded in a PDF file (two of the lines have been manually broken to fit the test in the margins)}}, label={lst:pdfinfoOutputPart13}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
@@ -1191,7 +1187,7 @@ caption={{The \texttt{xmpMM}-prefix metadata embedded in a PDF file (two of the 
       <xmpMM:RenditionClass>default</xmpMM:RenditionClass>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart14} shows the \texttt{Iptc4xmpCore}-prefix metadata. The IPTC Core Schema namespace used by the IPTC Photo Metadata standards is described briefly at \url{http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/}. A full description is available at \url{https://www.iptc.org/std/Iptc4xmpCore/1.0/specification/Iptc4xmpCore_1.0-spec-XMPSchema_8.pdf}. The \texttt{Iptc4xmpCore:CreatorContactInfo} is supposed to provide enough information to enable someone reading the file to be able to contact the creator of the content. For the purposes of the thesis I have identified the authors using the KTH\_id, since one students have completed their studies at kTH their acocunts are deactivated; hence, an e-mail address is no longer meaningful.
+\Cref{lst:pdfinfoOutputPart14} shows the \texttt{Iptc4xmpCore}-prefix metadata. The International Press Telecommunications Council (IPTC) Core Schema namespace used by the IPTC Photo Metadata standards is described briefly at \url{http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/}. A full description is available at \url{https://www.iptc.org/std/Iptc4xmpCore/1.0/specification/Iptc4xmpCore_1.0-spec-XMPSchema_8.pdf}. The \texttt{Iptc4xmpCore:CreatorContactInfo} is supposed to provide enough information to enable someone reading the file to be able to contact the creator of the content. For the purposes of a thesis, I have identified the authors using their KTH\_id, since once a student has completed their studies at KTH, their accounts are deactivated; hence, an e-mail address is no longer meaningful.
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{Iptc4xmpCore}-prefix metadata embedded in a PDF file}}, label={lst:pdfinfoOutputPart14}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
@@ -1200,7 +1196,7 @@ caption={{The \texttt{Iptc4xmpCore}-prefix metadata embedded in a PDF file}}, la
       </Iptc4xmpCore:CreatorContactInfo>
 \end{lstlisting}
 
-\Cref{lst:pdfinfoOutputPart15} shows the \texttt{prism}-prefix metadata. The Publishing Requirements for Industry Standard Metadata (PRISM) namespace should be described at \url{http://prismstandard.org/namespaces/basic/3.0/}; however, this URL is no longer valid but the PRISM Basic Metadata Specification can be found at \url{https://www.w3.org/Submission/2020/SUBM-prism-20200910/prism-basic.html}.
+\Cref{lst:pdfinfoOutputPart15} shows the \texttt{prism}-prefix metadata. The Publishing Requirements for Industry Standard Metadata (PRISM) namespace should be described at http://prismstandard.org/namespaces/basic/3.0/; however, this \gls{URL} is no longer valid, but the PRISM Basic Metadata Specification can be found at \url{https://www.w3.org/Submission/2020/SUBM-prism-20200910/prism-basic.html}.
 \begin{lstlisting}[style=myXML,
 caption={{The \texttt{prism}-prefix metadata embedded in a PDF file}}, label={lst:pdfinfoOutputPart15}]
 £$\ldots$ {\color{red} continuation of the above listing}£ 
@@ -1224,9 +1220,9 @@ caption={The final part of the metadata embedded in a PDF file}, label={lst:pdfi
 \Needspace*{14\baselineskip}
 \subsection{Extending the set of elements for theses}
 \label{sec:newMetadataForTheses}
-Even with all of the various schema included in XMP, there is a lot of metadata that is needed for DiVA that can not yet easily be included and embedded in XMP. Thus, for the present, the extra metadata needs to be collected and processed via some mechanism other than XMP.
+Even with the various schemas included in \gls{XMP}, DiVA still needs metadata that cannot yet be easily included and embedded in \ gls{XMP}. Thus, the extra metadata needs to be collected and processed via some mechanism other than \gls{XMP}.
 
-For XMP, there are some specific areas that might be of interest in the future:
+For \gls{XMP}, there are some specific areas that might be of interest in the future:
 \begin{itemize}
   \item Adding new dc elements (§\,\ref{sec:newDCelements}) 
   \item Adding references to the metadata (§\,\ref{sec:addingReferences}), and 
@@ -1239,16 +1235,14 @@ In \Cref{tab:dublicCoreDigitalCommons} on \pageref{tab:dublicCoreDigitalCommons}
 \texttt{thesis.degree}, \texttt{thesis.degree.discipline}, \linebreak[4]\texttt{thesis.degree.grantor}, \texttt{thesis.degree.level}, and \linebreak[4] \texttt{thesis.degree.name}. It may be worth adding these to the XMP data for a thesis in the future. For some discussion of these elements, please see the discussion of EDT‐MS metadata elements in the paper by Ivanović, Ivanović, and Surla entitled \textit{A data model of theses and dissertations compatible with {CERIF}, {Dublin} {Core} and {EDT}‐{MS}}~\cite{ivanovic_data_2012}. ETD-MS is defined in \textit{ETD-MS v1.1: an Interoperability Metadata Standard for Electronic Theses and Dissertations}~\cite{hickey_pavani_suleman_2010} and available at \url{https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html}.
 
 
-
-
 \subsubsection{Adding references to the metadata}
 \label{sec:addingReferences}
-Increasingly, there is an interest in being able to easily know what references have been cited by a thesis. Part of this interest is to be able to compute citation maps (who cites whom) and to examine the types of sources that are cited.
+Increasingly, there is interest in easily knowing which references a thesis cites. Part of this interest is to be able to compute citation maps (who cites whom) and to examine the types of sources that are cited.
 
-There are several possibilities for storing information about references. One is the element \texttt{dc.relation.references}. Another possibility is to use the \texttt{dcterms:references} element refinement of \texttt{dc:relation} as proposed in 1998 by Ann Apps of the DCMI Citations Working Group (\url{https://www.dublincore.org/groups/citation/}).
+There are several possibilities for storing information about references. One is the element \texttt{dc.relation.references}. Another possibility is to use the \texttt{dcterms:references} element refinement of \texttt{dc:relation} as proposed in 1998 by Ann Apps of the Dublin Core Metadata Initiative (DCMI) Citations Working Group (\url{https://www.dublincore.org/groups/citation/}).
 
 \Needspace*{9\baselineskip}
-More recently, a new schema was proposed by CrossRef, see \url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/}. Note that the focus of this work is to facilitate depositing with CrossRef the list of references used in a publication. Their set of elements is shown in \Cref{tab:crossRefElementsForCitationTagging}\footnote{\url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/\#00178}}. Note that while the focus seems to be on journal articles, they also have a \enquote{Metadata best practices} website with lots of examples of metadata for different types of documents, see \url{https://www.crossref.org/documentation/principles-practices/best-practices/}.
+More recently, a new schema was proposed by CrossRef; see \url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/}. Note that the focus of this work is to facilitate depositing with CrossRef the list of references used in a publication. Their set of elements is shown in \Cref{tab:crossRefElementsForCitationTagging}\footnote{\url{https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/references/\#00178}}. Note that while the focus seems to be on journal articles, they also have a \enquote{Metadata best practices} website with lots of examples of metadata for different types of documents; see \url{https://www.crossref.org/documentation/principles-practices/best-practices/}.
 
 \begin{table}[!ht]
     \caption{CrossRef elements for citation tagging}
@@ -1278,16 +1272,18 @@ doi\\
 \end{tabular}
 \end{table}
 
+At present, I think the easiest method is to attach a file containing the \BibLaTeX{} entries used. Note that the GitHub workflow and script \fname{bib\_cleanup.py} process the \fname{references.bib} file and produce a \fname{referencesUsed.bib} file that could be attached to the \gls{PDF}. An advantage of this approach is that you can extract this file and get the bibliographic entries used—in machine-readable form that can be used directly with \LaTeX.
+
 \subsubsection{Adding citation data to the metadata}
 \label{sec:addingCitation}
-There is also a desire by many to include bibliographic citation information into the XMP so that the \gls{PDF} carries this data and one does \emph{not} need to access some other source to find this information. The element \texttt{DCTERMS.bibliographicCitation} is proposed for this purpose in a document by Ann Apps, \textit{Guidelines for Encoding Bibliographic Citation Information in Dublin Core™ Metadata}~\cite{Ann_Apps_2005}.
+There is also a desire by many to include bibliographic citation information into the \gls{XMP} so that the \gls{PDF} carries this data and one does \emph{not} need to access some other source to find this information. The element \texttt{DCTERMS.bibliographicCitation} is proposed for this purpose in a document by Ann Apps, \textit{Guidelines for Encoding Bibliographic Citation Information in Dublin Core™ Metadata}~\cite{Ann_Apps_2005}.
 
 \Needspace*{3\baselineskip}
-Note that to include the URN and \gls{DiVA} identifiers assigned by \gls{DiVA}, you first need to create a \gls{DiVA} entry and then use the assigned values to update the \gls{XMP} information in the \gls{PDF} file \textit{before} uploading the full text to \gls{DiVA}.
+Note that to include the \gls{URN} and \gls{DiVA} identifiers assigned by \gls{DiVA}, you first need to create a \gls{DiVA} entry and then use the assigned values to update the \gls{XMP} information in the \gls{PDF} file \textit{before} uploading the full text to \gls{DiVA}.
 
 \subsubsection{Adding abstracts via the dc.description}
 \label{sec:addingAbstractsInXMP}
-The code shown in \Cref{lst:LuaForAbstractinXMP} can be used to add the abstracts to the XMP data. While this code works, it has \textbf{not} been added as a feature in the current template, but is a candidate for a future addition.
+The code shown in \Cref{lst:LuaForAbstractinXMP} can be used to add the abstracts to the gls{XMP} data. While this code works, it has \textbf{not} been added as a feature in the current template, but is a candidate for a future addition.
 
 Note that region codes have been used for several of the languages, this is to distinguish the abstract entries from alternate titles, which also seem to end up in the same part of the XMP.
 

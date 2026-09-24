@@ -125,24 +125,8 @@
 \usepackage{cleveref}           %% Replace Section with a symbol
 \usepackage{metalogo}   % for \LuaLaTeX logo
 
-%% Conventions for todo notes:
-% Informational
-%% \generalExpl{Comments/directions/... in English}
-\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
-
-% Language-specific information (currently in English or Swedish)
-\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
-\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
-
-% warnings
-\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
-
-
   \RequirePackage{fontspec}
   \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
-
-
-
 
     \babelfont{rm}{TeX Gyre Termes}
     \DeclareFontShape{TU}{TeXGyreTermes(0)}{md}{n}{<->sub * TeXGyreTermes(0)/m/n}{}
@@ -176,8 +160,15 @@
   \newfontfamily\mystixmathfont{STIX Two Math}
   % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
   % and this will return the bold serif version of the character
-  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
-  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+\makeatletter
+% Suppress missing bold font shape warnings across all STIX Two Math font instances
+\@for\idx:={0,1,2,3,4,5,6}\do{%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+}
+\makeatother
   \newfontfamily\mystixtextfont{STIX Two Text}
   
     % To access the Stylistic Set 1 <ss01> such as ℋ

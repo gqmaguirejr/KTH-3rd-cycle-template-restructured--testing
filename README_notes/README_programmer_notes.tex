@@ -125,19 +125,6 @@
 \usepackage{cleveref}           %% Replace Section with a symbol
 \usepackage{metalogo}   % for \LuaLaTeX logo
 
-%% Conventions for todo notes:
-% Informational
-%% \generalExpl{Comments/directions/... in English}
-\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
-
-% Language-specific information (currently in English or Swedish)
-\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
-\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{\foreignlanguage{swedish}{#1}}}  %% % \sweExpl{Text på svenska}
-
-% warnings
-\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
-
-
   \RequirePackage{fontspec}
   \defaultfontfeatures{Ligatures={TeX}} % This enables TeX style ligatures such as ---, '', ``, and so on
 
@@ -176,8 +163,15 @@
   \newfontfamily\mystixmathfont{STIX Two Math}
   % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
   % and this will return the bold serif version of the character
-  \DeclareFontShape{TU}{STIXTwoMath(0)}{b}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
-  \DeclareFontShape{TU}{STIXTwoMath(0)}{sb}{n}{<->ssub * STIXTwoMath(0)/m/n}{}
+\makeatletter
+% Suppress missing bold font shape warnings across all STIX Two Math font instances
+\@for\idx:={0,1,2,3,4,5,6}\do{%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+}
+\makeatother
   \newfontfamily\mystixtextfont{STIX Two Text}
   
     % To access the Stylistic Set 1 <ss01> such as ℋ
@@ -427,7 +421,7 @@ The focus in the first part of this document is on how to use the information in
 \begin{enumerate}
     \item The announcements and calendar events of thesis presentations or defenses. Moreover, thesis presentations and defenses are supposed to be public, so it would be useful and foster their visibility if it were easy to make such announcements (in both English and Swedish).
     
-    \item Both the metadata and the thesis itself need to be entered into \foreignlanguage{swedish}{\gls{DiVA}}\footnote{There is a separate issue regarding whether the full-text is publicly available or not, but this is outside the scope of this document.}.
+    \item Both the metadata and the thesis itself need to be entered into \foreignlanguage{swedish}{\gls{DiVA}}\footnote{There is a separate issue regarding whether the full-text is publicly available or not, but this is outside the scope of this document.}. \fname{README\_programmer\_notes-JSON\_to\_MODS.tex} describes how one can take the \gls{JSON} and convert it to \gls{MODS} to easily import much of the metadata into \gls{DiVA}.
     
     \item Both English and Swedish titles will be reported along with the decision of the grading committee in \foreignlanguage{swedish}{\gls{LADOK}}.
 \end{enumerate}
@@ -447,8 +441,10 @@ A high-level overview was given in the \fname{README\_supervisor\_notes.tex} fil
 
 \Cref{sec:copyrightOrCClicenseExaminer} presents how the copyright or Creative Commons License can be realized on the \texttt{bookinfo} page.
 \Cref{sec:acronymsInForDIVAdata} describes how one can add the  \fname{acronyms.tex} file to the \gls{PDF} both as text and attach it to the \gls{PDF} file.
-\Cref{sec:addingMetadataToPDFfile} presents the details of how to add additional metadata to the \gls{PDF} file, such that human readers and other tools can access this data. This is a rather expansive area, as there are those who would like to be able to mechanically extract data about the thesis and extract data from it (\eg citation data).
+\fname{README\_programmer\_notes-PDF\_metadata.tex} presents the details of how to add additional metadata to the \gls{PDF} file, such that human readers and other tools can access this data. This is a rather expansive area, as there are those who would like to be able to mechanically extract data about the thesis and extract data from it (\eg citation data).
 Finally, \Cref{sec:futurework} suggests some future work, such as how to better exploit unicode, better math support in \gls{DiVA}, and Cora-based \gls{DiVA}.
+
+\fname{README\_programmer\_notes\_Biber\_and\_BibLaTeX.tex} describes how one can use Biber's data annotations in \BibLaTeX{} entries, how to use this annotation for \gls{CReDiT} data, and gives some recommendations for generating fake \BibLaTeX{} entries. \fname{README\_programmer\_notes\_appendix.tex} provides some information about the language codes that are used (for example, if you want to add an abstract in a language for which there is not yet a template), as well as some examples of how one can add fallback characters to handle the case where a character is not available in the current font and face.
 
 I hope that this document contains sufficient information to enable someone else to address any remaining problems (that will inevitably occur) and extend it in new ways to better support the whole thesis process and the various readers.
 
@@ -1445,7 +1441,7 @@ Where the colors are defined as (note that the ForestGreen lacks sufficient cont
 
 Note that the colors do \textbf{not} encode any essential meaning (\ie they could all be turned to black), since the citations are recognizable by their format, the URL (and URI) by linking to an external document, and the links (by linking within the document).
 
-Some additional colors are defined and used for \texttt{todonotes} – they should, of course, be removed before the thesis is finalized (as of course all of these issues should have been resolved!). The default background color for todonotes is orange (which is predefined as \#FF7F00). The other colors are shown in \Cref{lst:todonotesColors}. The \gls{KTH} colors are defined in \fname{kthcolors.tex}.
+Some additional colors are defined and used for \texttt{todonotes} – they should, of course, be removed before the thesis is finalized (as of course all of these issues should have been resolved!). The default background color for todonotes is orange (which is predefined as \#FF7F00). The other colors are shown in \Cref{lst:todonotesColors}. The \gls{KTH} colors are defined in \fname{kthcolors.tex}. The commands themselves are defined in \fname{lib/defines.tex}.
 \Needspace*{16\baselineskip}
 \begin{lstlisting}[style=latexExampleForAuthors, caption={Defines for todo notes}, label=lst:todonotesColors]
 %% Conventions for todo notes:
