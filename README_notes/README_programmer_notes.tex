@@ -161,15 +161,20 @@
   % STIX Two Math does not have bold face - so we fake it
   %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
   \newfontfamily\mystixmathfont{STIX Two Math}
-  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % STIX Two Math does not have a bold font, but it has bold symbols with and without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
   % and this will return the bold serif version of the character
 \makeatletter
-% Suppress missing bold font shape warnings across all STIX Two Math font instances
-\@for\idx:={0,1,2,3,4,5,6}\do{%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+\AtBeginDocument{%
+  \@for\idx:={0,1,2,3,4,5,6}\do{%
+    \@ifundefined{T@TU+STIXTwoMath(\idx)}{%
+      % Family not loaded by unicode-math; do nothing
+    }{%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+    }%
+  }%
 }
 \makeatother
   \newfontfamily\mystixtextfont{STIX Two Text}
@@ -1278,7 +1283,7 @@ commentstyle=\color{black}, backgroundcolor=\color{white}]{lib/acronyms.tex}
 \label{sec:cleaaningUpJSON}
 If you save the \fname{fordiva.json} and \fname{acronyms.tex} files locally\footnote{Either by extracting them from the PDF file or you can download the acronyms.tex file from your project and can download the \fname{fordiva.json} with the \enquote{Other logs and files} button shown at the bottom of the log output window.}, then you can clean up and transform the \fname{fordiva.json} file. After having done this, you can make a \gls{MODS} file with the following commands:
 \Needspace*{4\baselineskip}
-\begin{lstlisting}[language={bash}, caption={cleanup\_pseudo\_JSON-from\_LaTeX and JSON\_to\_MODS.p},label=lst:cleanPseudoJSONandConvertToMODS]
+\begin{lstlisting}[language={bash}, caption={cleanup\_pseudo\_JSON-from\_LaTeX and JSON\_to\_MODS.py},label=lst:cleanPseudoJSONandConvertToMODS]
 ./cleanup_pseudo_JSON-from_LaTeX.py --json xxx_fordiva.json --acronyms acronyms.tex
 ./JSON_to_MODS.py --json xxx_fordiva.json
 \end{lstlisting}
@@ -1594,7 +1599,7 @@ There is a new \texttt{\textbackslash thesiscopyrightleft} command added to the 
 \end{lstlisting}
 
 As a result of adding support for the \gls{PDF} metadata for the copyright, the template now uses the \texttt{hyperxmp} package. Details of the code to set the value of the pdfcopyright metadata can be seen in \Cref{lst:bookinfopageCopyrightPDFmetadata}.
-The use of \texttt{hyperxmp} caused a change in how the author's name is processed - for details about this see \Cref{sec:addingKeywordsAndMetaDataToPDF} starting on page~\pageref{sec:addingKeywordsAndMetaDataToPDF}.
+The use of \texttt{hyperxmp} caused a change in how the author's name is processed - for details about this see \fname{README\_programmer\_notes-PDF\_metadata.tex}.
 
 \begin{lstlisting}[language={[LaTeX]TeX}, caption={{Processing copyright PDF metadata information in \textbackslash bookinfopageCC}}, label=lst:bookinfopageCopyrightPDFmetadata]
 % Command to print out the standardized document information page
