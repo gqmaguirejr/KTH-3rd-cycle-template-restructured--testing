@@ -14,8 +14,10 @@
 
 %% Colorize
 %\usepackage{color}
-\PassOptionsToPackage{dvipsnames, svgnames, table, cmyk}{xcolor}
+\PassOptionsToPackage{dvipsnames, svgnames, table, rgb}{xcolor}
 \usepackage{xcolor}
+\selectcolormodel{rgb}
+
 \usepackage{luacolor}
 
 \usepackage[normalem]{ulem}
@@ -27,7 +29,13 @@
 \usepackage[locale=US]{siunitx}
 
 \usepackage{balance}
-\usepackage{stmaryrd}
+
+% While the template utilizes STIX Math Two, you might want to load specific characters from  St. Mary's Road symbol font (stmaryrd) --- designed to work with merican Mathematical Society (amsfonts/amssymb)
+\usepackage[only,Lbag,Rbag]{stmaryrd} % Only grabs the specific multiset brackets
+% Others might want to load the "Varo" Operators: \varoplus, \varotimes, and \varoslash
+% Alternatively, you can load the full set of characters from the font
+%\usepackage{stmaryrd}
+
 \usepackage{booktabs}
 \usepackage{graphicx}	        %% Support for images
 \usepackage{multirow}	        %% Support for multirow columns in tables
@@ -61,11 +69,21 @@
 %% If you are going to include source code (or code snippets) you can use minted in a listings environment
 \usepackage{listings}		    %% For source code listing
                                 %% For source code highlighting
-%\usepackage[chapter, cache=false]{minted}   %% If you use minted make sure to use the chapter options to do numbering in the chapter
+% Force listings to use the OpenType Unicode font
+\AtBeginDocument{
+  \lstset{
+    basicstyle=\ListingMono\small,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true
+  }
+}
+%\usepackage[chapter, cache=false]{minted}   %% If you use minted in your thesis, make sure to use the chapter options to do numbering within the chapter
+% You can set the style that minted uses with commands such as:
 %%\usemintedstyle{borland}
 
 \usepackage{bytefield}          %% For packet drawings
-
+\bytefieldsetup{bitformatting={\ListingMono\tiny}, boxformatting={\centering\ListingMono\small}}
 
 \setlength {\marginparwidth }{2cm} %leave some extra space for todo notes
 % The obeyFinal option means that todonotes will be disables when "final" is added as an option for the documentclass
@@ -88,6 +106,16 @@
 \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit,positioning, decorations.pathreplacing, calc,shapes, patterns, arrows.meta}
 % arrows.meta is a new and improved set of arrows
 
+% Ensure PGF's color driver translates CMYK to RGB
+\makeatletter
+\def\pgfsys@color@cmyk@stroke#1#2#3#4{%
+  \pgfutil@color@cmykto@rgb{#1}{#2}{#3}{#4}\pgfsys@color@rgb@stroke
+}
+\def\pgfsys@color@cmyk@fill#1#2#3#4{%
+  \pgfutil@color@cmykto@rgb{#1}{#2}{#3}{#4}\pgfsys@color@rgb@fill
+}
+\makeatother
+
 \usepackage{pgfmath}	% --math engine
 \newcommand\bmmax{2}
 \usepackage{bm} % bold math
@@ -102,6 +130,8 @@
 \usepackage{pdfpages}
 
 \usepackage{fvextra}
+\fvset{fontfamily=tt}
+
 \usepackage{csquotes}               %% Recommended by biblatex
 % to provide a float barrier use:
 \usepackage{placeins}
@@ -218,8 +248,6 @@
 \usepackage{pgf-pie}
 
 \usetikzlibrary{tikzmark}
-
-\usepackage{alltt} % for setting everything in a tt font
 
 % To allow the use of subfiles for separate compilation
 \usepackage{subfiles}

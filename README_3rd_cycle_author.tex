@@ -179,12 +179,17 @@ Extension = .ttf,
     ]{NotoSansCustomA}
 
 \makeatletter
-% Suppress missing bold font shape warnings across all STIX Two Math font instances
-\@for\idx:={0,1,2,3,4,5,6}\do{%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+\AtBeginDocument{%
+  \@for\idx:={0,1,2,3,4,5,6}\do{%
+    \@ifundefined{T@TU+STIXTwoMath(\idx)}{%
+      % Family not loaded by unicode-math; do nothing
+    }{%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+    }%
+  }%
 }
 \makeatother
 

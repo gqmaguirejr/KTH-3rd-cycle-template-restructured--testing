@@ -23,6 +23,9 @@
 \ExplSyntaxOn
 %pdf_version_gset:n{2.0}
 %\pdf_version_gset:n{1.5}
+% Optionally, you can set the uncompress flag to make it easier to examine the PDF
+%\pdf_uncompress: % to check the pdf
+\ExplSyntaxOff
 
 %% Alternatively, if you have a LaTeX newer than June 2022, you can use the following. However, then you have to remove the pdfversion from hyperef. It also breaks hyperxmp. So perhaps it is too early to try using it!
 %\DocumentMetadata
@@ -36,14 +39,9 @@
     % pdfversion  = 2.0,
     % pdfstandard = A-4,
     pdfversion=1.7,
-    pdfstandard=A-2u,
+    pdfstandard=a-3u,
     lang        = en-US
 }
-
-
-% Optionally, you can set the uncompress flag to make it easier to examine the PDF
-%\pdf_uncompress: % to check the pdf
-\ExplSyntaxOff
 
 
 %% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
@@ -375,35 +373,31 @@ morekeywords={begin, todo, textbf, textit, texttt}
 % define my own version of the fancytab macro
 % This creates black rectangles with white lettering
 \newcommand{\myfancytab}[5][RIGHT]{%
-  % #1: Alignment (RIGHT)
+  % #1: Alignment (RIGHT or LEFT)
   % #2: Label/Tag (\ref*{paper:A})
   % #3: Divider Number
-    \ifstrequal{#1}{LEFT}
-    {
-        \renewcommand{\eastwest}{west}
-        \renewcommand{\multiplier}{0.5}
-    }
-    { %else
-        \renewcommand{\eastwest}{east}
-        \renewcommand{\multiplier}{-0.5}
-    }
-    \begin{tikzpicture}[remember picture,overlay]%
-    \node[yshift={-1*(\the\tab@top+\the\tab@height/2+
-                    mod(#3-1-\tab@floor,\tab@count)*
-                    (\the\tab@height+\the\tab@gap))},
-    xshift=\multiplier*\the\tab@width]
-    at (current page.north \eastwest) {
-    \tikz\draw [fill=black,black]
-    (0,0) rectangle (\the\tab@width,\the\tab@height)
-    node[rotate=0]
-     at (\tab@texthpos*\the\tab@width,\tab@textvpos*\the\tab@height)%
-    {\tab@style\textcolor{white}{#2}};%
-    };%
-    \end{tikzpicture}%
-    \ifstrempty{#5}{}{%   If #5 is empty ignore it
+  \ifstrequal{#1}{LEFT}
+  {
+    \renewcommand{\eastwest}{west}
+    \def\tabxoffset{0pt}
+  }
+  {
+    \renewcommand{\eastwest}{east}
+    \def\tabxoffset{-\the\tab@width}
+  }
+  \begin{tikzpicture}[remember picture,overlay]%
+    \draw [fill=black,draw=black]
+      ([xshift=\tabxoffset,
+        yshift={-1*(\the\tab@top+\the\tab@height/2+
+                mod(#3-1-\tab@floor,\tab@count)*
+                (\the\tab@height+\the\tab@gap))}]current page.north \eastwest)
+      rectangle ++(\the\tab@width,\the\tab@height)
+      node[midway] {\tab@style\textcolor{white}{#2}};
+  \end{tikzpicture}%
+  \ifstrempty{#5}{}{%
     \mywritebibfileinfo{#5.bib}%
-    }%
-    \noindent\fullcite{#4}%
+  }%
+  \noindent\fullcite{#4}%
 }
 \makeatother
 \input{lib/check_for_placeholder_references}
@@ -523,7 +517,7 @@ Choose the most specific keyword from those used in your domain, see for example
 the IEEE Taxonomy ({\small \url{https://www.ieee.org/publications/services/thesaurus-thank-you.html}}), PhySH (Physics Subject Headings)\linebreak[4] ({\small \url{https://physh.aps.org/}}), \ldots or keyword selection tools such as the  National Library of Medicine's Medical Subject Headings (MeSH)  ({\small \url{https://www.nlm.nih.gov/mesh/authors.html}}) or Google's Keyword Tool ({\small \url{https://keywordtool.io/}})\\
 
 \warningExpl{A helpful script for those who are comfortable with Python}
-To help identify suitable keywords, a dedicated Python utility, \texttt{thesis\_keyword\_extractor.py}, has been developed. This tool processes the main textual content of the thesis (as a PDF input) and generates a list of potential keywords and specialized terminology. Crucially, it attempts to assign a linguistic proficiency level to each term, based on the Common European Framework of Reference for Languages (CEFR) scale. This analysis is intended to assist the author in selecting precise and appropriately specialized keywords for the thesis.
+To help identify suitable keywords, a dedicated Python utility, \texttt{thesis\_keyword\_extractor.py}, has been developed. This tool processes the main textual content of the thesis (as a \gls{PDF} input) and generates a list of potential keywords and specialized terminology. Crucially, it attempts to assign a linguistic proficiency level to each term, based on the Common European Framework of Reference for Languages (CEFR) scale. This analysis is intended to assist the author in selecting precise and appropriately specialized keywords for the thesis.
 \footnote{The source code for the keyword extractor and supporting files can be found at \url{https://github.com/gqmaguirejr/Canvas-tools}.}
 
 \textbf{Formatting the keywords}:
@@ -1625,7 +1619,7 @@ def make_spreadsheet_of_differences(pds):
 These figures are just some examples to show that you can draw your own figures for use in your thesis. This has two advantages: \first you do not have to worry about copyrights --- as these are your own figures, and \Second the text is now readable and not simply a picture of text --- so screen readers can read the figure's contents to someone who is listening to the contents of your thesis.
 
 \subsubsection{Azure's Form Recognizer}
-\Cref{fig:processAnInvoice} shows the processing of key-value extraction from a PDF document using Azure's Form Recognizer. 
+\Cref{fig:processAnInvoice} shows the processing of key-value extraction from a \gls{PDF} document using Azure's Form Recognizer. 
 
 \tikzset{
     processBox/.style={rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, font=\sffamily, draw=black, fill=red!20},
@@ -1651,7 +1645,7 @@ These figures are just some examples to show that you can draw your own figures 
      , -latex'] let \p1=(GDM.east), \p2=(kvp.west), \p3=(entities.west) in (GDM.east) --  +(0.25*\x2-0.25*\x1, \y1) -- +(0.5*\x3-0.5*\x1, \y3) -- (entities.west);
 \end{tikzpicture}
 }
-\caption{The processing of key-value extraction from a PDF document using Azure's Form Recognizer}
+\caption{The processing of key-value extraction from a \gls{PDF} document using Azure's Form Recognizer}
   \label{fig:processAnInvoice}
 \end{figure}
 \FloatBarrier
@@ -2145,51 +2139,66 @@ xxxx.
 \renewcommand{\chaptermark}[1]{\markboth{Appendix \thechapter\relax:\thinspace\relax#1}{}}
 \chapter{Supporting materials}
 \label{sec:supportingMaterial}
-\generalExpl{Here is a place to add supporting material that can help others build upon your work. You can include files as attachments to the PDF file or indirectly via URLs. Alternatively, consider adding supporting material uploaded as separate files in DiVA.}
+\generalExpl{Here is a place to add supporting material that can help others build upon your work. You can include files as attachments to the \gls{PDF} file, embedded into the \gls{PDF} file, or indirectly via URLs. Alternatively, consider adding supporting material uploaded as separate files in DiVA.}
 
-\section{Directly: Attach files to the PDF file}
-% Attach the BibLaTeX for your references to make it easy for a reader to find and use them
+\section{Directly: Embed files to the PDF file}
+% Embed the BibLaTeX for your references to make it easy for a reader to find and use them
 The BibLaTeX references used in this thesis are attached.
-    \IfFileNotEmpty{referencesUsed.bib}{
-    \attachfile[description={referencesUsed.bib}]{referencesUsed.bib}}
-    {\attachfile[description={references.bib}]{references.bib}}
-\engExpl{Here we have used \texttt{\textbackslash attachfile} and attached the file. There is also a mechanism for \textbf{embedding} files into PDF, but I do not use it or describe it further here -- for reasons of \first simplicity, \Second \texttt{\textbackslash attachfile} supports any type of file, \third the attached files are visible as annotations on the page where they are included, and  \fourth potential compatibility with PDF/A-3.}
+\begin{lstlisting}[language={[LaTeX]TeX}, caption={Embedding referencesUsed.bib file}, label=lst:exampleOfEmbedding]
+\IfFileNotEmpty{referencesUsed.bib}{%
+    \embedfile[
+        afrelationship = {Supplement},
+        mimetype       = {text/x-bibtex},
+        desc           = {Sanitized BibLaTeX entries cited in the thesis}
+    ]{referencesUsed.bib}%
+    }{}
+\end{lstlisting}
+\engExpl{Here we have used \texttt{\textbackslash embedfile} to embed the file. Since we configured the document to use PDF/A-3u, we can embed any file type.}
 
-Your reader can access the attached files using a PDF tool such as Adobe Acrobat Reader using the paperclip icon in the left menu, as shown in \Cref{fig:PDFreaderPaperclipExample} or by right-clicking on the push-pin icon in the PDF file and then using the menu to save the embedded file as shown in \Cref{fig:PDFreaderPushpinExample}.
+One argument for including supporting material in the \gls{PDF} file is that it will be available to anyone who has a copy of the \gls{PDF} file. As a result, they do not have to look elsewhere for this material. This comes at the cost of a larger \gls{PDF} file. However, the files are encoded into a compressed stream within the \gls{PDF} file; thus, reducing the number of additional bytes. For example, a \texttt{references.bib} file that was \qty{18093}{\byte} in size only occupies \qty{7087}{\byte} in the \gls{PDF} file.
 
-An argument for including supporting material in the PDF file is that it will be available to anyone who has a copy of the PDF file. As a result, they do not have to look elsewhere for this material. This comes at the cost of a larger PDF file. However, the attached files are encoded into a compressed stream within the PDF file; thus, reducing the number of additional bytes. For example, the references.bib file that was used in this example is \qty{18093}{\byte} in size but only occupies \qty{7087}{\byte} in the PDF file.
+Assuming that the \gls{PDF} file is named \texttt{xxx.pdf}, you can get a list of the embedded files with \texttt{pdfdetach}, as shown in \Cref{lst:listOfEmbeddedFiles}. One can save all of the embedded files, as shown in \Cref{lst:saveAllEmbeddedFiles}, or save one of the files (by name or number), as shown in \Cref{lst:saveOneEmbeddedFiles}. Additionally, one can programmatically extract the embedded files with Python tools such as \texttt{pypdf} or \texttt{PyMuPDF}, Adobe Acrobat / Adobe Reader\footnote{Your reader can access the attached files using a PDF tool such as Adobe Acrobat Reader using the paperclip icon in the left menu, as shown in \Cref{fig:PDFreaderPaperclipExample}.}, and other tools.
 
-\engExpl{Note that the figures are for an earlier version of the \texttt{references.bib} file; hence, the size does not match that stated in the above paragraph.}
+\begin{lstlisting}[language={bash}, caption={Listing the embedded files},label=lst:listOfEmbeddedFiles]
+pdfdetach -list xxx.pdf 
+4 embedded files
+1: citedtags.bib
+2: fordiva.json
+3: lib/acronyms.tex
+4: referencesUsed.bib
+\end{lstlisting}
+
+\begin{lstlisting}[language={bash}, caption={Saving all of the embedded files},label=lst:saveAllEmbeddedFiles]
+pdfdetach -saveall xxx.pdf
+\end{lstlisting}
+
+\begin{lstlisting}[language={bash}, caption={Saving one of the embedded files by number or name},label=lst:saveOneEmbeddedFiles]
+pdfdetach -save 1 -o fordiva.json xxx.pdf
+# or by filename
+pdfdetach -savefile fordiva.json xxx.pdf
+\end{lstlisting}
 
 \begin{figure}[!ht]
   \begin{center}
-    \includegraphics[width=0.50\textwidth]{README_notes/pdf-viewer-attached-files.png}
+    \includegraphics[width=0.99\textwidth]{README_notes/Acroread_paperclip_attachments}
   \end{center}
-  \caption{Adobe Acrobat Reader using the paperclip icon for the attached references.bib file}
+  \caption{Adobe Acrobat Reader using the paperclip icon for embedded files}
   \label{fig:PDFreaderPaperclipExample}
 \end{figure}
 \FloatBarrier
 
-\begin{figure}[!ht]
-  \begin{center}
-    \includegraphics[width=0.99\textwidth]{README_notes/Bib-save-embedded-example.png}
-  \end{center}
-  \caption{Adobe Acrobat Reader after right-clicking on the push-pin icon for the attached references.bib file}
-  \label{fig:PDFreaderPushpinExample}
-\end{figure}
-\FloatBarrier
 
 \section{Indirectly: Using a URL}
-% Attach source code file(s) or add a URL to the github or other repository
+% Embed source code file(s) or add a URL to the GitHub or other repository
 Some source code relevant to this thesis can be found at \url{https://github.com/gqmaguirejr/E-learning} and \url{https://github.com/gqmaguirejr/Canvas-tools}.
 
-If you used a research data repository, you should include a URL to your data (at some point in the thesis or, at worst, in an appendix such as this). Some potential data repositories are: \foreignlanguage{swedish}{Svensk nationell datatjänst} (\href{https://snd.se/sv}{SND}) and \href{https://researchdata.se/}{Researchdata.se}; \foreignlanguage{swedish}{Sveriges dataportal} (\href{https://www.digg.se/}{DIGG}); \href{https://zenodo.org/}{Zenodo} and
+If you used a research data repository, you should include a \gls{URL} to your data (at some point in the thesis or, at worst, in an appendix such as this). Some potential data repositories are: \foreignlanguage{swedish}{Svensk nationell datatjänst} (\href{https://snd.se/sv}{SND}) and \href{https://researchdata.se/}{Researchdata.se}; \foreignlanguage{swedish}{Sveriges dataportal} (\href{https://www.digg.se/}{DIGG}); \href{https://zenodo.org/}{Zenodo} and
 \href{https://zenodo.org/communities/eu/}{EU Open Research Repository}; and \href{https://figshare.com/}{Figshare}.
 
 \section{Uploading supporting materials into DiVA}
 
-\warningExpl{DiVA is limited to $\approx$\qty{1}{\giga\byte} for each supporting file. If you have very large amounts of supporting material, you will probably want to use one of the data repositories. For additional help with this, contact KTH Library via 
-\href{mailto:researchdata@kth.se}{researchdata@kth.se}.\\As of Spring 2024, there are plans to migrate this supporting data from DiVA to a research data repository.
+\warningExpl{\gls{DiVA} is limited to $\approx$\qty{1}{\giga\byte} for each supporting file. If you have very large amounts of supporting material, you will probably want to use one of the data repositories. For additional help with this, contact KTH Library via 
+\href{mailto:researchdata@kth.se}{researchdata@kth.se}.\\As of Spring 2024, there are plans to migrate this supporting data from \gls{DiVA} to a research data repository.
 }
 \cleardoublepage
 
@@ -2323,7 +2332,8 @@ This publication has a \href{https://creativecommons.org/licenses/by/3.0/}{CC BY
 %% Include Paper_B-two_pages.pdf
 %% can include as options pagecommand={\thispagestyle{fancy}},frame to keep pagination and running headings
 % Just include 2 pages for this example
-\includepdf[pages={1-},scale=1.0]{Included_publications/Paper_B_one_page.pdf}
+% Note that this is using a cleaned version of the file.
+\includepdf[pages={1-},scale=1.0]{Included_publications/Paper_B_one_page_final.pdf}
 
 \cleardoublepage
 % Third publication
@@ -2433,24 +2443,45 @@ For details see \cite{10.1145/3445814.3446724}. The following pages are based on
 \inputminted[breaklines]{json}{fordiva.json}
 }
 {}
-    % Attach the fordiva.json file
-    \IfFileNotEmpty{fordiva.json}{
-    \attachfile[description={fordiva.json}]{fordiva.json}
-    }{}
-    
-    % Attach the citedtags.bib file
-    \IfFileNotEmpty{citedtags.bib}{
-    \attachfile[description={cited tags bib file}]{citedtags.bib}
-    }{}
-
-    % If there is an acronyms.tex file, add it
-    \IfFileNotEmpty{lib/acronyms.tex}{
- \attachfile[description={acronyms.tex}]{lib/acronyms.tex}
-    }{}
-
    \end{flushleft}
 \clearpage
 \end{NoHyper}
 
+% add the various files to be embedded
+    % 1. fordiva.json -> /Data
+    \IfFileNotEmpty{fordiva.json}{%
+    \embedfile[
+        afrelationship = {Data},
+        mimetype       = {application/json},
+        desc           = {DiVA thesis metadata payload in JSON format}
+    ]{fordiva.json}%
+    }{}
+    
+    % 2. referencesUsed.bib -> /Supplement
+    \IfFileNotEmpty{referencesUsed.bib}{%
+    \embedfile[
+        afrelationship = {Supplement},
+        mimetype       = {text/x-bibtex},
+        desc           = {Sanitized BibLaTeX entries cited in the thesis}
+    ]{referencesUsed.bib}%
+    }{}
+    
+    % 3. acronyms.tex -> /Source
+    \IfFileNotEmpty{lib/acronyms.tex}{%
+    \embedfile[
+        afrelationship = {Source},
+        mimetype       = {application/x-tex},
+        desc           = {LaTeX source definitions for acronyms and glossaries}
+    ]{lib/acronyms.tex}%
+    }{}
+    
+    % 4. Attach the citedtags.bib file
+    \IfFileNotEmpty{citedtags.bib}{%
+    \embedfile[
+        afrelationship = {Supplement},
+        mimetype       = {text/x-bibtex},
+        desc           = {Cited tags BibLaTeX bibliography file}
+    ]{citedtags.bib}%
+    }{}
 
 \end{document}

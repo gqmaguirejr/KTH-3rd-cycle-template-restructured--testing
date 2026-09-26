@@ -5,6 +5,7 @@
 % For more information about his template see https://github.com/novoid/LaTeX-KOMA-template
 % Note that this template does not use anything from his template other than the names of the information for the PDF meta fields, i.e., mytitle, myauthor, and mykeywords together with the idea of defining the corresponding newcommand to set the relevant hyperref parameters.
 
+
 \makeatletter
 \ifx\@subtitle\@empty
     \newcommand{\mytitle}{\@title}
@@ -33,14 +34,14 @@
 
 \ifinswedish
 \hypersetup{%
-    pdflang={sv},
+    pdflang={sv-SE},
     pdfmetalang={sv},
     %pdftitle={\mytitle}        % Title field
     pdftitle = {[sv]{{\mytitle}}, [en]{{\myalttitle}}},
 }
 \else
 \hypersetup{%
-    pdflang={en},
+    pdflang={en-US},
     pdfmetalang={en},
     %pdftitle={\mytitle}        % Title field
     pdftitle = {[en]{{\mytitle}}, [sv]{{\myalttitle}}},
@@ -179,7 +180,7 @@
 
   % Publication Type (already registered as 'aggregationType' or custom property)
   \tl_put_right:Nn \l_tmpa_tl {
-    \space\space\space\space<prism:publicationType>report</prism:publicationType>^^J
+    \space\space\space\space<prism:aggregationType>report</prism:aggregationType>^^J
   }
 
   % Inject properties directly into the existing outer <rdf:Description>

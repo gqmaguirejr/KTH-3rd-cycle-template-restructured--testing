@@ -121,15 +121,20 @@
   % STIX Two Math does not have bold face - so we fake it
   %\newfontfamily\mystixmathfont[BoldFeatures={FakeBold=1.5}, BoldItalicFeatures={FakeBold=1.5}]{STIX Two Math}
   \newfontfamily\mystixmathfont{STIX Two Math}
-  % STIX Two Math does not have a bold font, but it has bold symbols with an without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
+  % STIX Two Math does not have a bold font, but it has bold symbols with and without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
   % and this will return the bold serif version of the character
 \makeatletter
-% Suppress missing bold font shape warnings across all STIX Two Math font instances
-\@for\idx:={0,1,2,3,4,5,6}\do{%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
-  \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+\AtBeginDocument{%
+  \@for\idx:={0,1,2,3,4,5,6}\do{%
+    \@ifundefined{T@TU+STIXTwoMath(\idx)}{%
+      % Family not loaded by unicode-math; do nothing
+    }{%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+    }%
+  }%
 }
 \makeatother
 
