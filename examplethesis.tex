@@ -40,9 +40,9 @@
     % pdfstandard = A-4,
     pdfversion=1.7,
     pdfstandard=a-3u,
-    lang        = en-US
+    lang        = en-US,
+    colorprofiles=sRGB.icc
 }
-
 
 %% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
 \makeatletter
@@ -137,6 +137,7 @@ includepublications,    % uncomment - if you want to include publications for a 
 %EnableYiddishAbstract,      % include Yiddish abstract
 %
 ]{kththesis}
+\usepackage[debugshow]{tracefnt}
 
 % KTH color palette for use in thesis
 \input{kth/kthcolors}
@@ -527,7 +528,7 @@ To help identify suitable keywords, a dedicated Python utility, \texttt{thesis\_
   \item Avoid "stop words" --- as they generally carry little or no information.
   \item List your keywords separated by commas (\enquote{,}).
 \end{itemize}    
-Since you should have both English and Swedish keywords --- you might think of ordering the keywords in corresponding order (\ie, so that the n\textsuperscript{th} word in each list correspond) --- this makes it easier to mechanically find matching keywords.
+Since you should have both English and Swedish keywords --- you might think of ordering the keywords in corresponding order (\ie so that the n\textsuperscript{th} word in each list correspond) --- this makes it easier to mechanically find matching keywords.
 
 \cleardoublepage
 \selectlanguage{swedish}
