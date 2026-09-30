@@ -1916,9 +1916,103 @@ doc.close()
 print(f"General-purpose processing complete: Patched {patched_cmaps} CMaps, cleaned {cleaned_cids} CIDSets, purged {removed_tr} TR keys.")
 \end{lstlisting}
 
+Here is the clean, generalized, object-agnostic Python script that you can use as the universal recipe for any non-compliant publication PDF (Paper B, Paper D, or future inclusions):
 
-\begin{lstlisting}[language={[LaTeX]TeX}, caption={Generates only 5 issues with two types of issues}, label=lst:pdfaTwoTypesOfErrors]
+\begin{lstlisting}[language={Python}, caption={Python to fix up paper X},label=lst:cleanPaperGeneral]
+import fitz
+import re
 
+doc = fitz.open("Paper_D_fully_rgb.pdf")
+
+# 1. Define a standard ToUnicode CMap stream for WinAnsi fonts
+cmap_content = (
+    b"/CIDInit /ProcSet findresource begin\n"
+    b"12 dict begin\n"
+    b"begincmap\n"
+    b"/CMapType 2 def\n"
+    b"/CMapName /Custom-WinAnsi-ToUnicode def\n"
+    b"1 begincodespacerange\n"
+    b"<00><ff>\n"
+    b"endcodespacerange\n"
+    b"1 beginbfrange\n"
+    b"<00><ff><0000>\n"
+    b"endbfrange\n"
+    b"endcmap\n"
+    b"CMapName currentdict /CMap defineresource pop\n"
+    b"end end"
+)
+
+cmap_xref = doc.get_new_xref()
+doc.update_object(cmap_xref, f"<</Length {len(cmap_content)}>>")
+doc.update_stream(cmap_xref, cmap_content)
+
+patched_cmaps = 0
+cleaned_cids = 0
+cleaned_tr = 0
+
+# 2. Universal sweep across all cross-reference objects in the document
+for xref in range(1, doc.xref_length()):
+  try:
+    # A. Dynamically inject fallback ToUnicode mappings where missing
+    stream_data = doc.xref_stream(xref)
+    if stream_data and b"begincmap" in stream_data:
+      cmap_text = stream_data.decode("latin1", errors="ignore")
+      if "endcmap" in cmap_text and "<fffd>" not in cmap_text:
+        fallback_range = "\n1 beginbfrange\n<00> <ff> <fffd>\nendbfrange\n"
+        cmap_text = cmap_text.replace("endcmap", fallback_range + "endcmap")
+        doc.update_stream(xref, cmap_text.encode("latin1"))
+        patched_cmaps += 1
+
+    # B. Fetch object text (handling both compressed and uncompressed streams)
+    obj_text = doc.xref_object(xref, compressed=False)
+    if not obj_text or obj_text == "null":
+      obj_text = doc.xref_object(xref, compressed=True)
+
+    if obj_text:
+      updated = False
+      
+      # General-purpose cleanup: strip conflicting /CIDSet references
+      if "FontDescriptor" in obj_text or "CIDSet" in obj_text:
+        new_obj = re.sub(r'/CIDSet\s+\d+\s+0\s+R', '', obj_text)
+        if new_obj != obj_text:
+          obj_text = new_obj
+          updated = True
+          cleaned_cids += 1
+
+      # General-purpose cleanup: strip forbidden /TR or /TR2 keys anywhere they appear
+      if "/TR" in obj_text or "/TR2" in obj_text:
+        # Matches /TR or /TR2 keys and their inline values (names, references, arrays, dicts)
+        new_obj = re.sub(r'/\s*TR2?\b\s*(?:\[[^\]]*\]|/[A-Za-z0-9#+-]+|\d+\s+\d+\s+R|<[^>]*>|\([^)]*\)|<<[^>]*>>)?', '', obj_text)
+        
+        # Structural fallback: strip out any line explicitly defining a standalone /TR property
+        if new_obj == obj_text:
+          lines = obj_text.splitlines()
+          filtered = [l for l in lines if not re.search(r'/\s*TR2?\b', l)]
+          new_obj = "\n".join(filtered)
+
+        if new_obj != obj_text:
+          obj_text = new_obj
+          updated = True
+          cleaned_tr += 1
+
+      if updated:
+        doc.update_object(xref, obj_text)
+
+  except Exception:
+    continue
+
+# 3. Explicitly link the ToUnicode stream to any WinAnsi fonts lacking it
+for page_num in range(len(doc)):
+  for font in doc.get_page_fonts(page_num):
+    font_xref = font[0]
+    obj_text = doc.xref_object(font_xref, compressed=True)
+    if "/ToUnicode" not in obj_text and obj_text.endswith(">>"):
+      updated_obj = obj_text[:-2] + f"/ToUnicode {cmap_xref} 0 R>>"
+      doc.update_object(font_xref, updated_obj)
+
+doc.save("Paper_D_one_page_final.pdf", garbage=4, deflate=True)
+doc.close()
+print(f"Universal processing complete: Patched {patched_cmaps} CMaps, cleaned {cleaned_cids} CIDSets, purged {cleaned_tr} TR keys.")
 \end{lstlisting}
 
 \clearpage
