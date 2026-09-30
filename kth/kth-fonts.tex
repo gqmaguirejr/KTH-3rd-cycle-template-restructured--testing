@@ -39,14 +39,7 @@
 \setmonofont{TeX Gyre Cursor}[Ligatures={ResetAll}]
 \babelfont{tt}[Ligatures={ResetAll}]{TeX Gyre Cursor}
 
-\DeclareFontFamily{TU}{cmtt}{}
-\DeclareFontShape{TU}{cmtt}{m}{n}{<-> "TeXGyreCursor-Regular:mode=node;unicode=yes;"}{}
-\DeclareFontShape{TU}{cmtt}{m}{it}{<-> "TeXGyreCursor-Italic:mode=node;unicode=yes;"}{}
-\DeclareFontShape{TU}{cmtt}{m}{sl}{<-> "TeXGyreCursor-Italic:mode=node;unicode=yes;"}{}
-\DeclareFontShape{TU}{cmtt}{b}{n}{<-> "TeXGyreCursor-Bold:mode=node;unicode=yes;"}{}
-\DeclareFontShape{TU}{cmtt}{bx}{n}{<-> "TeXGyreCursor-Bold:mode=node;unicode=yes;"}{}
-
-\renewcommand{\ttdefault}{qcr}
+\makeatletter
 
 \begin{comment}
     \babelfont[english]{rm}{TeX Gyre Termes}
@@ -55,12 +48,40 @@
 \end{comment}
 
 %% set up math font
-%  \setmathfont{TeX Gyre Termes Math} %% a math font
 \usepackage{mathtools}
-\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
-% The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
-%\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
-\setmathfont{STIX Two Math}[version=normal]
+\usepackage[
+  math-style=ISO,
+  bold-style=ISO
+]{unicode-math}
+
+% Load STIX Two Math and force it over all standard math characters to bypass OML/cmmi
+\setmathfont{STIX Two Math}
+\setmathfont{STIX Two Math}[
+  range = {
+    up/{num,latin,Latin,greek,Greek},
+    it/{latin,Latin,greek,Greek},
+    bfup/{num,latin,Latin,greek,Greek},
+    bfit/{latin,Latin,greek,Greek}
+  }
+]
+% Forcefully unbind symletters (mathgroup 1) from legacy OML/cmmi
+\DeclareSymbolFont{letters}{TU}{STIXTwoMath(1)}{m}{it}
+
+% Calligraphic override
+\setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
+
+\begin{comment}
+\setmathfont{STIX Two Math}[
+  range = {
+    "00030-\00039, % digits
+    "00041-\0005A, % Latin uppercase
+    "00061-\0007A, % Latin lowercase
+    "00391-\003A9, % Greek uppercase
+    "003B1-\003C9  % Greek lowercase
+  }
+]
+\end{comment}
+
 %\setmathfont{TeX Gyre Pagella Math}[version=normal]
 %\setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
   % For both XeLaTeX and LuaLatex for getting access to unicode symbols
@@ -81,6 +102,8 @@
       \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
       \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
       \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
+      % Map italic shape requests for STIX Two Math symbol families to normal shape
+      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{m}{it}{<-> ssub * STIXTwoMath(\idx)/m/n}{}%
     }%
   }%
 }
@@ -88,13 +111,34 @@
 
 \newfontfamily\mystixtextfont{STIX Two Text}
 
-  % Define a new math alphabet mapping that uses
-  % the font's Stylistic Set 1 for the \mathcal range.
-  \setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
-    % Alternatively, one can define a new font to access the Stylistic Set 1 <ss01>
-    % To access all the Stylistic Set 1 <ss01> such as ℋ
-    %\newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
-    
+% Define a new math alphabet mapping that uses
+% the font's Stylistic Set 1 for the \mathcal range.
+\setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
+% Alternatively, one can define a new font to access the Stylistic Set 1 <ss01>
+% To access all the Stylistic Set 1 <ss01> such as ℋ
+%\newfontfamily\mystixmathfontSSa{STIX Two Math}[StylisticSet=1]
+
+
+% Alias cmtt to TeX Gyre Cursor across all encodings
+\DeclareFontFamily{TU}{cmtt}{}
+\DeclareFontShape{TU}{cmtt}{m}{n}{<->ssub * qcr/m/n}{}
+\DeclareFontShape{TU}{cmtt}{m}{it}{<->ssub * qcr/m/it}{}
+\DeclareFontShape{TU}{cmtt}{b}{n}{<->ssub * qcr/b/n}{}
+\DeclareFontShape{TU}{cmtt}{bx}{n}{<->ssub * qcr/b/n}{}
+
+\DeclareFontFamily{OT1}{cmtt}{}
+\DeclareFontShape{OT1}{cmtt}{m}{n}{<->ssub * qcr/m/n}{}
+
+\DeclareFontFamily{T1}{cmtt}{}
+\DeclareFontShape{T1}{cmtt}{m}{n}{<->ssub * qcr/m/n}{}
+\makeatother
+\renewcommand{\ttdefault}{qcr}
+
+% Forcefully remap the legacy 'letters' symbol font to use the OpenType math font under TU encoding
+\AtBeginDocument{
+  \DeclareSymbolFont{letters}{TU}{STIXTwoMath(1)}{m}{n}
+}
+
 % use english as a fallback when in other languages
 \babelprovide[import, onchar=ids fonts]{english}
 
@@ -369,3 +413,4 @@ Extension = .ttf,
 }
 \ExplSyntaxOff % Deactivate expl3 syntax
 \makeatother
+

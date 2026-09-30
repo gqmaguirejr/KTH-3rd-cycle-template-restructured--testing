@@ -1577,6 +1577,68 @@ While document-level metadata strings are configured via \fname{lib/pdf\_related
 \section{To achieve PDF/A when including existing PDF files}
 \label{sec:PDFAforExistingPDFs}
 
+There are several alternatives to consider when you want to include non-PDF/A compliant \gls{PDF} files in a thesis:
+\begin{enumerate}
+    \item\label{RecompileAlternative} If you have the source files (and the relevant copyright ownership or permissions), you can recompile them such that they are PDF/A compliant.
+    \begin{description}[style=nextline, labelwidth=\widthof{\textbf{Disadvantage}}, leftmargin=!]
+    \item[Advantage] PDF/A compliance --- it is also a \enquote{new} document and hence has its own copyright.
+    \item[Disadvantage] You may lose the layout of the publication.
+    \item[Note] Many monographs have chapters that are based on a specific publication, rewritten as a chapter (with, of course, a citation to the original publication).
+    \end{description}
+    
+    \item\label{AttachAlternative} If your kappa (or thesis) is PDF/A-3u compliant, \textbf{attach} the non-PDF/A compliant files
+    \begin{description}[style=nextline, labelwidth=\widthof{\textbf{Disadvantage}}, leftmargin=!]
+    \item[Advantage] PDF/A-3u compliance allows the attachment of other kinds of files without breaking the containing PDF file's PDF/A-3u compliance. As a result, the \enquote{included files} are fully present.
+    
+    \item[Disadvantage] The attached files must be viewed separately and may not maintain their appearance in the future (as they do not include all fonts used, among other external dependencies).
+    \end{description}
+
+    \item\label{TransformAlternative} Transform the non-compliant \glspl{PDF} into compliant \glspl{PDF}
+    \begin{description}[style=nextline, labelwidth=\widthof{\textbf{Disadvantage}}, leftmargin=!]
+    \item[Advantage] The documents can be included in-place with \texttt{\textbackslash includepdf}.
+    
+    \item[Disadvantage] Doing the transformation can be \textbf{very} difficult. See \Cref{sec:nonPDFAcompliantPublications}.
+    \end{description}
+\end{enumerate}
+
+
+\subsection{Dealing with non-PDF/A compliant publications}
+\label{sec:nonPDFAcompliantPublications}
+
+\subsubsection{Dealing with Paper A from rfc1235.txt.pdf}
+The included paper \fname{rfc1235.txt.pdf} is set in Courier, but the file does not embed this Adobe proprietary font. One can replace this font with the NimbusMonoPS-Regular font by using the command shown in \Cref{lst:cleanrfc1235}. While the replacement font is not visually identical, it is metrically matched:
+\begin{itemize}
+    \item \textbf{The Outlines (Glyph Shapes):} NimbusMonoPS was created as an open-source clone of Adobe Courier. While their character widths, line heights, word spacing, and overall proportions are meticulously matched (metrics are identical), the actual glyph designs have subtle differences in stroke weight, serifs, and spacing. If you look at them under a microscope, you can tell they are different font families.
+
+    \item \textbf{The Layout:} Because the metrics (widths and spacing) match, the text wrapping, line breaks, page lengths, and overall formatting of the included paper will not shift.
+\end{itemize}
+
+Will NimbusMono be acceptable for KTH and archival standards? The short answer is \enquote{Yes}. Archival bodies (enforcing PDF/A rules) care primarily about self-containment and long-term readability:
+\begin{itemize}
+    \item Every character is permanently baked into the file as vector outlines. PDF/A-3u strictly forbids depending on device fonts or un-embedded Base-14 references precisely because a digital archive must remain viewable decades from now, even if the user's computer does not have Adobe Courier installed. By embedding NimbusMono, the rendering engine will always have the exact outlines it needs.
+
+    \item ToUnicode maps are fully integrated so the text remains searchable and highlightable.
+
+    \item The layout is preserved without breaking pagination.
+\end{itemize}
+
+However, this clearly comes at the cost of not being visually identical at the pixel level.
+
+The file is cleaned as shown in \Cref{lst:cleanrfc1235}.
+\begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the rfc1235 PDF file},label=lst:cleanrfc1235]
+gs -o rfc1235\_clean.pdf -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress rfc1235.txt.pdf
+\end{lstlisting}
+
+This works because Ghostscript does not bundle the original, proprietary Adobe font binaries; instead, it relies on high-quality, \textit{metric-compatible open-source font equivalents} created by URW++ to render and process these fonts.
+\begin{itemize}
+    \item Courier is mapped to NimbusMonoPS-Regular.
+
+    \item Times-Roman is mapped to NimbusRoman.
+
+    \item Helvetica is mapped to NimbusSans.
+\end{itemize}
+
+\subsubsection{Dealing with Paper\_B}
 The example paper in \fname{Paper\_B\_one\_page.pdf} is not PDF/A compliant.
 The veraPDF report for this file highlights the exact violations propagating into the thesis \gls{PDF}:
 \begin{enumerate}
@@ -1586,45 +1648,170 @@ The Hindawi publisher layout (the orange/brown header band, lines, and logos) wa
 \item \textbf{21 \enquote{DeviceGray} Color Space Violations (Rule \enquote{6.2.3.3 Test 3}):}
 Grayscale text and borders were authored in uncalibrated \enquote{/DeviceGray} without an OutputIntent profile.
 
-
 \item \textbf{Missing \enquote{CIDSet} in Font Descriptor (Rule \enquote{6.3.5 Test 3}):}
 The font \enquote{VHFPLH+MinionPro-Regular} used by the publisher lacks the mandatory \enquote{/CIDSet} stream mapping its subset glyphs.
 
-\item \textbf{Illegal Link Annotation Properties (Rule \enquote{6.5.3 Test 2 & 3}):}
+\item \textbf{Illegal Link Annotation Properties (Rule \enquote{6.5.3 Test 2 \& 3}):}
 The clickable DOI URL (\enquote{[http://dx.doi.org/10.1155/2014/528407](http://dx.doi.org/10.1155/2014/528407)}) contains an annotation dictionary (\enquote{29 0 obj}) lacking standard \enquote{/Print} flags and containing non-conforming color arrays.
 
-\item \textbf{Non-Standard XMP Metadata Extensions (Rule \enquote{6.7.9 Test 2 & 3}):}
-Hindawi injected CrossMark, NISO-JAV, and PRISM 2.1 properties (\enquote{crossmark:MajorVersionDate}, \enquote{jav:journal_article_version}, \etc) without an \enquote{extensionSchemas} container.
+\item \textbf{Non-Standard XMP Metadata Extensions (Rule \enquote{6.7.9 Test 2 \& 3}):}
+Hindawi injected CrossMark, NISO-JAV, and PRISM 2.1 properties (\enquote{crossmark:MajorVersionDate}, \enquote{jav:journal\_article\_version}, \etc) without an \enquote{extensionSchemas} container.
 \end{enumerate}
 
-\begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the fixed PDF file},label=lst:cleanPaperB]
-gs -sDEVICE=pdfwrite \
-   -dCompatibilityLevel=1.7 \
+The entire multi-stage pipeline that transforms the \gls{PDF} file  \fname{Paper\_B\_one\_page.pdf} into a \qty{100}{\percent} compliant PDF/A-3u file consists of:
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{Disadvantage}}, leftmargin=!]
+
+\item [Ghostscript] \Cref{lst:cleanPaperB} cleanups and converts all CMYK color channels, vector spaces, and fills into the device-independent sRGB color space.
+\begin{itemize}
+    \item \texttt{-sColorConversionStrategy=sRGB} and \texttt{-sProcessColorModel=DeviceRGB} forces Ghostscript to map all embedded CMYK vector artwork, fills, and strokes into standard sRGB, eliminating any raw DeviceCMYK operators that trigger veraPDF rule 6.2.4.3.
+
+    \item \texttt{-dOverrideICC=true} ensures that existing embedded profiles that might conflict or cause color-space mismatches are overridden by the target sRGB conversion strategy.
+\end{itemize}
+
+
+\item[Python Part 1] See \Cref{lst:cleanPaperBone}, which:
+\begin{itemize}
+    \item Injects a universal fallback byte-range (\texttt{<00> <ff> <fffd>}) into \texttt{CMap} streams to safely handle any unmapped glyph indices.
+
+    \item Allocates a custom \texttt{/ToUnicode} stream and explicitly linked it to WinAnsi-encoded fonts (such as Minion-Black).
+
+    \item Generates baseline \texttt{CIDSet} descriptor tables for embedded CID font subsets.
+\end{itemize}
+
+\item[Python Part 1] 2B performs a regex-based cleanup pass to surgically strip out conflicting or overly strict \texttt{/CIDSet} property references that tripped the validator's conditional checks.
+\end{description}
+
+\begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the Paper\_B PDF file},label=lst:cleanPaperB]
+gs -o Paper_B_fully_rgb.pdf \
+   -sDEVICE=pdfwrite \
    -dPDFSETTINGS=/prepress \
-   -dNOPAUSE -dBATCH \
+   -dPDFA=3 \
    -sProcessColorModel=DeviceRGB \
    -sColorConversionStrategy=sRGB \
-   -dShowAnnots=false \
-   -dPreserveHalftoneInfo=false \
-   -dPreserveOPIRes=false \
+   -dOverrideICC=true \
    -dEmbedAllFonts=true \
    -dSubsetFonts=true \
-   -dTransferFunctionInfo=/Apply \
-   -sOutputFile=Paper_B_one_page_final.pdf \
-   -f Paper_B_one_page.pdf
+   -dForceEncodeFonts=true \
+   -dPreserveGlyphNames=false \
+   Paper_B_one_page.pdf
 \end{lstlisting}
 
-\begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the fixed PDF file},label=lst:cleanOtherPapers]
-gs -sDEVICE=pdfwrite \
-   -dCompatibilityLevel=1.7 \
-   -dPDFSETTINGS=/prepress \
-   -dNOPAUSE -dBATCH \
-   -sProcessColorModel=DeviceRGB \
-   -sColorConversionStrategy=sRGB \
-   -dEmbedAllFonts=true \
-   -dSubsetFonts=true \
-   -sOutputFile=figure_fixed.pdf \
-   -f original_figure.pdf
+\begin{lstlisting}[language={Python}, caption={Python to fix up paper B},label=lst:cleanPaperBone]
+import fitz
+import re
+
+doc = fitz.open("Paper\_B\_fully\_rgb.pdf")
+
+# 1. Define a standard ToUnicode CMap stream for WinAnsi fonts
+cmap_content = (
+    b"/CIDInit /ProcSet findresource begin\n"
+    b"12 dict begin\n"
+    b"begincmap\n"
+    b"/CMapType 2 def\n"
+    b"/CMapName /Custom-WinAnsi-ToUnicode def\n"
+    b"1 begincodespacerange\n"
+    b"<00><ff>\n"
+    b"endcodespacerange\n"
+    b"1 beginbfrange\n"
+    b"<00><ff><0000>\n"
+    b"endbfrange\n"
+    b"endcmap\n"
+    b"CMapName currentdict /CMap defineresource pop\n"
+    b"end end"
+)
+
+cmap_xref = doc.get_new_xref()
+doc.update\_object(cmap\_xref, f"<</Length {len(cma\p_content)}>>")
+doc.update\_stream(cmap\_xref, cmap\_content)
+
+patched_cmaps = 0
+cleaned_cids = 0
+
+# 2. General-case processing across all objects
+for xref in range(1, doc.xref\_length()):
+  try:
+    # A. Dynamically handle any unmapped ranges in CMap streams
+    stream\_data = doc.xref\_stream(xref)
+    if stream\_data and b"begincmap" in stream\_data:
+      cmap\_text = stream\_data.decode("latin1", errors="ignore")
+      # If the CMap lacks a general fallback or replacement range, inject a safe universal bfrange
+      if "endcmap" in cmap_text and "<fffd>" not in cmap\_text:
+        # Universal fallback range covering unmapped glyph indices to satisfy VeraPDF
+        fallback\_range = "\n1 beginbfrange\n<00> <ff> <fffd>\nendbfrange\n"
+        cmap\_text = cmap\_text.replace("endcmap", fallback\_range + "endcmap")
+        doc.update\_stream(xref, cmap\_text.encode("latin1"))
+        patched\_cmaps += 1
+
+    # B. General cleanup of conflicting /CIDSet entries from font descriptors
+    obj\_text = doc.xref\_object(xref, compressed=True)
+    if obj\_text and ("FontDescriptor" in obj\_text or "CIDSet" in obj\_text):
+      new\_obj = re.sub(r'/CIDSet\s+\d+\s+0\s+R', '', obj\_text)
+      if new\_obj != obj\_text:
+        doc.update\_object(xref, new\_obj)
+        cleaned\_cids += 1
+  except Exception:
+    continue
+
+# 3. Explicitly link the ToUnicode stream to any WinAnsi fonts lacking it
+for page_num in range(len(doc)):
+  for font in doc.get\_page\_fonts(page_num):
+    font\_xref = font[0]
+    obj\_text = doc.xref\_object(font\_xref, compressed=True)
+    if "/ToUnicode" not in obj\_text and obj\_text.endswith(">>"):
+      updated\_obj = obj_text[:-2] + f"/ToUnicode {cmap\_xref} 0 R>>"
+      doc.updat\e_object(font\_xref, updated_obj)
+
+doc.save("Paper\_B\_one\_page\_final.pdf", garbage=4, deflate=True)
+doc.close()
+print(f"General-case processing complete: Patched {patched_cmaps} CMaps, cleaned {cleaned_cids} CIDSets.")
+\end{lstlisting}
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.75\textwidth]{README_notes/veraPDF-validation-report.png}}
+  \end{center}
+  \caption{Successful veraPDF validation report with \enquote{Validation Profile:	PDF/A-3u validation profile} of the whole thesis with Papers A and B included.}
+  \label{fig:veraPDFvalidationReport}
+\end{figure}
+\FloatBarrier
+
+Regarding the Python snippet 2B, one might ask: Is this a good idea, or just removing the symptom?
+
+This is a classic tension in digital preservation: \textbf{reconciling rigid, older archival standards with modern font engineering}. Removing the \enquote{/CIDSet} entry is indeed \textbf{treating the symptom} rather than fixing the root cause at the font-generation level. However, in the context of PDF/A-3u compliance, it is a pragmatic and technically safe workaround.
+
+The mismatch happens because:
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{The Specification Anchor}}, leftmargin=!]
+    \item [The Specification Anchor] PDF/A-3 (ISO 19005-3:2012) normatively inherits its rules from \gls{PDF} 1.7 (ISO 32000-1). Under \gls{PDF} 1.7 rules, a subsetted CID font \textbf{must} include a \enquote{/CIDSet} stream, \ie a binary bitmask indicating which character IDs are present in the subset.
+    
+    \item [Modern Tooling vs. Legacy Rules] When modern engines (\eg LuaLaTeX, Ghostscript, or modern subsetters) build a \gls{PDF}, they either omit \enquote{/CIDSet} or generate a bitmask that strict validators, such as veraPDF, find fault with (\eg a mismatch between the bitmask and the actual glyph usage tables inside the font program).
+    
+    \item [The PDF 2.0 Shift] The committee behind PDF 2.0 (ISO 32000-2) deprecated \enquote{/CIDSet} precisely because it was redundant, error-prone, and caused more archiving headaches than it solved. Modern \gls{PDF} processors can inspect the embedded font program (\enquote{FontFile2} or \enquote{FontFile3}) directly to see what glyphs exist.
+\end{description}
+
+Is Removing It Safe? Yes, it is safe for long-term archiving and rendering, for a few key reasons:
+\begin{description}[style=nextline, labelwidth=\widthof{\textbf{The Source of Truth Remains}}, leftmargin=!]
+    \item [The Source of Truth Remains] The actual font subset data (\enquote{FontFile2}/\enquote{FontFile3}) is untouched and fully embedded. Any compliant PDF renderer gets its glyph data straight from the font program, not from the \enquote{/CIDSet} bitmask.
+    \item [Bypassing the Rule] The PDF/A rule for \enquote{CIDSet} is conditional: \textbf{If} a \enquote{CIDSet} stream is present, it must be exhaustively accurate. By stripping the key entirely, you bypass the conditional validation check while leaving the core font intact.
+\end{description}
+While fixing it upstream in the LaTeX or Ghostscript compilation chain would be the \enquote{pure} architectural fix, surgically removing a deprecated, redundant metadata entry to satisfy a legacy validator is a standard and effective technique in PDF remediation.
+
+Useful tools when tracking down VerPDF issues were the program \texttt{pdffonts}, \texttt{gs}, the \texttt{fitz} Python library (part of \texttt{PyMuPDF}), and Google's Gemini.
+
+
+
+By switching to this targeted approach, your text layer will remain fully searchable and copyable as clean, readable text, while still satisfying the strict compliance checks.
+
+\subsubsection{Dealing with Paper\_D}
+
+\begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the Paper\_D PDF file},label=lst:cleanPaperD]
+gs -o Paper\_D\_clean.pdf -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -dSubsetFonts=true -dEmbedAllFonts=true -sFontmap.Alt="{(Times-Roman) (NimbusRoman-Regular)}" Paper\_D.pdf
+\end{lstlisting}
+
+Then used Adobe Acrobat 8 to save as a PostScript file and then distill the .ps file to use PDF/A-1b.
+
+
+\begin{lstlisting}[language={[LaTeX]TeX}, caption={Generates only 5 issues with two types of issues}, label=lst:pdfaTwoTypesOfErrors]
+gs -o Paper\_D\_clean.pdf -sDEVICE=pdfwrite -dPDFA=3 -sColorConversionStrategy=RGB -sProcessColorModel=DeviceRGB -dPDFACompatibilityPolicy=1 -dEmbedAllFonts=true -dSubsetFonts=true Paper\_D.pdf
 \end{lstlisting}
 
 \clearpage

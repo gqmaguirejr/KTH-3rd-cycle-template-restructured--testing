@@ -5,7 +5,7 @@
 % Note that this version works safely with cmyk mode for xcolors.
 % It uses the STIX Match font to have the correct character at the LuaLaTeX engine level.
 \newsavebox{\lstbreakbox}
-\sbox{\lstbreakbox}{\textcolor{red}{\mystixmathfont ↪}\space}
+\sbox{\lstbreakbox}{\textcolor{red}{\ensuremath{\hookrightarrow}}\space}
 
 \lstdefinelanguage{BibTeX}{
  basicstyle=\ListingMono\footnotesize,
@@ -42,7 +42,7 @@ language=[LaTeX]{TeX},
     breaklines=true,
     postbreak=\usebox{\lstbreakbox},
     basicstyle=\ListingMono\small,
-    keywordstyle=\color{blue}\sf,
+    keywordstyle=\color{blue}\sffamily,
     identifierstyle=\color{magenta},
     commentstyle=\color{cyan},
     backgroundcolor=\color{yellow!15},
@@ -185,7 +185,8 @@ language=[LaTeX]{TeX},
 
 
 \setminted{
-  fontsize        = \ListingMono\small,
+  fontsize        = \small,
+  fontfamily      = tt,
   %bgcolor         = listingBackground,
   breaklines      = true,
   breakanywhere   = true,
