@@ -726,14 +726,14 @@ Increasingly, metadata is being embedded into digital objects to provide informa
 
 An early paper about automatically extracting the title, author(s), and abstract from theses was written by Mao Ni of the University of North Carolina at Chapel Hill, School of Library and Information Science in 2004~\cite{Mao_Ni_2004}. The idea was to collect the metadata from the thesis using an Adobe Acrobat plugin and then write this data to \gls{XMP} (which could be embedded into the \gls{PDF} file). The schema used for the metadata~\cite{hickey_pavani_suleman_2010} \footnote{\url{https://ndltd.org/metadata/}} was that of Networked Digital Library of Theses and Dissertations\footnote{\url{https://ndltd.org/}}.
 
-More recently, Elsevier's Digital Commons \footnote{\url{https://www.elsevier.com/solutions/digital-commons}} uses an extension of the Dublin Core\footnote{\url{https://www.dublincore.org/}} shown in \Cref{tab:dublicCoreDigitalCommons} to collect metadata. We will see the Dublin Core elements and other metadata schema used in \gls{XMP} in the remainder of this section.
+More recently, Elsevier's Digital Commons \footnote{\url{https://www.elsevier.com/solutions/digital-commons}} uses an extension of the Dublin Core\footnote{\url{https://www.dublincore.org/}} shown in \Cref{tab:dublinCoreDigitalCommons} to collect metadata. We will see the Dublin Core elements and other metadata schema used in \gls{XMP} in the remainder of this section.
 
 Bepress has written about Elsevier's Digital Commons on a webpage \enquote{Digital Commons and OAI-PMH: Outbound Harvesting of Repository Records} \url{https://bepress.com/reference_guide_dc/digital-commons-oai-harvesting/}. \gls{OAI-PMH} fosters interoperability between repositories\footnote{\url{https://www.openarchives.org/pmh/}} by enabling harvesters to collect metadata from a repository. Over the last 20 years, there has been an evolution from simply having metadata in a database that is associated with a publication to an entire ecosystem of metadata and applications; see, for example, the twentieth International Conference on Dublin Core and Metadata Applications (DCMI 2022) \url{https://www.dublincore.org/conferences/2022/programme/}.
 \clearpage
 
 \begin{table}[!ht]
-    \caption{Dublin Core Elements in Digital Commons ~\cite{digital_commons_metadata_2016} - items in bold are from the so-called \enquote{simple Dublic Core}}
-    \label{tab:dublicCoreDigitalCommons}
+    \caption{Dublin Core Elements in Digital Commons ~\cite{digital_commons_metadata_2016} - items in bold are from the so-called \enquote{simple Dublin Core}}
+    \label{tab:dublinCoreDigitalCommons}
     \begin{scriptsize}   
     \begin{tabular}{l | l }
       \textbf{Element} & \textbf{Element} \\
@@ -1313,7 +1313,7 @@ For \gls{XMP}, there are some specific areas that might be of interest in the fu
 
 \subsubsection{Adding new dc elements}
 \label{sec:newDCelements}
-In \Cref{tab:dublicCoreDigitalCommons} on \pageref{tab:dublicCoreDigitalCommons} we saw five elements that are perhaps worth adding, specifically:
+In \Cref{tab:dublinCoreDigitalCommons} on \pageref{tab:dublinCoreDigitalCommons} we saw five elements that are perhaps worth adding, specifically:
 \texttt{thesis.degree}, \texttt{thesis.degree.discipline}, \linebreak[4]\texttt{thesis.degree.grantor}, \texttt{thesis.degree.level}, and \linebreak[4] \texttt{thesis.degree.name}. It may be worth adding these to the XMP data for a thesis in the future. For some discussion of these elements, please see the discussion of EDT‐MS metadata elements in the paper by Ivanović, Ivanović, and Surla entitled \textit{A data model of theses and dissertations compatible with {CERIF}, {Dublin} {Core} and {EDT}‐{MS}}~\cite{ivanovic_data_2012}. ETD-MS is defined in \textit{ETD-MS v1.1: an Interoperability Metadata Standard for Electronic Theses and Dissertations}~\cite{hickey_pavani_suleman_2010} and available at \url{https://ndltd.org/wp-content/uploads/2021/04/etd-ms-v1.1.html}.
 
 
@@ -1597,7 +1597,7 @@ There are several alternatives to consider when you want to include non-PDF/A co
     \begin{description}[style=nextline, labelwidth=\widthof{\textbf{Disadvantage}}, leftmargin=!]
     \item[Advantage] The documents can be included in-place with \texttt{\textbackslash includepdf}.
     
-    \item[Disadvantage] Doing the transformation can be \textbf{very} difficult. See \Cref{sec:nonPDFAcompliantPublications}.
+    \item[Disadvantage] Doing the transformation can be \textbf{very} difficult. See \Cref{sec:nonPDFAcompliantPublications}. \textbf{Note:} It took nearly a week of effort to transform all the files to successfully get the PDF/A-3u verification shown in \Cref{sec:verificationOfAll}.
     \end{description}
 \end{enumerate}
 
@@ -1605,7 +1605,10 @@ There are several alternatives to consider when you want to include non-PDF/A co
 \subsection{Dealing with non-PDF/A compliant publications}
 \label{sec:nonPDFAcompliantPublications}
 
+This section describes the effort to transform the example publication so the full thesis, including publications, meets the PDF/A-3u requirements.
+
 \subsubsection{Dealing with Paper A from rfc1235.txt.pdf}
+\label{sec:dealingWithPaperA}
 The sample paper \fname{rfc1235.txt.pdf} uses Courier, but the file does \textbf{not} embed this Adobe \textit{proprietary} font. One can replace this font with the \texttt{NimbusMonoPS-Regular} font by using the command shown in \Cref{lst:cleanrfc1235}. While the replacement font is \textbf{not} visually identical, it is metrically matched:
 \begin{itemize}
     \item \textbf{The Outlines (Glyph Shapes):} \texttt{NimbusMonoPS} was created as an open-source clone of Adobe Courier. While their character widths, line heights, word spacing, and overall proportions are meticulously matched (\ie metrics are identical), the actual glyph designs have subtle differences in stroke weight, serifs, and spacing. Under a microscope, you can tell they are different font families.
@@ -1629,7 +1632,7 @@ The file is cleaned as shown in \Cref{lst:cleanrfc1235}.
 gs -o rfc1235\_clean.pdf -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress rfc1235.txt.pdf
 \end{lstlisting}
 
-This works because Ghostscript does not bundle the original, proprietary Adobe font binaries; instead, it relies on high-quality, \textit{metric-compatible open-source font equivalents} created by URW++\footnote{Now know as URW Type Foundry GmbH is owned by Monotype Imaging Holdings Inc.} to render and process these fonts.
+This works because Ghostscript does not bundle the original, proprietary Adobe font binaries; instead, it relies on high-quality, \textit{metric-compatible open-source font equivalents} created by URW++\footnote{Now known as URW Type Foundry GmbH, owned by Monotype Imaging Holdings Inc.} to render and process these fonts.
 \begin{itemize}
     \item Courier is mapped to NimbusMonoPS-Regular.
 
@@ -1639,6 +1642,7 @@ This works because Ghostscript does not bundle the original, proprietary Adobe f
 \end{itemize}
 
 \subsubsection{Dealing with Paper\_B}
+\label{sec:dealingWithPaperB}
 The example paper in \fname{Paper\_B\_one\_page.pdf} is not PDF/A compliant.
 The veraPDF\footnote{veraPDF is stylized in lowercase --- \url{https://verapdf.org/}} report for this file highlights the exact violations propagating into the thesis \gls{PDF}:
 \begin{enumerate}
@@ -1800,6 +1804,7 @@ Useful tools when tracking down VerPDF issues were the program \texttt{pdffonts}
 
 
 \subsubsection{Dealing with Paper\_D}
+\label{sec:dealingWithPaperD}
 We start with the same Ghostscript to clean up the color information. See \Cref{lst:cleanPaperD}.
 \begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the Paper\_D PDF file},label=lst:cleanPaperD]
 gs -o Paper\_D\_fully\_rgb.pdf \
@@ -1916,15 +1921,21 @@ doc.close()
 print(f"General-purpose processing complete: Patched {patched_cmaps} CMaps, cleaned {cleaned_cids} CIDSets, purged {removed_tr} TR keys.")
 \end{lstlisting}
 
+By injecting the fallback range right before \texttt{endcmap}, we ensure that any character codes missing from the publisher's sparse tables safely map to \texttt{<fffd>}, while the publisher's explicit character mappings retain precedence during text extraction.
 
-\Cref{lst:cleanPaperGeneral} shows a clean, generalized, object-agnostic Python script that you can use as the universal recipe for any non-compliant publication \gls{PDF} (\eg Paper B, Paper D, or future inclusions). The approach is to repair incomplete CMaps rather than skipping them. Instead of only attaching a fallback to fonts that completely lack a /ToUnicode map, we inspect every font's CMap stream. If an existing CMap stream does not contain a broad fallback range (\ie \texttt{<00> <ff> <fffd>}), we append it to the stream. This ensures that any character code lacking an explicit mapping falls back safely to \texttt{<fffd>}, satisfying VeraPDF without breaking valid character mappings.
+\Cref{lst:cleanPaperGeneral} shows a clean, generalized, object-agnostic Python script\footnote{Available in \fname{README\_notes/pdf\_a3u\_remediator.py}.} that you can use as the universal recipe for any non-compliant publication \gls{PDF} (\eg Paper B, Paper D, or future inclusions). The approach is to repair incomplete CMaps rather than skipping them. Instead of only attaching a fallback to fonts that completely lack a /ToUnicode map, we inspect every font's CMap stream. If an existing CMap stream does not contain a broad fallback range (\ie \texttt{<00> <ff> <fffd>}), we append it to the stream. This ensures that any 8-bit character code lacking an explicit mapping falls back safely to \texttt{<fffd>}\footnote{See \Cref{sec:sixteenBitFallback} for further information.}, satisfying VeraPDF without breaking valid character mappings.
 
-\begin{lstlisting}[language={Python}, caption={Python to fix up paper X},label=lst:cleanPaperGeneral]
-iimport fitz
+\begin{lstlisting}[language={Python}, caption={Python to fix up publications},label=lst:cleanPaperGeneral]
+import argparse
+import fitz
 import re
 
-doc = fitz.open("Paper_D_fully_rgb.pdf")
+parser = argparse.ArgumentParser(description="Remediate a publication PDF for PDF/A-3u compliance.")
+parser.add_argument("input", help="Path to input PDF")
+parser.add_argument("output", help="Path to output remediated PDF")
+args = parser.parse_args()
 
+doc = fitz.open(args.input)
 cleaned_cids = 0
 cleaned_tr = 0
 patched_cmaps = 0
@@ -1971,12 +1982,13 @@ for xref in range(1, doc.xref_length()):
   except Exception:
     continue
 
-doc.save("Paper_D_clean.pdf", garbage=4, deflate=True)
+doc.save(args.output, garbage=4, deflate=True)
 doc.close()
 print(f"Universal processing complete: Patched {patched_cmaps} CMaps, cleaned {cleaned_cids} CIDSets, purged {cleaned_tr} TR keys.")
 \end{lstlisting}
 
 \subsubsection{Dealing with Paper\_E}
+\label{sec:dealingWithPaperE}
 
 As shown in \Cref{lst:fontsInPaperE}, the proprietary Calibri-Bold and Times-Roman fonts are used; however, Calibri-Bold is embedded, while Times-Roman is not. \Cref{lst:cleaningPaperE} shows the cleaning and the resulting fonts.
 
@@ -2020,11 +2032,12 @@ Specification: ISO 19005-3:2012, Clause: 6.2.5, Test number: 1
 An ExtGState dictionary shall not contain the TR key
 \end{verbatim}
 
-Therefore, we apply the Python script as used with Papers B and D to produce a Paper\_E\_cleaned.pdf
+Therefore, we apply the Python script (shown in \Cref{lst:cleanPaperGeneral}) as used with Papers B and D to produce a \fname{Paper\_E\_cleaned.pdf}.
 
 
 \subsubsection{Dealing with Patent\_A and Patent\_B}
-Paper\_E uses the proprietary Courier font, as shown in \Cref{lst:fontsInPatentA}. The commands to clean the file are shown in \Cref{lst:cleanPatentA} and the resulting fonts are shown in \Cref{lst:fontsInCleanedPatentA}. When the cleaned file was included in the thesis, it passed all of the veraPDF tests; despite the \enquote{no} with respect to Unicode shown in \Cref{lst:fontsInCleanedPatentA}. The same method can be applied to Patent\_B.
+\label{sec:dealingWithPatentsAandB}
+Patent\_A uses the proprietary Courier font, as shown in \Cref{lst:fontsInPatentA}. The commands to clean the file are shown in \Cref{lst:cleanPatentA} and the resulting fonts are shown in \Cref{lst:fontsInCleanedPatentA}. When the cleaned file was included in the thesis, it passed all of the veraPDF tests; despite the \enquote{no} with respect to Unicode shown in \Cref{lst:fontsInCleanedPatentA}\footnote{It seems possible to extract the text from the \gls{PDF}. However, in any case, the full text of patents is publicly available}. The same method can be applied to Patent\_B.
 
 \begin{lstlisting}[language={bash}, caption={Listing of fonts in Patent\_A PDF file},label=lst:fontsInPatentA]
  pdffonts US7107453.pdf
@@ -2035,7 +2048,7 @@ Courier                              Type 1            WinAnsi          no  no  
 \end{lstlisting}
 
 
-\begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the US7107453.pdf PDF file},label=lst:cleanPaperE]
+\begin{lstlisting}[language={bash}, caption={Using ghostscript to correct the US7107453.pdf PDF file},label=lst:cleanPatentA]
 gs -o US7107453\_clean.pdf -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress US7107453.pdf
 \end{lstlisting}
 
@@ -2047,6 +2060,7 @@ LOXXSN+Courier                       Type 1C           WinAnsi          yes yes 
 \end{lstlisting}
 
 \subsubsection{Dealing with Artifact\_A}
+\label{sec:dealingWithPatifactA}
 
 As shown in \Cref{lst:fontsInArtifactA}, all of the fonts are embedded.
 
@@ -2065,6 +2079,49 @@ name                                 type              encoding         emb sub 
 CAAAAA+LiberationSans                CID TrueType      Identity-H       yes yes yes     18  0
 EAAAAA+Roboto-Regular                CID TrueType      Identity-H       yes yes yes     20  0
 \end{lstlisting}
+
+\subsubsection{Thesis with all included papers}
+\label{sec:verificationOfAll}
+After all of the above changes to the included publications, the full \gls{PDF} passes the veraPDF PDF/A-3u validation profile. See 
+\Cref{fig:veraPDFvalidationReportFull}.
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=0.75\textwidth]{README_notes/validation-whole-thesis-with-included-papers.png}}
+  \end{center}
+  \caption{Successful veraPDF validation report for the thesis with all included publications.}
+  \label{fig:veraPDFvalidationReportFull}
+\end{figure}
+\FloatBarrier
+
+\subsection{Cautionary statement}
+\label{sec:cautionaryStatement}
+
+While this section addressed a number of different types of publications, it does \textbf{not} necessarily follow that these methods will work for \textit{all} publications from \textit{all} publishers.
+
+\subsubsection{16-bit Fallback}
+\label{sec:sixteenBitFallback}
+As mentioned in \Cref{sec:dealingWithPaperD}, \enquote{If an existing CMap stream does not contain a broad fallback range (\ie the 8-bit single-byte range \ldots)}; future work should consider:
+\begin{itemize}
+    \item Single-byte hex ranges (\ie \texttt{<00> <ff>}) are tailored for 8-bit font encodings (such as WinAnsi, MacRoman, or Standard encoding), which are standard in Western journal papers, patents, \glspl{RFC}, and older glspl{PDF}.
+
+    \item If a publication uses a 16-bit wide-character CID font (common in CJK documents or complex symbol sets), character codes use 4-hex-digit ranges (\ e.g. \texttt{<0000> <ffff>}); thus, a broadened fallback will be needed.
+\end{itemize}
+
+Note that in the Adobe CMap Syntax Standard, the \enquote{beginbfrange} operator expects the layout:
+\begin{quotation}
+$$\text{<start\_code>} \quad \text{<end\_code>} \quad \text{<target\_mapping>}$$
+\end{quotation}
+
+No dots, dashes, or separators other than whitespace are permitted between the starting hex code and the ending hex code.
+
+Additionally, angle brackets \enquote{< >} enclose hexadecimal strings. For a 16-bit wide-character range, each value requires 4 hex digits (\eg \enquote{0000} through \enquote{FFFF}), resulting precisely in \enquote{<0000> <ffff>}.
+
+Defining a fallback for 32-bit characters is likely similar, but, as with the 16-bit case, is left for future work.
+
+
+\subsubsection{Future work should address both print and on-line optimizations}
+\label{sec:futureWork}
+Additionally, this document has not addressed the challenges of optimizing the thesis and its publications for both printed and electronic formats. This remains as future work.
 
 
 \clearpage
