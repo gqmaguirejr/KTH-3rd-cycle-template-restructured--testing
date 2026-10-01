@@ -153,6 +153,9 @@ Extension = .ttf,
     ]{DejaVu Sans}
 \end{comment}  
 
+% A font to be used in minted listings
+\newfontfamily{\ListingMono}{Noto Sans Mono}[Ligatures=ResetAll]
+
 % Set up the header and footer for plain style pages
 \fancypagestyle{plain}{%
 \fancyhf{}% clear all header and footer fields
@@ -281,7 +284,7 @@ language=[LaTeX]{TeX},
 \title{README and notes about the template for supervisors}
 
 \author{Gerald Q. Maguire Jr.}
-\date{July 2025}
+\date{October 2026}
 
 \begin{document}
 \pagenumbering{roman}
@@ -291,7 +294,7 @@ language=[LaTeX]{TeX},
 \warningExpl{\textbf{This document is a work in progress.}}
 
 
-This document describes the thesis template that I have developed for use at \gls{KTH} and provides some background about why it is the way that it is. This document provides some information for supervisors (and possibly for administrators) about the template and especially how it can be used with some programs to help make the thesis process easier for students, faculty, and administrators.
+This document describes the thesis template that I have developed for use at \gls{KTH}. It provides some background about why the template is the way that it is. This document provides some information for supervisors (and possibly for administrators) about the template and especially how it can be used with some programs to help make the thesis process easier for students, faculty, and administrators.
 
 \setcounter{page}{1}
 \pagenumbering{arabic}
@@ -299,30 +302,30 @@ This document describes the thesis template that I have developed for use at \gl
 \section{Introduction}
 \label{sec:IntroForSupervisors}
 
-Each year, there are hundreds of third-cycle theses written by students at KTH Royal Institute of Technology. These are one of the core elements of graduate education, and producing high-quality theses is of interest to the faculty, students, administration, \foreignlanguage{swedish}{\gls{UKÄ}}, and the public. The reasons for the work described in this document are \first I have been a supervisor for a number of third-cycle students and I want to help students by providing them a template to start with (avoiding the \enquote{Blank paper} barrier) and to help facilitate the thesis process, \Second the previous \LaTeX~template had been primarily developed to support first and second-cycle theses, and \third the \foreignlanguage{swedish}{\gls{GVS}} Communications unit introduced a new DOCX template.
+Each year, there are hundreds of third-cycle theses written by students at \gls{KTH}. These are one of the core elements of graduate education, and producing high-quality theses is of interest to the faculty, students, administration, \foreignlanguage{swedish}{\gls{UKÄ}}, and the public. The reasons for the work described in this document are \first I have been a supervisor for a number of third-cycle students, and I want to help students by providing them a template to start with (avoiding the \enquote{Blank paper} barrier) and to help facilitate the thesis process; \Second my previous \LaTeX~template had been primarily developed to support first- and second-cycle theses; and \third the \foreignlanguage{swedish}{\gls{GVS}} Communications unit introduced a new DOCX template.
 
 Since $\approx$2010, all KTH theses should have English and Swedish abstracts. Ideally, the thesis would also include keywords and titles in both English and Swedish. Moreover, this information is useful not only in the thesis itself but also in:
 \begin{enumerate}
-    \item The announcements and calendar events of thesis presentations or defenses. Moreover, thesis presentations and defenses are supposed to be public, so it would be useful and foster their visibility if it were easy to make such announcements (in both English and Swedish).
-    \item Both the metadata and the thesis itself thesis need to be entered into \foreignlanguage{swedish}{\gls{DiVA}}\footnote{There is a separate issue regarding whether the full-text is publicly available or not, but this is outside the scope of this document.}.
-    \item Both English and Swedish titles will be reported along with the decision of the grading committee in \foreignlanguage{swedish}{\gls{LADOK}}.
+    \item The announcements and calendar events of thesis presentations or defenses. Moreover, thesis presentations and defenses are supposed to be public, so it would be useful to make such announcements easy (in both English and Swedish) to foster visibility.
+    \item Both the metadata and the thesis itself must be entered into \gls{DiVA}\footnote{There is a separate issue regarding whether the full text is publicly available, but this is outside the scope of this document.}.
+    \item Both English and Swedish titles will be reported along with the decision of the grading committee in \gls{LADOK}.
 \end{enumerate}
 
-Therefore, in my (former) roles as a first and second-cycle examiner, third-cycle supervisor, a member of the “\foreignlanguage{swedish}{språkkommittén (referensgruppen för språkfrågor})”\footnote{A faculty representative 2015-03-17 until 2022-03-31.}, and to foster the production of theses in both English and Swedish, I have written a DOCX and \LaTeX~templates for 1\textsuperscript{st} and 2\textsuperscript{nd} cycle degree projects (as well as this \LaTeX~template for third cycle theses). Additionally, I have written some software to: \first make it easier to announce presentations or defenses to make it easier for people to know about them so that they can attend, \Second make it easy to make a draft version of the covers, title page, and book information page\footnote{While US-AB will make the actual covers, title page, and book information page, it is useful for the author and supervisors to have a draft version of these pages to ensure that the material is correct before the thesis is printed.}, and \third facilitate entering the metadata and thesis into DiVA. There is also an experimental effort to insert the English and Swedish titles into LADOK\iflabelexists{sec:JSONtoLADOK}{(see \Cref{sec:JSONtoLADOK})}.
+Therefore, in my (former) roles as a first and second-cycle examiner, third-cycle supervisor, a member of the “\foreignlanguage{swedish}{språkkommittén (referensgruppen för språkfrågor})”\footnote{A faculty representative 2015-03-17 until 2022-03-31.}, and to foster the production of theses in both English and Swedish, I have written a DOCX and \LaTeX~templates for 1\textsuperscript{st} and 2\textsuperscript{nd} cycle degree projects (as well as this \LaTeX~template for third cycle theses). Additionally, I have written some software to: \first make it easier to announce presentations or defenses so that people can know about them so that they can attend, \Second make it easy to make a draft version of the covers, title page, and book information page\footnote{While US-AB will make the actual covers, title page, and book information page, it is useful for the author and supervisors to have a draft version of these pages to ensure that the material is correct before the thesis is printed.}, and \third facilitate entering the metadata and thesis into \gls{DiVA}. There is also an experimental effort to insert the English and Swedish titles into \gls{LADOK}\iflabelexists{sec:JSONtoLADOK}{(see \Cref{sec:JSONtoLADOK})}.
 
-The focus of this document will be on the \LaTeX\  template for this third-cycle \LaTeX{}~template. 
+The focus of this document will be on the \LaTeX{}  template for this third-cycle \LaTeX{}~template. 
 Most readers will only be interested in the high-level overview given in \Cref{sec:AutomatingLaterSteps,sec:accuracyAndEconomics,sec:makeItSimpleFromTheStart,sec:AutomatingLaterSteps}.
 
 
 \section{Accuracy and Economics}
 \label{sec:accuracyAndEconomics}
 
-An earlier 1\textsuperscript{st} cycle thesis looked at the automation of entering a thesis and its metadata into DiVA and found that a large fraction of existing entries with manually entered metadata in DiVA had errors in them and also estimated that the total number of full-time equivalent (FTE) hours spent entering this data was several FTEs\cite{BesharatPour_and_Li_2019}. Note that the change to having only administrative staff enter the metadata has \textbf{not} eliminated the problem of errors in data entry.
+An earlier 1\textsuperscript{st} cycle thesis looked at the automation of entering a thesis and its metadata into \gls{DiVA} and found that a large fraction of existing entries with manually entered metadata in \gls{DiVA} had errors in them and also estimated that the total number of full-time equivalent (FTE) hours spent entering this data was several FTEs\cite{BesharatPour_and_Li_2019}. Note that the change to having only administrative staff enter the metadata has \textbf{not} eliminated the problem of errors in data entry.
 \begin{description}[labelwidth =\widthof{\textbf{Hypothesis}}, leftmargin = !]
-\item[Hypothesis] Incorporating the relevant data into the thesis document will facilitate both announcements and DiVA data entry.
+\item[Hypothesis] Incorporating the relevant data into the thesis document will facilitate both announcements and \gls{DiVA} data entry.
 
 \item[Approach] Make this data readily available via the template and collect \& output it in a 
-“For DIVA” set of information at the end of the Portable Document Format (PDF) document and as a \fname{fordiva.json} file attached to the PDF. Additionally, try to minimize the need to manually enter information by taking information from a Canvas course room (if there is a relevant course room).
+\enquote{For DIVA} set of information at the end of the \gls{PDF} document and as a \fname{fordiva.json} file attached to the P\gls{PDF}. Additionally, try to minimize the need to manually enter information by taking information from a Canvas course room (if there is a relevant course room).
 \end{description}
 
 Given the hypothesis stated above, the overall flow is shown in \Cref{fig:LogicalOverviewOfWhatIsDone}. 
@@ -377,18 +380,18 @@ Given the hypothesis stated above, the overall flow is shown in \Cref{fig:Logica
 \Needspace*{3\baselineskip}
 The key to the process shown in \Cref{fig:LogicalOverviewOfWhatIsDone} is collecting all of the necessary data in the thesis and organizing all of the data so that it is easy to extract (hence the limitations inherent to my templates). It is this information and its organization that makes the magic \enquote{Extractor} possible.
 
-For the purposes of this third-cycle \LaTeX\  template, the extractor is simple, as the information is attached as a fordiva.json file! Therefore, it only needs to be transformed to be used by all the downstream programs.
+For the purposes of this third-cycle \LaTeX{} template, the extractor is simple, as the information is attached as a \fname{fordiva.json} file! Therefore, it only needs to be transformed by downstream programs.
 
 This template supports only two types of degrees: \texttt{\textbackslash degreeName\{Doctorate\}} and \texttt{\textbackslash degreeName\{Licentiate\}} - that can be modified with\linebreak[4] \texttt{\textbackslash degreeModifier\{Philosophy\}} to produce the Philosophy variants of these degree names for use in the defense or presentation description on the title page.
 
 
 \section{Automating later steps}
 \label{sec:AutomatingLaterSteps}
-There are many different steps in the third-cycle degree process that can be facilitated by using the information from the student's thesis. An example of one of these is making an announcement for the student's oral presentation (described in \Cref{sec:makingAnAnnouncement}). Another example is facilitating entering the metadata about the thesis into DiVA (see \Cref{sec:facilitatingDiVAentry}). Ideally, it could also be used to facilitate the making of the cover, title page, and book information pages by US-AB, see \Cref{sec:makingACover}.
+There are many different steps in the third-cycle degree process that can be facilitated by using the information from the student's thesis. An example of one of these is making an announcement for the student's oral presentation (described in \Cref{sec:makingAnAnnouncement}). Another example is facilitating entering the metadata about the thesis into \gls{DiVA} (see \Cref{sec:facilitatingDiVAentry}). Ideally, it could also be used to facilitate the making of the cover, title page, and book information pages by US-AB, see \Cref{sec:makingACover}.
 
 \subsection{Making an announcement}
 \label{sec:makingAnAnnouncement}
-When the defense or presentation date, time, place, \ldots have been decided for the student's oral presentation or defense, then assuming that a student has submitted their thesis with the information in the “For DIVA” pages and that this information includes the information about the opponent(s) and presentation (\eg date, time, place, zoom link), the steps to make an announcement are:
+When the defense or presentation date, time, place, \ldots have been decided for the student's oral presentation or defense, then assuming that a student has submitted their thesis with the information in the \enquote{For DIVA} pages and that this information includes the information about the opponent(s) and presentation (\eg date, time, place, Zoom link), the steps to make an announcement are:
 \begin{enumerate}
     \item Extract the \fname{fordiva.json} file - transform it if necessary (\eg expanding acronyms) and
     
@@ -398,43 +401,43 @@ When the defense or presentation date, time, place, \ldots have been decided for
 \begin{lstlisting}[language={bash}, caption={JSON\_to\_calendar.py for a transformed version of the fordiva.json file called oscar.json}, label=lst:jsonToCalenarforOscar1] 
 ./JSON_to_calendar.py -c 11 --json oscar.json
 \end{lstlisting}
-The command line shown in \Cref{lst:jsonToCalenarforOscar1} will publish the announcement in \first Canvas course 11, \Second in the Canvas course’s calendar, and \third (eventually) in the KTH Calendar. To publish a KTH calendar event, the software supports the development version of the KTH Cortina API. However, this API is (to my knowledge) \textbf{not} yet in production and requires a KTH Cortina Access Key.
+The command line shown in \Cref{lst:jsonToCalenarforOscar1} will publish the announcement in \first Canvas course 11, \Second in the Canvas course’s calendar, and \third (eventually) in the \gls{KTH} Calendar. To publish a \gls{KTH} calendar event, the software supports the development version of the \gls{KTH} Cortina \gls{API}. However, this \gls{API} is (to my knowledge) \textbf{not} yet in production and requires a \gls{KTH} Cortina Access Key.
 
-\warningExpl{Note that the program should be revised to just publish to the KTH Calendar - for third-cycle theses}
+\warningExpl{Note that the program should be revised to just publish to the \gls{KTH} Calendar - for third-cycle theses}
 
 \subsection{Making a cover and applying it}
 \label{sec:makingACover}
-For third-cycle theses, US-AB will make the cover. However, for the convenience of the student and their supervisors, the cover is automatically made and updated as the student writes their thesis. The only items that may be missing from the real cover are the TRITA number and ISBN. Once these are added to the project, the template will output them.
+For third-cycle theses, US-AB will make the cover. However, for the convenience of the student and their supervisors, the cover is automatically made and updated as the student writes their thesis. The only items that may be missing from the real cover are the TRITA number and \gls{ISBN}. Once these are added to the project, the template will output them.
 
-Within EECS, the Office of Student Affairs assigns the TRITA number when the thesis has been approved for printing and the student has received an ISBN. I am unsure of the process in other schools.
+Within EECS, the Office of Student Affairs assigns the TRITA number when the thesis has been approved for printing and the student has received an \gls{ISBN}. I am unsure of the process in other schools.
 
 \subsection{Make a MODS file to facilitate entering a thesis into DiVA}
 \label{sec:facilitatingDiVAentry}
-Assuming that a student has written a thesis with the information in the “For DIVA pages” that includes the information needed for the DIVA entry. The first step is to extract the \fname{fordiva.json} file. This file is then used to make a MODS file via the command shown in \Cref{lst:jsonToMODSforOscar}. Again, we assume the file \fname{oscar.json} is the transformed \fname{fordiva.json} file.
+Assuming that a student has written a thesis with the information in the \enquote{For DIVA pages} that includes the information needed for the \gls{DiVA} entry. The first step is to extract the \fname{fordiva.json} file. This file is then used to make a \gls{MODS} file via the command shown in \Cref{lst:jsonToMODSforOscar}. Again, we assume the file \fname{oscar.json} is the transformed \fname{fordiva.json} file.
 \Needspace*{4\baselineskip}
 \begin{lstlisting}[language={bash}, caption={JSON\_to\_MODS.py for Oscar}, label=lst:jsonToMODSforOscar] 
 ./JSON\_to\_MODS.py   --json oscar.json
 \end{lstlisting}
 
-\generalExpl{Note that in Spring 2026, KTH will move to the new Cora-based DIVA; hence, at that time it should be possible to use the Cora API to enter the metadata and thesis into DiVA.}
+\generalExpl{It was scheduled that in Spring 2026, \gls{KTH} would move to the new Cora-based \gls{DiVA}; hence, at that time it should be possible to use the Cora \gls{API} to enter the metadata and thesis into \gls{DiVA}. However, as of October 2026, this move has not taken place.}
 \warningExpl{This a new program will need to be developed to do this.}
 
 
 \section{Can someone else use these programs?}
-The source code is at \url{https://github.com/gqmaguirejr/E-learning}. Get the programs from the github, then create a \fname{config.json} file to provide your Canvas access token and the URL of the Canvas instance you want to use, for details see \url{https://canvas.kth.se/courses/11/pages/making-a-config-dot-json-file-to-make-life-simpler}. The Canvas access token is only needed to get information from a Canvas course room. 
+The source code is at \url{https://github.com/gqmaguirejr/E-learning}. Get the programs from GitHub, then create a \fname{config.json} file to provide your Canvas access token and the \gls{URL} of the Canvas instance you want to use; for details, see \url{https://canvas.kth.se/courses/11/pages/making-a-config-dot-json-file-to-make-life-simpler}. The Canvas access token is only needed to get information from a Canvas course room. 
 
-To make an entry in the KTH Calendar requires a KTH Cortina access key (which you have to get from the IT unit). Making the MODS file does not require any specific permissions, as the program is run locally and the resulting MODS file is uploaded via the DiVA web interface.
+To make an entry in the \gls{KTH} Calendar requires a \gls{KTH} Cortina access key (which you have to get from the IT unit). Creating the \gls{MODS} file does not require specific permissions, as the program runs locally and the resulting \gls{MODS} file is uploaded via the \gls{DiVA} web interface.
 
 \section{\LaTeX{}~template in Overleaf}
-A \LaTeX~template in Overleaf is at \url{https://www.overleaf.com/read/wxtdfxmdfzxd#1501dcc}.
+A \LaTeX~template in Overleaf is at \url{https://www.overleaf.com/read/yydhwvfdmqqt#63a33e}.
 
 Basic details about using the template are in  
 the \fname{README\_notes/README\_notes.tex} file.
 
-\section{Put information into \LaTeX~template to generate a draft or final thesis}
+\section{Put information into the \LaTeX~template to generate a draft or final thesis}
 \label{sec:putInformationIntoLatexTemplate}
 
-As noted earlier, the idea is to capture in the thesis itself all of the information needed for the title page, the cover pages, the announcement of the oral presentation, and for entering the metadata and final thesis in DiVA.
+As noted earlier, the idea is to capture in the thesis itself all of the information needed for the title page, the cover pages, the announcement of the oral presentation, and for entering the metadata and final thesis in \gls{DiVA}.
 
 For additional documentation about the template, please see the file \fname{README\_notes\_reduced.tex} and the other README files (based on your interests).
 
@@ -444,26 +447,24 @@ In the  \fname{custom\_configuration.tex} file, information about the author(s) 
 \begin{itemize}
     \item One might question why have an e-mail address (when, under the current policy, the student will lose their e-mail address upon graduation)? One of the main reasons is so that the library (\ie \gls{KTHB}) can contact the student if needed.
     
-    \item One might also wonder, why include the student’s \texttt{kthid} (\ie their internal to KTH ID). The main reason is that this identifier \textit{uniquely identifies} this author within KTH, so that all of their publications can be found in a DiVA search. Note that a number of KTH students have written or will go on to write papers related to their thesis, and a number of these publications are registered in DiVA\footnote{For a compilation thesis, all of the publications that have been published are supposed to be entered into DiVA before the thesis itself is entered.}. Without a unique identifier, it would not be possible to connect these different documents.
+    \item One might also wonder why include the student’s \texttt{kthid} (\ie their internal KTH ID). The main reason is that this identifier \textit{uniquely identifies} this author within \gls{KTH}, so that all of their publications can be found in a \gls{DiVA} search. Note that a number of \gls{KTH} students have written or will go on to write papers related to their thesis, and a number of these publications are registered in \gls{DiVA}\footnote{For a compilation thesis, all of the publications that have been published are supposed to be entered into \gls{DiVA} before the thesis itself is entered.}. Without a unique identifier, it would not be possible to connect these different documents.
     
-    \item The \texttt{authorsSchool} field should be the school where the student is employed, or if the student is employed outside of KTH, then it should be the school of their main supervisor.
+    \item The \texttt{authorsSchool} field should be the school where the student is employed, or if the student is employed outside of \gls{KTH}, then it should be the school of their main supervisor.
     
-    \item There is \texttt{programcode} – this is used to generate the degree information just above the other data on the title page and is also used to compute the “lead” for the calendar entry.
+    \item There is \texttt{programcode} – this is used to generate the degree information just above the other data on the title page and is also used to compute the \enquote{lead} for the calendar entry.
 
     \item The template supports ORCID IDs for students, which is a persistent ID that is very useful when publishing, as this identifier enables publications to be coupled to an author \textit{despite} changes in name, affiliation, etc.
 
-    \item Information about the student's supervisors is also entered via macros, similar to those for the student. Currently, only the name of the opponent(s) is collected.
+    \item Information about the student's supervisors is also entered via macros, similar to those for the student. Currently, only the name of the opponent is collected.
 
     \item There are macros to collect the title and optionally a subtitle (at the start of the thesis draft, a working title should be known.
 
     \item The alternative title and optional subtitle are also in this file, even though they might only be decided upon much later in the process. The main reasons for keeping them with the title (and possible subtitle) are coherence and consistency, as both are likely to be updated at the same time and they should in the end be consistent. 
     
-    \item Finally, the \texttt{degreeName} and \texttt{subjectArea}, provide information that is used when generating the KTH cover and title page.
+    \item Finally, the \texttt{degreeName} and \texttt{subjectArea}, provide information that is used when generating the \gls{KTH} cover and title page.
 \end{itemize}
 
-\warningExpl{In the current version of DiVA, it is not possible to get the information about the publications that have been included (although the web interface will show links to them). This is because the information shown comes from the individual publications that each have a field that indicates which thesis they were included in.}
-
-In contrast, information that is known later in the process is placed prior to \texttt{\textbackslash begin\{document\}} in the \fname{examplethesis.tex} file. This information includes keywords, presentation-related information, opponent(s), \etc.
+\warningExpl{In the current version of \gls{DiVA}, it is not possible to get the information about the publications that have been included (although the web interface will show links to them). This is because the information shown comes from the individual publications that each have a field that indicates which thesis they were included in.}
 
 \cleardoublepage
 \ifinswedish
