@@ -67,8 +67,13 @@
 % Forcefully unbind symletters (mathgroup 1) from legacy OML/cmmi
 \DeclareSymbolFont{letters}{TU}{STIXTwoMath(1)}{m}{it}
 
+
 % Calligraphic override
-\setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
+%\setmathfont[range=\mathcal, StylisticSet=1]{STIX Two Math}
+% 3. Calligraphic override using native OpenType StylisticSets
+\setmathfont[range={\mathcal,\symcal}, StylisticSet=1]{STIX Two Math}
+\setmathfont[range={\mathbfcal,\symbfcal}, StylisticSet=1]{STIX Two Math}[FakeBold=1.5]
+
 
 \begin{comment}
 \setmathfont{STIX Two Math}[
