@@ -54,22 +54,23 @@ jobs:
         run: |
           TARGET="${{ github.event.inputs.target_doc }}"
           TARGET_DIR=$(dirname "$TARGET")
-          TARGET_FILE=$(basename "$TARGET")
-          BASE_NAME="${TARGET_FILE%.tex}"
           
-          # Dedicated artifact staging directory
           OUT_DIR="$GITHUB_WORKSPACE/artifacts"
           mkdir -p "$OUT_DIR"
 
-          echo "==> Entering $TARGET_DIR"
-          cd "$TARGET_DIR"
+          # 1. Stay in the root directory where lib/ resides
+          cd "$GITHUB_WORKSPACE"
 
-          echo "==> Compiling $TARGET_FILE with latexmk (LuaLaTeX + Biber)"
-          # -lualatex: LuaLaTeX engine only
-          # -interaction=nonstopmode: Don't pause on errors in headless CI
-          # -outdir: Stage PDFs, aux, and generated bib/json files to artifacts
+          # 2. Tell kpathsea to search the document's directory and project root
+          # Note: The trailing : ensures default system paths are preserved
+          export TEXINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
+          export BIBINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
+
+          echo "==> Compiling $TARGET from workspace root"
+          echo "==> TEXINPUTS is set to: $TEXINPUTS"
+
           latexmk -lualatex -interaction=nonstopmode -synctex=1 \
-                  -outdir="$OUT_DIR" "$TARGET_FILE"
+                  -outdir="$OUT_DIR" "$TARGET"
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -91,10 +92,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - path: 'examplethesis.tex'
+            slug: "examplethesis"
+          - path: 'Quick_Start_Guide.tex'
+            slug: "Quick_Start"
+          - path: 'README_3rd_cycle_author.tex'
+            slug: "3rd_cycle_author"
+          - path: 'README_notes/README_for_3rd_cycle_version.tex'
+            slug: "3rd_cycle_version"
+          - path: 'README_notes/README_for_administrators.tex'
+            slug: "for_administrators"
+          - path: 'README_notes/README_notes_reduced.tex'
+            slug: "notes_reduced"
+          - path: 'README_notes/README_programmer_notes_appendix.tex'
+            slug: "programmer_notes_appendix"
           - path: "README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex"
-            slug: "programmer-notes"
-          - path: "main.tex"
-            slug: "main-thesis"
+            slug: "programmer-notes-Biber"
+          - path: 'README_notes/README_programmer_notes-JSON_to_MODS.tex'
+            slug: "programmer_notes_JSON"
+          - path: 'README_notes/README_programmer_notes-PDF_metadata.tex'
+            slug: "programmer_notes_PDF"
+          - path: 'README_notes/README_programmer_notes.tex'
+            slug: "programmer_notes"
+          - path: 'README_notes/README_supervisor_notes.tex'
+            slug: "supervisor_notes"
+          - path: 'README_notes/README_Tekla_template.tex'
+            slug: "Tekla"
           # Add any other root or README_notes targets here:
           # - path: "README_notes/another_note.tex"
           #   slug: "another-note"
@@ -110,17 +133,16 @@ jobs:
         run: |
           TARGET="${{ matrix.path }}"
           TARGET_DIR=$(dirname "$TARGET")
-          TARGET_FILE=$(basename "$TARGET")
           
           OUT_DIR="$GITHUB_WORKSPACE/artifacts-${{ matrix.slug }}"
           mkdir -p "$OUT_DIR"
 
-          echo "==> Entering directory: $TARGET_DIR"
-          cd "$TARGET_DIR"
+          cd "$GITHUB_WORKSPACE"
+          export TEXINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
+          export BIBINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
 
-          echo "==> Compiling: $TARGET_FILE"
           latexmk -lualatex -interaction=nonstopmode -synctex=1 \
-                  -outdir="$OUT_DIR" "$TARGET_FILE"
+                  -outdir="$OUT_DIR" "$TARGET"
 
       - name: Upload Artifacts (${{ matrix.slug }})
         uses: actions/upload-artifact@v4
