@@ -1508,7 +1508,7 @@ Statutes (\foreignlanguage{swedish}{Svensk författningssamling} (SFS)). Finally
 \Needspace*{14\baselineskip}
 Increasingly, the university libraries administering \gls{DiVA} favor PDF/A-2u. Conformance level, \ie Level U (Unicode), guarantees everything Level B does regarding visual fidelity, but adds a strict prerequisite: all text must map cleanly to Unicode semantics. This has two advantages:
 \begin{enumerate}
-    \item Search Engine Visibility: PDF/A-2u is structurally guaranteed to be cleanly indexable by web crawlers, supporting DiVA's core mandate for open-access visibility; and
+    \item Search Engine Visibility: PDF/A-2u is structurally guaranteed to be cleanly indexable by web crawlers, supporting \gls{DiVA}'s core mandate for open-access visibility; and
     
     \item Visual Transparency: PDF/A-2 allows transparency, layers, and modern OpenType fonts, which are common in thesis covers, complex charts, and scientific figures. PDF/A2u addresses unicode mapping (with ToUnicode CMaps), embedded ICC color profiles, and the elimination of non-standard font encoding anomalies. [\textbf{NB} Current information from USAB is that transparency is \textbf{not} allowed in a thesis they print and that the \gls{PDF} file that they produce is \textbf{not} designed to be accessible (\ie it has been optimized for printing).]
 \end{enumerate}
@@ -1666,7 +1666,7 @@ Hindawi injected CrossMark, NISO-JAV, and PRISM 2.1 properties (\enquote{crossma
 The entire multi-stage pipeline that transforms the \gls{PDF} file  \fname{Paper\_B\_one\_page.pdf} into a \qty{100}{\percent} compliant PDF/A-3u file consists of:
 \begin{description}[style=nextline, labelwidth=\widthof{\textbf{Disadvantage}}, leftmargin=!]
 
-\item [Ghostscript] \Cref{lst:cleanPaperB} cleanups and converts all CMYK color channels, vector spaces, and fills into the device-independent sRGB color space.
+\item [Ghostscript] \Cref{lst:cleanPaperB} cleans up and converts all CMYK color channels, vector spaces, and fills into the device-independent sRGB color space.
 \begin{itemize}
     \item \texttt{-sColorConversionStrategy=sRGB} and \texttt{-sProcessColorModel=DeviceRGB} forces Ghostscript to map all embedded CMYK vector artwork, fills, and strokes into standard sRGB, eliminating any raw DeviceCMYK operators that trigger veraPDF rule 6.2.4.3.
 
@@ -1798,7 +1798,7 @@ Is removing it safe? Yes, it is safe for long-term archiving and rendering, for 
     \item [The Source of Truth Remains] The actual font subset data (\enquote{FontFile2}/\enquote{FontFile3}) is untouched and fully embedded. Any compliant PDF renderer gets its glyph data straight from the font program, not from the \enquote{/CIDSet} bitmask.
     \item [Bypassing the Rule] The PDF/A rule for \enquote{CIDSet} is conditional: \textbf{If} a \enquote{CIDSet} stream is present, it must be exhaustively accurate. By stripping the key entirely, you bypass the conditional validation check while leaving the core font intact.
 \end{description}
-While fixing it upstream in the LaTeX or Ghostscript compilation chain would be the \enquote{pure} architectural fix, surgically removing a deprecated, redundant metadata entry to satisfy a legacy validator is a standard and effective technique in PDF remediation.
+While fixing it upstream in the \LaTeX{} or Ghostscript compilation chain would be the \enquote{pure} architectural fix, surgically removing a deprecated, redundant metadata entry to satisfy a legacy validator is a standard and effective technique in PDF remediation.
 
 Useful tools when tracking down VerPDF issues were the program \texttt{pdffonts}, \texttt{gs}, the \texttt{fitz} Python library (part of \texttt{PyMuPDF}), and Google's Gemini.
 

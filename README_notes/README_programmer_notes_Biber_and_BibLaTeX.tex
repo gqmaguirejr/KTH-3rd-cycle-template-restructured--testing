@@ -2449,7 +2449,7 @@ fi
 
 \subsection{Further Automation}
 \label{sec:furtherAutomation}
-It is possible to build other automation on the mechanism shown in \Cref{lst:accessBuildLogDirectly}. For example, Python code shown in \Cref{lst:uploadOutputPDF} can copy files from the build container to the Overleaf project (\ie the stable files in the project's directory tree). An example of using this is shown in \Cref{lst:uploadOutputSuccess}. Further examples include fordiva.json, referencesUsed.bib, and citedtags.bib.
+It is possible to build other automation on the mechanism shown in \Cref{lst:accessBuildLogDirectly}. For example, Python code shown in \Cref{lst:uploadOutputPDF} can copy files from the build container to the Overleaf project (\ie making them stable files in the project's directory tree). An example of using this is shown in \Cref{lst:uploadOutputSuccess}. Further examples include \fname{fordiva.json}, \fname{referencesUsed.bib}, and \fname{citedtags.bib} for a thesis.
 
 \begin{lstlisting}[language={Python}, escapechar=£, caption={Use Python to compile the project and upload a file, such as the PDF. Note that \LaTeX{} commands were added for layout purposes.},label=lst:uploadOutputPDF]
 #!/usr/bin/env python3
