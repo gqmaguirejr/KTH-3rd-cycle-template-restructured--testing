@@ -93,27 +93,24 @@ jobs:
         run: |
           # 1. Instruct Git to trust the mounted workspace regardless of UID ownership
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git config --global --add safe.directory /__w/KTH-3rd-cycle-template-restructured--testing/KTH-3rd-cycle-template-restructured--testing
-
-          # 2. Set author identity globally
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 3. Enter repository root explicitly
+          # 2. Enter repository root explicitly
           cd "$GITHUB_WORKSPACE"
 
-          # Verify we are in a valid Git repo
-          git rev-parse --is-inside-work-tree
+          # 3. Print what was generated (for verification in logs)
+          echo "==> Generated files:"
+          find artifacts -type f
 
-          # 4. Stage and commit generated artifacts
-          git add -f artifacts/*.pdf artifacts/*.bib artifacts/*.json 2>/dev/null || true
+          # 4. Recursively stage the entire artifacts directory (including subfolders)
+          git add -f artifacts/
 
-          # Commit only if changes were detected
-          if ! git diff --staged --quiet; then
-            git commit -m "docs: automated build artifacts [skip ci]"
-            # Pull any concurrent changes and push directly to current branch
-            git pull --rebase origin ${{ github.ref_name }}
-            git push origin HEAD:${{ github.ref_name }}
+          # 5. Commit only if changes were detected
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: automated build artifacts for ${{ github.event.inputs.target_doc }} [skip ci]"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
             echo "Artifacts pushed to branch ${{ github.ref_name }}."
           else
             echo "No changes in generated artifacts; nothing to commit."
