@@ -1,0 +1,133 @@
+name: Compile LuaLaTeX Documents
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.tex'
+      - '**.bib'
+  workflow_dispatch:
+    inputs:
+      target_doc:
+        description: 'Select document to compile (or choose "all")'
+        required: true
+        default: 'README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex'
+        type: choice
+        options:
+          - 'examplethesis.tex'
+          - 'Quick_Start_Guide.tex'
+          - 'README_3rd_cycle_author.tex'
+          - 'Generate_titles_in_plain_text.tex'
+          - 'listfonts_and_generate_exclusion_list.tex'
+          - 'luaotfload-tool-find-font.tex'
+          - 'restore_font_cache.tex'
+          - 'Saving_and_restoring_font_cache.tex'
+          - 'updatefontcache.tex'
+          - 'warmup.tex'
+          - 'README_notes/README_for_3rd_cycle_version.tex'
+          - 'README_notes/README_for_administrators.tex'
+          - 'README_notes/README_notes_reduced.tex'
+          - 'README_notes/README_programmer_notes_appendix.tex'
+          - 'README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex'
+          - 'README_notes/README_programmer_notes-JSON_to_MODS.tex'
+          - 'README_notes/README_programmer_notes-PDF_metadata.tex'
+          - 'README_notes/README_programmer_notes.tex'
+          - 'README_notes/README_supervisor_notes.tex'
+          - 'README_notes/README_Tekla_template.tex'
+          - 'all'
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Compile a single selected document on demand
+  # -------------------------------------------------------------
+  compile-single:
+    if: "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc != 'all' }}"
+    runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile with LuaLaTeX
+        run: |
+          TARGET="${{ github.event.inputs.target_doc }}"
+          TARGET_DIR=$(dirname "$TARGET")
+          TARGET_FILE=$(basename "$TARGET")
+          BASE_NAME="${TARGET_FILE%.tex}"
+          
+          # Dedicated artifact staging directory
+          OUT_DIR="$GITHUB_WORKSPACE/artifacts"
+          mkdir -p "$OUT_DIR"
+
+          echo "==> Entering $TARGET_DIR"
+          cd "$TARGET_DIR"
+
+          echo "==> Compiling $TARGET_FILE with latexmk (LuaLaTeX + Biber)"
+          # -lualatex: LuaLaTeX engine only
+          # -interaction=nonstopmode: Don't pause on errors in headless CI
+          # -outdir: Stage PDFs, aux, and generated bib/json files to artifacts
+          latexmk -lualatex -interaction=nonstopmode -synctex=1 \
+                  -outdir="$OUT_DIR" "$TARGET_FILE"
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-single
+          path: |
+            artifacts/*.pdf
+            artifacts/*.bib
+            artifacts/*.json
+          if-no-files-found: warn
+
+  # -------------------------------------------------------------
+  # Job 2: Compile all defined documents in parallel (push or dispatch 'all')
+  # -------------------------------------------------------------
+  compile-matrix:
+    if: "${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc == 'all') }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - path: "README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex"
+            slug: "programmer-notes"
+          - path: "main.tex"
+            slug: "main-thesis"
+          # Add any other root or README_notes targets here:
+          # - path: "README_notes/another_note.tex"
+          #   slug: "another-note"
+
+    container:
+      image: texlive/texlive:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile ${{ matrix.slug }} with LuaLaTeX
+        run: |
+          TARGET="${{ matrix.path }}"
+          TARGET_DIR=$(dirname "$TARGET")
+          TARGET_FILE=$(basename "$TARGET")
+          
+          OUT_DIR="$GITHUB_WORKSPACE/artifacts-${{ matrix.slug }}"
+          mkdir -p "$OUT_DIR"
+
+          echo "==> Entering directory: $TARGET_DIR"
+          cd "$TARGET_DIR"
+
+          echo "==> Compiling: $TARGET_FILE"
+          latexmk -lualatex -interaction=nonstopmode -synctex=1 \
+                  -outdir="$OUT_DIR" "$TARGET_FILE"
+
+      - name: Upload Artifacts (${{ matrix.slug }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: "artifacts-${{ matrix.slug }}"
+          path: |
+            artifacts-${{ matrix.slug }}/*.pdf
+            artifacts-${{ matrix.slug }}/*.bib
+            artifacts-${{ matrix.slug }}/*.json
+          if-no-files-found: warn
