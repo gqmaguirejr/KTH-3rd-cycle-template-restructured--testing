@@ -51,6 +51,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Fetch full history so pull/rebase works smoothly
+          fetch-depth: 0
+          # Ensure GITHUB_TOKEN credentials persist for git push
+          persist-credentials: true
+
 
       - name: Install System Fonts
         run: |
@@ -82,19 +88,26 @@ jobs:
 
       - name: Commit artifacts to repository
         run: |
-          cd "$GITHUB_WORKSPACE"
+          # 1. Instruct Git to trust the mounted workspace regardless of UID ownership
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Stage artifacts generated for this target
-          git add -f artifacts*/*.pdf artifacts*/*.bib artifacts*/*.json 2>/dev/null || true
-          
+          git config --global --add safe.directory /__w/KTH-3rd-cycle-template-restructured--testing/KTH-3rd-cycle-template-restructured--testing
+
+          # 2. Set author identity globally
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 3. Enter repository root explicitly
+          cd "$GITHUB_WORKSPACE"
+
+          # Verify we are in a valid Git repo
+          git rev-parse --is-inside-work-tree
+
+          # 4. Stage and commit generated artifacts
+          git add -f artifacts/*.pdf artifacts/*.bib artifacts/*.json 2>/dev/null || true
+
           if ! git diff --staged --quiet; then
             git commit -m "chore: update build artifacts [skip ci]"
-            # Rebase in case another matrix job just pushed
-            git pull --rebase origin main
-            git push origin main
+            git push origin HEAD:${{ github.ref_name }}
           else
             echo "No artifact changes to commit."
           fi
