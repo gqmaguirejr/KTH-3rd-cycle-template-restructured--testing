@@ -91,31 +91,25 @@ jobs:
 
       - name: Commit artifacts to repository
         run: |
-          # 1. Instruct Git to trust the mounted workspace regardless of UID ownership
+          cd "$GITHUB_WORKSPACE"
+
+          # 1. Trust workspace UID
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 2. Enter repository root explicitly
-          cd "$GITHUB_WORKSPACE"
+          # 2. Stage only PDFs, bibs, and json files inside artifacts/
+          find artifacts -type f \( -name "*.pdf" -o -name "*.bib" -o -name "*.json" -o -name "*.log" \) -print0 | xargs -0 -r git add -f
 
-          # 3. Print what was generated (for verification in logs)
-          echo "==> Generated files:"
-          find artifacts -type f
-
-          # 4. Recursively stage the entire artifacts directory (including subfolders)
-          # git add -f artifacts/
-          # Explicitly stage only deliverables
-          git add -f artifacts/**/*.pdf artifacts/**/*.bib artifacts/**/*.json artifacts/**/*.log
-
-          # 5. Commit only if changes were detected
+          # 3. Commit only if changes were detected
           if ! git diff --cached --quiet; then
+            echo "==> Changes detected, committing..."
             git commit -m "docs: automated build artifacts for ${{ github.event.inputs.target_doc }} [skip ci]"
             git pull --rebase origin "${{ github.ref_name }}"
             git push origin "HEAD:${{ github.ref_name }}"
             echo "Artifacts pushed to branch ${{ github.ref_name }}."
           else
-            echo "No changes in generated artifacts; nothing to commit."
+            echo "No artifact changes to commit."
           fi
 
       - name: Upload Build Artifacts
