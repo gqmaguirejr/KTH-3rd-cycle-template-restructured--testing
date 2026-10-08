@@ -6,6 +6,8 @@
 *.synctex.gz
 *.bcf
 *.run.xml
+*.lbx
+*.ldf
 lib/publications_dividers_generated.tex
 lib/publications_generated.tex
 lib/thesis_contributions_generated.tex
