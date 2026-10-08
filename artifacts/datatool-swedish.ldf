@@ -1,0 +1,11 @@
+\ProvidesFile{datatool-swedish.ldf}
+% Define how Swedish characters should be handled during sorting
+% This maps them so Å, Ä, and Ö appear at the end of the alphabet
+\@ifundefined{dtl@sortreplace}{}{%
+  \dtl@sortreplace{å}{za}%
+  \dtl@sortreplace{Å}{Za}%
+  \dtl@sortreplace{ä}{zb}%
+  \dtl@sortreplace{Ä}{Zb}%
+  \dtl@sortreplace{ö}{zc}%
+  \dtl@sortreplace{Ö}{Zc}%
+}
