@@ -104,7 +104,9 @@ jobs:
           find artifacts -type f
 
           # 4. Recursively stage the entire artifacts directory (including subfolders)
-          git add -f artifacts/
+	  # git add -f artifacts/
+	  # Explicitly stage only deliverables
+	  git add -f artifacts/**/*.pdf artifacts/**/*.bib artifacts/**/*.json artifacts/**/*.log
 
           # 5. Commit only if changes were detected
           if ! git diff --cached --quiet; then
