@@ -55,7 +55,10 @@ jobs:
           apt-get update && apt-get install -y --no-install-recommends \
             fontconfig \
             fonts-noto-core \
-            fonts-noto-extra
+            fonts-noto-extra \
+            fonts-noto-cjk \
+            fonts-noto-cjk-extra \
+            fonts-noto-mono 
           fc-cache -f
           luaotfload-tool --update
 
@@ -145,7 +148,10 @@ jobs:
           apt-get update && apt-get install -y --no-install-recommends \
             fontconfig \
             fonts-noto-core \
-            fonts-noto-extra
+            fonts-noto-extra \
+            fonts-noto-cjk \
+            fonts-noto-cjk-extra \
+            fonts-noto-mono 
           fc-cache -f
           luaotfload-tool --update
 
