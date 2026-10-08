@@ -118,7 +118,9 @@
      {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
      {\end{longtable}}%
  }
- 
+
+\input{lib/placeHolder_lbx_files}
+
 % define a left-aligned table cell that is ragged right
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
 
@@ -140,7 +142,7 @@
     \babelfont{sf}{TeX Gyre Heros}
     %\setmonofont[Ligatures={NoCommon}, Numbers={Lining,Monospaced}]{TeX Gyre Cursor}  %% Courier like font
     %% Turn off ligature for tt font
-    \babelfont{tt}[Ligatures={ResetAll}]{TeX Gyre Cursor}
+    \babelfont{tt}[Ligatures={NoCommon, NoRequired, NoContextual}]{TeX Gyre Cursor}
  \begin{comment}
     \babelfont[english]{rm}{TeX Gyre Termes}
     \babelfont[english]{sf}{TeX Gyre Heros}
@@ -332,7 +334,7 @@ Extension = .ttf,
 
 % color symbols - this would require changes in the font used in the U+2600-U+26FF-Miscellaneous-Symbols.tex file
 % for example for characters: ☕, ⚽, ⛄, and ✈
-%\newfontfamily{\NotoColorEmojiFont}{Noto Color Emoji}[Renderer=Harfbuzz]
+\newfontfamily{\NotoColorEmojiFont}{Noto Color Emoji}[Renderer=Harfbuzz]
 
 % Phonetic Extensions, U+1D00 - U+1D7F
 \input{unicode_blocks/U+1D00-U+1D7F-Phonetic-Extensions}
@@ -340,6 +342,10 @@ Extension = .ttf,
 \input{unicode_blocks/U+2070-U+209F-Superscripts-and-Subscripts}
 % Miscellaneous Symbols, U+2600 - U+26FF
 \input{unicode_blocks/U+2600-U+26FF-Miscellaneous-Symbols}
+% Dingbats, U+2700 - U+27BF
+\input{unicode_blocks/U+2700-U+27BF-Dingbats}
+% Miscellaneous Symbols and Pictographs, U+1F300 - U+1F5FF
+\input{unicode_blocks/U+1F300-U+1F5FF-Miscellaneous-Symbols-and-Pictographs}
 
 % Set up the header and footer for plain style pages
 \fancypagestyle{plain}{%
@@ -367,6 +373,7 @@ Extension = .ttf,
 \addtolength{\topmargin}{-3pt}
 
 \input{lib/configure_listings}
+\sbox{\lstbreakbox}{\textcolor{red}{\ensuremath{\mystixmathfont ↪}}\space}
 % If you use both listing and lstlisting environments - the following makes them both use the same counter and the same formatting in the List of Listings
 \makeatletter
 \AtBeginDocument{\let\c@listing\c@lstlisting}
@@ -419,7 +426,34 @@ This document describes how to use Biber data annotations in \BibLaTeX{} entries
 \setcounter{page}{1}
 \pagenumbering{arabic}
 \glsresetall
-This document describes how to use Biber data annotations in BibLaTeX entries (\Cref{sec:furtherBiberAnnotation}), how to use this annotation for \gls{CReDiT} data (\Cref{sec:annotationsForCReDiT}), and gives some recommendations for generating fake \BibLaTeX{} entries (\Cref{sec:generatingFakeBibLaTeXEntries}).
+This document describes how to use Biber data annotations in \BibLaTeX{} entries (\Cref{sec:furtherBiberAnnotation}), how to use this annotation for \gls{CReDiT} data (\Cref{sec:annotationsForCReDiT}), and gives some recommendations for generating fake \BibLaTeX{} entries (\Cref{sec:generatingFakeBibLaTeXEntries}).
+
+\section{Roadmap: How to Read This Guide}
+
+Depending on your immediate goals with the \gls{KTH} thesis template, you can navigate this document using the following tracks:
+\begin{enumerate}[leftmargin=*, label=\textbf{Track \arabic*}, ref=Track \arabic*]
+    \item \textbf{Quick Implementation (Just the ORCID \& Icon Snippets)}
+    \begin{itemize}
+    \item Go directly to \Cref{sec:furtherBiberAnnotation}
+    \item 
+Review \Cref{lst:biberAuthorAnnotation} for the `\enquote{author+an} syntax, and jump to \Cref{sec:orcidlinksMethodA} or \Cref{sec:orcidlinksMethodB} for the ready-to-use Lua and LaTeX hooks that automatically render clickable green ORCID badges.
+    \end{itemize}
+
+    \item \textbf{Automated Workflows \& the CReDiT Python Pipeline}
+    \begin{itemize}
+    \item  Focus on \Cref{sec:annotationsForCReDiT}
+    
+    \item  Review Pattern A (\Cref{lst:biberCreditPatternA}) for granular, degree-based contribution mapping.
+       
+    \item Skip to \Cref{sec:integratingAnnotationsWithCurrentWorkflows} to understand how external tools like \enquote{\fname{CReDiT\_Matrix\_Wizard.py}} and \enquote{\fname{publications\_map.json}} synchronize with GitHub Actions to build contribution matrices automatically.
+    \end{itemize}
+    
+\item \textbf{Advanced Architecture \& Metadata Overlays}
+    \begin{itemize} 
+    \item Read \Cref{sec:usingAnnotationsWithReferenceManagers} to understand why standard reference managers (such as Zotero or JabRef) strip data annotations and how the \textbf{Split-File Overlay} \enquote{\fname{references.bib}} + \enquote{\fname{references-annotations.bib}} solves this.
+    \item Explore \Cref{sec:otherUsesForBiberDataAnotations} for advanced applications such as Open Access compliance tracking, math-in-title normalization, and handling mega-collaborations.
+    \end{itemize}
+\end{enumerate}
 
 
 \section[Using Biber data annotations in BibLaTeX entries]{Using Biber data annotations in BibLaTeX\linebreak[4] entries}
@@ -453,15 +487,17 @@ As described in §3.7 of the \texttt{biblatex} package manual, data annotations 
 }
 \end{lstlisting}
 
-Note that each line of the author annotation has a prefix of the form `<number>:' followed by a name, an equal sign (`='), and a quoted value. Internally, this information is encoded into \textit{parts} and stored by Biber in the \texttt{`.bbl'} file. Note also the use of the \texttt{placeholder} field to explicitly identify this as a fake reference to be used simply for the purposes of examples.
+Note that each line of the author annotation(shown in \Cref{lst:biberAuthorAnnotation}) has a prefix of the form `<number>:' followed by a name, an equal sign (`='), and a quoted value. Internally, this information is encoded into \textit{parts} and stored by \texttt{biber} in the \texttt{`.bbl'} file. Note also the use of the \texttt{placeholder} field to explicitly identify this as a fake reference to be used simply for the purposes of examples.
 
 \subsection{BibLaTeX Part Annotation Signature}
 Programmatic access to the annotation is done via:
+\begin{small}
 \begin{verbatim}
 \texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
 
 \texttt{\textbackslash getpartannotation[<field>][<name>][<item>]\{<part>\}}
 \end{verbatim}
+\end{small}
 
 The three optional brackets define the bibliographic coordinates (`[author][default][<idx>]`), while the part slug is passed as the mandatory brace argument (`\{<part>\}`). In the example above, the slug will be \enquote{orcid} or \enquote{equal}.
 
@@ -680,7 +716,7 @@ end
 
 \subsection{Method B for inserting ORCID links}
 \label{sec:orcidlinksMethodB}
-Another example of this for \textbackslash fullcite\{doe2025collaborative\} using the code in \Cref{lst:biberHookExample1B} is:
+Another example of inserting ORCID links for \textbackslash fullcite\{doe2025collaborative\} using the code in \Cref{lst:biberHookExample1B} is:
 \newbox\orcidbox
 
 \newcommand*{\renderorcidbadgeB}[1]{%
@@ -889,7 +925,7 @@ Absence of the key implies no attributed contribution.
 \end{table}
 \FloatBarrier
 
-There are two primary paradigms for encoding \gls{CReDiT} roles using Biber annotations, as shown in \Cref{lst:biberCreditPatternA} and \Cref{lst:biberCreditPatternB}.
+There are two primary paradigms for encoding \gls{CReDiT} roles using \texttt{biber} annotations, as shown in \Cref{lst:biberCreditPatternA} and \Cref{lst:biberCreditPatternB}.
 
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, caption={{Pattern A: Role-as-Key (Fine-grained with degrees of contribution)}}, label=lst:biberCreditPatternA]
 @article{maguire2026pipeline,
@@ -1056,16 +1092,17 @@ The following generates some example output when using Approach A for the \gls{C
 
 \subsection{Architectural Takeaways for Your Pipeline}
 \begin{itemize}
-    \item \textbf{Biber `.bib` Annotation Delimiters:} Item annotations must be delimited by semicolons (`;`), not commas (`,`), with the item index explicit on each part (\eg `1:conceptualization="lead"; 1:software="lead"`).
+    \item \textbf{biber \enquote{.bib} Annotation Delimiters:} Item annotations must be delimited by semicolons (`;`), not commas (`,`), with the item index explicit on each part (\eg `1:conceptualization="lead"; 1:software="lead"`).
     \item \textbf{Kebab-Case Slugs:} Adopting the standard \gls{CReDiT} simplified names (\eg `writing-original-draft`, `data-curation`) avoids unescaped underscore collisions in TeX math mode and simplifies downstream \gls{JSON} serialization.
     \item \textbf{BibLaTeX Part Annotation Signature:}
+\begin{small}
 \begin{verbatim}
 \texttt{\textbackslash haspartannotation[<field>][<name>][<item>]\{<part>\}\{\dots\}\{\dots\}}
 
 
 \texttt{\textbackslash getpartannotation[<field>][<name>][<item>]\{<part>\}}
 \end{verbatim}
-
+\end{small}
 
 The three optional brackets define the bibliographic coordinates (`[author][default][<idx>]`), while the part slug is passed as the mandatory brace argument (`\{<part>\}`).
     \item \textbf{Index Isolation:} Freezing `\textbackslash the\textbackslash value{listcount}` via `\textbackslash edef` before triggering `\textbackslash docsvlist` prevents the inner loop from clobbering the active author index.
@@ -1179,20 +1216,20 @@ Define the slug-to-text mappings with \texttt{\textbackslash csdef}, as shown in
 
 In \BibLaTeX, whenever a citation or bibliography driver is executing (such as inside \texttt{\textbackslash AtEveryBibitem}, \texttt{\textbackslash AtEveryCitekey}, \texttt{\textbackslash DeclareBibliographyDriver}, \texttt{\textbackslash fullcite}, or inside a bibmacro like \texttt{finentry}), the active entry key is automatically set as the current context.
 
-When writing custom reports, contribution matrices, or diagnostic validation routines outside the standard citation loop, \BibLaTeX\ provides several mechanisms to inspect and manipulate the active citation context:
+When writing custom reports, contribution matrices, or diagnostic validation routines outside the standard citation loop, \BibLaTeX{} provides several mechanisms to inspect and manipulate the active citation context:
 \begin{enumerate}
     \item Standard Built-in Key Registers
     \begin{itemize}
-        \item \textbackslash thefield\{entrykey\}: Prints or retrieves the active \fname{.bib} entry key (\eg maguire2026pipeline).
+        \item \texttt{\textbackslash thefield\{entrykey\}}: Prints or retrieves the active \fname{.bib} entry key (\eg maguire2026pipeline).
 
-        \item \textbackslash strfield\{entrykey\}: Returns the unexpanded string representation of the entry key.
+        \item \texttt{\textbackslash strfield\{entrykey\}}: Returns the unexpanded string representation of the entry key.
 
-        \item \textbackslash currententrykey: An internal macro holding the literal key of the item currently being processed.
+        \item \texttt{\textbackslash currententrykey}: An internal macro holding the literal key of the item currently being processed.
     \end{itemize}
     
-    \item Explicitly Setting an Arbitrary Entry as "Current"
+    \item Explicitly Setting an Arbitrary Entry as \enquote{Current}
     
-If you are outside a standard bibliography loop (for example, in custom TeX/Lua code or arbitrary body text) and want to load a specific entry key into the active \BibLaTeX\ evaluation context without printing a full citation:
+If you are outside a standard bibliography loop (for example, in custom TeX/Lua code or arbitrary body text) and want to load a specific entry key into the active \BibLaTeX{} evaluation context without printing a full citation:
 \end{enumerate}
 
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Load specific entry key}}, label=lst:biberLoadSpecifcEntryKey]
@@ -1205,7 +1242,7 @@ If you are outside a standard bibliography loop (for example, in custom TeX/Lua 
 \endgroup
 \end{lstlisting}
 
-More commonly, \BibLaTeX\ provides \textbackslash entrydata\{<entrykey>\}\{<code/macros>\}, which temporarily switches the current entry context to <entrykey> and executes your custom code within that entry's data scope:
+More commonly, \BibLaTeX{} provides \texttt{\textbackslash entrydata\{<entrykey>\}\{<code/macros>\}}, which temporarily switches the current entry context to \texttt{<entrykey>} and executes your custom code within that entry's data scope:
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Temporary switch to specific entry key}}, label=lst:biberTemporarySwitchSpecifcEntryKey]
 \entrydata{maguire2026pipeline}{%
   % Inside this block, 'maguire2026pipeline' is the active entry
@@ -1215,8 +1252,8 @@ More commonly, \BibLaTeX\ provides \textbackslash entrydata\{<entrykey>\}\{<code
 }
 \end{lstlisting}
 
-Usage Example: Printing the Current Entry Key Alongside Metadata
-\Needspace*{8\baselineskip}
+\Needspace*{9\baselineskip}
+Example usage to print the current entry key alongside metadata;
 \begin{lstlisting}[style=latexExampleForAuthors, escapechar=|, basicstyle=\footnotesize, caption={{Print current entry key with metadata}}, label=lst:biberPrintCurrentEntry]
 \newbibmacro*{print:current:entry:info}{%
   \par\noindent
@@ -1342,19 +1379,19 @@ Whenever the \texttt{author:credit:roles} macro is invoked during bibliography r
 \end{lstlisting}
 
 Using creditlabel@\ldots{} provides strict separation:
-\begin{description}[labelwidth =\widthof{\textbf{credit@<degree>@<author\_idx>}}, leftmargin = !]
-    \item[creditlabel@<role>] Static translation table mapping raw slug keys to typeset strings.
+\begin{description}[labelwidth =\widthof{\textbf{\texttt{credit@<degree>@<author\_idx>}}}, leftmargin = !]
+    \item[\texttt{creditlabel@<role>}] Static translation table mapping raw slug keys to typeset strings.
 
-    \item[credit@<degree>@<author\_idx>] Dynamic runtime data containers accumulating roles during macro evaluation.
+    \item[\texttt{credit@<degree>@<author\_idx>}] Dynamic runtime data containers accumulating roles during macro evaluation.
 \end{description}
 
-\subsection{Using Biber data annotations for other purposes}
+\subsection{Using biber data annotations for other purposes}
 \label{sec:otherUsesForBiberDataAnotations}
 
 Beyond author attribution and multilingual titles, Biber’s data annotations can attach semantic metadata to citations, authors, and sources without requiring custom \texttt{.dbx} datamodel extensions. Potentially, several applications could be integrated directly into thesis workflows:
 \begin{enumerate}
 \Needspace*{27\baselineskip}
-    \item Thesis Inclusion \& Paper Categorization (Compilation Theses)
+    \item Thesis Inclusion and Paper Categorization (Compilation Theses)
 
 In Swedish compilation doctoral theses (\foreignlanguage{swedish}{sammanläggningsavhandlingar}), candidates must distinguish between papers formally included in the thesis and secondary publications completed during their studies:
 
@@ -1382,7 +1419,7 @@ In Swedish compilation doctoral theses (\foreignlanguage{swedish}{sammanläggnin
     \item[Automated Dividers] The value \texttt{paper="Paper I"} can be dynamically fetched to typeset decorative Roman-numeral divider sheets preceding individual reprint \glspl{PDF}.
 \end{description}
 \Needspace*{20\baselineskip}
-    \item Institutional Affiliation \& Degree Eligibility Mapping
+    \item Institutional Affiliation and Degree Eligibility Mapping
 
 For co-authored papers, evaluating committees often need to confirm whether an author was affiliated with \gls{KTH} or performed the research under an external industrial partnership:
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily, escapechar=|, caption={{Storing thesis related metadata}}, label=lst:biberThesisAffiliationMetadata]
@@ -1493,7 +1530,7 @@ Some bibliographic titles contain \LaTeX{} math expressions. \BibLaTeX{} provide
 \end{listing}
 \FloatBarrier
 
-While \texttt{sorttitle} normalizes the title into plain ASCII for alphabetical ordering, external ingest pipelines (\eg\ automated bibliography validators, metadata scrapers, or repository systems such as SwePub and \gls{DiVA}) frequently require a clean UTF-8 plain-text representation. We can use \BibLaTeX{} data annotations to store a canonical UTF-8 version of the title, as shown in \Cref{lst:biberMathInTitles}. Note that the leading \enquote{\texttt{=}} (equal sign) instructs Biber to treat the annotation value as a literal string rather than a key-value or boolean flag.
+While \texttt{sorttitle} normalizes the title into plain ASCII for alphabetical ordering, external ingest pipelines (\eg\ automated bibliography validators, metadata scrapers, or repository systems such as SwePub and \gls{DiVA}) frequently require a clean UTF-8 plain-text representation. We can use \BibLaTeX{} data annotations to store a canonical UTF-8 version of the title, as shown in \Cref{lst:biberMathInTitles}. Note that the leading \enquote{\texttt{=}} (equal sign) instructs \texttt{biber} to treat the annotation value as a literal string rather than a key-value or boolean flag.
 
 \begin{listing}[!ht]
 \begin{minted}[breaklines, escapeinside=||]{bibtex}
@@ -1509,7 +1546,7 @@ While \texttt{sorttitle} normalizes the title into plain ASCII for alphabetical 
 \end{listing}
 \FloatBarrier
 
-Both approaches can be combined, as shown in \Cref{lst:biberMathInTitlesCombined}. This allows \texttt{sorttitle} to govern internal Biber sorting while \texttt{title+an:utf8} supplies external validation pipelines and metadata harvesters with an authoritative UTF-8 string.
+Both approaches can be combined, as shown in \Cref{lst:biberMathInTitlesCombined}. This allows \texttt{sorttitle} to govern internal \texttt{biber} sorting while \texttt{title+an:utf8} supplies external validation pipelines and metadata harvesters with an authoritative UTF-8 string.
 
 \begin{listing}[!ht]
 \begin{minted}[breaklines, escapeinside=||]{bibtex}
@@ -1528,8 +1565,8 @@ Both approaches can be combined, as shown in \Cref{lst:biberMathInTitlesCombined
 
 \subsubsection{Can annotations be used in conjunction with reference managers}
 \label{sec:usingAnnotationsWithReferenceManagers}
-Considering the usage \enquote{Thesis Inclusion \& Paper Categorization (Compilation Theses)} above, there is a practical problem: 
-Currently, no mainstream reference manager supports Biber’s data annotations as first-class, structured semantic data.
+Considering the usage \enquote{Thesis Inclusion and Paper Categorization (Compilation Theses)} above, there is a practical problem: 
+Currently, no mainstream reference manager supports biber’s data annotations as first-class, structured semantic data.
 
 The landscape divides into tools that parse and preserve the raw fields versus tools that strip them entirely:
 \begin{enumerate}
@@ -1538,16 +1575,16 @@ The landscape divides into tools that parse and preserve the raw fields versus t
 Because JabRef uses the \fname{.bib} file directly as its internal database (without converting entries into a generic internal schema), it is the most compatible tool:
 \begin{description}[labelwidth =\widthof{\textbf{Proprietary Flat Schemas}}, leftmargin = !]
     \item[Preservation] When set to \BibLaTeX{} mode, JabRef will not corrupt or strip `author+an` or `title+an` fields when saving.
-    \item[UI Editing] It does not parse the sub-properties (`1:orcid="...";`) into GUI checkboxes, creator cards, or linked badges. The entire annotation block appears as an unformatted raw string in an auxiliary field text box.
-    \item[Feature Status] Native support for Biber data annotations has been discussed in feature issues (\eg Issue \#11505), but it remains an unparsed text field.
+    \item[UI Editing] It does not parse the sub-properties (`1:orcid="...";`) into \gls{GUI} checkboxes, creator cards, or linked badges. The entire annotation block appears as an unformatted raw string in an auxiliary field text box.
+    \item[Feature Status] Native support for \texttt{biber} data annotations has been discussed in feature issues (\eg Issue \#11505), but it remains an unparsed text field.
 \end{description}
 
     \item Zotero \& Mendeley (Destructive / Incompatible)
 
-Both tools convert bibliographic entries into an internal relational model that assumes a flat `author` table (`first\_name`, `last\_name`, `role`):
+Both tools convert bibliographic entries into an internal relational model that assumes a flat \enquote{author} table (\enquote{first\_name}, \enquote{last\_name}, \enquote{role}):
 \begin{description}[labelwidth =\widthof{\textbf{Proprietary Flat Schemas}}, leftmargin = !]
-    \item[Data Loss on Import] If a `.bib` file decorated with `author+an = { 1:orcid="..."; }` is imported, the parser discards the annotation entirely because it does not map to any creator field.
-    \item[Export Inability] Neither tool can reconstruct `<field>+an` upon export unless an external layer like Better BibTeX (BBT) parses custom dummy strings stashed in the record's `Extra` field.
+    \item[Data Loss on Import] If a \fname{.bib} file decorated with \enquote{author+an = { 1:orcid="..."; }} is imported, the parser discards the annotation entirely because it does not map to any creator field.
+    \item[Export Inability] Neither tool can reconstruct \enquote{<field>+an} upon export unless an external layer like Better BibTeX (BBT) parses custom dummy strings stashed in the record's \enquote{Extra} field.
 \end{description}
 
     \item EndNote, Citavi, \& Paperpile
@@ -1557,23 +1594,23 @@ Both tools convert bibliographic entries into an internal relational model that 
 \end{description}
 \end{enumerate}
 
-\paragraph{Practical Recommendation}\mbox{}\par
+\subsubsection{Practical Recommendation}\mbox{}\par
 \smallskip
 
-Because reference managers lag behind Biber’s advanced data-model features, \textbf{managing annotations outside the GUI reference manager is the only stable design pattern}. For a \gls{KTH} doctoral workflow, managing \glspl{ORCID} and \gls{CReDiT} through \fname{publications\_map.json} and external Python/\gls{CI} scripts remains far more robust than relying on a reference manager.
+Because reference managers lag behind \texttt{biber}’s advanced data-model features, \textbf{managing annotations outside the \gls{GUI} reference manager is the only stable design pattern}. For a \gls{KTH} doctoral workflow, managing \glspl{ORCID} and \gls{CReDiT} through \fname{publications\_map.json} and external Python/\gls{CI} scripts remains far more robust than relying on a reference manager.
 
 This means:
 \begin{enumerate}
     \item \fname{references.bib} as the standard citation repository (which Zotero or JabRef can export safely), and
-    \item \fname{publications\_map.json} (managed via the Python/Streamlit wizard and GitHub Actions) as the pipeline that programmatically decorates entries with `author+an` at build time, ensuring reference managers never accidentally wipe out contributor roles or \glspl{ORCID} during library re-exports.
+    \item \fname{publications\_map.json} (managed via the Python/Streamlit wizard and GitHub Actions) as the pipeline that programmatically decorates entries with \enquote{author+an} at build time, ensuring reference managers never accidentally wipe out contributor roles or \glspl{ORCID} during library re-exports.
 \end{enumerate}
 
-\paragraph{A Forward-Looking Architecture: Split-File Overlay}\mbox{}\par
+\subsubsection{A Forward-Looking Architecture: Split-File Overlay}\mbox{}\par
 \smallskip
 
 A cleaner architectural path forward is to decouple the reference management lifecycle from semantic metadata authoring by maintaining two distinct bibliographic files sharing identical citation keys:
 \begin{enumerate}
-\item \fname{references.bib}: The upstream, GUI-managed store (exported directly from Zotero, Mendeley, or JabRef) containing canonical bibliographic descriptors (\eg \texttt{author}, \texttt{title}, \texttt{year}, \texttt{doi}).
+\item \fname{references.bib}: The upstream, \gls{GUI}-managed store (exported directly from Zotero, Mendeley, or JabRef) containing canonical bibliographic descriptors (\eg \texttt{author}, \texttt{title}, \texttt{year}, \texttt{doi}).
 
 \item \fname{references-annotations.bib}: A companion overlay containing sparse entries with matching citation keys that declare only the extended data annotations (\eg \texttt{author+an}, \texttt{title+an}, or \texttt{entry+an}).
 \end{enumerate}
@@ -1582,7 +1619,7 @@ Existing utilities such as \texttt{bibtool}, \texttt{bibtex-tools}, or \texttt{b
 
 Such an overlay or split-file architecture (\fname{references.bib} alongside \fname{references-annotations.bib}) cleanly separates concerns while providing persistent annotations. As a result, students never have to manually re-annotate files after updating their reference library.
 
-In Biber and \BibLaTeX{}, data annotations are completely generic: \emph{any} standard or custom field can take the \enquote{+an} suffix at the item, field, or entry level.
+In \texttt{biber} and \BibLaTeX{}, data annotations are completely generic: \emph{any} standard or custom field can take the \enquote{+an} suffix at the item, field, or entry level.
 
 Under the split-file overlay architecture (\fname{references.bib} + \fname{references-annotations.bib}), an additive Python pre-processor can attach granular semantic metadata across several distinct bibliographic dimensions without reference-manager corruption. Examples of these other dimensions include:
 \begin{enumerate}
@@ -1597,7 +1634,7 @@ doi+an   = {status="verified"; resolver="crossref"; checked="2026-03-01"},
 eprint   = {2501.09876},
 eprint+an = {archive="arxiv"; primaryClass="cs.NI"; openaccess="true"}
 \end{lstlisting}
-        \item[Application] BibLaTeX macros can selectively render a green verification checkmark beside verified DOIs or trigger build-time compiler warnings for unverified or dead links.
+        \item[Application] \BibLaTeX{} macros can selectively render a green verification checkmark beside verified \glspl{DOI} or trigger build-time compiler warnings for unverified or dead links.
     \end{description}
     
     \item Open Access \& Licensing Terms (\texttt{url+an}, \texttt{file+an})
@@ -1644,7 +1681,7 @@ addendum+an = {funder="VR"; grant="2023-04567"; project="6G-SEC"}
         \end{description}
     \item Editorial Curation \& Retraction Watches (\texttt{entry+an})
         \begin{description}[labelwidth =\widthof{\textbf{Application}}, leftmargin = !]
-        \item[Context] Long-lived literature repositories occasionally contain retracted papers, expressions of concern, or errata.
+        \item[Context] Long-lived literature repositories occasionally contain retracted papers, expressions of concern, or \foreignlanguage{latin}{errata}.
         \Needspace*{6\baselineskip}
         \item[Syntax]
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Syntax for Editorial Curation \& Retraction Watches}}, label=lst:biberEditorialCurationAndRetractionWatchesMetadata]
@@ -1715,7 +1752,7 @@ The existing pipeline positions the \fname{.bib} file as a traditional citation 
 
 \subsection{Support for Mega-Collaborations}
 \label{sec:biberMegaCollaborations}
-To prevent Biber and \LaTeX{} from crashing on mega-collaborations while still providing granular \gls{CReDiT} attribution for a student, you can use \textbf{sparse target indexing}, (\ie you only need to add the relevant additional author details):
+To prevent \texttt{biber} and \LaTeX{} from crashing on mega-collaborations while still providing granular \gls{CReDiT} attribution for a student, you can use \textbf{sparse target indexing}, (\ie you only need to add the relevant additional author details):
 
 \Needspace*{24\baselineskip}
 \begin{lstlisting}[language={BibTeX}, breaklines=true, basicstyle=\small\ttfamily,  escapechar=|, caption={{Example of a specific contributor to a large collaboration}}, label=lst:biberMegaCollaborationMetadata]
@@ -1744,9 +1781,9 @@ To prevent Biber and \LaTeX{} from crashing on mega-collaborations while still p
 \subsection{Integrating annotations with current workflows}
 \label{sec:integratingAnnotationsWithCurrentWorkflows}
 
-The challenge with handling entities like the \textbf{MPS Collaboration} in standard \fname{.bib} files is that the individual student or researcher (\eg Gerald Q. Maguire Jr.) is not listed as an indexed name item in the \texttt{author} field (which contains only \enquote{Lindenbaum, S. J.} and \enquote{\{MPS Collaboration\}}). Consequently, Biber’s item-indexed annotations (\texttt{author+an = \{ 3:software="supporting"\}}) cannot bind to an author index (in this example \enquote{3}) that does not exist in the primary name list (or might only appear far down the list, \ie beyond the range of the authors processed).
+The challenge with handling entities like the \textbf{MPS Collaboration} in standard \fname{.bib} files is that the individual student or researcher (\eg Gerald Q. Maguire Jr.) is not listed as an indexed name item in the \texttt{author} field (which contains only \enquote{Lindenbaum, S. J.} and \enquote{\{MPS Collaboration\}}). Consequently, biber’s item-indexed annotations (\texttt{author+an = \{ 3:software="supporting"\}}) cannot bind to an author index (in this example \enquote{3}) that does not exist in the primary name list (or might only appear far down the list, \ie beyond the range of the authors processed).
 
-Under Biber, this can be solved cleanly using one of two annotation architectures:
+Under biber, this can be solved cleanly using one of two annotation architectures:
 
 \begin{enumerate}
     \item Standalone Contributor Data Annotation (\texttt{contributors+an})
@@ -1992,9 +2029,822 @@ placeholder = {Placeholder fake reference for use in examples},
     Under \gls{RFC} 2606~\cite{rfc2606} and its update \gls{RFC} 6761~\cite{rfc6761}, only the reserved second-level domains (\texttt{example.com}, \texttt{example.org}, \texttt{example.edu}) or the reserved top-level domains (\texttt{.test}, \texttt{.example}, \texttt{.invalid}) should be used for \glspl{URL} and repository mirrors. For national repository handles, use zero-padded identifiers (\eg \texttt{urn:nbn:se:kth:diva-000000}).
 \end{description}
 
+\section{Overleaf Automation}
+\label{sec:verleafAutomation}
+
+\Cref{{sec:AutomatingPlaceholdCheck}} examines how a script could be used to check for placeholders. \Cref{sec:furtherAutomation} generalizes this approach to copy files from the compilation container to the Overleaf project, so that artifacts can become persistent and potentially be stored in a GitHub repository.
+
+\subsection{Automating the Placeholder check}
+\label{sec:AutomatingPlaceholdCheck}
+
+Overleaf's internal build pipeline is fundamentally stateless with respect to the git tree, as the compiler container writes auxiliary files, \enquote{.log}, and \enquote{.pdf} to an ephemeral build cache outside the git repository directory. The web \gls{UI} exposes these via internal project endpoints that are not exposed in standard git syncs.
+
+Breaking the \gls{SaaS} walled gardens via the UNIX philosophy: \textbf{If a browser button triggers an action, there is an underlying HTTP endpoint or a DOM event that can be automated.}
 
 
+There are two primary approaches to automating this retrieval without manually clicking through the \gls{GUI}:
+\begin{enumerate}[leftmargin=*, label=\textbf{Method \arabic*}, ref=Method \arabic*]
+\item Use a script to compile the file, then fetch the output.log file and filter it
 
+If we assume that you are logged in and accessing your Overleaf project using Chrome as your browser. You should set the environment variable \texttt{OVERLEAF\_PROJECT\_ID} to be the identifier of your Overleaf project, \ie the string that follows \enquote{project/}. \Cref{lst:accessBuildLogDirectly} shows a Python program that accesses Overleaf (via its \gls{CLSI}), authenticating with your standard session cookie (\texttt{overleaf\_session2}).  \Cref{lst:bashForRemainingPlaceholders} shows the output of the program when accessing this \LaTeX{} file. The hardest part of developing this program was programmatically discovering all MongoDB 24-hex ObjectIds. The program can take one of three arguments (see \texttt{resolve\_file\_target}): \first the 24-hexadecimal ID, \Second the exact path name, or\third part of a path name. If the program finds unresolved placeholders, it returns \num{2} so it can be used in a \gls{CI} process.
+
+\begin{lstlisting}[language={Python}, caption={Use Python to access the build log},label=lst:accessBuildLogDirectly]
+#!/usr/bin/env python3
+"""
+fetch_overleaf_check_for_unresolved_placeholders4.py
+
+Automates Overleaf log retrieval and audits for unresolved BibLaTeX placeholder
+references. Programmatically discovers all MongoDB 24-hex ObjectIds directly
+from Overleaf's /updates and /entities endpoints without requiring manual
+JSON mapping files or browser developer window scripts.
+"""
+
+import os
+import re
+import sys
+import uuid
+import requests
+
+try:
+    import browser_cookie3
+except ImportError:
+    browser_cookie3 = None
+
+TARGET_BANNER = "UNRESOLVED PLACEHOLDER REFERENCES DETECTED IN THIS BUILD:"
+PLACEHOLDER_MARKER = "Unresolved placeholder reference"
+
+FallBack_Project_ID="000000000000000000000000" # replace with your project ID
+FallBack_CLSIserver="clsi-cache-zone-b-prod-3" # replace with your CLSI server
+
+
+def get_authenticated_session(project_id: str) -> tuple[requests.Session, str]:
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36"
+        ),
+        "Referer": f"https://www.overleaf.com/project/{project_id}",
+        "Origin": "https://www.overleaf.com",
+        "Accept": "application/json, text/plain, */*",
+    })
+
+    cookie_val = os.environ.get("OVERLEAF_SESSION_COOKIE")
+
+    if not cookie_val and browser_cookie3:
+        try:
+            cj = browser_cookie3.chrome(domain_name=".overleaf.com")
+            session.cookies.update(cj)
+            for c in cj:
+                if c.name == "overleaf_session2":
+                    cookie_val = c.value
+                    break
+        except Exception as e:
+            sys.stderr.write(f"Note: browser_cookie3: {e}\n")
+
+    if cookie_val:
+        if "overleaf_session2=" in cookie_val:
+            cookie_val = cookie_val.split("overleaf_session2=")[1].split(";")[0].strip()
+        session.cookies.set("overleaf_session2", cookie_val, domain=".overleaf.com", path="/")
+
+    res = session.get(f"https://www.overleaf.com/project/{project_id}")
+    if res.status_code == 403 or "login" in res.url:
+        sys.stderr.write("Authentication failed. Ensure you are logged into Overleaf in Chrome.\n")
+        sys.exit(1)
+
+    csrf_token = None
+    for pat in [
+        r'window\.csrfToken\s*=\s*["\']([^"\']+)["\']',
+        r'<meta\s+name=["\']ol-csrfToken["\']\s+content=["\']([^"\']+)["\']',
+        r'"_csrf"\s*:\s*["\']([^"\']+)["\']',
+    ]:
+        m = re.search(pat, res.text)
+        if m:
+            csrf_token = m.group(1)
+            break
+
+    if not csrf_token:
+        sys.stderr.write("Failed to retrieve CSRF token from project page.\n")
+        sys.exit(1)
+
+    return session, csrf_token
+
+
+def fetch_project_doc_mapping(session: requests.Session, project_id: str, csrf_token: str) -> dict[str, str]:
+    """
+    Queries Overleaf's /updates endpoint to dynamically extract the mapping between
+    file relative paths and their 24-hex MongoDB ObjectIds.
+    """
+    mapping = {}
+    headers = {
+        "X-Csrf-Token": csrf_token,
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json",
+    }
+
+    try:
+        r = session.get(f"https://www.overleaf.com/project/{project_id}/updates", headers=headers, timeout=15)
+        if r.status_code == 200:
+            data = r.json()
+            updates = data.get("updates", [])
+            for u in updates:
+                # Overleaf update records store pathnames and document/blob metadata
+                pathnames = u.get("pathnames", [])
+                
+                # Check for explicit docs/files lists inside updates
+                docs = u.get("docs", []) or u.get("meta", {}).get("docs", [])
+                for d in docs:
+                    d_id = d.get("id") or d.get("_id")
+                    d_path = d.get("pathname") or d.get("path")
+                    if d_id and d_path:
+                        clean_p = d_path.lstrip("/")
+                        mapping[clean_p] = d_id
+                        mapping[os.path.basename(clean_p)] = d_id
+
+                # Inspect patches/ops where doc IDs are paired with paths
+                patches = u.get("patches", [])
+                for p in patches:
+                    d_id = p.get("doc") or p.get("doc_id")
+                    d_path = p.get("pathname") or p.get("path")
+                    if d_id and d_path:
+                        clean_p = d_path.lstrip("/")
+                        mapping[clean_p] = d_id
+                        mapping[os.path.basename(clean_p)] = d_id
+
+                # If updates associate a single doc_id with pathnames
+                u_doc_id = u.get("doc") or u.get("doc_id") or u.get("id")
+                if u_doc_id and re.fullmatch(r"[a-f0-9]{24}", str(u_doc_id)):
+                    for path in pathnames:
+                        clean_p = path.lstrip("/")
+                        mapping[clean_p] = u_doc_id
+                        mapping[os.path.basename(clean_p)] = u_doc_id
+
+            # Fallback regex scan over the payload for any "pathname":"...", "id":"..." structures
+            if not mapping:
+                for match in re.finditer(
+                    r'(?:pathname|path)["\']?\s*:\s*["\']([^"\']+)["\'].*?(?:id|_id|doc)["\']?\s*:\s*["\']([a-f0-9]{24})["\']',
+                    r.text
+                ):
+                    p, did = match.group(1).lstrip("/"), match.group(2)
+                    mapping[p] = did
+                    mapping[os.path.basename(p)] = did
+    except Exception as e:
+        sys.stderr.write(f"Warning: Failed to fetch updates mapping: {e}\n")
+
+    return mapping
+
+
+def fetch_project_paths(session: requests.Session, project_id: str, csrf_token: str) -> list[str]:
+    """Retrieves canonical paths from the /entities endpoint."""
+    headers = {
+        "X-Csrf-Token": csrf_token,
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json",
+    }
+    try:
+        r = session.get(
+            f"https://www.overleaf.com/project/{project_id}/entities?projectId={project_id}",
+            headers=headers,
+            timeout=10
+        )
+        if r.status_code == 200:
+            data = r.json()
+            entities = data.get("entities", [])
+            return [e.get("path", "").lstrip("/") for e in entities if "path" in e]
+    except Exception:
+        pass
+    return []
+
+
+def resolve_file_target(
+    arg: str | None,
+    mapping: dict[str, str],
+    known_paths: list[str],
+) -> tuple[str | None, str | None]:
+    """Resolves an input argument to (root_doc_id, root_resource_path)."""
+    if not arg:
+        return None, None
+
+    clean = arg.strip().lstrip("./")
+
+    # Invert mapping to support doc_id -> canonical path
+    id_to_path = {}
+    for p, did in mapping.items():
+        if "/" in p:
+            id_to_path[did] = p
+    for p, did in mapping.items():
+        id_to_path.setdefault(did, p)
+
+    # 1. Direct 24-character hexadecimal MongoDB ObjectId
+    if re.fullmatch(r"[a-f0-9]{24}", clean):
+        doc_id = clean
+        path = id_to_path.get(doc_id)
+        if not path:
+            path = next((p for p in known_paths if os.path.basename(p) == clean), None)
+        return doc_id, path
+
+    # 2. Exact match in mapping
+    base = os.path.basename(clean)
+    doc_id = mapping.get(clean) or mapping.get(base)
+
+    # 3. Substring / fuzzy match across mapped paths and known entities
+    if not doc_id:
+        candidates = {k: v for k, v in mapping.items() if base.lower() in k.lower()}
+        unique_ids = set(candidates.values())
+        if len(unique_ids) == 1:
+            doc_id = next(iter(unique_ids))
+            clean = max([k for k in candidates if candidates[k] == doc_id], key=len)
+        elif len(unique_ids) > 1:
+            sys.stderr.write(f"Ambiguous match for '{arg}':\n")
+            for k in sorted(candidates.keys()):
+                sys.stderr.write(f"  * {k}\n")
+            sys.exit(1)
+
+    # 4. Resolve relative canonical directory path
+    full_path = id_to_path.get(doc_id)
+    if not full_path:
+        for p in known_paths:
+            if os.path.basename(p) == base or p == clean:
+                full_path = p
+                break
+
+    if not full_path:
+        full_path = clean if "/" in clean else base
+
+    return doc_id, full_path
+
+
+def fetch_latest_log(
+    session: requests.Session,
+    project_id: str,
+    csrf_token: str,
+    root_doc_id: str | None = None,
+    root_resource_path: str | None = None,
+) -> str:
+    compile_url = f"https://www.overleaf.com/project/{project_id}/compile?enable_pdf_caching=true"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Csrf-Token": csrf_token,
+    }
+
+    payload = {
+        "draft": False,
+        "png2pdf": True,
+        "incrementalCompilesEnabled": True,
+        "stopOnFirstError": False,
+        "editorId": str(uuid.uuid4()),
+    }
+
+    # Pass the resolved MongoDB ObjectId and canonical resource path
+    if root_doc_id:
+        payload["rootDoc_id"] = root_doc_id
+    if root_resource_path:
+        payload["rootResourcePath"] = root_resource_path
+
+    # Only request a silent check when building the default root document
+    if not root_doc_id and not root_resource_path:
+        payload["check"] = "silent"
+
+    compile_res = session.post(compile_url, headers=headers, json=payload)
+    if compile_res.status_code != 200:
+        sys.stderr.write(f"POST compile failed: HTTP {compile_res.status_code}\n")
+        sys.stderr.write(compile_res.text[:300] + "\n")
+        sys.exit(1)
+
+    data = compile_res.json()
+    output_files = data.get("outputFiles", [])
+
+    log_entry = next((f for f in output_files if f.get("path") == "output.log"), None)
+    if not log_entry:
+        sys.stderr.write("No output.log found in compile artifacts.\n")
+        sys.stderr.write(f"Compile status: {data.get('status')}\n")
+        sys.exit(1)
+
+    params = {
+        "clsiserverid": data.get("clsiServerId", FallBack_CLSIserver),
+        "compileGroup": data.get("compileGroup", "priority"),
+        "editorId": payload["editorId"],
+    }
+
+    cdn_domain = data.get(
+        "pdfDownloadDomain", "https://compiles.overleafusercontent.com"
+    ).rstrip("/")
+
+    # Primary URL directly to Overleaf usercontent CDN
+    cdn_url = f"{cdn_domain}{log_entry['url']}"
+    res = session.get(cdn_url, params=params)
+    if res.status_code == 200:
+        return res.text
+
+    # Fallback to main host
+    main_url = f"https://www.overleaf.com{log_entry['url']}"
+    res = session.get(main_url, params=params)
+    if res.status_code == 200:
+        return res.text
+
+    sys.stderr.write(f"Failed to fetch output.log (HTTP {res.status_code}).\n")
+    sys.exit(1)
+
+
+def audit_placeholders(log_content: str):
+    has_marker = PLACEHOLDER_MARKER in log_content
+    has_banner = TARGET_BANNER in log_content
+
+    if not (has_marker or has_banner):
+        sys.stdout.write("✅ Clean build: No unresolved placeholder references.\n")
+        sys.exit(0)
+
+    wrapped_re = re.compile(
+        r"Package biblatex Warning:\s*Unresolved placeholder reference\s*'(?P<key>[^']+)':\s*(?P<note>[^\n]+(?:\n[^\n]+)*?\.)(?:\s+(?:Underfull|Overfull|Package|\n|\[|$))"
+    )
+    matches = list(wrapped_re.finditer(log_content))
+
+    detected = {}
+    if matches:
+        for w in matches:
+            key = w.group("key")
+            note = " ".join(w.group("note").split()).rstrip(".")
+            detected.setdefault(key, note)
+    else:
+        for line in log_content.splitlines():
+            if PLACEHOLDER_MARKER in line:
+                m = re.search(r"reference\s*'([^']+)':\s*(.*?)(?:\.|$)", line)
+                if m:
+                    detected.setdefault(m.group(1), m.group(2).strip().rstrip("."))
+
+    total_occurrences = len(matches) if matches else len(detected)
+    sys.stdout.write(
+        f"\n❌ UNRESOLVED PLACEHOLDERS DETECTED ({len(detected)} unique keys, {total_occurrences} total citations):\n"
+    )
+    for key, note in sorted(detected.items()):
+        sys.stdout.write(f"  * [{key}] {note}\n")
+
+    sys.stdout.write("\n")
+    sys.exit(2)
+
+
+def main():
+    project_id = os.environ.get("OVERLEAF_PROJECT_ID") or FallBack_Project_ID
+    target_arg = sys.argv[1].strip() if len(sys.argv) > 1 else None
+
+    session, csrf_token = get_authenticated_session(project_id)
+    known_paths = fetch_project_paths(session, project_id, csrf_token)
+    doc_mapping = fetch_project_doc_mapping(session, project_id, csrf_token)
+
+    root_id, resource_path = resolve_file_target(target_arg, doc_mapping, known_paths)
+
+    if target_arg:
+        sys.stdout.write(f"Target Resolved:\n  * rootDoc_id: {root_id}\n  * rootResourcePath: {resource_path}\n\n")
+
+    log_text = fetch_latest_log(
+        session=session,
+        project_id=project_id,
+        csrf_token=csrf_token,
+        root_doc_id=root_id,
+        root_resource_path=resource_path,
+    )
+    audit_placeholders(log_text)
+
+
+if __name__ == "__main__":
+    main()
+\end{lstlisting}
+
+
+\begin{lstlisting}[language={bash}, caption={Check for remaining placholders},label=lst:bashForRemainingPlaceholders]
+./fetch_overleaf_check_for_unresolved_placeholders4.py README_programmer_notes_Biber_and_BibLaTeX.tex
+Target Resolved:
+  * rootDoc_id: None
+  * rootResourcePath: README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex
+
+
+❌ UNRESOLVED PLACEHOLDERS DETECTED (2 unique keys, 5 total citations):
+  * [doe2025collaborative] Placeholder fake reference for use in examples
+  * [maguire2026pipeline] Placeholder fake reference for use in examples
+\end{lstlisting}
+
+\item\label{itm:BuildOnGitHub} Inverting the Flow (Build on GitHub Actions via Git Bridge)
+
+If you already maintain the two-way \textbf{Overleaf $\longleftrightarrow$ GitHub} sync, there is an alternative that avoids browser reverse-engineering altogether:
+\begin{enumerate}
+    \item When the student clicks \enquote{Sync to GitHub} or pushes to GitHub from Overleaf, GitHub receives the raw source tree (\enquote{.tex}, \enquote{.bib}, graphics, \etc).
+    
+    \item Rather than extract the log from Overleaf’s proprietary runner, let a \textbf{GitHub Actions workflow compile the document natively} using the official TeX Live / LuaLaTeX container (\enquote{texlive/texlive:latest}).
+    
+    \item The GitHub runner has full, unrestricted access to \enquote{stdout} and \enquote{output.log}.
+    
+    \item It executes the \texttt{grep} check on the spot (see \Cref{lst:bashForPlaceholders}), fails the Action check (putting a red ❌ right on the commit or pull request), and optionally drops an automated comment on the GitHub commit pointing to the unresolved keys.
+\end{enumerate}
+
+This keeps Overleaf purely as an editor, while GitHub Actions serves as the canonical verification gate.
+\end{enumerate}
+
+\begin{lstlisting}[language={bash}, caption={Check for remaining placholders},label=lst:bashForPlaceholders]
+if grep -Fq "UNRESOLVED PLACEHOLDER REFERENCES DETECTED" build.log; then
+    echo "Build failed: Unresolved placeholder references remain."
+    exit 1
+fi
+\end{lstlisting}
+
+
+\subsection{Further Automation}
+\label{sec:furtherAutomation}
+It is possible to build other automation on the mechanism shown in \Cref{lst:accessBuildLogDirectly}. For example, Python code shown in \Cref{lst:uploadOutputPDF} can copy files from the build container to the Overleaf project (\ie the stable files in the project's directory tree). An example of using this is shown in \Cref{lst:uploadOutputSuccess}. Further examples include fordiva.json, referencesUsed.bib, and citedtags.bib.
+
+\begin{lstlisting}[language={Python}, escapechar=£, caption={Use Python to compile the project and upload a file, such as the PDF. Note that \LaTeX{} commands were added for layout purposes.},label=lst:uploadOutputPDF]
+#!/usr/bin/env python3
+"""
+copy_files_from_build_to_project.py
+
+Compiles an Overleaf sub-document or project root, downloads generated build
+artifacts (e.g. output.pdf, fordiva.json, referencesUsed.bib, citedtags.bib)
+from the CLSI build container, and persists them into the project tree.
+"""
+
+import io
+import os
+import re
+import sys
+import time
+import uuid
+import requests
+
+try:
+    import browser_cookie3
+except ImportError:
+    browser_cookie3 = None
+
+FallBack_Project_ID="000000000000000000000000" # replace with your project ID
+FallBack_CLSIserver="clsi-cache-zone-b-prod-3" # replace with your CLSI server
+
+
+def get_authenticated_session(project_id: str) -> tuple[requests.Session, str]:
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36"
+        ),
+        "Referer": f"https://www.overleaf.com/project/{project_id}",
+        "Origin": "https://www.overleaf.com",
+        "Accept": "application/json, text/plain, */*",
+    })
+
+    cookie_val = os.environ.get("OVERLEAF_SESSION_COOKIE")
+    if not cookie_val and browser_cookie3:
+        try:
+            cj = browser_cookie3.chrome(domain_name=".overleaf.com")
+            session.cookies.update(cj)
+            for c in cj:
+                if c.name == "overleaf_session2":
+                    cookie_val = c.value
+                    break
+        except Exception as e:
+            sys.stderr.write(f"Note: browser_cookie3: {e}\n")
+
+    if cookie_val:
+        if "overleaf_session2=" in cookie_val:
+            cookie_val = cookie_val.split("overleaf_session2=")[1].split(";")[0].strip()
+        session.cookies.set("overleaf_session2", cookie_val, domain=".overleaf.com", path="/")
+
+    res = session.get(f"https://www.overleaf.com/project/{project_id}")
+    if res.status_code == 403 or "login" in res.url:
+        sys.stderr.write("Authentication failed. Ensure you are logged into Overleaf in Chrome.\n")
+        sys.exit(1)
+
+    csrf_token = None
+    for pat in [
+        r'<meta\s+name=["\']ol-csrfToken["\']\s+content=["\']([^"\']+)["\']',
+        r'window\.csrfToken\s*=\s*["\']([^"\']+)["\']',
+        r'"_csrf"\s*:\s*["\']([^"\']+)["\']',
+    ]:
+        m = re.search(pat, res.text)
+        if m:
+            csrf_token = m.group(1)
+            break
+
+    if not csrf_token:
+        sys.stderr.write("Failed to retrieve CSRF token from project page.\n")
+        sys.exit(1)
+
+    return session, csrf_token
+
+
+def fetch_project_paths(session: requests.Session, project_id: str, csrf_token: str) -> list[str]:
+    headers = {
+        "X-Csrf-Token": csrf_token,
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json",
+    }
+    try:
+        r = session.get(
+            f"https://www.overleaf.com/project/{project_id}/entities?projectId={project_id}",
+            headers=headers,
+            timeout=10,
+        )
+        if r.status_code == 200:
+            data = r.json()
+            return [e.get("path", "").lstrip("/") for e in data.get("entities", []) if "path" in e]
+    except Exception:
+        pass
+    return []
+
+
+def get_or_create_destination_folder(
+    session: requests.Session,
+    project_id: str,
+    csrf_token: str,
+    base_folder_name: str = "artifacts",
+) -> tuple[str, str]:
+    """
+    Creates a destination folder on the project root and returns (folder_name, folder_id).
+    If base_folder_name already exists, falls back to a timestamped folder name
+    to guarantee a freshly allocated, valid MongoDB ObjectId.
+    """
+    headers = {
+        "X-Csrf-Token": csrf_token,
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+
+    candidates = [
+        base_folder_name,
+        f"{base_folder_name}_{int(time.time())}",
+    ]
+
+    for fname in candidates:
+        post_res = session.post(
+            f"https://www.overleaf.com/project/{project_id}/folder",
+            headers=headers,
+            json={"name": fname},
+            timeout=10,
+        )
+        if post_res.status_code in (200, 201):
+            data = post_res.json()
+            fid = data.get("_id")
+            if fid:
+                return fname, fid
+
+    sys.stderr.write(f"Error: Unable to create destination folder in Overleaf.\n")
+    sys.exit(1)
+
+
+def compile_and_get_artifacts(
+    session: requests.Session,
+    project_id: str,
+    csrf_token: str,
+    root_resource_path: str | None = None,
+) -> tuple[str, list[dict], dict]:
+    compile_url = f"https://www.overleaf.com/project/{project_id}/compile?enable_pdf_caching=true"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Csrf-Token": csrf_token,
+    }
+
+    editor_id = str(uuid.uuid4())
+    payload = {
+        "draft": False,
+        "png2pdf": True,
+        "incrementalCompilesEnabled": True,
+        "stopOnFirstError": False,
+        "editorId": editor_id,
+    }
+
+    if root_resource_path:
+        payload["rootResourcePath"] = root_resource_path
+    else:
+        payload["check"] = "silent"
+
+    compile_res = session.post(compile_url, headers=headers, json=payload)
+    if compile_res.status_code != 200:
+        sys.stderr.write(f"POST compile failed: HTTP {compile_res.status_code}\n")
+        sys.stderr.write(compile_res.text[:300] + "\n")
+        sys.exit(1)
+
+    data = compile_res.json()
+    status = data.get("status", "unknown")
+    routing = {
+        "clsiServerId": data.get("clsiServerId", FallBack_CLSIserver),
+        "compileGroup": data.get("compileGroup", "priority"),
+        "editorId": editor_id,
+        "pdfDownloadDomain": data.get("pdfDownloadDomain", "https://compiles.overleafusercontent.com").rstrip("/"),
+    }
+    return status, data.get("outputFiles", []), routing
+
+
+def download_build_artifact(
+    session: requests.Session,
+    artifact_url: str,
+    routing: dict,
+) -> bytes | None:
+    params = {
+        "clsiserverid": routing["clsiServerId"],
+        "compileGroup": routing["compileGroup"],
+        "editorId": routing["editorId"],
+    }
+
+    cdn_url = f"{routing['pdfDownloadDomain']}{artifact_url}"
+    res = session.get(cdn_url, params=params)
+    if res.status_code == 200:
+        return res.content
+
+    main_url = f"https://www.overleaf.com{artifact_url}"
+    res = session.get(main_url, params=params)
+    if res.status_code == 200:
+        return res.content
+
+    return None
+
+
+def upload_to_folder(
+    session: requests.Session,
+    project_id: str,
+    csrf_token: str,
+    file_bytes: bytes,
+    dest_name: str,
+    folder_id: str,
+) -> bool:
+    upload_url = f"https://www.overleaf.com/project/{project_id}/upload"
+    
+    # 1. folder_id MUST be in query params, not body
+    params = {
+        "folder_id": folder_id,
+    }
+    
+    headers = {
+        "X-Csrf-Token": csrf_token,
+        "Accept": "application/json",
+    }
+    
+    # 2. Body must contain ONLY 'name' (FineUploader uses this, validator allows this)
+    data = {
+        "name": dest_name,
+    }
+    
+    # 3. File tuple: (filename, stream, mime_type)
+    files = {
+        "qqfile": (dest_name, io.BytesIO(file_bytes), "application/octet-stream"),
+    }
+
+    res = session.post(upload_url, headers=headers, params=params, data=data, files=files)
+    if res.status_code in (200, 201):
+        try:
+            return res.json().get("success", True)
+        except Exception:
+            return True
+
+    sys.stderr.write(f"Failed to upload '{dest_name}': HTTP {res.status_code} - {res.text[:300]}\n")
+    return False
+
+
+def main():
+    if len(sys.argv) < 2:
+        sys.stderr.write(
+            "Usage:\n"
+            "  ./copy_files_from_build_to_project.py [subdoc.tex] <artifact1> [artifact2 ...]\n"
+            "  ./copy_files_from_build_to_project.py README_programmer_notes_Biber_and_BibLaTeX.tex output.pdf fordiva.json referencesUsed.bib citedtags.bib\n\n"
+        )
+        sys.exit(1)
+
+    project_id = os.environ.get("OVERLEAF_PROJECT_ID") or FallBack_Project_ID
+
+    args = sys.argv[1:]
+    target_subdoc = None
+
+    if args[0].endswith(".tex"):
+        target_subdoc = args[0]
+        targets = args[1:]
+    else:
+        targets = args
+
+    if not targets:
+        targets = ["output.pdf", "fordiva.json", "referencesUsed.bib", "citedtags.bib"]
+
+    session, csrf_token = get_authenticated_session(project_id)
+    known_paths = fetch_project_paths(session, project_id, csrf_token)
+
+    # Dynamically resolve destination folder and ID
+    folder_name, folder_id = get_or_create_destination_folder(session, project_id, csrf_token, "artifacts")
+
+    root_resource_path = None
+    if target_subdoc:
+        clean_target = target_subdoc.strip().lstrip("./")
+        root_resource_path = next(
+            (p for p in known_paths if p == clean_target or os.path.basename(p) == os.path.basename(clean_target)),
+            clean_target,
+        )
+
+    sys.stdout.write(f"Initiating compilation on Overleaf (target: {root_resource_path or 'default root'})...\n")
+    status, artifacts, routing = compile_and_get_artifacts(
+        session=session,
+        project_id=project_id,
+        csrf_token=csrf_token,
+        root_resource_path=root_resource_path,
+    )
+
+    sys.stdout.write(f"Compilation Status: {status}\n")
+    artifact_map = {item.get("path"): item.get("url") for item in artifacts if "path" in item and "url" in item}
+    sys.stdout.write(f"Total build artifacts returned: {len(artifact_map)}\n")
+    sys.stdout.write(f"Destination folder '{folder_name}' ID: {folder_id}\n\n")
+
+    persisted_count = 0
+    for target in targets:
+        src_name = os.path.basename(target)
+        dest_name = src_name
+
+        matched_artifact_path = None
+        if src_name in artifact_map:
+            matched_artifact_path = src_name
+        else:
+            for art_path in artifact_map:
+                if os.path.basename(art_path) == src_name:
+                    matched_artifact_path = art_path
+                    break
+
+        if not matched_artifact_path and src_name.endswith(".pdf"):
+            for art_path in artifact_map:
+                if art_path.endswith(".pdf"):
+                    matched_artifact_path = art_path
+                    break
+
+        if not matched_artifact_path:
+            sys.stdout.write(f"⚠️  Artifact '{src_name}' was not produced by this build run (skipping).\n")
+            continue
+
+        url = artifact_map[matched_artifact_path]
+        content = download_build_artifact(session, url, routing)
+
+        if content is None:
+            sys.stderr.write(f"❌ Failed to download artifact data for '{matched_artifact_path}'.\n")
+            continue
+
+        sys.stdout.write(f"£{\NotoColorEmojiFont \Uchar"1F4E6}£ Fetched '{matched_artifact_path}' ({len(content)} bytes) from build container.\n")
+        success = upload_to_folder(
+            session=session,
+            project_id=project_id,
+            csrf_token=csrf_token,
+            file_bytes=content,
+            dest_name=dest_name,
+            folder_id=folder_id,
+        )
+
+        if success:
+            sys.stdout.write(f"✅ Successfully persisted '{folder_name}/{dest_name}' into the project tree.\n")
+            persisted_count += 1
+
+    sys.stdout.write(f"\nDone. {persisted_count}/{len(targets)} files successfully persisted to Overleaf project.\n")
+
+
+if __name__ == "__main__":
+    main()
+
+\end{lstlisting}
+
+\begin{lstlisting}[language={bash}, escapechar=£, caption={Compile and upload the output.pdf into a folder in the Overleaf project. Note that \LaTeX{} commands were added for layout purposes.},label=lst:uploadOutputSuccess]
+./copy_files_from_build_to_project.py README_programmer_notes_Biber_and_BibLaTeX.tex output.pdf
+Initiating compilation on Overleaf (target: README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex)...
+Compilation Status: success
+Total build artifacts returned: 177
+Destination folder 'artifacts_1791413684' ID: £\hbox{6ac6cdb4a98c95d1223e6ce3}£
+
+£{\NotoColorEmojiFont \Uchar"1F4E6}£ Fetched 'output.pdf' (311800 bytes) from build container.
+£\hbox{✅ Successfully persisted}£ 'artifacts_1791413684/output.pdf' into the project tree.
+
+Done. 1/1 files successfully persisted to Overleaf project.
+\end{lstlisting}
+
+\subsection{Risks of this automation approach}
+The automation scripts introduce several technical, architectural, and operational vulnerabilities that are important to consider:
+\begin{enumerate}
+    \item Fragility of Undocumented Internal \glspl{API}
+
+The scripts rely entirely on Overleaf’s private, undocumented frontend endpoints (\texttt{/updates}, \texttt{/entities}, \texttt{/compile}, \texttt{/upload}) rather than a public, supported \gls{API}. Because these endpoints power Overleaf's internal web application \gls{UI} rather than external developer integrations, \textbf{any minor frontend update by Overleaf can instantly break the scripts}. Changes to JSON schemas, \gls{URL} routing, or header requirements will cause silent failures or \texttt{HTTP 400/422} errors without warning.
+
+    \item Local Cookie Scrape Dependency (\texttt{browser\_cookie3})
+
+The authentication mechanism depends on reading live browser cookies (\texttt{overleaf\_session2}) from the local machine using libraries like \texttt{browser\_cookie3}. This introduces severe environment-specific constraints:
+\begin{itemize}
+    \item \textbf{Operating System Keychains}: Modern operating systems encrypt browser cookie databases using OS-level keyrings (macOS Keychain, Linux GNOME Keyring/KWallet), which frequently block automated Python scripts from reading them without explicit user intervention.
+    
+    \item \textbf{CI/CD Incompatibility}: This method \textbf{cannot} be run inside standard headless CI/CD runners (like GitHub Actions) because there is no local browser profile or active session cookie available in a clean cloud container.
+\end{itemize}
+
+    \item Hardcoded Fallbacks and Security Risks
+
+If a user runs the script without explicitly setting the \texttt{OVERLEAF\_PROJECT\_ID} environment variable, the script defaults to interacting with a project that is statically configured in the code. While it requires authentication cookies, hardcoding project IDs or server strings (such as \texttt{clsi-cache-zone-b-prod-3}) introduces maintenance debt and a risk of cross-project interference.
+
+    \item High Friction and Steep Learning Curve for Users
+
+For a typical doctoral student who just wants to write a thesis, maintaining a Python script that reverse-engineers a \gls{SaaS} platform's session management creates an enormous cognitive and technical barrier. If a student changes their default browser, updates their operating system, or clears their cookies, the automation tool breaks, shifting troubleshooting overhead onto the user.
+
+    \item The Maintenance Loop of Reverse Engineering
+
+As seen in the script's code, handling edge cases requires complex fallback parsing (such as \texttt{regex} scans over raw text payloads, handling \texttt{FineUploader} parameters for file uploads, and timestamping fallback folders like \texttt{base\_folder\_name\_{int(time.time())}}). Maintaining this wrapper code requires continuous developer attention whenever Overleaf modifies its backend infrastructure.
+\end{enumerate}
+
+The primary vulnerability of this approach is that \textbf{it couples the thesis workflow to a closed third-party platform's private implementation details}. While it serves as a tactical workaround for Overleaf's limitations, its long-term viability depends on how long Overleaf's current internal routing remains unchanged. This underscores why \ref{itm:BuildOnGitHub} (moving the source of truth to a GitHub repository and compiling natively via GitHub Actions) shown in \Cref{sec:AutomatingPlaceholdCheck} remains the more robust, future-proof architectural choice for continuous integration.
+
+\clearpage
 \ifinswedish
 \printglossary[style=mylong, type=\acronymtype, title={Lista över akronymer
 och förkortningar}]

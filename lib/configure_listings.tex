@@ -194,6 +194,31 @@ language=[LaTeX]{TeX},
   samepage      = false
 }
 
+\lstdefinelanguage{http}{%
+  morekeywords=[1]{HTTP,%
+  GET,POST,PUT,HEAD,DELETE,PATCH,OPTIONS,CONNECT,TRACE,%
+  OK,Precondition,Failed,Not,Modified,Acceptable,%
+  Created,Found,Accepted,No,Content,Gone,Multiple,Choices,See,Other,Method,Allowed,%
+  Unsupported,Media,Type,Required%
+  },%
+  morekeywords=[2]{%
+  Accept,Accept-Encoding,Accept-Language,Alternates,%
+  Content-Type,Content-Language,Content-Encoding,Content-Location,Content-Length,%
+  If-Match,If-None-Match,If-Modified-Since,If-Unmodified-Since,%
+  ETag,Last-Modified,Negotiate,TCN,Vary,%
+  Cache-control,%
+  Allow,%
+  Date,%
+  Host,%
+  Location,%
+  Server,%
+  User-Agent,%
+  },%
+  alsodigit=-,%
+  morestring=[b]",%
+  morecomment=[l]\$,%
+  morecomment=[s]{[}{]},%
+}[keywords,comments,strings]
 
 % to remove the rules above and below the listing heading, keep heading at the top
 \floatstyle{plaintop}

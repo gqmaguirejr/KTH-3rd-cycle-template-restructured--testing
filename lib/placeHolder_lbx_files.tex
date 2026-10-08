@@ -48,8 +48,22 @@
 \end{filecontents*}
 
 \begin{filecontents*}{latin.lbx}
-    \ProvidesFile{latin.lbx}
-    [\abx@lbxid]
+\ProvidesFile{latin.lbx}
+[\abx@lbxid Latin localisation for biblatex]
+
+\InheritBibliographyExtras{english}
+
+\DeclareBibliographyStrings{%
+  inherit          = {english},
+  and              = {{et}{et}},
+  andothers        = {{et al\adddot}{et al\adddot}},
+  volume           = {{tomus}{vol\.}},
+  volumes          = {{tomi}{voll\.}},
+  pages            = {{paginae}{pp\.}},
+  page             = {{pagina}{p\.}},
+  %by               = {{a}{a}},
+}
+
 \end{filecontents*}
 
 \begin{filecontents*}{latvian.lbx}
