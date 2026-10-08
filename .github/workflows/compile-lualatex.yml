@@ -50,6 +50,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install System Fonts
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            fontconfig \
+            fonts-noto-core \
+            fonts-noto-extra
+          fc-cache -f
+          luaotfload-tool --update
+
       - name: Compile with LuaLaTeX
         run: |
           TARGET="${{ github.event.inputs.target_doc }}"
@@ -58,17 +67,11 @@ jobs:
           OUT_DIR="$GITHUB_WORKSPACE/artifacts"
           mkdir -p "$OUT_DIR"
 
-          # 1. Stay in the root directory where lib/ resides
           cd "$GITHUB_WORKSPACE"
-
-          # 2. Tell kpathsea to search the document's directory and project root
-          # Note: The trailing : ensures default system paths are preserved
           export TEXINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
           export BIBINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
 
           echo "==> Compiling $TARGET from workspace root"
-          echo "==> TEXINPUTS is set to: $TEXINPUTS"
-
           latexmk -lualatex -interaction=nonstopmode -synctex=1 \
                   -outdir="$OUT_DIR" "$TARGET"
 
@@ -128,6 +131,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install System Fonts
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            fontconfig \
+            fonts-noto-core \
+            fonts-noto-extra
+          fc-cache -f
+          luaotfload-tool --update
 
       - name: Compile ${{ matrix.slug }} with LuaLaTeX
         run: |
