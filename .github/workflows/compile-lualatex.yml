@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4§
 
       - name: Install System Fonts
         run: |
@@ -74,6 +74,14 @@ jobs:
           echo "==> Compiling $TARGET from workspace root"
           latexmk -lualatex -interaction=nonstopmode -synctex=1 \
                   -outdir="$OUT_DIR" "$TARGET"
+
+      - name: Commit artifacts to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f artifacts/*.pdf artifacts/*.bib artifacts/*.json
+          git diff --staged --quiet || git commit -m "chore: update build artifacts [skip ci]"
+          git push
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
