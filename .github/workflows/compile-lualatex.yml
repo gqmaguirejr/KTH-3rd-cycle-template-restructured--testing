@@ -45,6 +45,8 @@ jobs:
   compile-single:
     if: "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc != 'all' }}"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     container:
       image: texlive/texlive:latest
 
@@ -52,6 +54,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.ref_name }}
           # Fetch full history so pull/rebase works smoothly
           fetch-depth: 0
           # Ensure GITHUB_TOKEN credentials persist for git push
@@ -105,11 +108,15 @@ jobs:
           # 4. Stage and commit generated artifacts
           git add -f artifacts/*.pdf artifacts/*.bib artifacts/*.json 2>/dev/null || true
 
+          # Commit only if changes were detected
           if ! git diff --staged --quiet; then
-            git commit -m "chore: update build artifacts [skip ci]"
+            git commit -m "docs: automated build artifacts [skip ci]"
+            # Pull any concurrent changes and push directly to current branch
+            git pull --rebase origin ${{ github.ref_name }}
             git push origin HEAD:${{ github.ref_name }}
+            echo "Artifacts pushed to branch ${{ github.ref_name }}."
           else
-            echo "No artifact changes to commit."
+            echo "No changes in generated artifacts; nothing to commit."
           fi
 
       - name: Upload Build Artifacts
