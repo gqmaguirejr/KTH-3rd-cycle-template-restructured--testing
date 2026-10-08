@@ -1,0 +1,6 @@
+\ProvidesGlossariesLang{swedish}[2024/03/26]
+% Use provide or renew to avoid the "already defined" error
+\renewcommand*{\glossaryname}{Ordlista}
+\renewcommand*{\acronymname}{Akronymer}
+\renewcommand*{\entryname}{Term}
+\renewcommand*{\descriptionname}{Beskrivning}

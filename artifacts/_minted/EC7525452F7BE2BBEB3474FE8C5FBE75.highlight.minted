@@ -1,0 +1,8 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{n+nc}{@article}\PYG{p}{\PYGZob{}}\PYG{n+nl}{Noz\PYGZus{}1975}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n+na}{author}\PYG{+w}{        }\PYG{p}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZob{}}\PYG{l+s}{Noz, Marilyn E. and Maguire, Jr., Gerald Q.}\PYG{l+s}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n+na}{title}\PYG{+w}{         }\PYG{p}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZob{}}\PYG{l+s}{\PYGZob{}}\PYG{l+s}{Calculation of \PYGZdl{}\PYGZbs{}bar}\PYG{l+s}{\PYGZob{}}\PYG{l+s}{E}\PYG{l+s}{\PYGZcb{}}\PYG{l+s}{\PYGZus{}}\PYG{l+s}{\PYGZob{}}\PYG{l+s}{\PYGZbs{}beta}\PYG{l+s}{\PYGZcb{}}\PYG{l+s}{\PYGZdl{}, \PYGZdl{}\PYGZbs{}Gamma\PYGZdl{} and \PYGZdl{}\PYGZbs{}Delta\PYGZus{}}\PYG{l+s}{\PYGZob{}}\PYG{l+s}{i}\PYG{l+s}{\PYGZcb{}}\PYG{l+s}{\PYGZdl{} for \PYGZdl{}\PYGZca{}}\PYG{l+s}{\PYGZob{}}\PYG{l+s}{99m}\PYG{l+s}{\PYGZcb{}}\PYG{l+s}{\PYGZdl{}Tc}\PYG{l+s}{\PYGZcb{}}\PYG{l+s}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{  }\PYG{n+na}{title+an:utf8}\PYG{+w}{ }\PYG{p}{=}\PYG{+w}{ }\PYG{l+s}{\PYGZob{}}\PYG{l+s}{=Calculation of Ēᵦ, Γ and Δᵢ for ⁹⁹ᵐTc}\PYG{l+s}{\PYGZcb{}}\PYG{p}{,}
+\PYG{+w}{  }\PYG{esc}{\dots}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

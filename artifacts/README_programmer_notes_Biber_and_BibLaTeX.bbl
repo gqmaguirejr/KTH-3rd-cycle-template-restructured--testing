@@ -1,0 +1,363 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{doe2025collaborative}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=57e1f4ce367aa302806d9e406df4ed1b}{%
+           family={Maguire\bibnamedelima Jr.},
+           familyi={M\bibinitperiod\bibinitdelim J\bibinitperiod},
+           given={Gerald\bibnamedelima Q.},
+           giveni={G\bibinitperiod\bibinitdelim Q\bibinitperiod}}}%
+        {{hash=055f6811649a97bc3a36ff4b2581f441}{%
+           family={Smith},
+           familyi={S\bibinitperiod},
+           given={Jane},
+           giveni={J\bibinitperiod}}}%
+        {{hash=49de59c40c7dd8919b46e009188a2c8e}{%
+           family={Green},
+           familyi={G\bibinitperiod},
+           given={Alex},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{935dfea3c342d94ec0ac84acc8554bdc}
+      \strng{fullhash}{a4480cebc0fe6f3e7ebaebdbdf3121a0}
+      \strng{fullhashraw}{a4480cebc0fe6f3e7ebaebdbdf3121a0}
+      \strng{bibnamehash}{a4480cebc0fe6f3e7ebaebdbdf3121a0}
+      \strng{authorbibnamehash}{a4480cebc0fe6f3e7ebaebdbdf3121a0}
+      \strng{authornamehash}{935dfea3c342d94ec0ac84acc8554bdc}
+      \strng{authorfullhash}{a4480cebc0fe6f3e7ebaebdbdf3121a0}
+      \strng{authorfullhashraw}{a4480cebc0fe6f3e7ebaebdbdf3121a0}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0000-0000}
+      \field{journaltitle}{Journal of Academic Stewardship}
+      \field{number}{2}
+      \field{placeholder}{Placeholder fake reference for use in examples}
+      \field{title}{Collaborative Systems in Higher Education}
+      \field{volume}{3}
+      \field{year}{2025}
+      \field{pages}{112\bibrangedash 128}
+      \range{pages}{17}
+      \verb{doi}
+      \verb 10.1000/182
+      \endverb
+      \annotation{part}{author}{default}{1}{equal}{1}{true}
+      \annotation{part}{author}{default}{1}{investigation}{1}{lead}
+      \annotation{part}{author}{default}{1}{orcid}{1}{0000-0002-6066-746X}
+      \annotation{part}{author}{default}{1}{writing-original-draft}{1}{equal}
+      \annotation{part}{author}{default}{2}{data-curation}{1}{lead}
+      \annotation{part}{author}{default}{2}{equal}{1}{true}
+      \annotation{part}{author}{default}{2}{orcid}{1}{0000-0001-2345-6789}
+      \annotation{part}{author}{default}{2}{writing-original-draft}{1}{equal}
+      \annotation{part}{author}{default}{3}{orcid}{1}{0000-0003-9876-5432}
+      \annotation{part}{author}{default}{3}{supervision}{1}{lead}
+      \annotation{part}{author}{default}{3}{writing-review-editing}{1}{supporting}
+    \endentry
+    \entry{niso_z39_104_2022}{manual}{}{}
+      \name{author}{1}{}{%
+        {{hash=f1363f7d2a3c548632a24a1c04037b7c}{%
+           family={{National Information Standards Organization}},
+           familyi={N\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Baltimore, MD, USA}%
+      }
+      \list{organization}{1}{%
+        {National Information Standards Organization}%
+      }
+      \list{publisher}{1}{%
+        {NISO}%
+      }
+      \strng{namehash}{f1363f7d2a3c548632a24a1c04037b7c}
+      \strng{fullhash}{f1363f7d2a3c548632a24a1c04037b7c}
+      \strng{fullhashraw}{f1363f7d2a3c548632a24a1c04037b7c}
+      \strng{bibnamehash}{f1363f7d2a3c548632a24a1c04037b7c}
+      \strng{authorbibnamehash}{f1363f7d2a3c548632a24a1c04037b7c}
+      \strng{authornamehash}{f1363f7d2a3c548632a24a1c04037b7c}
+      \strng{authorfullhash}{f1363f7d2a3c548632a24a1c04037b7c}
+      \strng{authorfullhashraw}{f1363f7d2a3c548632a24a1c04037b7c}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{8}
+      \field{isbn}{978-1-950980-18-5}
+      \field{issn}{1041-5653}
+      \field{month}{2}
+      \field{number}{ANSI/NISO Z39.104-2022}
+      \field{subtitle}{{ANSI/NISO Z39.104-2022}}
+      \field{title}{{Contributor Roles Taxonomy}}
+      \field{type}{Standard}
+      \field{urlday}{31}
+      \field{urlmonth}{8}
+      \field{urlyear}{2026}
+      \field{year}{2022}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.3789/ansi.niso.z39.104-2022
+      \endverb
+      \verb{urlraw}
+      \verb https://www.niso.org/standards-committees/credit
+      \endverb
+      \verb{url}
+      \verb https://www.niso.org/standards-committees/credit
+      \endverb
+    \endentry
+    \entry{maguire2026pipeline}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=57e1f4ce367aa302806d9e406df4ed1b}{%
+           family={Maguire\bibnamedelima Jr.},
+           familyi={M\bibinitperiod\bibinitdelim J\bibinitperiod},
+           given={Gerald\bibnamedelima Q.},
+           giveni={G\bibinitperiod\bibinitdelim Q\bibinitperiod}}}%
+        {{hash=055f6811649a97bc3a36ff4b2581f441}{%
+           family={Smith},
+           familyi={S\bibinitperiod},
+           given={Jane},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{426e6be565a73b19ab0f4d5431eb7d80}
+      \strng{fullhash}{426e6be565a73b19ab0f4d5431eb7d80}
+      \strng{fullhashraw}{426e6be565a73b19ab0f4d5431eb7d80}
+      \strng{bibnamehash}{426e6be565a73b19ab0f4d5431eb7d80}
+      \strng{authorbibnamehash}{426e6be565a73b19ab0f4d5431eb7d80}
+      \strng{authornamehash}{426e6be565a73b19ab0f4d5431eb7d80}
+      \strng{authorfullhash}{426e6be565a73b19ab0f4d5431eb7d80}
+      \strng{authorfullhashraw}{426e6be565a73b19ab0f4d5431eb7d80}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0000-0000}
+      \field{journaltitle}{Journal of Academic Stewardship}
+      \field{number}{1}
+      \field{placeholder}{Placeholder fake reference for use in examples}
+      \field{title}{Automated Metadata Integrity in Academic Publishing}
+      \field{volume}{4}
+      \field{year}{2026}
+      \field{pages}{45\bibrangedash 60}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1000/182
+      \endverb
+      \annotation{part}{author}{default}{1}{conceptualization}{1}{lead}
+      \annotation{part}{author}{default}{1}{orcid}{1}{0000-0002-6066-746X}
+      \annotation{part}{author}{default}{1}{software}{1}{lead}
+      \annotation{part}{author}{default}{1}{writing-original-draft}{1}{lead}
+      \annotation{part}{author}{default}{2}{orcid}{1}{0000-0001-2345-6789}
+      \annotation{part}{author}{default}{2}{supervision}{1}{lead}
+      \annotation{part}{author}{default}{2}{writing-review-editing}{1}{supporting}
+    \endentry
+    \entry{iso27729:2024}{manual}{}{}
+      \name{author}{1}{}{%
+        {{hash=7058e4bd76f877c52b621c942b30613c}{%
+           family={{International Organization for Standardization}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \name{shortauthor}{1}{}{%
+        {{hash=5b512ee8a59deb284ad0a6a035ba10b1}{%
+           family={{ISO}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Geneva}%
+      }
+      \list{publisher}{1}{%
+        {International Organization for Standardization}%
+      }
+      \strng{namehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{fullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \strng{bibnamehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{authorbibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authornamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \strng{shortauthorbibnamehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{shortauthornamehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{shortauthorfullhash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{shortauthorfullhashraw}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \field{extraname}{1}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{shortauthor}
+      \field{labeltitlesource}{title}
+      \field{edition}{2}
+      \field{month}{11}
+      \field{number}{ISO 27729:2024}
+      \field{pagetotal}{12}
+      \field{subtitle}{International standard name identifier ({ISNI})}
+      \field{title}{Information and documentation}
+      \field{year}{2024}
+      \verb{urlraw}
+      \verb https://www.iso.org/standard/87177.html
+      \endverb
+      \verb{url}
+      \verb https://www.iso.org/standard/87177.html
+      \endverb
+    \endentry
+    \entry{iso2108:2017}{manual}{}{}
+      \name{author}{1}{}{%
+        {{hash=7058e4bd76f877c52b621c942b30613c}{%
+           family={{International Organization for Standardization}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \name{shortauthor}{1}{}{%
+        {{hash=5b512ee8a59deb284ad0a6a035ba10b1}{%
+           family={{ISO}},
+           familyi={I\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Geneva}%
+      }
+      \list{publisher}{1}{%
+        {International Organization for Standardization}%
+      }
+      \strng{namehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{fullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{fullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \strng{bibnamehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{authorbibnamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authornamehash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhash}{7058e4bd76f877c52b621c942b30613c}
+      \strng{authorfullhashraw}{7058e4bd76f877c52b621c942b30613c}
+      \strng{shortauthorbibnamehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{shortauthornamehash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{shortauthorfullhash}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \strng{shortauthorfullhashraw}{5b512ee8a59deb284ad0a6a035ba10b1}
+      \field{extraname}{2}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{shortauthor}
+      \field{labeltitlesource}{title}
+      \field{edition}{5}
+      \field{month}{12}
+      \field{number}{ISO 2108:2017}
+      \field{pagetotal}{22}
+      \field{subtitle}{International Standard Book Number ({ISBN})}
+      \field{title}{Information and documentation}
+      \field{year}{2017}
+      \verb{urlraw}
+      \verb https://www.iso.org/standard/65483.html
+      \endverb
+      \verb{url}
+      \verb https://www.iso.org/standard/65483.html
+      \endverb
+    \endentry
+    \entry{rfc2606}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=0a767734bd60d3b9c1f344824da77d30}{%
+           family={3rd},
+           familyi={3\bibinitperiod},
+           given={D.\bibnamedelimi Eastlake},
+           giveni={D\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+        {{hash=20e154c24c10f761788943913c9bd624}{%
+           family={Panitz},
+           familyi={P\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {RFC Editor}%
+      }
+      \strng{namehash}{ca958e207cca15779c36b9425a9e0526}
+      \strng{fullhash}{ca958e207cca15779c36b9425a9e0526}
+      \strng{fullhashraw}{ca958e207cca15779c36b9425a9e0526}
+      \strng{bibnamehash}{ca958e207cca15779c36b9425a9e0526}
+      \strng{authorbibnamehash}{ca958e207cca15779c36b9425a9e0526}
+      \strng{authornamehash}{ca958e207cca15779c36b9425a9e0526}
+      \strng{authorfullhash}{ca958e207cca15779c36b9425a9e0526}
+      \strng{authorfullhashraw}{ca958e207cca15779c36b9425a9e0526}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{To reduce the likelihood of conflict and confusion, a few top level domain names are reserved for use in private testing, as examples in documentation, and the like. In addition, a few second level domain names reserved for use as examples are documented. This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.}
+      \field{howpublished}{RFC 2606}
+      \field{month}{6}
+      \field{number}{2606}
+      \field{pagetotal}{5}
+      \field{series}{Request for Comments}
+      \field{title}{{Reserved Top Level DNS Names}}
+      \field{year}{1999}
+      \verb{doi}
+      \verb 10.17487/RFC2606
+      \endverb
+      \verb{urlraw}
+      \verb https://www.rfc-editor.org/info/rfc2606/
+      \endverb
+      \verb{url}
+      \verb https://www.rfc-editor.org/info/rfc2606/
+      \endverb
+    \endentry
+    \entry{rfc6761}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=3ce6c29cc780e2a86b6022182a7bd362}{%
+           family={Cheshire},
+           familyi={C\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=15b9829e7da499a2d2e01d7afdd51cf3}{%
+           family={Krochmal},
+           familyi={K\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {RFC Editor}%
+      }
+      \strng{namehash}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \strng{fullhash}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \strng{fullhashraw}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \strng{bibnamehash}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \strng{authorbibnamehash}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \strng{authornamehash}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \strng{authorfullhash}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \strng{authorfullhashraw}{3dd7f803e5c7b42b4112fa9fe9cc3033}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This document describes what it means to say that a Domain Name (DNS name) is reserved for special use, when reserving such a name is appropriate, and the procedure for doing so. It establishes an IANA registry for such domain names, and seeds it with entries for some of the already established special domain names.}
+      \field{howpublished}{RFC 6761}
+      \field{month}{2}
+      \field{number}{6761}
+      \field{pagetotal}{13}
+      \field{series}{Request for Comments}
+      \field{title}{{Special-Use Domain Names}}
+      \field{year}{2013}
+      \verb{doi}
+      \verb 10.17487/RFC6761
+      \endverb
+      \verb{urlraw}
+      \verb https://www.rfc-editor.org/info/rfc6761/
+      \endverb
+      \verb{url}
+      \verb https://www.rfc-editor.org/info/rfc6761/
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
