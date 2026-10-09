@@ -159,11 +159,25 @@ jobs:
                   sf.write(f"### ⚠️ BibLaTeX Unresolved Placeholders Detected in `{os.path.basename(log_file)}`\n\n")
                   sf.write(f"- **Unique Keys:** {unique_keys_count}\n")
                   sf.write(f"- **Total Occurrences:** {total_occurrences}\n\n")
-                  sf.write("| Citation Key | Resolution Note |\n")
-                  sf.write("| :--- | :--- |\n")
+                  
+                  # Use HTML table markup for guaranteed column widths and no-wrap behavior
+                  sf.write("<table>\n")
+                  sf.write("  <thead>\n")
+                  sf.write("    <tr>\n")
+                  sf.write('      <th align="left" style="width: 320px; white-space: nowrap;">Citation Key</th>\n')
+                  sf.write('      <th align="left">Resolution Note</th>\n')
+                  sf.write("    </tr>\n")
+                  sf.write("  </thead>\n")
+                  sf.write("  <tbody>\n")
                   for key, note in sorted(detected.items()):
-                      sf.write(f"| `{key}` | {note} |\n")
-                  sf.write("\n")
+                      clean_key = key.strip()
+                      clean_note = note.strip()
+                      sf.write("    <tr>\n")
+                      sf.write(f'      <td style="white-space: nowrap;"><code>{clean_key}</code></td>\n')
+                      sf.write(f"      <td>{clean_note}</td>\n")
+                      sf.write("    </tr>\n")
+                  sf.write("  </tbody>\n")
+                  sf.write("</table>\n\n")
 
           # Exit with code 0 to allow artifact committing/uploading,
           # or use sys.exit(2) if you want the CI workflow run to fail when placeholders exist.
