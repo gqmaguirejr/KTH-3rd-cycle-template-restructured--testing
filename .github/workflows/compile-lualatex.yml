@@ -88,6 +88,87 @@ jobs:
           echo "==> Compiling $TARGET from workspace root"
           latexmk -lualatex -interaction=nonstopmode -synctex=1 \
                   -outdir="$OUT_DIR" "$TARGET"
+      - name: Audit BibLaTeX Unresolved Placeholders
+        run: |
+          python3 - << 'EOF'
+          import os
+          import re
+          import sys
+          import glob
+
+          TARGET_BANNER = "UNRESOLVED PLACEHOLDER REFERENCES DETECTED IN THIS BUILD:"
+          PLACEHOLDER_MARKER = "Unresolved placeholder reference"
+
+          # 1. Locate the generated .log file in artifacts/
+          log_files = glob.glob("artifacts/**/*.log", recursive=True)
+          if not log_files:
+              print("::warning::No .log file found in artifacts/ to audit.")
+              sys.exit(0)
+
+          log_file = log_files[0]
+          print(f"==> Auditing log file: {log_file}")
+
+          with open(log_file, "r", encoding="utf-8", errors="replace") as f:
+              log_content = f.read()
+
+          has_marker = PLACEHOLDER_MARKER in log_content
+          has_banner = TARGET_BANNER in log_content
+
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+
+          if not (has_marker or has_banner):
+              msg = f"✅ Clean build: No unresolved placeholder references in `{os.path.basename(log_file)}`."
+              print(msg)
+              if summary_path:
+                  with open(summary_path, "a", encoding="utf-8") as sf:
+                      sf.write(f"### 🔍 BibLaTeX Placeholder Audit\n\n{msg}\n\n")
+              sys.exit(0)
+
+          # Multiline wrapper regex from audit_placeholders()
+          wrapped_re = re.compile(
+              r"Package biblatex Warning:\s*Unresolved placeholder reference\s*'(?P<key>[^']+)':\s*(?P<note>[^\n]+(?:\n[^\n]+)*?\.)(?:\s+(?:Underfull|Overfull|Package|\n|\[|$))"
+          )
+          matches = list(wrapped_re.finditer(log_content))
+
+          detected = {}
+          if matches:
+              for w in matches:
+                  key = w.group("key")
+                  note = " ".join(w.group("note").split()).rstrip(".")
+                  detected.setdefault(key, note)
+          else:
+              for line in log_content.splitlines():
+                  if PLACEHOLDER_MARKER in line:
+                      m = re.search(r"reference\s*'([^']+)':\s*(.*?)(?:\.|$)", line)
+                      if m:
+                          detected.setdefault(m.group(1), m.group(2).strip().rstrip("."))
+
+          total_occurrences = len(matches) if matches else len(detected)
+          unique_keys_count = len(detected)
+
+          # Output to console
+          print(f"\n❌ UNRESOLVED PLACEHOLDERS DETECTED ({unique_keys_count} unique keys, {total_occurrences} total citations):")
+          for key, note in sorted(detected.items()):
+              print(f"  * [{key}] {note}")
+              # Emit native GitHub Actions warning annotations
+              print(f"::warning file={log_file}::Unresolved placeholder reference [{key}]: {note}")
+
+          # Write rich Markdown report to the GitHub Actions Job Summary
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as sf:
+                  sf.write(f"### ⚠️ BibLaTeX Unresolved Placeholders Detected in `{os.path.basename(log_file)}`\n\n")
+                  sf.write(f"- **Unique Keys:** {unique_keys_count}\n")
+                  sf.write(f"- **Total Occurrences:** {total_occurrences}\n\n")
+                  sf.write("| Citation Key | Resolution Note |\n")
+                  sf.write("| :--- | :--- |\n")
+                  for key, note in sorted(detected.items()):
+                      sf.write(f"| `{key}` | {note} |\n")
+                  sf.write("\n")
+
+          # Exit with code 0 to allow artifact committing/uploading,
+          # or use sys.exit(2) if you want the CI workflow run to fail when placeholders exist.
+          sys.exit(0)
+          EOF
 
       - name: Commit artifacts to repository
         run: |
