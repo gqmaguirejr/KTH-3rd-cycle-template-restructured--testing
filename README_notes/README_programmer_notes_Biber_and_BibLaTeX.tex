@@ -2044,7 +2044,7 @@ Breaking the \gls{SaaS} walled gardens via the UNIX philosophy: \textbf{If a bro
 
 There are two primary approaches to automating this retrieval without manually clicking through the \gls{GUI}:
 \begin{enumerate}[leftmargin=*, label=\textbf{Method \arabic*}, ref=Method \arabic*]
-\item Use a script to compile the file, then fetch the output.log file and filter it
+\item\label{itm:LocalScriptForChecking} Use a script to compile the file, then fetch the output.log file and filter it
 
 If we assume that you are logged in and accessing your Overleaf project using Chrome as your browser. You should set the environment variable \texttt{OVERLEAF\_PROJECT\_ID} to be the identifier of your Overleaf project, \ie the string that follows \enquote{project/}. \Cref{lst:accessBuildLogDirectly} shows a Python program that accesses Overleaf (via its \gls{CLSI}), authenticating with your standard session cookie (\texttt{overleaf\_session2}).  \Cref{lst:bashForRemainingPlaceholders} shows the output of the program when accessing this \LaTeX{} file. The hardest part of developing this program was programmatically discovering all MongoDB 24-hex ObjectIds. The program can take one of three arguments (see \texttt{resolve\_file\_target}): \first the 24-hexadecimal ID, \Second the exact path name, or\third part of a path name. If the program finds unresolved placeholders, it returns \num{2} so it can be used in a \gls{CI} process.
 
@@ -2429,27 +2429,335 @@ If you already maintain the two-way \textbf{Overleaf $\longleftrightarrow$ GitHu
 \begin{enumerate}
     \item When the student clicks \enquote{Sync to GitHub} or pushes to GitHub from Overleaf, GitHub receives the raw source tree (\enquote{.tex}, \enquote{.bib}, graphics, \etc).
     
-    \item Rather than extract the log from Overleaf’s proprietary runner, let a \textbf{GitHub Actions workflow compile the document natively} using the official TeX Live / LuaLaTeX container (\enquote{texlive/texlive:latest}).
+    \item Rather than extract the log from Overleaf’s proprietary runner, let a \textbf{GitHub Actions workflow compile the document natively} using the official TeX Live / LuaLaTeX container (\enquote{texlive/texlive:latest}). \Cref{lst:compileWorkflow} shows a compilation workflow.
     
     \item The GitHub runner has full, unrestricted access to \enquote{stdout} and \enquote{output.log}.
     
-    \item It executes the \texttt{grep} check on the spot (see \Cref{lst:bashForPlaceholders}), fails the Action check (putting a red ❌ right on the commit or pull request), and optionally drops an automated comment on the GitHub commit pointing to the unresolved keys.
+    \item It executes the check on the spot. An example of the output is shown in \Cref{fig:workflowPlaceholdersPresent}. Alternatively, it could be arranged such that if it fails the Action check (putting a red ❌ right on the commit or pull request), and optionally drops an automated comment on the GitHub commit pointing to the unresolved keys. 
 \end{enumerate}
 
 This keeps Overleaf purely as an editor, while GitHub Actions serves as the canonical verification gate.
 \end{enumerate}
 
-\begin{lstlisting}[language={bash}, caption={Check for remaining placholders},label=lst:bashForPlaceholders]
-if grep -Fq "UNRESOLVED PLACEHOLDER REFERENCES DETECTED" build.log; then
-    echo "Build failed: Unresolved placeholder references remain."
-    exit 1
-fi
+\begin{lstlisting}[language={yaml}, caption={Compiling on Gitub with compile-lualatex.yml workflow},label=lst:compileWorkflow]
+name: Compile LuaLaTeX Documents
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.tex'
+      - '**.bib'
+  workflow_dispatch:
+    inputs:
+      target_doc:
+        description: 'Select document to compile (or choose "all")'
+        required: true
+        default: 'README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex'
+        type: choice
+        options:
+          - 'examplethesis.tex'
+          - 'Quick_Start_Guide.tex'
+          - 'README_3rd_cycle_author.tex'
+          - 'Generate_titles_in_plain_text.tex'
+          - 'listfonts_and_generate_exclusion_list.tex'
+          - 'luaotfload-tool-find-font.tex'
+          - 'restore_font_cache.tex'
+          - 'Saving_and_restoring_font_cache.tex'
+          - 'updatefontcache.tex'
+          - 'warmup.tex'
+          - 'README_notes/README_for_3rd_cycle_version.tex'
+          - 'README_notes/README_for_administrators.tex'
+          - 'README_notes/README_notes_reduced.tex'
+          - 'README_notes/README_programmer_notes_appendix.tex'
+          - 'README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex'
+          - 'README_notes/README_programmer_notes-JSON_to_MODS.tex'
+          - 'README_notes/README_programmer_notes-PDF_metadata.tex'
+          - 'README_notes/README_programmer_notes.tex'
+          - 'README_notes/README_supervisor_notes.tex'
+          - 'README_notes/README_Tekla_template.tex'
+          - 'all'
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Compile a single selected document on demand
+  # -------------------------------------------------------------
+  compile-single:
+    if: "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc != 'all' }}"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    container:
+      image: texlive/texlive:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          # Fetch full history so pull/rebase works smoothly
+          fetch-depth: 0
+          # Ensure GITHUB_TOKEN credentials persist for git push
+          persist-credentials: true
+
+
+      - name: Install System Fonts
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            fontconfig \
+            fonts-noto-core \
+            fonts-noto-extra \
+            fonts-noto-cjk \
+            fonts-noto-cjk-extra \
+            fonts-noto-mono 
+          fc-cache -f
+          luaotfload-tool --update
+
+      - name: Compile with LuaLaTeX
+        run: |
+          TARGET="${{ github.event.inputs.target_doc }}"
+          TARGET_DIR=$(dirname "$TARGET")
+          
+          OUT_DIR="$GITHUB_WORKSPACE/artifacts"
+          mkdir -p "$OUT_DIR"
+
+          cd "$GITHUB_WORKSPACE"
+          export TEXINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
+          export BIBINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
+
+          echo "==> Compiling $TARGET from workspace root"
+          latexmk -lualatex -interaction=nonstopmode -synctex=1 \
+                  -outdir="$OUT_DIR" "$TARGET"
+      - name: Audit BibLaTeX Unresolved Placeholders
+        run: |
+          python3 - << 'EOF'
+          import os
+          import re
+          import sys
+          import glob
+
+          TARGET_BANNER = "UNRESOLVED PLACEHOLDER REFERENCES DETECTED IN THIS BUILD:"
+          PLACEHOLDER_MARKER = "Unresolved placeholder reference"
+
+          # 1. Locate the generated .log file in artifacts/
+          log_files = glob.glob("artifacts/**/*.log", recursive=True)
+          if not log_files:
+              print("::warning::No .log file found in artifacts/ to audit.")
+              sys.exit(0)
+
+          log_file = log_files[0]
+          print(f"==> Auditing log file: {log_file}")
+
+          with open(log_file, "r", encoding="utf-8", errors="replace") as f:
+              log_content = f.read()
+
+          has_marker = PLACEHOLDER_MARKER in log_content
+          has_banner = TARGET_BANNER in log_content
+
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+
+          if not (has_marker or has_banner):
+              msg = f"✅ Clean build: No unresolved placeholder references in `{os.path.basename(log_file)}`."
+              print(msg)
+              if summary_path:
+                  with open(summary_path, "a", encoding="utf-8") as sf:
+                      sf.write(f"### �� BibLaTeX Placeholder Audit\n\n{msg}\n\n")
+              sys.exit(0)
+
+          # Multiline wrapper regex from audit_placeholders()
+          wrapped_re = re.compile(
+              r"Package biblatex Warning:\s*Unresolved placeholder reference\s*'(?P<key>[^']+)':\s*(?P<note>[^\n]+(?:\n[^\n]+)*?\.)(?:\s+(?:Underfull|Overfull|Package|\n|\[|$))"
+          )
+          matches = list(wrapped_re.finditer(log_content))
+
+          detected = {}
+          if matches:
+              for w in matches:
+                  key = w.group("key")
+                  note = " ".join(w.group("note").split()).rstrip(".")
+                  detected.setdefault(key, note)
+          else:
+              for line in log_content.splitlines():
+                  if PLACEHOLDER_MARKER in line:
+                      m = re.search(r"reference\s*'([^']+)':\s*(.*?)(?:\.|$)", line)
+                      if m:
+                          detected.setdefault(m.group(1), m.group(2).strip().rstrip("."))
+
+          total_occurrences = len(matches) if matches else len(detected)
+          unique_keys_count = len(detected)
+
+          # Output to console
+          print(f"\n❌ UNRESOLVED PLACEHOLDERS DETECTED ({unique_keys_count} unique keys, {total_occurrences} total citations):")
+          for key, note in sorted(detected.items()):
+              print(f"  * [{key}] {note}")
+              # Emit native GitHub Actions warning annotations
+              print(f"::warning file={log_file}::Unresolved placeholder reference [{key}]: {note}")
+
+          # Write rich Markdown report to the GitHub Actions Job Summary
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as sf:
+                  sf.write(f"### ⚠️ BibLaTeX Unresolved Placeholders Detected in `{os.path.basename(log_file)}`\n\n")
+                  sf.write(f"- **Unique Keys:** {unique_keys_count}\n")
+                  sf.write(f"- **Total Occurrences:** {total_occurrences}\n\n")
+                  
+                  # Use HTML table markup for guaranteed column widths and no-wrap behavior
+                  sf.write("<table>\n")
+                  sf.write("  <thead>\n")
+                  sf.write("    <tr>\n")
+                  sf.write('      <th align="left" style="width: 320px; white-space: nowrap;">Citation Key</th>\n')
+                  sf.write('      <th align="left">Resolution Note</th>\n')
+                  sf.write("    </tr>\n")
+                  sf.write("  </thead>\n")
+                  sf.write("  <tbody>\n")
+                  for key, note in sorted(detected.items()):
+                      clean_key = key.strip()
+                      clean_note = note.strip()
+                      sf.write("    <tr>\n")
+                      sf.write(f'      <td style="white-space: nowrap;"><code>{clean_key}</code></td>\n')
+                      sf.write(f"      <td>{clean_note}</td>\n")
+                      sf.write("    </tr>\n")
+                  sf.write("  </tbody>\n")
+                  sf.write("</table>\n\n")
+
+          # Exit with code 0 to allow artifact committing/uploading,
+          # or use sys.exit(2) if you want the CI workflow run to fail when placeholders exist.
+          sys.exit(0)
+          EOF
+
+      - name: Commit artifacts to repository
+        run: |
+          cd "$GITHUB_WORKSPACE"
+
+          # 1. Trust workspace UID
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 2. Stage only PDFs, bibs, and json files inside artifacts/
+          find artifacts -type f \( -name "*.pdf" -o -name "*.bib" -o -name "*.json" -o -name "*.log" \) -print0 | xargs -0 -r git add -f
+
+          # 3. Commit only if changes were detected
+          if ! git diff --cached --quiet; then
+            echo "==> Changes detected, committing..."
+            git commit -m "docs: automated build artifacts for ${{ github.event.inputs.target_doc }} [skip ci]"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
+            echo "Artifacts pushed to branch ${{ github.ref_name }}."
+          else
+            echo "No artifact changes to commit."
+          fi
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-single
+          path: |
+            artifacts/*.pdf
+            artifacts/*.bib
+            artifacts/*.json
+          if-no-files-found: warn
+
+  # -------------------------------------------------------------
+  # Job 2: Compile all defined documents in parallel (push or dispatch 'all')
+  # -------------------------------------------------------------
+  compile-matrix:
+    if: "${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc == 'all') }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - path: 'examplethesis.tex'
+            slug: "examplethesis"
+          - path: 'Quick_Start_Guide.tex'
+            slug: "Quick_Start"
+          - path: 'README_3rd_cycle_author.tex'
+            slug: "3rd_cycle_author"
+          - path: 'README_notes/README_for_3rd_cycle_version.tex'
+            slug: "3rd_cycle_version"
+          - path: 'README_notes/README_for_administrators.tex'
+            slug: "for_administrators"
+          - path: 'README_notes/README_notes_reduced.tex'
+            slug: "notes_reduced"
+          - path: 'README_notes/README_programmer_notes_appendix.tex'
+            slug: "programmer_notes_appendix"
+          - path: "README_notes/README_programmer_notes_Biber_and_BibLaTeX.tex"
+            slug: "programmer-notes-Biber"
+          - path: 'README_notes/README_programmer_notes-JSON_to_MODS.tex'
+            slug: "programmer_notes_JSON"
+          - path: 'README_notes/README_programmer_notes-PDF_metadata.tex'
+            slug: "programmer_notes_PDF"
+          - path: 'README_notes/README_programmer_notes.tex'
+            slug: "programmer_notes"
+          - path: 'README_notes/README_supervisor_notes.tex'
+            slug: "supervisor_notes"
+          - path: 'README_notes/README_Tekla_template.tex'
+            slug: "Tekla"
+          # Add any other root or README_notes targets here:
+          # - path: "README_notes/another_note.tex"
+          #   slug: "another-note"
+
+    container:
+      image: texlive/texlive:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install System Fonts
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            fontconfig \
+            fonts-noto-core \
+            fonts-noto-extra \
+            fonts-noto-cjk \
+            fonts-noto-cjk-extra \
+            fonts-noto-mono 
+          fc-cache -f
+          luaotfload-tool --update
+
+      - name: Compile ${{ matrix.slug }} with LuaLaTeX
+        run: |
+          TARGET="${{ matrix.path }}"
+          TARGET_DIR=$(dirname "$TARGET")
+          
+          OUT_DIR="$GITHUB_WORKSPACE/artifacts-${{ matrix.slug }}"
+          mkdir -p "$OUT_DIR"
+
+          cd "$GITHUB_WORKSPACE"
+          export TEXINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
+          export BIBINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
+
+          latexmk -lualatex -interaction=nonstopmode -synctex=1 \
+                  -outdir="$OUT_DIR" "$TARGET"
+
+      - name: Upload Artifacts (${{ matrix.slug }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: "artifacts-${{ matrix.slug }}"
+          path: |
+            artifacts-${{ matrix.slug }}/*.pdf
+            artifacts-${{ matrix.slug }}/*.bib
+            artifacts-${{ matrix.slug }}/*.json
+          if-no-files-found: warn
 \end{lstlisting}
 
 
+
+\begin{figure}[!ht]
+  \begin{center}
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/workflow-output-for-placeholders.png}}
+  \end{center}
+  \caption{Result of the compilation showing the case of unresolved placeholders}
+  \label{fig:workflowPlaceholdersPresent}
+\end{figure}
+\FloatBarrier
+
 \subsection{Further Automation}
 \label{sec:furtherAutomation}
-It is possible to build other automation on the mechanism shown in \Cref{lst:accessBuildLogDirectly}. For example, Python code shown in \Cref{lst:uploadOutputPDF} can copy files from the build container to the Overleaf project (\ie making them stable files in the project's directory tree). An example of using this is shown in \Cref{lst:uploadOutputSuccess}. Further examples include \fname{fordiva.json}, \fname{referencesUsed.bib}, and \fname{citedtags.bib} for a thesis.
+It is possible to build other automation on the mechanism of \ref{itm:LocalScriptForChecking} shown in \Cref{lst:accessBuildLogDirectly}. For example, Python code shown in \Cref{lst:uploadOutputPDF} can copy files from the build container to the Overleaf project (\ie making them stable files in the project's directory tree). An example of using this is shown in \Cref{lst:uploadOutputSuccess}. Further examples include \fname{fordiva.json}, \fname{referencesUsed.bib}, and \fname{citedtags.bib} for a thesis.
 
 \begin{lstlisting}[language={Python}, escapechar=£, caption={Use Python to compile the project and upload a file, such as the PDF. Note that \LaTeX{} commands were added for layout purposes.},label=lst:uploadOutputPDF]
 #!/usr/bin/env python3
@@ -2813,7 +3121,7 @@ Destination folder 'artifacts_1791413684' ID: £\hbox{6ac6cdb4a98c95d1223e6ce3}�
 Done. 1/1 files successfully persisted to Overleaf project.
 \end{lstlisting}
 
-\subsection{Risks of this automation approach}
+\subsection{Risks of the \ref{itm:LocalScriptForChecking} based automation approach}
 The automation scripts introduce several technical, architectural, and operational vulnerabilities that are important to consider:
 \begin{enumerate}
     \item Fragility of Undocumented Internal \glspl{API}
