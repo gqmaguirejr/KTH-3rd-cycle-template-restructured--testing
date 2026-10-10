@@ -164,7 +164,7 @@ jobs:
                   sf.write("<table>\n")
                   sf.write("  <thead>\n")
                   sf.write("    <tr>\n")
-                  sf.write('      <th align="left" style="width: 320px; white-space: nowrap;">Citation Key</th>\n')
+                  sf.write('      <th align="left" style="width: 30%; white-space: nowrap;">Citation Key</th>\n')
                   sf.write('      <th align="left">Resolution Note</th>\n')
                   sf.write("    </tr>\n")
                   sf.write("  </thead>\n")
