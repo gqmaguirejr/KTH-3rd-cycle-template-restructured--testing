@@ -208,13 +208,15 @@ jobs:
           fi
 
       - name: Upload Build Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-single
           path: |
-            artifacts/*.pdf
-            artifacts/*.bib
-            artifacts/*.json
+            artifacts*/**/*.pdf
+            artifacts*/**/*.log
+            artifacts*/**/*.bib
+            artifacts*/**/*.json
           if-no-files-found: warn
 
   # -------------------------------------------------------------
