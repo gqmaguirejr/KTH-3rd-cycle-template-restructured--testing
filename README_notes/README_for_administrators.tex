@@ -186,8 +186,8 @@
     FontFace={sb}{n}{*-SemiBold},
     ]{NotoEmoji}
 
-   % To set the abstract headings in Figtree we redefine the abstravt environment to look at the language being used and use the appropriate font, with the default being Figtree
-   % The languages that are automatically introduced by Polyglossia or Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the ssans erif font.
+   % To set the abstract headings in Figtree, we redefine the abstract environment to look at the language being used and use the appropriate font, with the default being Figtree
+   % The languages that are automatically introduced by Polyglossia or Babel have a name of the form xxxfont and xxxfontsf; where xxxfont is the serif font and xxxfontsf is the sans serif font.
    % This means that for each language that Figtree does not support, you have to define the sans serif and serif font to use.
 
       \babelprovide[import, onchar=ids fonts]{greek}
@@ -365,7 +365,7 @@ This document provides information for \gls{DiVA} administrators about the templ
 \glsresetall
 \section[Introduction to the template]{Introduction to the template}
 
-The assumption is that a student is writing their thesis using my \LaTeX\ ~template~\cite{maguire2026kthtemplate}\footnote{Or perhaps a \gls{DOCX} file that also produces a \fname{fordiva.json} file.}.  The key idea is to have the thesis include  \first the information needed for input into \gls{DiVA}, the TRITA list/database, and \gls{LADOK}, and \Second information that can be used by US-AB to produce the covers, title page, and book information page.
+The assumption is that a student is writing their thesis using my \LaTeX{} ~template~\cite{maguire2026kthtemplate}\footnote{Or perhaps a \gls{DOCX} file that also produces a \fname{fordiva.json} file.}.  The key idea is to have the thesis include  \first the information needed for input into \gls{DiVA}, the TRITA list/database, and \gls{LADOK}, and \Second information that can be used by US-AB to produce the covers, title page, and book information page.
 
 The \gls{PDF} file produced has one or more pages at the end that are in a section with a heading of ``For DIVA'' or this same string with four euro symbols (\ie `€') before and after the string, with a space before and after the string. An example of the top of such a page is shown in \Cref{fig:topOfForDiva}, and the bottom is shown in \Cref{fig:bottomOfForDiva}. Note that in the bottom figure, we can see two push-pins, representing two attached files: \fname{fordiva.json} and \fname{acronyms.tex}. These attached files make it easier to automate adding the metadata to \gls{DiVA}\footnote{At a minimum, all of the data is now collected in one spot from which, in the worst case, one can cut-and-paste it into a single \gls{JSON} file.} Additionally, some scripts have been developed to mechanically extract this data, as will be described in \Cref{sec:gettingNecessaryData}.
 
