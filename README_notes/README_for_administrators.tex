@@ -199,8 +199,9 @@
     % The Overleaf TeX Live includes these fonts, so there is little you have to do!
     % The list of such fonts is at https://www.overleaf.com/learn/latex/Questions%2FWhich_OTF_or_TTF_fonts_are_supported_via_fontspec%3F
     %
-\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
-    ]{Noto Sans Mono CJK JP}
+%\newfontfamily{\NotoSansJPFont}[Ligatures=TeX,
+%    ]{Noto Sans Mono CJK JP}
+\newfontfamily{\NotoSansJPFont}{Noto Sans CJK JP}
 
 \newfontfamily{\NotoSansFont}[Ligatures=TeX,
     ]{Noto Sans}
@@ -211,7 +212,8 @@
 \newfontfamily{\DejaVuSansFont}[Ligatures=TeX,
     ]{DejaVu Sans}
 
-
+% A font to be used in minted listings
+\newfontfamily{\ListingMono}{Noto Sans Mono}[Ligatures=ResetAll]
  
 
 % Set up the header and footer for plain style pages
@@ -363,7 +365,7 @@ This document provides information for \gls{DiVA} administrators about the templ
 \glsresetall
 \section[Introduction to the template]{Introduction to the template}
 
-The assumption is that a student is writing their thesis using my \LaTeX\ ~template\footnote{Or perhaps a \gls{DOCX} file that also produces a \fname{fordiva.json} file.}.  The key idea is to have the thesis include  \first the information needed for input into \gls{DiVA}, the TRITA list/database, and \gls{LADOK}, and \Second information that can be used by US-AB to produce the covers, title page, and book information page.
+The assumption is that a student is writing their thesis using my \LaTeX\ ~template~\cite{maguire2026kthtemplate}\footnote{Or perhaps a \gls{DOCX} file that also produces a \fname{fordiva.json} file.}.  The key idea is to have the thesis include  \first the information needed for input into \gls{DiVA}, the TRITA list/database, and \gls{LADOK}, and \Second information that can be used by US-AB to produce the covers, title page, and book information page.
 
 The \gls{PDF} file produced has one or more pages at the end that are in a section with a heading of ``For DIVA'' or this same string with four euro symbols (\ie `€') before and after the string, with a space before and after the string. An example of the top of such a page is shown in \Cref{fig:topOfForDiva}, and the bottom is shown in \Cref{fig:bottomOfForDiva}. Note that in the bottom figure, we can see two push-pins, representing two attached files: \fname{fordiva.json} and \fname{acronyms.tex}. These attached files make it easier to automate adding the metadata to \gls{DiVA}\footnote{At a minimum, all of the data is now collected in one spot from which, in the worst case, one can cut-and-paste it into a single \gls{JSON} file.} Additionally, some scripts have been developed to mechanically extract this data, as will be described in \Cref{sec:gettingNecessaryData}.
 
