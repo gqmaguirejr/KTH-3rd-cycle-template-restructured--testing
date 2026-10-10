@@ -223,11 +223,12 @@
     UprightFont = NotoSans-Regular,
     BoldFont = NotoSans-Bold,
     ItalicFont = NotoSans-Italic,
-    BoldItalicFont = NotoSans-BoldItalic
+    BoldItalicFont = NotoSans-BoldItalic,
+    Language=Default
 ]{NotoSansCustom}
 \fi
 \ifusenotomono
-    \babelfont[greek, russian, ukrainian, vietnamese]{tt}{Noto Mono}
+    \babelfont[greek, russian, ukrainian, vietnamese]{tt}[Language=Default]{Noto Mono}
 \fi
 
 \ifenableddevanagarifont
