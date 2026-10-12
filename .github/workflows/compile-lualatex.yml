@@ -223,7 +223,7 @@ jobs:
   # Job 2: Compile all defined documents in parallel (push or dispatch 'all')
   # -------------------------------------------------------------
   compile-matrix:
-    if: "${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc == 'all') }}"
+    if: "${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc == 'all') }}" # github.event_name == 'push' ||
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
