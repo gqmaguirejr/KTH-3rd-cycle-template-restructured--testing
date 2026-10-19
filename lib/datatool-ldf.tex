@@ -13,7 +13,9 @@
 }
 \end{filecontents*}
 \begin{filecontents*}{datatool-latin.ldf}
-\ProvidesFile{datatool-latin.ldf}
+\ProvidesFile{datatool-latin.ldf}[2026/10/14 v1.0 Dummy Latin localization for datatool]
+% Inherit English fallbacks so datatool hooks don't fail if evaluated
+\RequireFileList{datatool-english.ldf}
 \end{filecontents*}
 \begin{filecontents*}{glossaries-swedish.ldf}
 \ProvidesGlossariesLang{swedish}[2024/03/26]
