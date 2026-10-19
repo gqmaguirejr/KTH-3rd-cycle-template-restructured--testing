@@ -14,6 +14,14 @@ from bs4 import BeautifulSoup
 import re
 import json
 import os
+import urllib.parse
+
+# Try importing browser_cookie3 to harvest local KTH session cookies
+try:
+    import browser_cookie3
+    HAS_BROWSER_COOKIE3 = True
+except ImportError:
+    HAS_BROWSER_COOKIE3 = False
 
 # --- 1. CONFIGURATION & BILINGUAL DATA ---
 STATE_FILE = "wizard_session.json"
@@ -39,6 +47,8 @@ TRANSLATIONS = {
         'reset_btn': "Clear All Data (Reset)", 'dl_btn': "Download .tex snippet",
         'info_saved': "Session data saved to:",
         'degree_label': "Degree Name", 'modifier_label': "Modifier (Philosophy)",
+        'cookie_status_ok': "🔑 Authenticated session detected via local browser cookies.",
+        'cookie_status_none': "ℹ️ Running in anonymous mode (log in to kth.se in your browser to auto-fetch kthId)."
     },
     'Swedish': {
         'title': "🎓 Konfigurationsguide för avhandlings mall för tredje nivån",
@@ -59,6 +69,8 @@ TRANSLATIONS = {
         'reset_btn': "Rensa all data (Återställ)", 'dl_btn': "Ladda ner .tex-fil",
         'info_saved': "Sessionsdata sparad i:",
         'degree_label': "Examensnamn", 'modifier_label': "Tillägg (Philosophy)",
+        'cookie_status_ok': "🔑 Inloggad session identifierades via lokala webbläsarkakor.",
+        'cookie_status_none': "ℹ️ Körs anonymt (logga in på kth.se i din webbläsare för att hämta kthId automatiskt)."
     }
 }
 
@@ -126,7 +138,34 @@ if "degree_modifier" not in st.session_state: st.session_state["degree_modifier"
 if "thesis_title" not in st.session_state: st.session_state["thesis_title"] = ""
 if "thesis_subtitle" not in st.session_state: st.session_state["thesis_subtitle"] = ""
 
-# --- 3. LOGIC FUNCTIONS ---
+# --- 3. SESSION & LOGIC FUNCTIONS ---
+def get_kth_session():
+    """Tries to extract kth.se session cookies across installed browsers."""
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    if not HAS_BROWSER_COOKIE3:
+        return session, False
+
+    # Browser inspection order
+    extractors = [
+        ('Chrome', browser_cookie3.chrome),
+        ('Firefox', browser_cookie3.firefox),
+        ('Edge', browser_cookie3.edge),
+        ('Safari', browser_cookie3.safari),
+        ('Chromium', browser_cookie3.chromium),
+        ('Brave', browser_cookie3.brave),
+    ]
+    for b_name, extractor in extractors:
+        try:
+            cj = extractor(domain_name='kth.se')
+            if any('kth' in c.domain for c in cj):
+                session.cookies = cj
+                return session, True
+        except Exception:
+            continue
+
+    return session, False
+
 def save_state():
     state = {
         "author": st.session_state["author"], 
@@ -137,7 +176,8 @@ def save_state():
         "thesis_title": st.session_state["thesis_title"],
         "thesis_subtitle": st.session_state["thesis_subtitle"]
     }
-    with open(STATE_FILE, "w") as f: json.dump(state, f)
+    with open(STATE_FILE, "w") as f:
+        json.dump(state, f)
 
 def load_state():
     if os.path.exists(STATE_FILE):
@@ -146,9 +186,10 @@ def load_state():
                 saved = json.load(f)
                 for key, val in saved.items():
                     st.session_state[key] = val
-        except: pass
+        except  Exception:
+            pass
 
-def get_kth_person_info(username):
+def old_get_kth_person_info(username):
     try:
         url = f"https://www.kth.se/profile/{username}/"
         res = requests.get(url, headers=HEADERS, timeout=10)
@@ -186,6 +227,73 @@ def get_kth_person_info(username):
         return None, "Not found in directory."
     except Exception as e: return None, str(e)
 
+def get_kth_person_info(username):
+    try:
+        username = username.strip().lower()
+        if '@' in username:
+            username = username.split('@')[0]
+
+        session, is_auth = get_kth_session()
+        url = f"https://www.kth.se/profile/{username}/"
+        res = session.get(url, timeout=10)
+        if res.status_code != 200:
+            return None, f"Profile for '{username}' not found (HTTP {res.status_code})."
+
+        html_content = res.text
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # 1. Check for authenticated span in DOM
+        kthid = None
+        kthid_elem = soup.find(attrs={"class": "kthId"})
+        if kthid_elem:
+            kthid = kthid_elem.get_text(strip=True)
+
+        # 2. Extract and decode __compressedData__DATA
+        data_match = re.search(r'window\.__compressedData__DATA\s*=\s*"([^"]+)"', html_content)
+        if data_match:
+            raw_json = urllib.parse.unquote(data_match.group(1))
+            profile_data = json.loads(raw_json).get('profile', {})
+
+            if not kthid:
+                kthid = profile_data.get('kthId', '')
+
+            fname = profile_data.get('firstName', '')
+            lname = profile_data.get('lastName', '')
+            email = profile_data.get('emailAddress', f"{username}@kth.se")
+            title = profile_data.get('title', '')
+
+            # Parse School and Department mapping
+            dept_name = ""
+            school_acronym = "XXX"
+            works_for_items = profile_data.get('worksFor', {}).get('items', [])
+            if works_for_items:
+                dept_name = works_for_items[0].get('text', '')
+                dir_url = works_for_items[0].get('url', '').lower()
+                m = re.search(r'/directory/([a-z])', dir_url)
+                if m:
+                    school_acronym = SCHOOL_MAP_letters.get(m.group(1), "XXX")
+
+            # Clean "Department of " if present
+            if dept_name.lower().startswith("department of "):
+                dept_name = dept_name[14:].strip()
+
+            return {
+                "fname": fname,
+                "lname": lname,
+                "email": email,
+                "title": title,
+                "kthid": kthid if kthid else "",  # Leaves blank for user review if unauthenticated
+                "school": school_acronym,
+                "dept": dept_name,
+                "is_kth": True
+            }, None
+
+        return None, "Unable to extract profile payload."
+
+    except Exception as e:
+        return None, str(e)
+
+
 # --- 4. UI SETUP ---
 st.set_page_config(page_title="KTH Config Wizard", layout="wide")
 if not st.session_state["initialized"]:
@@ -195,6 +303,13 @@ if not st.session_state["initialized"]:
 lang = st.radio("Language / Språk", ["English", "Swedish"], horizontal=True)
 t = TRANSLATIONS[lang]
 st.title(t['title'])
+
+# Display local cookie detection status
+_, auth_detected = get_kth_session()
+if auth_detected:
+    st.caption(f"🟢 {t['cookie_status_ok']}")
+else:
+    st.caption(f"⚪ {t['cookie_status_none']}")
 
 # --- FILE SAFETY CHECK ---
 PUB_MAP_FILE = "publications_map.json"
@@ -243,8 +358,12 @@ with c1:
     auth_user = st.text_input(t['user_label'], key="auth_input")
     if st.button(t['fetch_btn']):
         data, err = get_kth_person_info(auth_user)
-        if data: st.session_state['author'] = data; save_state(); st.rerun()
-        else: st.error(err)
+        if data:
+            st.session_state['author'] = data;
+            save_state();
+            st.rerun()
+        else:
+            st.error(err)
 
 if st.session_state['author']:
     a = st.session_state['author']
@@ -253,17 +372,19 @@ if st.session_state['author']:
             st.session_state["thesis_title"] = st.text_input(t['thesis_title'], value=st.session_state["thesis_title"])
             st.session_state["thesis_subtitle"] = st.text_input(t['thesis_subtitle'], value=st.session_state["thesis_subtitle"])
             st.divider()
-            a['fname'] = st.text_input(t['fname'], a['fname'])
-            a['lname'] = st.text_input(t['lname'], a['lname'])
-            a['email'] = st.text_input(t['email'], a['email'])
-            a['kthid'] = st.text_input(t['kthid'], a['kthid'])
-            a['school'] = st.text_input(t['school'], a['school'])
+            a['fname'] = st.text_input(t['fname'], a.get('fname', ''))
+            a['lname'] = st.text_input(t['lname'], a.get('lname', ''))
+            a['email'] = st.text_input(t['email'], a.get('email', ''))
+            a['kthid'] = st.text_input(t['kthid'], a.get('kthid', ''))
+            a['school'] = st.text_input(t['school'], a.get('school', ''))
             
             curr_code = st.session_state['edu_code']
             idx = list(EDUCATION_CODES.keys()).index(curr_code) if curr_code in EDUCATION_CODES else 0
             st.session_state['edu_code'] = st.selectbox(t['edu_code'], list(EDUCATION_CODES.keys()), index=idx)
             
-            if st.button(t['save_btn']): save_state(); st.success("Saved")
+            if st.button(t['save_btn']):
+                save_state();
+                st.success("Saved")
 
 # --- SUPERVISORS ---
 st.header(t['sup_header'])
@@ -272,43 +393,64 @@ with cs1:
     s_user = st.text_input(t['user_label'], key="sup_input")
     if st.button(t['fetch_btn'], key="sup_fetch"):
         data, err = get_kth_person_info(s_user)
-        if data: st.session_state['supervisors'].append(data); save_state(); st.rerun()
-        else: st.error(err)
+        if data:
+            st.session_state['supervisors'].append(data);
+            save_state();
+            st.rerun()
+        else:
+            st.error(err)
 with cs2:
     with st.expander(t['add_ext_sup']):
-        ef, el, ee, eo = st.text_input(t['fname']), st.text_input(t['lname']), st.text_input(t['email']), st.text_input(t['ext_org'])
+        ef = st.text_input(t['fname'], key="ext_fn")
+        el = st.text_input(t['lname'], key="ext_ln")
+        ee = st.text_input(t['email'], key="ext_em")
+        eo = st.text_input(t['ext_org'], key="ext_org")
         if st.button(t['add_btn']):
             st.session_state['supervisors'].append({"fname": ef, "lname": el, "email": ee, "org": eo, "is_kth": False})
-            save_state(); st.rerun()
+            save_state();
+            st.rerun()
 
 if st.session_state['supervisors']:
     st.subheader(t['curr_list'])
     to_del = None
     for i, s in enumerate(st.session_state['supervisors']):
         cols = st.columns([5, 1])
-        cols[0].write(f"**{chr(65+i)}:** {s['fname']} {s['lname']} ({s.get('kthid', 'Ext')})")
-        if cols[1].button(t['rem_btn'], key=f"r{i}"): to_del = i
-    if to_del is not None: st.session_state['supervisors'].pop(to_del); save_state(); st.rerun()
+        id_display = s.get('kthid') if s.get('kthid') else ('KTH' if s.get('is_kth') else 'Ext')
+        cols[0].write(f"**{chr(65+i)}:** {s['fname']} {s['lname']} ({id_display})")
+        if cols[1].button(t['rem_btn'], key=f"r{i}"):
+            to_del = i
+    if to_del is not None:
+        st.session_state['supervisors'].pop(to_del)
+        save_state()
+        st.rerun()
 
 # --- OUTPUT ---
 st.header(t['out_header'])
 if st.button(t['reset_btn']):
-    if os.path.exists(STATE_FILE): os.remove(STATE_FILE)
-    st.session_state.clear(); st.rerun()
+    if os.path.exists(STATE_FILE):
+        os.remove(STATE_FILE)
+    st.session_state.clear()
+    st.rerun()
 
 if st.session_state['author']:
-    a, ed = st.session_state['author'], st.session_state['edu_code']
+    a = st.session_state['author']
+    ed = st.session_state['edu_code']
     out = f"\\title{{{st.session_state['thesis_title']}}}\n"
     out += f"\\subtitle{{{st.session_state['thesis_subtitle']}}}\n\n"
     out += f"\\courseCycle{{3}}\n\\educationSubjectcode{{{ed}}}\n\\subjectArea{{\\educationcodeToString{{{ed}}}}}\n"
     out += f"\\degreeName{{{st.session_state['degree_name']}}}\n"
-    if st.session_state['degree_modifier']: out += f"\\degreeModifier{{Philosophy}}\n"
+    if st.session_state['degree_modifier']:
+        out += f"\\degreeModifier{{Philosophy}}\n"
     out += f"\n\\authorsFirstname{{{a['fname']}}}\n\\authorsLastname{{{a['lname']}}}\n\\email{{{a['email']}}}\n\\kthid{{{a['kthid']}}}\n"
     out += f"\\authorsSchool{{\\schoolAcronym{{{a['school']}}}}}\n\n"
     for i, s in enumerate(st.session_state['supervisors']):
         l = chr(65+i)
         out += f"\\supervisor{l}sFirstname{{{s['fname']}}}\n\\supervisor{l}sLastname{{{s['lname']}}}\n\\supervisor{l}sEmail{{{s['email']}}}\n"
-        if s.get('is_kth'): out += f"\\supervisor{l}sKTHID{{{s['kthid']}}}\n\\supervisor{l}sSchool{{\\schoolAcronym{{{s['school']}}}}}\n\\supervisor{l}sDepartment{{{s['dept']}}}\n\n"
-        else: out += f"\\supervisor{l}sOrganization{{{s['org']}}}\n\n"
+        if s.get('is_kth'):
+            if s.get('kthid'):
+                out += f"\\supervisor{l}sKTHID{{{s['kthid']}}}\n"
+            out += f"\\supervisor{l}sSchool{{\\schoolAcronym{{{s['school']}}}}}\n\\supervisor{l}sDepartment{{{s['dept']}}}\n\n"
+        else:
+            out += f"\\supervisor{l}sOrganization{{{s['org']}}}\n\n"
     st.code(out, language='latex')
     st.download_button(t['dl_btn'], out, "config_snippet.tex")
