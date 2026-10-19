@@ -5,6 +5,39 @@
     \part{Included publications}
     \cleardoublepage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% set up macros for BibTeX - if necessary
+
+\ifbiblatex
+\relax
+\else
+\makeatletter
+% Disable the back reference
+%\renewcommand*{\backref}[1]{}
+%\renewcommand*{\backrefalt}[4]{}
+\newcommand*{\backref}[1]{}
+\newcommand*{\backrefalt}[4]{}
+
+% No special openbib formatting
+\let\@openbib@code\@empty % see https://www.latex-project.org/help/documentation/classes.pdf
+
+% Turn off item's biblabel
+\renewcommand\@biblabel[1]{}
+
+% Redefine the thebibliography to format as we want
+\renewenvironment{thebibliography}[1]
+{\list{}%
+   {\leftmargin0pt \usecounter{enumiv}}%
+\sloppy
+\clubpenalty4000
+\@clubpenalty \clubpenalty
+\widowpenalty4000%
+\sfcode`\.\@m}
+{\def\@noitemerr
+{\@latex@warning{Empty `thebibliography' environment}}%
+\endlist}
+\makeatother
+\fi % end of ifbiblatex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Make a file to put the cited information into
 \FileOpen{citedtagsfile}{citedtags.bib}
 
@@ -19,7 +52,7 @@
 The authors granted IETF Trust and the IETF the non-exclusive right to publish the document as an RFC. All other rights are retained by the authors.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=1.0]{Included_publications/rfc1235_clean.txt.pdf}
+\includepdf[pages={1-2},scale=1.0]{Included_publications/rfc1235.txt.pdf}
 \cleardoublepage
 % Divider for paper:B
 \thispagestyle{empty}
@@ -29,8 +62,7 @@ The authors granted IETF Trust and the IETF the non-exclusive right to publish t
 This publication has a \href{https://creativecommons.org/licenses/by/3.0/}{CC BY 3.0 license - Attribution 3.0 Unported}.
 \end{dividerContent}
 \cleardoublepage
-%%%% Note: this is using a manually corrected PDF file
-\includepdf[pages={1-},scale=1.0]{Included_publications/Paper_B_one_page_final.pdf}
+\includepdf[pages={1-},scale=1.0]{Included_publications/Paper_B_one_page.pdf}
 \cleardoublepage
 % Divider for paper:C
 \thispagestyle{empty}
@@ -52,7 +84,7 @@ Copyright © 2019 ACM.\\ Permission to make digital or hard copies of all or par
 This publication has a \href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0 - Attribution 4.0 International} license.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=0.9]{Included_publications/Paper_D_clean.pdf}
+\includepdf[pages={1-2},scale=0.9]{Included_publications/Paper_D.pdf}
 \cleardoublepage
 % Divider for paper:E
 \thispagestyle{empty}
@@ -62,7 +94,7 @@ This publication has a \href{https://creativecommons.org/licenses/by/4.0/}{CC BY
 This paper is unpublished but appears as an arXiv preprint.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=0.9]{Included_publications/Paper_E_cleaned.pdf}
+\includepdf[pages={1-2},scale=0.9]{Included_publications/Paper_E.pdf}
 \cleardoublepage
 % Divider for patent:A
 \thispagestyle{empty}
@@ -72,7 +104,7 @@ This paper is unpublished but appears as an arXiv preprint.
 This publication is a U.S. Government publication; hence, it has no copyright.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=0.9]{Included_publications/US7107453_clean.pdf}
+\includepdf[pages={1-2},scale=0.9]{Included_publications/US7107453.pdf}
 \cleardoublepage
 % Divider for patent:B
 \thispagestyle{empty}
@@ -82,7 +114,7 @@ This publication is a U.S. Government publication; hence, it has no copyright.
 This publication is a U.S. Government publication; hence, it has no copyright.
 \end{dividerContent}
 \cleardoublepage
-\includepdf[pages={1-2},scale=0.9]{Included_publications/US12111768_clean.pdf}
+\includepdf[pages={1-2},scale=0.9]{Included_publications/US12111768.pdf}
 \cleardoublepage
 % Divider for artifact:A
 \thispagestyle{empty}
@@ -93,6 +125,6 @@ For details see \cite{10.1145/3445814.3446724}. The following pages are based on
 \end{dividerContent}
 \cleardoublepage
 \includepdf[pages={1-},scale=0.9]{Included_publications/PacketMill-Artifact_for_ASPLOS21.pdf}
-\cleardoublepaged
+\cleardoublepage
 \FileClose{citedtagsfile}
 \fi
