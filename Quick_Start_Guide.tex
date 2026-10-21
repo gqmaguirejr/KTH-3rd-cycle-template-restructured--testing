@@ -14,6 +14,12 @@
 %\usepackage{url}
 \input{lib/includes}
 \usepackage{metalogo}   % for \XeLaTeX and \LuaLaTeX logos
+% define a listing postbreak character to be used
+% Note that this version works safely with cmyk mode for xcolors.
+% It uses the STIX Match font to have the correct character at the LuaLaTeX engine level.
+\newsavebox{\lstbreakbox}
+\sbox{\lstbreakbox}{\textcolor{red}{\ensuremath{\hookrightarrow}}\space}
+
 
 \input{lib/defines}
 \newcommand{\dname}[1]{\textbf{#1}}
@@ -22,7 +28,7 @@
 
 \title{Quick Start Guide}
 \author{Gerald Q. Maguire Jr.}
-\date{24 September 2026}
+\date{20 October 2026}
 
 \begin{document}
 
@@ -50,7 +56,44 @@ If you are used to working with GitHub, you might want to use the Overleaf and G
 If you wish to use this integration or simply refer to work with a GitHub repository, see the repository \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
 Note that this means that, as step 1, you should clone the repository and then make a new Overleaf project by importing from your GitHub repository.
 
-Using the GitHub repository enables automated functions that help you configure the \fname{custom\_configuration.tex} file, generate a list of included publications, and even create the tab pages, including the PDF of publications (if you have downloaded the publications).
+Using the GitHub repository (or running scripts locally) enables automated functions that help you configure the \fname{custom\_configuration.tex} file, generate a list of included publications, and even create the tab pages, including the PDF of publications (if you have downloaded the publications).
+
+\Needspace*{20\baselineskip}
+\section*{When writing a compilation thesis, use the scripts}
+To streamline assembling a compilation thesis, the template repository provides scripts that automate metadata configuration, publication harvesting from DiVA, CReDiT author contributions, paper divider tabs, and bibliography validation. Full documentation and tools are available at \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
+
+Follow this sequential procedure:
+\begin{enumerate}
+    \item \textbf{Configure metadata:} Run the wizard to configure \fname{custom\_configuration.tex}.
+    \item \textbf{Fetch publications:} Harvest your published records from DiVA into \fname{publications\_map.json}, then reorder or label the papers to include.
+    \item \textbf{Assign contributions:} Use the matrix wizard to record CReDiT contributions for co-authored works.
+    \item \textbf{Generate thesis sections:} Run the divider and contribution generators to produce input files for the \emph{kappa}.
+    \item \textbf{Sanitize bibliography:} Validate persistent identifiers and entries in \fname{references.bib}.
+\end{enumerate}
+
+
+\begin{lstlisting}[language={bash}, breaklines=true, postbreak=\usebox{\lstbreakbox}, caption={{Configure your project, get publications from DiVA, add CReDiT information}}, label=lst:scripts, basicstyle=\footnotesize\ttfamily, escapechar=£]
+# 1. Configure your custom_configuration.tex file
+streamlit run ./scripts/config_wizard.py
+# Add your configuration data to your project; either manually or using GitHub's automation
+
+# 2. Get information about your publications from DiVA (uses your KTHID from custom_configuration.tex); assumes all your publications are in references.bib
+./scripts/DiVA_discovery.py
+# Edit publications_map.json to indicate which publications you want to include, what labels you want, and their order
+
+# 3. Enter CReDiT info for your included papers
+streamlit run ./scripts/CReDiT_Matrix_Wizard.py
+
+# 4. Automatically generate text for your thesis
+./scripts/generate_publication_dividers.py
+./scripts/generate_thesis_contributions.py
+# Put the generated files into your thesis folder
+
+# 5. £{\sffamily\bfseries\color{red}*** Write the rest of your Kappa ***}£
+
+# 6. Check the existence of the entries in your references.bib file and sanitize referencesUsed.bib
+./scripts/bib_cleanup.py
+\end{lstlisting}
 
 \section*{Tips for Writing and Navigating the Template}
 A quick way to start writing is to go to the table of contents in Overleaf and click a chapter or section; this will use a hyperlink to take you to that part of the PDF. Next, click on the left-pointing arrow near the top of the border between the \LaTeX{} on the left and the PDF on the right; this will take you (close) to the correct place in the source file where you can start to modify the content and write.
