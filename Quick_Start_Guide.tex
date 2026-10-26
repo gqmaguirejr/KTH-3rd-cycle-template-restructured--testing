@@ -56,18 +56,19 @@ If you are used to working with GitHub, you might want to use the Overleaf and G
 If you wish to use this integration or simply refer to work with a GitHub repository, see the repository \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
 Note that this means that, as step 1, you should clone the repository and then make a new Overleaf project by importing from your GitHub repository.
 
-Using the GitHub repository (or running scripts locally) enables automated functions that help you configure the \fname{custom\_configuration.tex} file, generate a list of included publications, and even create the tab pages, including the PDF of publications (if you have downloaded the publications).
+Using the GitHub repository (or running scripts locally - see next section) enables automated functions that help you configure the \fname{custom\_configuration.tex} file, generate a list of included publications, create the tab pages, and include their PDF (if you have downloaded the publications).
 
-\Needspace*{20\baselineskip}
+
 \section*{When writing a compilation thesis, use the scripts}
 To streamline assembling a compilation thesis, the template repository provides scripts that automate metadata configuration, publication harvesting from DiVA, CReDiT author contributions, paper divider tabs, and bibliography validation. Full documentation and tools are available at \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
 
-Follow this sequential procedure:
-\begin{enumerate}
+\Needspace*{20\baselineskip}
+Follow this sequential procedure (as illustrated in Listing \ref{lst:scripts}):
+\begin{enumerate}[noitemsep]
     \item \textbf{Configure metadata:} Run the wizard to configure \fname{custom\_configuration.tex}.
-    \item \textbf{Fetch publications:} Harvest your published records from DiVA into \fname{publications\_map.json}, then reorder or label the papers to include.
+    \item \textbf{Fetch publications:} Harvest your published records from DiVA into \fname{publications\_map.json}, then order and label the papers to be included.
     \item \textbf{Assign contributions:} Use the matrix wizard to record CReDiT contributions for co-authored works.
-    \item \textbf{Generate thesis sections:} Run the divider and contribution generators to produce input files for the \emph{kappa}.
+    \item \textbf{Generate thesis sections:} Run the divider and contribution generators to produce input files for the thesis.
     \item \textbf{Sanitize bibliography:} Validate persistent identifiers and entries in \fname{references.bib}.
 \end{enumerate}
 
