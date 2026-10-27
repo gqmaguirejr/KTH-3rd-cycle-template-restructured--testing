@@ -33,9 +33,9 @@ jobs:
       # 2. Run Generators
       - name: Run Generators
         run: |
-          # Generates lib/publications_generated.tex
+          # Generates generated/publications_generated.tex
           python3 -u scripts/DiVA_generator.py 
-          # Generates lib/publications_dividers_generated.tex
+          # Generates generated/publications_dividers_generated.tex
           python3 -u scripts/generate_publication_dividers.py 
 
       - name: Run Publication and Divider Generators
@@ -51,16 +51,16 @@ jobs:
           
           # Force-add the mapping and the primary generated bib/list
           git add -f publications_map.json 
-          git add -f lib/publications_generated.tex
+          git add -f generated/publications_generated.tex
           
           # Conditionally add the dividers file if it exists
-          if [ -f "lib/publications_dividers_generated.tex" ]; then
-            git add -f lib/publications_dividers_generated.tex
+          if [ -f "generated/publications_dividers_generated.tex" ]; then
+            git add -f generated/publications_dividers_generated.tex
           fi
           
           # Conditionally add the CReDiT contributions file
-          if [ -f "lib/thesis_contributions_generated.tex" ]; then
-            git add -f lib/thesis_contributions_generated.tex
+          if [ -f "generated/thesis_contributions_generated.tex" ]; then
+            git add -f generated/thesis_contributions_generated.tex
           fi
           
           # Check for changes across all files before committing
