@@ -74,4 +74,4 @@ def generate_contributions(json_path, output_path):
         f.write("\n".join(tex))
 
 if __name__ == "__main__":
-    generate_contributions("publications_map.json", "lib/thesis_contributions_generated.tex")
+    generate_contributions("publications_map.json", "generated/thesis_contributions_generated.tex")

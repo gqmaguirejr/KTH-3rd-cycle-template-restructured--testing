@@ -8,7 +8,7 @@ import re
 import bibtexparser
 
 MAP_FILE = 'publications_map.json'
-OUTPUT_FILE = 'lib/publications_generated.tex'
+OUTPUT_FILE = 'generated/publications_generated.tex'
 
 ENV_MAP = {
     'paper': 'ListOfPapers',
