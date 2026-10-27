@@ -888,8 +888,8 @@ och förkortningar}]
     % alternatively use \small as the size - this may be suitable if you have titles that contain characters not in Figtree
     {\FigtreeFont\fontsize{11}{13}\fontshape{n}\selectfont
 % Check if there was an automatically generated list of publications file.
-\IfFileExists{lib/publications\_generated}{
-     \input{lib/publications_generated}
+\IfFileExists{generated/publications\_generated}{
+     \input{generated/publications_generated}
 }{
     \begin{ListOfPapers}
         \item \label{paper:A} Coherent {File} {Distribution} {Protocol}\cite{ioannidis_coherent_1991}
@@ -1109,7 +1109,7 @@ How does your thesis contribute to addressing the research questions?
 
 If you have done this work with others, clearly state what your own contributions were. If you have written a compilation thesis, give this description for each of your included publications. You might use the taxonomy defined in \gls{CReDiT}\cite{brand_beyond_2015}\footnote{See \url{https://authorservices.wiley.com/author-resources/Journal-Authors/open-access/credit.html}}.
 %%% The roles shown in the template are simply to illustrate what is possible and were not designed to be definitive.
-\IfFileNotEmpty{lib/thesis_contributions_generated.tex}{\input{lib/thesis_contributions_generated.tex}}
+\IfFileNotEmpty{generated/thesis_contributions_generated.tex}{\input{generated/thesis_contributions_generated.tex}}
 
 \section{Structure of the thesis}\sweExpl{Rapportens disposition}
 \Cref{ch:background} presents relevant background information about xxx.  \Cref{ch:methods} presents the methodology and method(s) used to solve the problem. 
@@ -2418,7 +2418,7 @@ For details see \cite{10.1145/3445814.3446724}. The following pages are based on
 \fi % end the ifincludepublications conditional 
 \end{comment}
 % input the automatically generated dividers and papers
-\IfFileNotEmpty{lib/publications_dividers_generated.tex}{\input{lib/publications_dividers_generated.tex}}
+\IfFileNotEmpty{generated/publications_dividers_generated.tex}{\input{generated/publications_dividers_generated.tex}}
 
 % --- End of Main matter
 %% The following label is necessary for computing the last page number of the body of the report to include in the "For DIVA" information
