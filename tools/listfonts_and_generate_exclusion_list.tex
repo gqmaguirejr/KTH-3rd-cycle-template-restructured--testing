@@ -1,0 +1,176 @@
+\documentclass{article}
+\usepackage{fontspec} % Required to initialize luaotfload
+\usepackage{luacode}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{List available fonts and generate a font exclusion List}
+\author{Gerald Q. Maguire Jr.}
+\date{August 2025}
+
+\begin{document}
+\maketitle
+
+This document uses a two-stage process within a single compilation to generate a list of fonts that are unsuitable for typesetting their own names.
+
+\section*{How it Works}
+\begin{enumerate}
+    \item For each font, it first attempts to typeset a single space character. This is a "safe" operation that forces \texttt{luaotfload} to load the font and create its cache file, but it does not cause a fatal error even for symbol fonts.
+    \item It then immediately inspects this newly created cache file to check if all the characters in the font's basename exist. If any are missing, they are reported.
+\end{enumerate}
+
+\section*{Background for Why it Works}
+To check if the font contains the required characters (to print the basename of the font), we need to look at the contents of the font file in the font cache. To get this font file in the font cache, we must use this font to attempt to set something, which will load the font. However, if we try to set a glyph that the font does not have, we get a low-level "missing glyph" error that Lua cannot catch with a protected call (pcall). Although the pcall can be used to wrap the generation of a string to print, this operation is successful. Unfortunately, the error occurs later when the mechanism to produce the output actually takes place.
+
+The solution is to set a character in a particular font, then look at the cached font file to check if the required letters occur in this font. A problem is that there is no character that is definitely in each font (although U+FFFD, i.e., the Replacement Character, is supposed to be in all well-formed fonts). So what character can be used? It seems that one can use a space, as this does not get rendered by the font, so the low-level error does not occur -- but the font has been loaded!
+\clearpage
+
+\begin{luacode}
+-- Record start time
+compilation_start_time = os.clock()
+
+-- Function for logging an event with a timestamp
+function log_event(message)
+  local current_time = os.clock()
+  local elapsed = current_time - compilation_start_time
+  local log_message = string.format("[+%.3fs] %s", elapsed, message)
+  tex.sprint("\\wlog{" .. log_message .. "}")
+  log_iso_time()
+end
+
+function get_iso_time_with_ns()
+    -- 1. Request nanosecond precision from the system's date command.
+    local command = "date --iso-8601=ns"
+    
+    local handle = io.popen(command)
+    if not handle then return "Error: Could not execute date command." end
+    
+    local result = handle:read("*a")
+    handle:close()
+    
+    -- 2. Trim any trailing newlines from the result and return it.
+    return result:gsub("[\\n\\r]$", "")
+end
+
+function log_iso_time()
+    local iso_time = get_iso_time_with_ns()
+    tex.sprint("\\wlog{ISO Time (ns): " .. iso_time .. "}")
+end
+
+    -- This helper function loads a .lua or .luc file
+    function load_lua_file(path_lua)
+        local path_luc = string.gsub(path_lua, "%.lua$", ".luc")
+        local chunk
+        
+        local f_luc = io.open(path_luc, "rb")
+        if f_luc then
+            local data = f_luc:read("*a"); f_luc:close()
+            chunk = load(data, 'b')
+        else
+            local f_lua = io.open(path_lua, "r")
+            if f_lua then
+                local data = f_lua:read("*a"); f_lua:close()
+                chunk = load(data, 't')
+            end
+        end
+
+        if chunk then
+            local success, result = pcall(chunk)
+            if success then return result end
+        end
+        return nil
+    end
+
+    -- *** DEFINITIVE HELPER FUNCTION ***
+    -- This version now returns the list of missing glyphs.
+    function check_font_glyphs(basename)
+        local lower_basename = string.lower(basename)
+        local cache_path = "./cache/luatex-cache/generic/fonts/otl/" .. file.replacesuffix(lower_basename, "lua")
+        local fontdata = load_lua_file(cache_path)
+        
+        if not fontdata or not fontdata.descriptions then
+            return false, { "cache file not found or invalid" }
+        end
+
+        -- Create a table to store any missing glyphs
+        local missing_glyphs = {}
+        
+        -- Check for the specific characters that appear in the basename.
+        for i = 1, #basename do
+            local char_code = string.byte(basename, i)
+            local char = string.char(char_code)
+            
+            -- Ignore the problematic hyphen-minus character.
+            if char ~= '-' then
+                if not fontdata.descriptions[char_code] then
+                    table.insert(missing_glyphs, "'" .. char .. "'")
+                end
+            end
+        end
+
+        if #missing_glyphs > 0 then
+            return false, missing_glyphs -- Return failure and the list of missing glyphs
+        else
+            return true, {} -- Return success and an empty list
+        end
+    end
+
+    -- The main function to generate the exclusion list
+    function generate_exclusion_list()
+        local myfonts = luaotfload.aux.read_font_index()
+        local exclusion_table = {}
+        local excluded_count = 0
+
+        tex.print("\\section*{Font Basenames and Self-Rendering Test}")
+        
+        for i, entry in ipairs(myfonts.mappings) do
+            local basename = entry.basename
+            log_event("GQMJr: Processing ".. i .. ", " .. basename)
+            
+            -- Stage 1: "Warm" the cache by typesetting a space.
+            local tex_command = string.format("\\font\\myfont={file:%s} at 10pt {\\myfont }", basename)
+            pcall(tex.sprint, tex_command)
+
+            -- Stage 2: Now that the cache file exists, check its contents.
+            local is_renderable, missing = check_font_glyphs(basename)
+            
+            if not is_renderable then
+                exclusion_table[basename] = true
+                excluded_count = excluded_count + 1
+                local missing_str = table.concat(missing, ", ")
+                tex.print("\\ttfamily " .. i .. " " .. (string.gsub(basename, "_", "\\_")) .. " (missing glyphs: " .. missing_str .. ")\\par")
+            else
+                tex.print("\\ttfamily " ..
+                    "\\font\\myfont = {file:" .. basename .. "} at 12pt \\myfont " .. i .. " " ..
+                    (string.gsub(basename, "_", "\\_")) ..
+                    "\\par")
+            end
+        end
+        log_event("GQMJr: Finished processing")
+        -- After the loop, write the exclusion list to a file.
+        local output_lines = { "local exclusion_list = {" }
+        for basename, _ in pairs(exclusion_table) do
+             table.insert(output_lines, string.format('    ["%s"] = true,', basename))
+        end
+        table.insert(output_lines, "}")
+        
+        local exclusion_list_string = table.concat(output_lines, "\\n")
+
+        local outputFile = io.open("generated_exclusion_list.lua", "w")
+        if outputFile then
+            outputFile:write(exclusion_list_string)
+            outputFile:close()
+            tex.sprint("\\wlog{SUCCESS: Wrote " .. excluded_count .. " font names to generated_exclusion_list.lua}")
+        else
+            tex.sprint("\\wlog{ERROR: Could not write to output file.}")
+        end
+    log_event("GQMJr: Finished all processing")
+    end
+
+    generate_exclusion_list()
+    
+\end{luacode}
+
+\section*{Process Complete}
+The process has finished. Please check your log file for the success message and the file `generated\_exclusion\_list.lua` for the result.
+
+\end{document}

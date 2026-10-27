@@ -1,0 +1,32 @@
+\documentclass{article}
+\RequirePackage{luacode}
+\RequirePackage{verbatim} % Required for \verbatiminput
+\RequirePackage{comment}
+
+\input{kth/kth-font-cache}
+
+\begin{document}
+\section*{Restore font cache}
+%\section{Look at the project directory, i.e., '.'}
+%\ShowDirectoryListing{.}
+
+% Now, just call the command directly.
+\ShowFontCache
+
+% Call the command with the directory you want to list
+%\ShowDirectoryListing{/home/tex/texmf-var/luatex-cache/generic/fonts}
+%\ShowDirectoryListing{/home/tex/texmf-var/luatex-cache/generic/names/}
+
+% To save or restore the fond cache
+%\MySaveFontCache
+\section{Restore saved fonts}
+\RestoreFontCache
+
+% Now, just call the command directly.
+
+\ShowFontCache
+
+% Call the command with the directory you want to list
+\ShowDirectoryListing{/home/tex/texmf-var/luatex-cache/generic/fonts}
+
+\end{document}
