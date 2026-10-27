@@ -1,0 +1,181 @@
+\documentclass{article}
+\usepackage{luacode}
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{List all of the available fonts and put them in the font cache}
+
+\author{Gerald Q. Maguire Jr.}
+\date{August 2025}
+
+\begin{document}
+% based on https://tex.stackexchange.com/a/14171/9075
+% addaswyd yn ateb: https://tex.stackexchange.com/a/737051/
+% ac: https://tex.stackexchange.com/a/737052/
+\maketitle
+% Extended on 2025-08-01 by GQMJr with more comments and headings, as well as an exclusion_list (really a Lua table).
+
+A side effect of compiling this file is to create entries for all of the available fonts (other than those in the exclusion list) in the font cache.
+
+Note that font files, such as \fname{NotoSansCJK-Regular.ttc} are a TrueType Collection (TTC), i.e., a file format that combines multiple TrueType or OpenType fonts into a single file. The following are all in a single file:
+\begin{itemize}
+    \item Noto Sans CJK JP
+    \item Noto Sans CJK KR
+    \item Noto Sans CJK SC
+    \item Noto Sans CJK TC
+    \item Noto Sans CJK HK
+\end{itemize}
+\begin{luacode}
+    maxfonts=1000 -- an arbitrary limit on the number of fonts to output information for
+    
+    -- some fonts lack the glyphs to print their name
+    local exclusion_list = {
+    ["NotoColorEmoji.ttf"] = true,
+    ["NotoEmoji-Regular.ttf"] = true,
+    ["NotoSansGothic-Regular.ttf"] = true,
+    ["NotoSansLinearA-Regular.ttf"] = true,
+    ["NotoSansLinearB-Regular.ttf"] = true,
+    ["NotoKufiArabic-Black.ttf"] = true,
+    ["NotoKufiArabic-Bold.ttf"] = true,
+    ["NotoKufiArabic-Light.ttf"] = true,
+    ["NotoKufiArabic-Medium.ttf"] = true,
+    ["NotoKufiArabic-Regular.ttf"] = true,
+    ["NotoKufiArabic-SemiBold.ttf"] = true,
+    ["NotoKufiArabic-Thin.ttf"] = true,
+    ["NotoRashiHebrew-Black.ttf"] = true,
+    ["NotoRashiHebrew-Bold.ttf"] = true,
+    ["NotoRashiHebrew-Light.ttf"] = true,
+    ["NotoRashiHebrew-Medium.ttf"] = true,
+    ["NotoRashiHebrew-Regular.ttf"] = true,
+    ["NotoRashiHebrew-SemiBold.ttf"] = true,
+    ["NotoRashiHebrew-Thin.ttf"] = true,
+    ["NotoNastaliqUrdu-Bold.ttf"] = true,
+    ["NotoNastaliqUrdu-Regular.ttf"] = true,
+    ["NotoMusic-Regular.ttf"] = true,
+    ["NotoSansDevanagari-Medium.ttf"] = true,
+    ["NotoSerifDisplay-Thin.ttf"] = true,
+    ["NotoSerifHebrew-Bold.ttf"] = true,
+    ["NotoSansArabic-Thin.ttf"] = true,
+    ["NotoSansHebrew-Bold.ttf"] = true,
+    ["NotoSansHebrew-Regular.ttf"] = true,
+    ["NotoSerifDevanagari-Light.ttf"] = true,
+    ["NotoSansArabic-Regular.ttf"] = true,
+    ["NotoSerifHebrew-Thin.ttf"] = true,
+    ["NotoSansArabic-SemiBold.ttf"] = true,
+    ["NotoSansDevanagari-Bold.ttf"] = true,
+    ["NotoSerifHebrew-Medium.ttf"] = true,
+    ["NotoSerifDevanagari-Bold.ttf"] = true,
+    ["NotoSerifDevanagari-SemiBold.ttf"] = true,
+    ["NotoSansHebrew-Thin.ttf"] = true,
+    ["NotoNaskhArabic-Medium.ttf"] = true,
+    ["NotoSansDevanagari-Regular.ttf"] = true,
+    ["NotoSansHebrew-SemiBold.ttf"] = true,
+    ["NotoNaskhArabic-SemiBold.ttf"] = true,
+    ["NotoSansHebrew-Light.ttf"] = true,
+    ["NotoSansArabic-Light.ttf"] = true,
+    ["NotoSerifDevanagari-Medium.ttf"] = true,
+    ["NotoSerifDevanagari-Thin.ttf"] = true,
+    ["NotoSerifHebrew-Regular.ttf"] = true,
+    ["NotoSansDevanagari-Thin.ttf"] = true,
+    ["NotoSansDevanagari-SemiBold.ttf"] = true,
+    ["NotoSansArabic-Bold.ttf"] = true,
+    ["NotoSansArabic-Medium.ttf"] = true,
+    ["NotoSerifHebrew-SemiBold.ttf"] = true,
+    ["NotoSerifDevanagari-Regular.ttf"] = true,
+    ["NotoNaskhArabic-Regular.ttf"] = true,
+    ["NotoNaskhArabic-Bold.ttf"] = true,
+    ["NotoSansDevanagari-Light.ttf"] = true,
+    ["NotoSansHebrew-Medium.ttf"] = true,
+    ["NotoSerifHebrew-Light.ttf"] = true,
+
+
+    -- math and symbol fonts
+    ["NotoSansSymbols2-Regular.ttf"] = true,
+    ["STIXSizeTwoSym-Regular.otf"] = true,
+    ["STIXIntegralsUp-Bold.otf"] = true,
+    ["STIXSizeThreeSym-Bold.otf"] = true,
+    ["STIXIntegralsUpD-Regular.otf"] = true,
+    ["STIXSizeFourSym-Regular.otf"] = true,
+    ["STIXIntegralsD-Bold.otf"] = true,
+    ["STIXSizeThreeSym-Regular.otf"] = true,
+    ["STIXNonUnicode-Bold.otf"] = true,
+    ["STIXIntegralsD-Regular.otf"] = true,
+    ["STIXVariants-Regular.otf"] = true,
+    ["STIXVariants-Bold.otf"] = true,
+    ["STIXIntegralsUpSm-Regular.otf"] = true,
+    ["STIXIntegralsSm-Regular.otf"] = true,
+    ["STIXSizeTwoSym-Bold.otf"] = true,
+    ["STIXIntegralsUpD-Bold.otf"] = true,
+    ["STIXSizeOneSym-Regular.otf"] = true,
+    ["STIXIntegralsSm-Bold.otf"] = true,
+    ["STIXIntegralsUp-Regular.otf"] = true,
+    ["STIXNonUnicode-Italic.otf"] = true,
+    ["STIXIntegralsUpSm-Bold.otf"] = true,
+    ["STIXSizeOneSym-Bold.otf"] = true,
+    ["STIXNonUnicode-Regular.otf"] = true,
+    ["STIXSizeFiveSym-Regular.otf"] = true,
+    ["STIXNonUnicode-BoldItalic.otf"] = true,
+    ["STIXSizeFourSym-Bold.otf"] = true,
+
+
+    -- You can add any other font basenames here
+    }
+-- The following fonts are missing a period
+-- NotoSansSymbolsBold�ttf
+-- NotoSansSymbolsLight�ttf
+
+    -- use the API to get the font index
+  myfonts = luaotfload.aux.read_font_index()
+
+  -- Get the number of font entries from the 'mappings' table
+ local number_of_fonts = #myfonts.mappings
+
+  tex.print("\\section*{Got all of the " .. number_of_fonts .. " available fonts}")
+  
+  -- List the font families
+  tex.print("\\section{myfonts myfonts.families}")
+  t={ myfonts, myfonts.families }
+  for _,b in ipairs(t) do
+    -- tex.print("\\ttfamily " .. b .. ": \\par")
+    for i,j in pairs(b) do
+      tex.print("\\ttfamily " .. i .. ":: " .. type(j) .. "\\par")
+    end
+  end
+
+  
+  tex.print("\\section*{myfonts.mappings plainname}")
+  n = 0
+  for _,i in ipairs(myfonts.mappings) do
+    n = n + 1
+    if n > maxfonts then break end
+    tex.print("\\ttfamily " .. myfonts.mappings[n].plainname .. "\\par")
+  end
+
+  
+  tex.print("\\section*{myfonts.mappings[1]}")
+  for i,_ in pairs(myfonts.mappings[1]) do
+    tex.print("\\ttfamily " .. i .. " ")
+  end
+  tex.print("\\par")
+
+  -- For all of the fonts, output their basename using the font.
+  -- Do not do this for those in the exclusion_list (these fonts would produce an error indicating that glyphs were not available).
+  tex.print("\\clearpage")
+  tex.print("\\section*{myfonts.mappings basename}")
+  n=0
+  for _,i in ipairs(myfonts.mappings) do
+    n = n + 1
+    if n > maxfonts then return 0 end
+    if exclusion_list[myfonts.mappings[n].basename] then
+    tex.print("\\ttfamily "  .. n .. " " ..(string.gsub(myfonts.mappings[n].basename,"_","\\_")) .. "\\font\\myfont = {file:" .. myfonts.mappings[n].basename .. "} at 14pt \\myfont " .. " " .. "\\par")
+--   elseif n == 112 or n == 246 or (255 < n) or (106 < n and n < 109) or n == 254 then
+--   tex.print("\\ttfamily "  .. n .. " " ..(string.gsub(myfonts.mappings[n].basename,"_","\\_")) .. "\\par")
+    else
+    tex.print("\\ttfamily "  ..
+      "\\font\\myfont = {file:" .. myfonts.mappings[n].basename .. "} at 14pt \\myfont " .. n .. " " ..
+      (string.gsub(myfonts.mappings[n].basename,"_","\\_")) ..
+    "\\par")
+    end
+  end
+\end{luacode}
+\end{document}
