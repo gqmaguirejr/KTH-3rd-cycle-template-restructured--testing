@@ -125,4 +125,4 @@ def generate_latex_dividers(json_path, output_path):
         f.write("\n".join(lines))
 
 if __name__ == "__main__":
-    generate_latex_dividers('publications_map.json', 'lib/publications_dividers_generated.tex')
+    generate_latex_dividers('publications_map.json', 'generated/publications_dividers_generated.tex')
