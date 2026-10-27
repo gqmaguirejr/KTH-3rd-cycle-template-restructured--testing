@@ -1,0 +1,182 @@
+\documentclass{article}
+\usepackage{luacode}
+\newcommand{\dname}[1]{\textbf{#1}}
+\newcommand{\fname}[1]{\texttt{#1}}
+
+\title{List all of the available fonts and put them in the font cache}
+\author{Gerald Q. Maguire Jr.}
+\date{August 2025}
+
+\begin{document}
+\maketitle
+
+A side effect of compiling this file is to create entries for all of the available fonts (other than those in the exclusion list) in the font cache.
+
+Note that font files, such as \fname{NotoSansCJK-Regular.ttc} are a TrueType Collection (TTC), i.e., a file format that combines multiple TrueType or OpenType fonts into a single file. The following are all in a single file:
+\begin{itemize}
+    \item Noto Sans CJK JP
+    \item Noto Sans CJK KR
+    \item Noto Sans CJK SC
+    \item Noto Sans CJK TC
+    \item Noto Sans CJK HK
+\end{itemize}
+
+\begin{luacode*}
+  maxfonts = 10000
+
+  local exclusion_list = {
+    ["NotoColorEmoji.ttf"] = true,
+    ["NotoEmoji-Regular.ttf"] = true,
+    ["NotoSansGothic-Regular.ttf"] = true,
+    ["NotoSansLinearA-Regular.ttf"] = true,
+    ["NotoSansLinearB-Regular.ttf"] = true,
+    ["NotoKufiArabic-Black.ttf"] = true,
+    ["NotoKufiArabic-Bold.ttf"] = true,
+    ["NotoKufiArabic-Light.ttf"] = true,
+    ["NotoKufiArabic-Medium.ttf"] = true,
+    ["NotoKufiArabic-Regular.ttf"] = true,
+    ["NotoKufiArabic-SemiBold.ttf"] = true,
+    ["NotoKufiArabic-Thin.ttf"] = true,
+    ["NotoRashiHebrew-Black.ttf"] = true,
+    ["NotoRashiHebrew-Bold.ttf"] = true,
+    ["NotoRashiHebrew-Light.ttf"] = true,
+    ["NotoRashiHebrew-Medium.ttf"] = true,
+    ["NotoRashiHebrew-Regular.ttf"] = true,
+    ["NotoRashiHebrew-SemiBold.ttf"] = true,
+    ["NotoRashiHebrew-Thin.ttf"] = true,
+    ["NotoNastaliqUrdu-Bold.ttf"] = true,
+    ["NotoNastaliqUrdu-Regular.ttf"] = true,
+    ["NotoMusic-Regular.ttf"] = true,
+    ["NotoSansDevanagari-Medium.ttf"] = true,
+    ["NotoSerifDisplay-Thin.ttf"] = true,
+    ["NotoSerifHebrew-Bold.ttf"] = true,
+    ["NotoSansArabic-Thin.ttf"] = true,
+    ["NotoSansHebrew-Bold.ttf"] = true,
+    ["NotoSansHebrew-Regular.ttf"] = true,
+    ["NotoSerifDevanagari-Light.ttf"] = true,
+    ["NotoSansArabic-Regular.ttf"] = true,
+    ["NotoSerifHebrew-Thin.ttf"] = true,
+    ["NotoSansArabic-SemiBold.ttf"] = true,
+    ["NotoSansDevanagari-Bold.ttf"] = true,
+    ["NotoSerifHebrew-Medium.ttf"] = true,
+    ["NotoSerifDevanagari-Bold.ttf"] = true,
+    ["NotoSerifDevanagari-SemiBold.ttf"] = true,
+    ["NotoSansHebrew-Thin.ttf"] = true,
+    ["NotoNaskhArabic-Medium.ttf"] = true,
+    ["NotoSansDevanagari-Regular.ttf"] = true,
+    ["NotoSansHebrew-SemiBold.ttf"] = true,
+    ["NotoNaskhArabic-SemiBold.ttf"] = true,
+    ["NotoSansHebrew-Light.ttf"] = true,
+    ["NotoSansArabic-Light.ttf"] = true,
+    ["NotoSerifDevanagari-Medium.ttf"] = true,
+    ["NotoSerifDevanagari-Thin.ttf"] = true,
+    ["NotoSerifHebrew-Regular.ttf"] = true,
+    ["NotoSansDevanagari-Thin.ttf"] = true,
+    ["NotoSansDevanagari-SemiBold.ttf"] = true,
+    ["NotoSansArabic-Bold.ttf"] = true,
+    ["NotoSansArabic-Medium.ttf"] = true,
+    ["NotoSerifHebrew-SemiBold.ttf"] = true,
+    ["NotoSerifDevanagari-Regular.ttf"] = true,
+    ["NotoNaskhArabic-Regular.ttf"] = true,
+    ["NotoNaskhArabic-Bold.ttf"] = true,
+    ["NotoSansDevanagari-Light.ttf"] = true,
+    ["NotoSansHebrew-Medium.ttf"] = true,
+    ["NotoSerifHebrew-Light.ttf"] = true,
+
+    -- Math, symbol, and variable fonts
+    ["NotoSansSymbols2-Regular.ttf"] = true,
+    ["STIXSizeTwoSym-Regular.otf"] = true,
+    ["STIXIntegralsUp-Bold.otf"] = true,
+    ["STIXSizeThreeSym-Bold.otf"] = true,
+    ["STIXIntegralsUpD-Regular.otf"] = true,
+    ["STIXSizeFourSym-Regular.otf"] = true,
+    ["STIXIntegralsD-Bold.otf"] = true,
+    ["STIXSizeThreeSym-Regular.otf"] = true,
+    ["STIXNonUnicode-Bold.otf"] = true,
+    ["STIXIntegralsD-Regular.otf"] = true,
+    ["STIXVariants-Regular.otf"] = true,
+    ["STIXVariants-Bold.otf"] = true,
+    ["STIXIntegralsUpSm-Regular.otf"] = true,
+    ["STIXIntegralsSm-Regular.otf"] = true,
+    ["STIXSizeTwoSym-Bold.otf"] = true,
+    ["STIXIntegralsUpD-Bold.otf"] = true,
+    ["STIXSizeOneSym-Regular.otf"] = true,
+    ["STIXIntegralsSm-Bold.otf"] = true,
+    ["STIXIntegralsUp-Regular.otf"] = true,
+    ["STIXNonUnicode-Italic.otf"] = true,
+    ["STIXIntegralsUpSm-Bold.otf"] = true,
+    ["STIXSizeOneSym-Bold.otf"] = true,
+    ["STIXNonUnicode-Regular.otf"] = true,
+    ["STIXSizeFiveSym-Regular.otf"] = true,
+    ["STIXNonUnicode-BoldItalic.otf"] = true,
+    ["STIXSizeFourSym-Bold.otf"] = true,
+    ["Dingbats.ttf"] = true,
+    ["Cantarell-VF.otf"] = true,
+    ["HEJI2Text.otf"] = true,
+    ["academicons.ttf"] = true,
+    ["Guseul.ttf"] = true,
+    ["DroidSansThai.ttf"] = true,
+    ["DroidSansJapanese.ttf"] = true,
+    ["DroidSansHebrew-Regular.ttf"] = true,
+    ["DroidSansHebrew-Bold.ttf"] = true,
+    ["DroidSansGeorgian.ttf"] = true,
+    ["DroidSansFallbackFull.ttf"] = true,
+    ["DroidSansFallback.ttf"] = true,
+    ["DroidSansEthiopic-Regular.ttf"] = true,
+    ["DroidSansEthiopic-Bold.ttf"] = true,
+    ["DroidSansArmenian.ttf"] = true,
+    ["DroidNaskh-Regular.ttf"] = true,
+    ["DroidNaskh-Bold.ttf"] = true,
+    ["DroidKufi-Regular.ttf"] = true,
+    ["DroidKufi-Bold.ttf"] = true,
+  }
+
+  myfonts = luaotfload.aux.read_font_index()
+  local number_of_fonts = #myfonts.mappings
+
+  tex.print("\\section*{Got all of the " .. number_of_fonts .. " available fonts}")
+
+  tex.print("\\section{myfonts myfonts.families}")
+  t = { myfonts, myfonts.families }
+  for _, b in ipairs(t) do
+    for i, j in pairs(b) do
+      local clean_i = string.gsub(tostring(i), "_", "\\_")
+      tex.print("\\ttfamily " .. clean_i .. ":: " .. type(j) .. "\\par")
+    end
+  end
+
+  tex.print("\\section*{myfonts.mappings plainname}")
+  local n = 0
+  for _, m in ipairs(myfonts.mappings) do
+    n = n + 1
+    if n > maxfonts then break end
+    if m.plainname then
+      local clean_plain = string.gsub(m.plainname, "_", "\\_")
+      tex.print("\\ttfamily " .. clean_plain .. "\\par")
+    end
+  end
+
+  tex.print("\\section*{myfonts.mappings[1]}")
+  for i, _ in pairs(myfonts.mappings[1]) do
+    local clean_key = string.gsub(tostring(i), "_", "\\_")
+    tex.print("\\ttfamily " .. clean_key .. " ")
+  end
+  tex.print("\\par")
+
+  tex.print("\\clearpage")
+  tex.print("\\section*{myfonts.mappings basename}")
+  n = 0
+  for _, m in ipairs(myfonts.mappings) do
+    n = n + 1
+    if n > maxfonts then break end
+    local base = m.basename or ""
+    local clean_base = string.gsub(base, "_", "\\_")
+
+    if exclusion_list[base] then
+      tex.print("\\ttfamily " .. n .. " " .. clean_base .. " \\textit{[excluded]}\\par")
+    else
+      tex.print("\\ttfamily " .. n .. " " .. clean_base .. " -- {\\font\\myfont = {file:" .. base .. "} at 14pt \\myfont " .. clean_base .. "}\\par")
+    end
+  end
+\end{luacode*}
+\end{document}
