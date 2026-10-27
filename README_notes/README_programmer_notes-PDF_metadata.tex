@@ -710,10 +710,9 @@ Initially, the template used the \texttt{hyperxmp} package to add support for th
 The actual code for this insertion is shown in \fname{examplethesis.tex}.
 
 \begin{figure}[!ht]
-  \begin{center}
+  \centering
     \fbox{\includegraphics[width=1\textwidth]{README_notes/README-examiner-figures/PDF-file-metadata-Screenshot_20220330_085854.png}}
-  \end{center}
-  \caption[{The title page of the thesis and the PDF metadata}]{The title page of the thesis and the \gls{PDF} metadata. This title page is from a first-cycle thesis. What is relevant here is the metadata shown as part of the \gls{PDF} document description.}
+    \caption[{The title page of the thesis and the PDF metadata}]{The title page of the thesis and the \gls{PDF} metadata. This title page is from a first-cycle thesis. What is relevant here is the metadata shown as part of the \gls{PDF} document description.}
   \label{fig:pdfMetadata}
 \end{figure}
 \FloatBarrier
@@ -790,9 +789,8 @@ dc.relation.requires\\
 
 \Cref{fig:fileProperties} shows the properties of a \gls{PDF} file when using an old version of Adobe Acrobat with the command: \texttt{File$→$Properties}. This figure shows the Title, Author, Subject, and Keyword fields (among other properties of this \gls{PDF} file). Because this file was generated in PDF 2.0 format, Acrobat says you cannot edit the information and indicates this by displaying it in gray.
 \begin{figure}[!ht]
-  \begin{center}
+  \centering
     \fbox{\includegraphics[width=0.9\textwidth]{README_notes/README-examiner-figures/New_thesis_template_document_properties-Screenshot_20221227_115745.png}}
-  \end{center}
   \caption{PDF file properties}
   \label{fig:fileProperties}
 \end{figure}
@@ -800,9 +798,8 @@ dc.relation.requires\\
 
 \Cref{fig:fileProperties2} shows similar data for another \gls{PDF} file generated with an earlier \gls{PDF} version. Because this \gls{PDF} file uses PDF-1.5, Acrobat displays the information in dark text, and you can edit the metadata in Acrobat.
 \begin{figure}[!ht]
-  \begin{center}
+  \centering
     \fbox{\includegraphics[width=0.9\textwidth]{README_notes/README-examiner-figures/File-properties-Screenshot_20221225_135914.png}}
-  \end{center}
   \caption{PDF file properties of another PDF file, in this case, the proposal template}
   \label{fig:fileProperties2}
 \end{figure}
@@ -1191,9 +1188,8 @@ caption={{The \texttt{dc:rights}, \texttt{dc:publisher}, \texttt{dc:date}, and \
 
  	
 \begin{figure}[!ht]
-  \begin{center}
+  \centering
     \includegraphics[width=0.99\textwidth]{README_notes/README-examiner-figures/Example-of-copyright-data-Screenshot_20221227_143035.png}
-  \end{center}
   \caption{Example of the copyright information being displayed}
   \label{fig:exampleCopyrightXMPdisplayed}
 \end{figure}
@@ -1772,9 +1768,8 @@ print(f"General-case processing complete: Patched {patched_cmaps} CMaps, cleaned
 
 
 \begin{figure}[!ht]
-  \begin{center}
+    \centering
     \fbox{\includegraphics[width=0.75\textwidth]{README_notes/veraPDF-validation-report.png}}
-  \end{center}
   \caption{Successful veraPDF validation report with \enquote{Validation Profile:	PDF/A-3u validation profile} of the whole thesis with Papers A and B included.}
   \label{fig:veraPDFvalidationReport}
 \end{figure}
@@ -2033,7 +2028,7 @@ Specification: ISO 19005-3:2012, Clause: 6.2.5, Test number: 1
 An ExtGState dictionary shall not contain the TR key
 \end{verbatim}
 
-Therefore, we apply the Python script (shown in \Cref{lst:cleanPaperGeneral}) as used with Papers B and D to produce a \fname{Paper\_E\_cleaned.pdf}.
+Therefore, we apply the Python script (shown in \Cref{lst:cleanPaperGeneral}) as used with Papers B and D to produce a \fname{Paper\_E\_clean.pdf}.
 
 
 \subsubsection{Dealing with Patent\_A and Patent\_B}
@@ -2083,12 +2078,15 @@ EAAAAA+Roboto-Regular                CID TrueType      Identity-H       yes yes 
 
 \subsubsection{Thesis with all included papers}
 \label{sec:verificationOfAll}
-After all of the above changes to the included publications, the full \gls{PDF} passes the veraPDF PDF/A-3u validation profile. See 
+Update the \texttt{file\_path} for each modified document in \fname{publications\_map.json} and run the \fname{scripts/generate\_publication\_dividers.py} to make a new \fname{generated/publications\_dividers\_generated.tex} file.
+
+\warningExpl{\textbf{While trying to find and correct the non-PDF/A files, I manually modified the \fname{generated/publications\_dividers\_generated.tex} file.}}
+
+After all of the above changes to the included publications, the full \gls{PDF} passes the veraPDF PDF/A-3u validation profile. See
 \Cref{fig:veraPDFvalidationReportFull}.
 \begin{figure}[!ht]
-  \begin{center}
+  \centering
     \fbox{\includegraphics[width=0.75\textwidth]{README_notes/validation-whole-thesis-with-included-papers.png}}
-  \end{center}
   \caption{Successful veraPDF validation report for the thesis with all included publications.}
   \label{fig:veraPDFvalidationReportFull}
 \end{figure}
