@@ -24,7 +24,7 @@ on:
           - 'luaotfload-tool-find-font.tex'
           - 'restore_font_cache.tex'
           - 'Saving_and_restoring_font_cache.tex'
-          - 'updatefontcache.tex'
+          - 'tools/updatefontcache.tex'
           - 'warmup.tex'
           - 'README_notes/README_for_3rd_cycle_version.tex'
           - 'README_notes/README_for_administrators.tex'
