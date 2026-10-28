@@ -48,8 +48,17 @@ The initial steps are:
     \item Next, click the \enquote{Recompile} button. Now you have the example thesis with covers, title page, abstracts, and other preface pages, along with the body, example appendices, and examples of included papers (if you chose the \texttt{includepublications} option).
 \end{enumerate}
 
+\section*{Defense Metadata and the Phased-out Spikblad}
+KTH has phased out the physical, loose-paper \emph{spikblad} that was traditionally printed and inserted into bound copies for the public notification (\emph{spikning}). 
+
+However, all defense details --- including your opponent, date, time, and location --- must still be configured in \fname{custom\_configuration.tex}. The template uses this information to:
+\begin{itemize}
+    \item Typeset the official defense announcement on the title page.
+    \item Embed structured, machine-readable JSON metadata directly into the compiled thesis PDF for digital archival and DiVA synchronization.
+\end{itemize}
+
 \section*{Timeouts}
-If you have just started a new session (or started working after a long idle time), you may experience a timeout. This commonly happens because the fonts that you are (or were) using are no longer in the font cache. If you think this is the case, then add an \enquote{early} \texttt{\textbackslash end\{document\}} early in your document and compile again. Once the fonts are cached, you can comment out this early \texttt{\textbackslash end\{document\}}. For a better solution, see the document \fname{Saving\_and\_restoring\_font\_cache.tex}.
+If you have just started a new session (or started working after a long idle time), you may experience a timeout. This commonly happens because the fonts that you are (or were) using are no longer in the font cache. If you think this is the case, then add an \enquote{early} \texttt{\textbackslash end\{document\}} early in your document and compile again. Once the fonts are cached, you can comment out this early \texttt{\textbackslash end\{document\}}. For a better solution, see the document \fname{tools/Saving\_and\_restoring\_font\_cache.tex}.
 
 \section*{Using Overleaf and GitHub Integration}
 If you are used to working with GitHub, you might want to use the Overleaf and GitHub Integration. 
@@ -60,7 +69,7 @@ Using the GitHub repository (or running scripts locally - see next section) enab
 
 
 \section*{When writing a compilation thesis, use the scripts}
-To streamline assembling a compilation thesis, the template repository provides scripts that automate metadata configuration, publication harvesting from DiVA, CReDiT author contributions, paper divider tabs, and bibliography validation. Full documentation and tools are available at \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
+To streamline assembling a compilation thesis, the template repository provides scripts that automate metadata configuration, publication harvesting from DiVA, CReDiT author contributions, paper divider tabs, and bibliography validation (see Listing~\ref{lst:scripts}). Full documentation and tools are available at \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured}.
 
 \Needspace*{20\baselineskip}
 Follow this sequential procedure (as illustrated in Listing \ref{lst:scripts}):
@@ -68,7 +77,7 @@ Follow this sequential procedure (as illustrated in Listing \ref{lst:scripts}):
     \item \textbf{Configure metadata:} Run the wizard to configure \fname{custom\_configuration.tex}.
     \item \textbf{Fetch publications:} Harvest your published records from DiVA into \fname{publications\_map.json}, then order and label the papers to be included.
     \item \textbf{Assign contributions:} Use the matrix wizard to record CReDiT contributions for co-authored works.
-    \item \textbf{Generate thesis sections:} Run the divider and contribution generators to produce input files for the thesis.
+    \item \textbf{Generate thesis sections:} Run the divider and contribution generators to produce input files for the thesis. The files will be placed in the \dname{generated/} folder.
     \item \textbf{Sanitize bibliography:} Validate persistent identifiers and entries in \fname{references.bib}.
 \end{enumerate}
 
@@ -88,7 +97,7 @@ streamlit run ./scripts/CReDiT_Matrix_Wizard.py
 # 4. Automatically generate text for your thesis
 ./scripts/generate_publication_dividers.py
 ./scripts/generate_thesis_contributions.py
-# Put the generated files into your thesis folder
+# The output files are saved into ./generated/ (commit them to Git so Overleaf can see them)
 
 # 5. £{\sffamily\bfseries\color{red}*** Write the rest of your Kappa ***}£
 
