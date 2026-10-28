@@ -155,6 +155,7 @@
   % The [version=bold, FakeBold=1.2] is to avoid a warning about the lack of a bold font
   %\setmathfont{TeX Gyre Pagella Math}[version=bold, FakeBold=1.2] %% a font for math
   \setmathfont{STIX Two Math}[version=normal]
+  %\setmathfont{STIX Two Math}[version=bold, FakeBold=1.5]
   %\setmathfont{TeX Gyre Pagella Math}[version=normal]
   %\setmathfont{TeX Gyre Pagella Math}[version=bold, BoldFeatures={FakeBold=1.5}]
   % For both XeLaTeX and LuaLatex for getting access to unicode symbols
@@ -165,20 +166,7 @@
   \newfontfamily\mystixmathfont{STIX Two Math}
   % STIX Two Math does not have a bold font, but it has bold symbols with and without serifs - but you manually have to use them, unless you are in math mode - then you can use \symbf{}
   % and this will return the bold serif version of the character
-\makeatletter
-\AtBeginDocument{%
-  \@for\idx:={0,1,2,3,4,5,6}\do{%
-    \@ifundefined{T@TU+STIXTwoMath(\idx)}{%
-      % Family not loaded by unicode-math; do nothing
-    }{%
-      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{n}{<->ssub * STIXTwoMath(\idx)/m/n}{}%
-      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{b}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
-      \DeclareFontShape{TU}{STIXTwoMath(\idx)}{sb}{it}{<->ssub * STIXTwoMath(\idx)/m/it}{}%
-    }%
-  }%
-}
-\makeatother
+
   \newfontfamily\mystixtextfont{STIX Two Text}
   
     % To access the Stylistic Set 1 <ss01> such as ℋ
@@ -335,6 +323,8 @@ Extension = .ttf,
 % color symbols - this would require changes in the font used in the U+2600-U+26FF-Miscellaneous-Symbols.tex file
 % for example for characters: ☕, ⚽, ⛄, and ✈
 \newfontfamily{\NotoColorEmojiFont}{Noto Color Emoji}[Renderer=Harfbuzz]
+\DeclareFontShape{TU}{NotoColorEmoji(0)}{b}{n}{<-> ssub * NotoColorEmoji(0)/m/n}{}
+\DeclareFontShape{TU}{NotoColorEmoji(0)}{sb}{n}{<-> ssub * NotoColorEmoji(0)/m/n}{}
 
 % Phonetic Extensions, U+1D00 - U+1D7F
 \input{unicode_blocks/U+1D00-U+1D7F-Phonetic-Extensions}
@@ -2030,7 +2020,7 @@ placeholder = {Placeholder fake reference for use in examples},
 \end{description}
 
 \section{Overleaf Automation}
-\label{sec:verleafAutomation}
+\label{sec:overleafAutomation}
 
 \Cref{{sec:AutomatingPlaceholdCheck}} examines how a script could be used to check for placeholders. \Cref{sec:furtherAutomation} generalizes this approach to copy files from the compilation container to the Overleaf project, so that artifacts can become persistent and potentially be stored in a GitHub repository.
 
@@ -2046,7 +2036,7 @@ There are two primary approaches to automating this retrieval without manually c
 \begin{enumerate}[leftmargin=*, label=\textbf{Method \arabic*}, ref=Method \arabic*]
 \item\label{itm:LocalScriptForChecking} Use a script to compile the file, then fetch the output.log file and filter it
 
-If we assume that you are logged in and accessing your Overleaf project using Chrome as your browser. You should set the environment variable \texttt{OVERLEAF\_PROJECT\_ID} to be the identifier of your Overleaf project, \ie the string that follows \enquote{project/}. \Cref{lst:accessBuildLogDirectly} shows a Python program that accesses Overleaf (via its \gls{CLSI}), authenticating with your standard session cookie (\texttt{overleaf\_session2}).  \Cref{lst:bashForRemainingPlaceholders} shows the output of the program when accessing this \LaTeX{} file. The hardest part of developing this program was programmatically discovering all MongoDB 24-hex ObjectIds. The program can take one of three arguments (see \texttt{resolve\_file\_target}): \first the 24-hexadecimal ID, \Second the exact path name, or\third part of a path name. If the program finds unresolved placeholders, it returns \num{2} so it can be used in a \gls{CI} process.
+If we assume that you are logged in and accessing your Overleaf project using Chrome as your browser. You should set the environment variable \texttt{OVERLEAF\_PROJECT\_ID} to be the identifier of your Overleaf project, \ie the string that follows \enquote{project/}. \Cref{lst:accessBuildLogDirectly} shows a Python program that accesses Overleaf (via its \gls{CLSI}), authenticating with your standard session cookie (\texttt{overleaf\_session2}).  \Cref{lst:bashForRemainingPlaceholders} shows the output of the program when accessing this \LaTeX{} file. The hardest part of developing this program was programmatically discovering all MongoDB 24-hex ObjectIds. The program can take one of three arguments (see \texttt{resolve\_file\_target}): \first the 24-hexadecimal ID, \Second the exact path name, or \third part of a path name. If the program finds unresolved placeholders, it returns \num{2} so it can be used in a \gls{CI} process.
 
 \begin{lstlisting}[language={Python}, caption={Use Python to access the build log},label=lst:accessBuildLogDirectly]
 #!/usr/bin/env python3
@@ -2439,7 +2429,7 @@ If you already maintain the two-way \textbf{Overleaf $\longleftrightarrow$ GitHu
 This keeps Overleaf purely as an editor, while GitHub Actions serves as the canonical verification gate.
 \end{enumerate}
 
-\begin{lstlisting}[language={yaml}, caption={Compiling on Gitub with compile-lualatex.yml workflow},label=lst:compileWorkflow]
+\begin{lstlisting}[language={yaml},  escapechar=£, caption={{Compiling on Gitub with compile-lualatex.yml workflow. Note that some markdown characters required escaping into LaTeX{} to print them suitably.}},label=lst:compileWorkflow]
 name: Compile LuaLaTeX Documents
 permissions:
   contents: write
@@ -2462,12 +2452,12 @@ on:
           - 'Quick_Start_Guide.tex'
           - 'README_3rd_cycle_author.tex'
           - 'Generate_titles_in_plain_text.tex'
-          - 'listfonts_and_generate_exclusion_list.tex'
-          - 'luaotfload-tool-find-font.tex'
-          - 'restore_font_cache.tex'
-          - 'Saving_and_restoring_font_cache.tex'
-          - 'updatefontcache.tex'
-          - 'warmup.tex'
+          - 'tools/listfonts_and_generate_exclusion_list.tex'
+          - 'tools/luaotfload-tool-find-font.tex'
+          - 'tools/restore_font_cache.tex'
+          - 'tools/Saving_and_restoring_font_cache.tex'
+          - 'tools/updatefontcache.tex'
+          - 'tools/warmup.tex'
           - 'README_notes/README_for_3rd_cycle_version.tex'
           - 'README_notes/README_for_administrators.tex'
           - 'README_notes/README_notes_reduced.tex'
@@ -2563,7 +2553,7 @@ jobs:
               print(msg)
               if summary_path:
                   with open(summary_path, "a", encoding="utf-8") as sf:
-                      sf.write(f"### �� BibLaTeX Placeholder Audit\n\n{msg}\n\n")
+                      sf.write(f"### £{\NotoColorEmojiFont \Uchar"1F50D}£ BibLaTeX Placeholder Audit\n\n{msg}\n\n")
               sys.exit(0)
 
           # Multiline wrapper regex from audit_placeholders()
@@ -2598,7 +2588,7 @@ jobs:
           # Write rich Markdown report to the GitHub Actions Job Summary
           if summary_path:
               with open(summary_path, "a", encoding="utf-8") as sf:
-                  sf.write(f"### ⚠️ BibLaTeX Unresolved Placeholders Detected in `{os.path.basename(log_file)}`\n\n")
+                  sf.write(f"### £{\NotoEmojiFont \symbol{"26A0}}£ BibLaTeX Unresolved Placeholders Detected in `{os.path.basename(log_file)}`\n\n")
                   sf.write(f"- **Unique Keys:** {unique_keys_count}\n")
                   sf.write(f"- **Total Occurrences:** {total_occurrences}\n\n")
                   
@@ -2606,7 +2596,7 @@ jobs:
                   sf.write("<table>\n")
                   sf.write("  <thead>\n")
                   sf.write("    <tr>\n")
-                  sf.write('      <th align="left" style="width: 320px; white-space: nowrap;">Citation Key</th>\n')
+                  sf.write('      <th align="left" style="width: 30%; white-space: nowrap;">Citation Key</th>\n')
                   sf.write('      <th align="left">Resolution Note</th>\n')
                   sf.write("    </tr>\n")
                   sf.write("  </thead>\n")
@@ -2650,20 +2640,22 @@ jobs:
           fi
 
       - name: Upload Build Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-single
           path: |
-            artifacts/*.pdf
-            artifacts/*.bib
-            artifacts/*.json
+            artifacts*/**/*.pdf
+            artifacts*/**/*.log
+            artifacts*/**/*.bib
+            artifacts*/**/*.json
           if-no-files-found: warn
 
   # -------------------------------------------------------------
   # Job 2: Compile all defined documents in parallel (push or dispatch 'all')
   # -------------------------------------------------------------
   compile-matrix:
-    if: "${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc == 'all') }}"
+    if: "${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.target_doc == 'all') }}" # github.event_name == 'push' ||
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -2742,6 +2734,7 @@ jobs:
             artifacts-${{ matrix.slug }}/*.bib
             artifacts-${{ matrix.slug }}/*.json
           if-no-files-found: warn
+
 \end{lstlisting}
 
 
