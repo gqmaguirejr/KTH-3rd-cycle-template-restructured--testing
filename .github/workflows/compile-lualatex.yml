@@ -86,8 +86,27 @@ jobs:
           export BIBINPUTS=".:${GITHUB_WORKSPACE}/${TARGET_DIR}//:${GITHUB_WORKSPACE}//:"
 
           echo "==> Compiling $TARGET from workspace root"
+          # Run latexmk; do not let failure suppress copying the log
+          set +e
           latexmk -lualatex -interaction=nonstopmode -synctex=1 \
                   -outdir="$OUT_DIR" "$TARGET"
+          BUILD_EXIT=$?
+          set -e
+
+          # Ensure .log file exists in $OUT_DIR root for downstream auditing
+          BASENAME=$(basename "$TARGET" .tex)
+          if [ -f "$OUT_DIR/${BASENAME}.log" ]; then
+            echo "Log file generated successfully."
+          elif [ -f "${BASENAME}.log" ]; then
+            cp "${BASENAME}.log" "$OUT_DIR/"
+          fi
+
+          if [ $BUILD_EXIT -ne 0 ]; then
+            echo "❌ LuaLaTeX compilation failed with exit code $BUILD_EXIT"
+            echo "::error::Compilation failed for $TARGET. Check the log below:"
+            tail -n 100 "$OUT_DIR/${BASENAME}.log" || true
+            exit $BUILD_EXIT
+          fi
       - name: Audit BibLaTeX Unresolved Placeholders
         run: |
           python3 - << 'EOF'
