@@ -166,7 +166,7 @@
 % --- TRITA Number ---
 % This will use the data from the admin office if the file exists,
 % otherwise it will use the placeholder.
-\InputIfFileExists{assigned-TRITA.tex}
+\InputIfFileExists{generated/assigned-TRITA.tex}
   { % Code to execute if the file is found (do nothing, as the file contains the command)
   }
   { % Code to execute if the file is NOT found (use the placeholder)
@@ -176,7 +176,7 @@
 % --- ISBN ---
 % This will use the data from the library if the file exists,
 % otherwise it will use the placeholder.
-\InputIfFileExists{assigned-ISBN.tex}
+\InputIfFileExists{generated/assigned-ISBN.tex}
   { % File is found
   }
   { % File is NOT found
