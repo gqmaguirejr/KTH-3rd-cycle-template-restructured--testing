@@ -477,7 +477,7 @@ As described in §3.7 of the \texttt{biblatex} package manual, data annotations 
 }
 \end{lstlisting}
 
-Note that each line of the author annotation(shown in \Cref{lst:biberAuthorAnnotation}) has a prefix of the form `<number>:' followed by a name, an equal sign (`='), and a quoted value. Internally, this information is encoded into \textit{parts} and stored by \texttt{biber} in the \texttt{`.bbl'} file. Note also the use of the \texttt{placeholder} field to explicitly identify this as a fake reference to be used simply for the purposes of examples.
+Note that each line of the author annotation (shown in \Cref{lst:biberAuthorAnnotation}) has a prefix of the form `<number>:' followed by a name, an equal sign (`='), and a quoted value. Internally, this information is encoded into \textit{parts} and stored by \texttt{biber} in the \texttt{`.bbl'} file. Note also the use of the \texttt{placeholder} field to explicitly identify this as a fake reference to be used simply for the purposes of examples.
 
 \subsection{BibLaTeX Part Annotation Signature}
 Programmatic access to the annotation is done via:
@@ -2034,7 +2034,7 @@ Breaking the \gls{SaaS} walled gardens via the UNIX philosophy: \textbf{If a bro
 
 There are two primary approaches to automating this retrieval without manually clicking through the \gls{GUI}:
 \begin{enumerate}[leftmargin=*, label=\textbf{Method \arabic*}, ref=Method \arabic*]
-\item\label{itm:LocalScriptForChecking} Use a script to compile the file, then fetch the output.log file and filter it
+\item\label{itm:LocalScriptForChecking} Use a script to compile the file via Overleaf, then fetch the output.log file and filter it
 
 If we assume that you are logged in and accessing your Overleaf project using Chrome as your browser. You should set the environment variable \texttt{OVERLEAF\_PROJECT\_ID} to be the identifier of your Overleaf project, \ie the string that follows \enquote{project/}. \Cref{lst:accessBuildLogDirectly} shows a Python program that accesses Overleaf (via its \gls{CLSI}), authenticating with your standard session cookie (\texttt{overleaf\_session2}).  \Cref{lst:bashForRemainingPlaceholders} shows the output of the program when accessing this \LaTeX{} file. The hardest part of developing this program was programmatically discovering all MongoDB 24-hex ObjectIds. The program can take one of three arguments (see \texttt{resolve\_file\_target}): \first the 24-hexadecimal ID, \Second the exact path name, or \third part of a path name. If the program finds unresolved placeholders, it returns \num{2} so it can be used in a \gls{CI} process.
 
@@ -2419,11 +2419,13 @@ If you already maintain the two-way \textbf{Overleaf $\longleftrightarrow$ GitHu
 \begin{enumerate}
     \item When the student clicks \enquote{Sync to GitHub} or pushes to GitHub from Overleaf, GitHub receives the raw source tree (\enquote{.tex}, \enquote{.bib}, graphics, \etc).
     
-    \item Rather than extract the log from Overleaf’s proprietary runner, let a \textbf{GitHub Actions workflow compile the document natively} using the official TeX Live / LuaLaTeX container (\enquote{texlive/texlive:latest}). \Cref{lst:compileWorkflow} shows a compilation workflow.
+    \item Rather than extract the log from Overleaf’s proprietary runner, let a \textbf{GitHub Actions workflow compile the document natively} using the official TeX Live / LuaLaTeX container (\enquote{texlive/texlive:latest}). \Cref{lst:compileWorkflow} shows such a compilation workflow.
     
     \item The GitHub runner has full, unrestricted access to \enquote{stdout} and \enquote{output.log}.
     
-    \item It executes the check on the spot. An example of the output is shown in \Cref{fig:workflowPlaceholdersPresent}. Alternatively, it could be arranged such that if it fails the Action check (putting a red ❌ right on the commit or pull request), and optionally drops an automated comment on the GitHub commit pointing to the unresolved keys. 
+    \item It executes the check on the spot. An example of the output is shown in \Cref{fig:workflowPlaceholdersPresent}. Alternatively, it could be arranged such that if it fails the Action check (putting a red ❌ right on the commit or pull request), and optionally drops an automated comment on the GitHub commit pointing to the unresolved keys.
+
+    \item The workflow compile-lualatex.yml when used on a single compilation of \fname{README\_programmer\_notes\_Biber\_and\_BibLaTeX.tex} produces two artifacts (the \fname{.log} and \fname{.pdf} files), as shown in \Cref{fig:workflowCompileArtifacts}. These are placed in the \dname{artifacts} folder, so that the user can easily access them.
 \end{enumerate}
 
 This keeps Overleaf purely as an editor, while GitHub Actions serves as the canonical verification gate.
@@ -2588,7 +2590,7 @@ jobs:
           # Write rich Markdown report to the GitHub Actions Job Summary
           if summary_path:
               with open(summary_path, "a", encoding="utf-8") as sf:
-                  sf.write(f"### £{\NotoEmojiFont \symbol{"26A0}}£ BibLaTeX Unresolved Placeholders Detected in `{os.path.basename(log_file)}`\n\n")
+                  sf.write(f"### £{\NotoColorEmojiFont\mdseries\upshape \symbol{"26A0}\char"FE0F}£ BibLaTeX Unresolved Placeholders Detected in `{os.path.basename(log_file)}`\n\n")
                   sf.write(f"- **Unique Keys:** {unique_keys_count}\n")
                   sf.write(f"- **Total Occurrences:** {total_occurrences}\n\n")
                   
@@ -2740,11 +2742,18 @@ jobs:
 
 
 \begin{figure}[!ht]
-  \begin{center}
+  \centering
     \fbox{\includegraphics[width=1\textwidth]{README_notes/workflow-output-for-placeholders.png}}
-  \end{center}
   \caption{Result of the compilation showing the case of unresolved placeholders}
   \label{fig:workflowPlaceholdersPresent}
+\end{figure}
+
+
+\begin{figure}[!ht]
+  \centering
+    \fbox{\includegraphics[width=1\textwidth]{README_notes/compile-artifacts-Biber}}
+  \caption{Artifacts created by the workflow compile-lualatex.yml when used on a single compilation of \fname{README\_programmer\_notes\_Biber\_and\_BibLaTeX.tex}}
+  \label{fig:workflowCompileArtifacts}
 \end{figure}
 \FloatBarrier
 
