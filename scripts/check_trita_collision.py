@@ -91,18 +91,43 @@ def extract_isbn_from_tex(tex_path: str) -> str | None:
 
 
 def extract_metadata_from_fordiva(json_path: str) -> tuple[str | None, str | None]:
-    """Extracts (trita, isbn) from fordiva.json."""
+    """
+    Extracts (canonical_trita, isbn) from fordiva.json using the exact
+    DiVA ingest schema.
+    """
     if not os.path.exists(json_path):
         return None, None
     try:
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        trita = data.get("trita") or data.get("TRITA")
-        isbn = data.get("isbn") or data.get("ISBN")
-        return trita, isbn
-    except Exception:
-        return None, None
 
+        # 1. Extract TRITA from "Series" object
+        series_obj = data.get("Series", {})
+        title_of_series = (series_obj.get("Title of series") or "").strip()
+        no_in_series = (series_obj.get("No. in series") or "").strip()
+
+        trita = None
+        if title_of_series and no_in_series:
+            # Normalize "TRITA -- EECS-AVL" -> "TRITA-EECS-AVL"
+            norm_title = re.sub(r"\s*--\s*|\s+-\s*", "-", title_of_series).strip()
+            # Combine to form canonical "TRITA-EECS-AVL-2025:0001"
+            trita = f"{norm_title}-{no_in_series}"
+
+        # 2. Extract ISBN (search known locations: top-level, Identifiers, or Other information)
+        isbn = None
+        if "ISBN" in data:
+            isbn = str(data["ISBN"]).strip()
+        elif "isbn" in data:
+            isbn = str(data["isbn"]).strip()
+        elif "Identifiers" in data and isinstance(data["Identifiers"], dict):
+            isbn = data["Identifiers"].get("ISBN") or data["Identifiers"].get("isbn")
+        elif "Other information" in data and isinstance(data["Other information"], dict):
+            isbn = data["Other information"].get("ISBN") or data["Other information"].get("isbn")
+
+        return trita, isbn
+    except Exception as e:
+        print(f"::warning::Failed to parse {json_path}: {e}")
+        return None, None
 
 def fetch_school_mods(
     school: str, year: int, max_cache_hours: float = 24.0, refresh: bool = False
