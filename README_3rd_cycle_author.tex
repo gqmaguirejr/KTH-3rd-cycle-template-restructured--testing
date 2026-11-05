@@ -360,8 +360,32 @@ The author-related macros are:
 
 \item [\texttt{\textbackslash orcid\{\}}] ensure this is the author's official, registered \gls{ORCID} ID --- see \url{https://orcid.org/}.
 
-\item [\texttt{\textbackslash authorsSchool\{\}}] the argument is generally of the form:\linebreak[4] \texttt{\textbackslash schoolAcronym\{XXX\}}. The currently supported school acronyms are: \enquote{ABE}, \enquote{CBH}, \enquote{EECS}, \enquote{ITM}, and \enquote{SCI}. There is also a fake school XXX for use in the template. These are defined in the file \fname{school\_subjects\_3rdcycle.ins}.
+\item [\texttt{\textbackslash authorsSchool\{\}}] the argument is generally of the form:\linebreak[4] \texttt{\textbackslash schoolAcronym\{XXX\}}. The currently supported school acronyms are: \enquote{ABE}, \enquote{CBH}, \enquote{EECS}, \enquote{ITM}, and \enquote{SCI}. There is also a fake school \enquote{XXX} for use in the template. These are defined in the file \fname{school\_subjects\_3rdcycle.ins}.
 \end{description}
+
+If you need to lookup an \gls{ORCID} identifier, \ie an ORCID iD, you can use the script \fname{scripts/orcid\_search.py} as shown in \Cref{lst:bashOrcidSearch}.
+
+\begin{lstlisting}[language={bash}, caption={Search for an ORCID iD},label=lst:bashOrcidSearch]
+$ ./orcid_search.py gerald maguire
+==> Searching ORCID by name: 'gerald maguire'
+Strategy used: strict name + regional affiliation
+Found 1 matching record(s):
+
+  * Name:    Gerald Q. Maguire Jr.
+    ORCID:   0000-0002-6066-746X (checksum: valid)
+    URL:     https://orcid.org/0000-0002-6066-746X
+    Aliases: Chip Maguire
+
+$ ./orcid_search.py maguire@kth.se
+==> Searching ORCID by email: 'maguire@kth.se'
+Strategy used: email user-token fallback ('maguire' + domain)
+Found 1 matching record(s):
+
+  * Name:    Gerald Q. Maguire Jr.
+    ORCID:   0000-0002-6066-746X (checksum: valid)
+    URL:     https://orcid.org/0000-0002-6066-746X
+    Aliases: Chip Maguire
+\end{lstlisting}
 
 \generalExpl{Establishing a consistent professional name early in your career is vital for accurate citation and discovery. If your legal name changes, you may note this in your thesis to ensure your full body of work is linked to you. To facilitate this, establish and maintain an \gls{ORCID} identifier (\url{https://orcid.org/}).}
 
