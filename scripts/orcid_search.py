@@ -114,16 +114,10 @@ def _execute_query(
 def search_by_email(
     email: str,
     headers: dict[str, str],
+    affil_clause: str = "",
     max_results: int = 5,
     verbose: bool = False,
 ) -> tuple[list[dict], str]:
-    """
-    Searches ORCID for an author using progressive email query strategies:
-      1. Wildcard email search on user and domain.
-      2. Quoted text search for the full email.
-      3. Solr-escaped exact email.
-      4. Fallback to username token against family-name / text with domain affiliation.
-    """
     clean_email = email.strip().lower()
 
     if "@" in clean_email:
@@ -131,14 +125,14 @@ def search_by_email(
     else:
         user_part, domain_part = clean_email, ""
 
-    # Strategy 1: Wildcard on email field (matches how Solr stores tokenized emails)
+    # Strategy 1: Wildcard on email field
     if user_part and domain_part:
         q_wildcard = f'email:*{user_part}* AND email:*{domain_part}*'
         hits = _execute_query(q_wildcard, headers, max_results=max_results, verbose=verbose)
         if hits:
             return hits, "wildcard email (user + domain)"
 
-    # Strategy 2: Search full email in default 'text' field
+    # Strategy 2: Quoted email in generic text index
     q_text = f'text:"{clean_email}"'
     hits = _execute_query(q_text, headers, max_results=max_results, verbose=verbose)
     if hits:
@@ -151,21 +145,12 @@ def search_by_email(
     if hits:
         return hits, "escaped exact email"
 
-    # Strategy 4: Fallback extracting username as surname/identifier with domain affiliation
-    # e.g., for maguire@kth.se -> family-name:maguire AND affiliation:KTH
-    if user_part:
-        inst_query = ""
-        if "kth.se" in domain_part:
-            inst_query = ' AND (affiliation-org-name:"KTH" OR affiliation-org-name:"Royal Institute of Technology")'
-        elif "ki.se" in domain_part:
-            inst_query = ' AND (affiliation-org-name:"Karolinska")'
-        elif "su.se" in domain_part:
-            inst_query = ' AND (affiliation-org-name:"Stockholm University")'
-
-        q_name_fallback = f'(family-name:{user_part} OR text:{user_part}){inst_query}'
-        hits = _execute_query(q_name_fallback, headers, max_results=max_results, verbose=verbose)
+    # Strategy 4: Fallback to username token combined with the active affiliation clause
+    if user_part and affil_clause:
+        q_fallback = f'(family-name:{user_part} OR text:{user_part}) AND {affil_clause}'
+        hits = _execute_query(q_fallback, headers, max_results=max_results, verbose=verbose)
         if hits:
-            return hits, f"email user-token fallback ('{user_part}' + domain)"
+            return hits, f"email user-token fallback ('{user_part}' + affiliation)"
 
     return [], "no matching records found"
 
@@ -173,17 +158,10 @@ def search_by_name(
     given_name: str | None,
     family_name: str,
     headers: dict[str, str],
+    affil_clause: str = "",
     max_results: int = 5,
     verbose: bool = False,
 ) -> tuple[list[dict], str]:
-    """
-    Executes a tiered fallback search for an author:
-      1. Strict name + regional institution affiliation.
-      2. Initials prefix + regional institution affiliation.
-      3. Global unconstrained strict name.
-      4. Global unconstrained prefix.
-      5. Family name alone + regional affiliation.
-    """
     clean_family = family_name.strip()
     clean_given = given_name.strip() if given_name else None
 
@@ -192,38 +170,35 @@ def search_by_name(
         and re.fullmatch(r"^[A-Za-z](\.|\s+[A-Za-z]\.?|\s+[A-Za-z])*$", clean_given)
     )
 
-    # Strategy 1: Strict name + Affiliation
-    if clean_given and not is_initials:
-        q = (
-            f'family-name:"{clean_family}" AND given-names:"{clean_given}" '
-            f'AND ({DEFAULT_ORG_CLAUSE} OR email:*@kth.se OR email:*@ki.se OR email:*@su.se)'
-        )
+    # Strategy 1: Strict name + Affiliation (only if affil_clause exists)
+    if clean_given and not is_initials and affil_clause:
+        q = f'family-name:"{clean_family}" AND given-names:"{clean_given}" AND {affil_clause}'
         hits = _execute_query(q, headers, max_results, verbose=verbose)
         if hits:
-            return hits, "strict name + regional affiliation"
+            return hits, "strict name + specified affiliation"
 
-    # Strategy 2: Initials prefix + Affiliation
+    # Strategy 2: Initials prefix + Affiliation (only if affil_clause exists)
     first_initial = ""
-    if clean_given:
+    if clean_given and affil_clause:
         letters = re.findall(r"[A-Za-z]", clean_given)
         first_initial = letters[0] if letters else ""
         q = (
             f'family-name:"{clean_family}" '
             f'AND (given-names:{first_initial}* OR credit-name:{first_initial}* OR other-names:{first_initial}*) '
-            f'AND ({DEFAULT_ORG_CLAUSE} OR email:*@kth.se OR email:*@ki.se OR email:*@su.se)'
+            f"AND {affil_clause}"
         )
         hits = _execute_query(q, headers, max_results, verbose=verbose)
         if hits:
-            return hits, f"prefix '{first_initial}*' + regional affiliation"
+            return hits, f"prefix '{first_initial}*' + specified affiliation"
 
-    # Strategy 3: Global strict match
+    # Strategy 3: Global strict match (unconstrained)
     if clean_given and not is_initials:
         q = f'family-name:"{clean_family}" AND given-names:"{clean_given}"'
         hits = _execute_query(q, headers, max_results, verbose=verbose)
         if hits:
             return hits, "global strict name (no affiliation filter)"
 
-    # Strategy 4: Global prefix match
+    # Strategy 4: Global prefix match (unconstrained)
     if first_initial:
         q = (
             f'family-name:"{clean_family}" '
@@ -234,10 +209,11 @@ def search_by_name(
             return hits, f"global prefix '{first_initial}*'"
 
     # Strategy 5: Family name + affiliation
-    q = f'family-name:"{clean_family}" AND {DEFAULT_ORG_CLAUSE}'
-    hits = _execute_query(q, headers, max_results, verbose=verbose)
-    if hits:
-        return hits, "family-name only + regional affiliation"
+    if affil_clause:
+        q = f'family-name:"{clean_family}" AND {affil_clause}'
+        hits = _execute_query(q, headers, max_results, verbose=verbose)
+        if hits:
+            return hits, "family-name only + specified affiliation"
 
     return [], "no matching records found"
 
@@ -301,6 +277,36 @@ def parse_query_input(tokens: list[str]) -> tuple[str, str | None, str | None]:
         family = parts[-1]
         return "name", given, family
 
+def build_affiliation_clause(
+    custom_orgs: list[str] | None = None,
+    clear_defaults: bool = False,
+    include_email_domains: bool = True,
+) -> str:
+    """Builds a Solr boolean clause for institutional affiliation."""
+    clauses = []
+
+    if custom_orgs:
+        for org in custom_orgs:
+            clean = org.strip().replace('"', "")
+            clauses.append(f'affiliation-org-name:"{clean}"')
+
+    if not clear_defaults:
+        clauses.append(
+            'affiliation-org-name:"KTH" '
+            'OR affiliation-org-name:"Royal Institute of Technology" '
+            'OR affiliation-org-name:"Kungliga Tekniska högskolan" '
+            'OR affiliation-org-name:"Karolinska Institutet" '
+            'OR affiliation-org-name:"Karolinska" '
+            'OR affiliation-org-name:"Stockholm University" '
+            'OR affiliation-org-name:"Stockholms universitet"'
+        )
+        if include_email_domains:
+            clauses.append("email:*@kth.se OR email:*@ki.se OR email:*@su.se")
+
+    if not clauses:
+        return ""
+
+    return f"({' OR '.join(clauses)})"
 
 def main():
     default_email = os.environ.get("USER_EMAIL") or get_git_email() or "user@kth.se"
@@ -308,10 +314,18 @@ def main():
     parser = argparse.ArgumentParser(
         description="Search ORCID for researchers by name or email address."
     )
+    
+    # Optional flags defined first
     parser.add_argument(
-        "query",
-        nargs="+",
-        help="Target user query: either 'first_name last_name', 'last_name, first_name', or 'user@example.se'",
+        "--org",
+        action="append",
+        default=[],
+        help="Specify an affiliation organization name to filter by (can be used multiple times).",
+    )
+    parser.add_argument(
+        "--clear-default-orgs",
+        action="store_true",
+        help="Clear default Stockholm/KTH institutions and only match against explicitly supplied --org values.",
     )
     parser.add_argument(
         "--email",
@@ -331,6 +345,13 @@ def main():
         help="Print raw Solr queries and intermediate lookup stages",
     )
 
+    # Positional target query
+    parser.add_argument(
+        "query",
+        nargs="+",
+        help="Target user query: 'First Last', 'Last, First', or 'user@domain.se'",
+    )
+
     args = parser.parse_args()
 
     headers = {
@@ -343,18 +364,37 @@ def main():
 
     mode, val1, val2 = parse_query_input(args.query)
 
+    # Build dynamic Solr affiliation clause based on CLI args
+    affil_clause = build_affiliation_clause(
+        custom_orgs=args.org,
+        clear_defaults=args.clear_default_orgs,
+        include_email_domains=not args.clear_default_orgs,
+    )
+
+    if args.verbose and affil_clause:
+        print(f"[*] Active Affiliation Filter: {affil_clause}")
+
     if mode == "email":
         target_email = val1
         print(f"==> Searching ORCID by email: '{target_email}'")
         hits, strategy = search_by_email(
-            target_email, headers, max_results=args.max_results, verbose=args.verbose
+            target_email,
+            headers,
+            affil_clause=affil_clause,
+            max_results=args.max_results,
+            verbose=args.verbose,
         )
     else:
         given, family = val1, val2
         name_display = f"{given} {family}".strip() if given else family
         print(f"==> Searching ORCID by name: '{name_display}'")
         hits, strategy = search_by_name(
-            given, family, headers, max_results=args.max_results, verbose=args.verbose
+            given,
+            family,
+            headers,
+            affil_clause=affil_clause,
+            max_results=args.max_results,
+            verbose=args.verbose,
         )
 
     print(f"Strategy used: {strategy}")
