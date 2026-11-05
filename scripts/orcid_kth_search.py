@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """orcid_kth_search.py
 
 Searches the ORCID Public API v3.0 for researchers by name and institutional affiliation.
@@ -214,6 +214,7 @@ def fetch_person_summary(orcid_id: str, timeout: int = 10) -> dict:
     except (requests.exceptions.Timeout, requests.exceptions.RequestException):
         return {}
 
+    #print(f"{data=}")
     name_block = data.get("name", {}) or {}
 
     given = (
@@ -254,6 +255,7 @@ if __name__ == "__main__":
             "Bruchfeld",
             "S.",
         ),  # Hits Strategy 2 (Prefix S* + Karolinska Institutet)
+        ("Licalzi", "Nunzio"),
     ]
 
     for family, given in test_cases:
@@ -265,6 +267,7 @@ if __name__ == "__main__":
 
         for hit in hits:
             details = fetch_person_summary(hit["orcid"])
+            #print(f"{details=}")
             name_display = (
                 details.get("credit_name")
                 or f"{details.get('given_name')} {details.get('family_name')}".strip()
