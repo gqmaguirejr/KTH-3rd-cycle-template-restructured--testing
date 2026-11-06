@@ -28,6 +28,9 @@ except ImportError:
 import Elsevier_Data_Repository_V4_SDG_terms as sdg_dict
 
 
+from uoa_additional_terms import UOA_ADDITIONAL_SDG_TERMS
+  
+
 # Generic meta-terms that falsely inflate SDG 8 across unrelated abstracts
 GENERIC_SDG_META_TERMS = {
     "sdg", "sdgs", "sustainable development",
@@ -158,9 +161,13 @@ def build_sdg_term_index() -> dict[int, list[str]]:
         var_name = f"sdg{i}_terms"
         raw_terms = list(getattr(sdg_dict, var_name, []))
 
-        # Merge auxiliary domain terms
+        # 1. Merge auxiliary domain terms
         if i in AUXILIARY_SDG_TERMS:
             raw_terms.extend(AUXILIARY_SDG_TERMS[i])
+
+        # 2. Merge novel University of Auckland terms
+        if i in UOA_ADDITIONAL_SDG_TERMS:
+            raw_terms.extend(UOA_ADDITIONAL_SDG_TERMS[i])
 
         cleaned_terms = set()
         for t in raw_terms:

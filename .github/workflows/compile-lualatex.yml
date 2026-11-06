@@ -212,8 +212,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 2. Stage only PDFs, bibs, and json files inside artifacts/
-          find artifacts -type f \( -name "*.pdf" -o -name "*.bib" -o -name "*.json" -o -name "*.log" \) -print0 | xargs -0 -r git add -f
+          # 2. Stage only bibs, and json files inside artifacts/
+          find artifacts -type f \( -name "*.bib" -o -name "*.json" -o -name "*.log" \) -print0 | xargs -0 -r git add -f
 
           # 3. Commit only if changes were detected
           if ! git diff --cached --quiet; then
