@@ -317,7 +317,6 @@ jobs:
         with:
           name: "artifacts-${{ matrix.slug }}"
           path: |
-            artifacts-${{ matrix.slug }}/*.pdf
             artifacts-${{ matrix.slug }}/*.bib
             artifacts-${{ matrix.slug }}/*.json
           if-no-files-found: warn
