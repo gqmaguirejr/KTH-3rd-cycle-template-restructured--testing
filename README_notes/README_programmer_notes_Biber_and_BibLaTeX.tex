@@ -2238,7 +2238,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           # 2. Stage only PDFs, bibs, and json files inside artifacts/
-          find artifacts -type f \( -name "*.pdf" -o -name "*.bib" -o -name "*.json" -o -name "*.log" \) -print0 | xargs -0 -r git add -f
+          find artifacts -type f \( -name "*.bib" -o -name "*.json" -o -name "*.log" \) -print0 | xargs -0 -r git add -f
 
           # 3. Commit only if changes were detected
           if ! git diff --cached --quiet; then
@@ -2257,7 +2257,6 @@ jobs:
         with:
           name: artifacts-single
           path: |
-            artifacts*/**/*.pdf
             artifacts*/**/*.log
             artifacts*/**/*.bib
             artifacts*/**/*.json
@@ -2342,7 +2341,6 @@ jobs:
         with:
           name: "artifacts-${{ matrix.slug }}"
           path: |
-            artifacts-${{ matrix.slug }}/*.pdf
             artifacts-${{ matrix.slug }}/*.bib
             artifacts-${{ matrix.slug }}/*.json
           if-no-files-found: warn
