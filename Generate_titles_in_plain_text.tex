@@ -643,7 +643,7 @@ The reason that there is a block of \LaTeX{} code (below in the source code) is 
 \input{custom_configuration.tex}
 
 % read in the plain text definitions, if they exist
-\IfFileExists{custom_configuration_plaintext.tex}{\input{custom_configuration_plaintext.tex}}{}
+\IfFileExists{generated/custom_configuration_plaintext.tex}{\input{generated/custom_configuration_plaintext.tex}}{}
 
 % Process each of the base commands that we are interested in
 \processIfPlainTextIsMissing{title}
