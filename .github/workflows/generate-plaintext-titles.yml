@@ -1,0 +1,72 @@
+name: Generate Plaintext Titles and Subtitles
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'custom_configuration.tex'
+      - 'Generate_titles_in_plain_text.tex'
+      - '.github/workflows/generate-plaintext-titles.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: generate-plaintext-titles-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-commit-plaintext:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up TeX Live
+        uses: teatimeguest/setup-texlive-action@v3
+        with:
+          packages: |
+            scheme-basic
+            latex-bin
+            luatex
+
+
+      - name: Ensure output directory exists
+        run: |
+          mkdir -p generated
+
+      - name: Compile plaintext titles
+        run: |
+          # Run the extraction driver document
+          lualatex -interaction=nonstopmode Generate_titles_in_plain_text.tex
+
+      - name: Verify generated file
+        run: |
+          if [ ! -f generated/custom_configuration_plaintext.tex ]; then
+            echo "Error: generated/custom_configuration_plaintext.tex was not created."
+            exit 1
+          fi
+          echo "Generated content preview:"
+          cat generated/custom_configuration_plaintext.tex
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -f generated/custom_configuration_plaintext.tex
+
+          if git diff --cached --quiet; then
+            echo "No changes detected in generated/custom_configuration_plaintext.tex. Skipping commit."
+            exit 0
+          fi
+
+          git commit -m "Auto-generate custom_configuration_plaintext.tex from custom_configuration.tex [skip ci]"
+          git pull --rebase origin main
+          git push origin main
