@@ -57,6 +57,16 @@ jobs:
           echo "Generated content preview:"
           cat generated/custom_configuration_plaintext.tex
 
+      - name: Upload PDF and Log Artifacts
+        if: always() # Uploads even if lualatex fails, letting you read the log
+        uses: actions/upload-artifact@v4
+        with:
+          name: plaintext-titles-build-logs
+          path: |
+            Generate_titles_in_plain_text.pdf
+            Generate_titles_in_plain_text.log
+          retention-days: 5
+
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
