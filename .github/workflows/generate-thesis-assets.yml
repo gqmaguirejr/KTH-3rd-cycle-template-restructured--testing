@@ -68,21 +68,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Stage the specific generated artifacts
+          # Stage the generated artifacts
           git add -f \
             generated/publications_dividers_generated.tex \
             generated/publications_generated.tex \
             generated/thesis_contributions_generated.tex 2>/dev/null || true
 
-          # Check if there are changes staged
+          # If nothing changed, exit cleanly
           if git diff --cached --quiet; then
             echo "No changes detected in generated TeX artifacts. Skipping commit."
             exit 0
           fi
 
-          # Pull latest remote changes with rebase to prevent non-fast-forward push conflicts
+          # 1. Commit locally first so the index is clean
+          git commit -m "Auto-generate TeX fragments from publications_map.json [skip ci]"
+
+          # 2. Rebase on top of any concurrent remote changes (e.g. Overleaf syncs)
           git pull --rebase origin main
 
-          # Commit with [skip ci] to avoid re-triggering the workflow
-          git commit -m "Auto-generate TeX fragments from publications_map.json [skip ci]"
+          # 3. Push to GitHub
           git push origin main
