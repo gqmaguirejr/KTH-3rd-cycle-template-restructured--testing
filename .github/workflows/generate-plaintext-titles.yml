@@ -29,14 +29,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
 
-      - name: Set up TeX Live
-        uses: teatimeguest/setup-texlive-action@v3
-        with:
-          packages: |
-            scheme-basic
-            latex-bin
-            luatex
-
+      - name: Install LuaTeX
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends \
+            texlive-luatex \
+            texlive-latex-base \
+            texlive-latex-recommended
 
       - name: Ensure output directory exists
         run: |
@@ -44,7 +43,6 @@ jobs:
 
       - name: Compile plaintext titles
         run: |
-          # Run the extraction driver document
           lualatex -interaction=nonstopmode Generate_titles_in_plain_text.tex
 
       - name: Verify generated file
@@ -68,6 +66,6 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Auto-generate custom_configuration_plaintext.tex from custom_configuration.tex [skip ci]"
+          git commit -m "Auto-generate custom_configuration_plaintext.tex [skip ci]"
           git pull --rebase origin main
           git push origin main
