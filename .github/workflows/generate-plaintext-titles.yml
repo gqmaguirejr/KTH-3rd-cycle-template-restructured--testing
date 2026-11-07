@@ -29,13 +29,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
 
-      - name: Install minimal LuaTeX and Fontspec
+      - name: Install LuaTeX, Fonts, and TeX Packages
         run: |
           sudo DEBIAN_FRONTEND=noninteractive apt-get update -yq
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
             texlive-luatex \
             texlive-latex-base \
-            texlive-latex-recommended
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            fonts-stix
 
       - name: Ensure output directory exists
         run: |
