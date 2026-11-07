@@ -72,6 +72,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Move or stage the PDF if desired
+	  # mv Generate_titles_in_plain_text.pdf generated/ 2>/dev/null || true
+	  # git add -f \
+          #  generated/custom_configuration_plaintext.tex \
+          #  generated/Generate_titles_in_plain_text.pdf
+
           git add -f generated/custom_configuration_plaintext.tex
 
           if git diff --cached --quiet; then
