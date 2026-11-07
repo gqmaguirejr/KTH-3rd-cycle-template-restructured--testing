@@ -602,16 +602,16 @@ This document provides a tool to automatically convert complex \LaTeX{} titles a
 \section{Process the custom\_configuration.tex file}
 \label{sec:customconfig}
 Compiling this document will process your
-\texttt{custom\_configuration.tex} file and produce a file named \texttt{extra\_plaintext.tex} containing plain text versions of the \mbox{titles} and subtitles (both main and alternate). (It is named this to avoid overwriting your existing custom\_configuration\_plaintext.tex file during the process.) Additionally, the plain text is set \textit{without} ligatures. 
+\texttt{custom\_configuration.tex} file and produce a file named \texttt{generated/custom\_configuration\_plaintext.tex} containing plain text versions of the \mbox{titles} and subtitles (both main and alternate). Additionally, the plain text is set \textit{without} ligatures. 
 
 While Overleaf can display a UTF-8 file with characters outside of Unicode's Basic Multilingual Plane (BMP)\footnote{Unicode's BMP contains the first 65,536 unicode code points.} in a window, its editor does not have the ability to edit such characters. Moreover, you cannot cut and paste characters outside of the BMP into the Overleaf editing buffer. For further details, see \href{https://docs.overleaf.com/troubleshooting-and-support/file-encodings-and-line-endings}{Overleaf docs: File encodings and line endings}. Unfortunately, many mathematical symbols are in the Mathematical Alphanumeric Symbols, U+1D400 - U+1D7FF, block in the Supplementary Multilingual Plane (SMP).
 
 As a result, the workflow is:
 \begin{enumerate}
-    \item \textbf{Generate:} Compile your project to generate the initial \texttt{extra\_plaintext.tex} file. You can find this file in the ``Other logs and files'' view.
+    \item \textbf{Generate:} Compile your project to generate the initial \texttt{generated/custom\_configuration\_plaintext.tex} file. You can find this file in the ``Other logs and files'' view.
     \item \textbf{Download:} Download the generated file to your computer.
-    \item \textbf{Edit and merge:} Edit it locally using an editor that fully supports UTF-8, such as Emacs, texworks, EmEditor, Notepad, Word, \ldots . You should merge the entries with those of any existing \texttt{custom\_configuration\_plaintext.tex} file in your project. Save your final, edited file as \texttt{custom\_configuration\_plaintext.tex}
-    \item \textbf{Upload:} Upload the \texttt{custom\_configuration\_plaintext.tex} file to your Overleaf project.
+    \item \textbf{Edit and merge:} Edit it locally using an editor that fully supports UTF-8, such as Emacs, texworks, EmEditor, Notepad, Word, \ldots . You should merge the entries with those of any existing \texttt{custom\_configuration\_plaintext.tex} file in your project. Save your final, edited file as \texttt{generated/custom\_configuration\_plaintext.tex}
+    \item \textbf{Upload:} Upload the \texttt{generated/custom\_configuration\_plaintext.tex} file to your Overleaf project.
 \end{enumerate}
 
 \textbf{After uploading, you are done.} However, if you are interested in the technical details of the conversion process, please feel free to read on.
