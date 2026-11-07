@@ -37,6 +37,7 @@ jobs:
             texlive-latex-base \
             texlive-latex-recommended \
             texlive-latex-extra \
+            texlive-science \
             fonts-stix
 
       - name: Ensure output directory exists
