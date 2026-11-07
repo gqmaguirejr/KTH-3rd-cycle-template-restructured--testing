@@ -1315,12 +1315,44 @@ As increasing use is made of Generative AI tools, some institutions have an offi
 I take full responsibility for the content of the “kappa”/comprehensive summary of the thesis.} 
 
 
-\section{Managing Your Bibliography and Automated Checks}
-\label{sec:UserBibManagement}
+\section{Automated Workflows and GitHub Actions}
+\label{sec:UserGitHubWorkflows}
+Some effort has been made to automate many of the processes you need to do when writing a third-cycle thesis, especially for a compilation-style thesis. These are realized as Python scripts in \dname{scripts} and GitHub Actions (workflows, see \fname{.github/workflows/*}).
+
+A high-level introduction is given in the following sections. See the GitHub README at \url{https://github.com/gqmaguirejr/KTH-3rd-cycle-template-restructured} for more information.
+
+\subsection{Repository CI/CD Overview and Synchronization}
+Pushing commits triggers automated runners (GitHub workflow actions). Note that the workflows need to use a \texttt{git pull --rebase} strategy when working alongside Overleaf's Git bridge.
+
+\subsection{Automated Thesis Metadata and Fragment Generation}
+
+There is a set of setup wizards and scripts to be run locally:
+\begin{enumerate}
+    \item \fname{config\_wizard.py} - to help you set up your original \fname{custom\_configuration.tex}
+
+    \item Automated Publication Discovery: Using the workflow Manual DiVA Discovery Test, metadata is pulled directly from DiVA based on the author's KTHID. This creates a \fname{publications\_map.json} which you can edit to indicate which of you publications you want to include in your compilation thesis, what order you want them, etc.
+    
+    \item \fname{CReDiT\_Matrix\_Wizard.py} - to help you set up your CReDiT contributions for the publications you have selected.
+\end{enumerate}
+
+Now that you have established your \fname{publications\_map.json}, there is automation to produce your publication lists, divider pages, and plaintext titles (results are placed in the folder \dname{generated}):
+\begin{enumerate}
+    \item \textbf{generate-thesis-assets.yml}: Monitors \fname{publications\_map.json} to generate:
+    \begin{itemize}[topsep=0pt, partopsep=0pt]
+        \item \fname{publications\_generated.tex},     \item \fname{thesis\_contributions\_generated.tex},  and \item\fname{publications\_dividers\_generated.tex}
+    \end{itemize}
+
+    \item \textbf{generate-plaintext-titles.yml}: Monitors \fname{custom\_configuration.tex} and runs LuaLaTeX to generate UTF-8 plain text title variants for LADOK and DiVA reporting. These plaintext titles and subtitles are placed in:
+    \begin{itemize}[topsep=0pt, partopsep=0pt]
+        \item \fname{custom\_configuration\_plaintext.tex}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Bibliographic Verification and Archiving}
 
 Complementing the academic declaration above, this template provides automated verification to ensure bibliographic integrity, proper attribution, and standard-compliant persistent identifiers (\glspl{PID}). Every time you commit updates to \fname{references.bib} or the document source, GitHub Actions inspects your references against external registries and generates an archival subset (stripping unnecessary metadata).
 
-\subsection{What the Automated Workflow Does}
+\subsubsection{What the Automated Workflow Does}
 When you push your work to GitHub, the automated script:
 \begin{enumerate}
     \item Identifies the works you actually cited in the thesis.
@@ -1332,7 +1364,7 @@ When you push your work to GitHub, the automated script:
 
 \warningExpl{The automated verification confirms that a \gls{DOI}, \gls{ISBN}, or link \textbf{exists and resolves}, but it cannot verify whether the cited work factually supports the claims made in your text.}
 
-\subsection{Files Tracked by Git}
+\subsubsection{Files Tracked by Git}
 To ensure the automated cleanup functions smoothly, your repository tracks the files listed in \Cref{tab:bibCleanupFiles}.
 
 \begin{table}[!htp]
@@ -1353,6 +1385,7 @@ To ensure the automated cleanup functions smoothly, your repository tracks the f
     \bottomrule
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \subsection{Working with Overleaf}
 \warningExpl{When compiling in Overleaf, build artifacts like \fname{output.aux} and \fname{output.bcf} remain inside Overleaf's internal container. If you commit directly from Overleaf to GitHub, the automated workflow will simply check \textbf{all} entries in \fname{references.bib}.\\
@@ -1393,16 +1426,16 @@ This section covers a number of advanced topics: Advanced issues concerning char
 \noindent $☡$ The issue of what characters can be placed in a title (subtitle, keywords, and abstracts) and how to enter them is a bit complex, but you should be able to achieve much of what you want - at the cost of some effort.
 Ultimately, the characters that will be placed into \gls{DiVA} and \gls{LADOK} must be unicode, encoded using \gls{UTF}, specifically UTF-8. While \gls{DiVA} utilizes \gls{HTML} for these fields, allowing you to include some markup, \gls{LADOK} does not support any markup.
 
-\noindent $☡$ If you have titles or subtitles that cannot be converted to pure Unicode (such as subscripts with capital letters or other symbols), you should also use the optional commands \texttt{\textbackslash titleInPlainText}, \texttt{\textbackslash subtitleInPlainText}, \texttt{\textbackslash alttitleInPlainText}, and \texttt{\textbackslash altsubtitleInPlainText} in your \fname{custom\_configuration.tex}  \fname{custom\_configuration\_plaintext.tex} files to provide versions of titles and subtitles that can be used with \gls{LADOK} and when requesting an \gls{ISBN}. Compiling \fname{Generate\_titles\_in\_plain\_text.tex} will produce a file named \fname{extra\_plaintext.tex} containing plain text versions of the \mbox{titles} and subtitles (both main and alternate).
+\noindent $☡$ If you have titles or subtitles that cannot be converted to pure Unicode (such as subscripts with capital letters or other symbols), you should also use the optional commands \texttt{\textbackslash titleInPlainText}, \texttt{\textbackslash subtitleInPlainText}, \texttt{\textbackslash alttitleInPlainText}, and \texttt{\textbackslash altsubtitleInPlainText} in your \fname{custom\_configuration.tex}  \fname{generated/custom\_configuration\_plaintext.tex} files to provide versions of titles and subtitles that can be used with \gls{LADOK} and when requesting an \gls{ISBN}. Compiling \fname{Generate\_titles\_in\_plain\_text.tex} will produce a file named \fname{generated/custom\_configuration\_plaintext.tex} containing plain text versions of the \mbox{titles} and subtitles (both main and alternate).
 
-As noted earlier the title will be set on the cover and the title page in Figtree Bold and Semibold. However, as Figtree does not include Greek characters (and many other characters and symbols), you have to do a little more work. You can enter UTF-8 characters directly into your \LaTeX{} file, but you cannot use the \TeX{} commands, such as \textbackslash Gamma - as this will produce an error message in the log file:
+As noted earlier, the title will be set on the cover and the title page in Figtree Bold and Semibold. However, as Figtree does not include Greek characters (and many other characters and symbols), you have to do a little more work. You can enter UTF-8 characters directly into your \LaTeX{} file, but you cannot use the \TeX{} commands, such as \textbackslash Gamma - as this will produce an error message in the log file:
 \begin{lstlisting}[basicstyle=\scriptsize, escapechar=£]
 Missing character: There is no £{\mystixmathfont ^^^^fffd^^^^fffd}£ (U+1D6E4) in font
 [./Figtree/static/Figtree-Bold.ttf]/OT:script=latn;language=dflt;mapping=tex-text;!
 \end{lstlisting}
 
 \noindent In the above error message the '{\mystixmathfont ^^^^fffd^^^^fffd}' is actually output as a small box with the digits \enquote{01D6E4} in it. This is the hexadecimal value of the character \enquote{MATHEMATICAL ITALIC CAPITAL GAMMA}. However, you can enter the character {\mystixmathfont ^^^^^^01d792} using the hexadecimal code: 
-\textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum \textasciicircum 01d792 - for a \enquote{MATHEMATICAL SANS-SERIF BOLD ITALIC CAPITAL GAMMA}. You should choose the \enquote{SANS-SERIF BOLD ITALIC} version of the character, since the title is set in Figtree Bold, a sans-serif bold font. In the \fname{defines.tex} file you can find an include of a file of \enquote{Mathematical Alphanumeric Symbols, U+1D400 - U+1D7FF}  unicode characters that have been defined to render the character using the \gls{STIX}~Two~Math font\footnote{The file's name is \fname{unicode\_blocks/U+1D400-U+1D7FF-Mathematical Alphanumeric Symbols.tex}.}.
+\textasciicircum\textasciicircum\textasciicircum\textasciicircum\textasciicircum \textasciicircum 01d792 - for a \enquote{MATHEMATICAL SANS-SERIF BOLD ITALIC CAPITAL GAMMA}. You should choose the \enquote{SANS-SERIF BOLD ITALIC} version of the character, since the title is set in Figtree Bold, a sans-serif bold font. In the \fname{defines.tex} file, you can find an include of a file of \enquote{Mathematical Alphanumeric Symbols, U+1D400 - U+1D7FF}  unicode characters that have been defined to render the character using the \gls{STIX}~Two~Math font\footnote{The file's name is \fname{unicode\_blocks/U+1D400-U+1D7FF-Mathematical Alphanumeric Symbols.tex}.}.
 
 
 \Needspace*{2\baselineskip}
@@ -1410,7 +1443,7 @@ Alternatively, if you set your math font to use \gls{STIX}~Two~Math with:
 \begin{Verbatim}[breaklines=true]
  \setmathfont{STIX Two Math}[version=normal]
 \end{Verbatim}
-\noindent and use write $\Gamma$ (using \$\textbackslash Gamma\$) in your title, you will \textbf{not} get a missing character message. This occurs because the math font actually has a \enquote{MATHEMATICAL ITALIC CAPITAL GAMMA} character, but it will be the \textbf{serif} version and not a \textit{bold italic} version - since the \textit{bold italic} version of this character is at a different codepoint in the font.
+\noindent and use write $\Gamma$ (using \$\textbackslash Gamma\$) in your title, you will \textbf{not} get a missing character message. This occurs because the math font actually has a \enquote{MATHEMATICAL ITALIC CAPITAL GAMMA} character, but it will be the \textbf{serif} version and not a \textit{bold italic} version, since the \textit{bold italic} version of this character is at a different codepoint in the font.
 
 Note that while the \enquote{MATHEMATICAL ITALIC CAPITAL GAMMA} character will appear in the \gls{PDF}, you will get warnings from \texttt{hyperref} about using the math in the title:
 \begin{Verbatim}[breaklines=true]
