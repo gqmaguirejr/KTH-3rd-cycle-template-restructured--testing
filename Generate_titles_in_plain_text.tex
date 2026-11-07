@@ -531,7 +531,7 @@ end
 
 
 function write_added_config_file()
-    local output_file = io.open("extra_plaintext.tex", "w")
+    local output_file = io.open("generated/custom_configuration_plaintext.tex", "w")
     if not output_file then return end
 
     for _, command_base in ipairs({"title", "subtitle", "alttitle", "altsubtitle"}) do
@@ -545,7 +545,7 @@ function write_added_config_file()
     end
     
     output_file:close()
-    tex.sprint("\\wlog{SUCCESS: Plain text configuration file written to extra_plaintext.tex}")
+    tex.sprint("\\wlog{SUCCESS: Plain text configuration file written to generated/custom_configuration_plaintext.tex}")
 end
 \end{luacode*}
 
