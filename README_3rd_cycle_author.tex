@@ -198,6 +198,7 @@ Extension = .ttf,
 
 
 \input{lib/configure_listings}
+\sbox{\lstbreakbox}{\textcolor{red}{\ensuremath{\mystixmathfont ↪}}\space}
 
 \newcommand{\dname}[1]{\textbf{#1}}
 \newcommand{\fname}[1]{\texttt{#1}}
@@ -1324,31 +1325,53 @@ A high-level introduction is given in the following sections. See the GitHub REA
 \subsection{Repository CI/CD Overview and Synchronization}
 Pushing commits triggers automated runners (GitHub workflow actions). Note that the workflows need to use a \texttt{git pull --rebase} strategy when working alongside Overleaf's Git bridge.
 
+\Needspace*{8\baselineskip}
 \subsection{Automated Thesis Metadata and Fragment Generation}
 
 There is a set of setup wizards and scripts to be run locally:
 \begin{enumerate}
-    \item \fname{config\_wizard.py} - to help you set up your original \fname{custom\_configuration.tex}
+    \item \fname{config\_wizard.py} --- helps you interactively (via your web browser) configure your personal details (including KTHID), supervisors, degree, and language in \fname{custom\_configuration.tex}. Run locally with:
+\begin{lstlisting}[language=bash]
+streamlit run ./scripts/config_wizard.py
+\end{lstlisting}
 
-    \item Automated Publication Discovery: Using the workflow Manual DiVA Discovery Test, metadata is pulled directly from DiVA based on the author's KTHID. This creates a \fname{publications\_map.json} which you can edit to indicate which of you publications you want to include in your compilation thesis, what order you want them, etc.
+    \item \textbf{Automated Publication Discovery:} Using the workflow \fname{Manual DiVA Discovery Test}, metadata is pulled directly from DiVA based on the author's KTHID. This creates a \fname{publications\_map.json} file which you can edit to indicate which of your publications you want to include in your compilation thesis, what order you want them in, and their labels (\eg \texttt{paper:A}).
     
-    \item \fname{CReDiT\_Matrix\_Wizard.py} - to help you set up your CReDiT contributions for the publications you have selected.
+    \item \fname{CReDiT\_Matrix\_Wizard.py} --- helps you configure CReDiT contributor roles for your selected publications:
+\begin{lstlisting}[language=bash]
+streamlit run ./scripts/CReDiT_Matrix_Wizard.py
+\end{lstlisting}
 \end{enumerate}
 
-Now that you have established your \fname{publications\_map.json}, there is automation to produce your publication lists, divider pages, and plaintext titles (results are placed in the folder \dname{generated}):
-\begin{enumerate}
-    \item \textbf{generate-thesis-assets.yml}: Monitors \fname{publications\_map.json} to generate:
-    \begin{itemize}[topsep=0pt, partopsep=0pt]
-        \item \fname{publications\_generated.tex},     \item \fname{thesis\_contributions\_generated.tex},  and \item\fname{publications\_dividers\_generated.tex}
-    \end{itemize}
+Once you have established your \fname{publications\_map.json} and \linebreak[4]\fname{custom\_configuration.tex}, automated workflows produce your publication lists, divider pages, and plaintext titles (these files are committed into the \dname{generated/} directory):
 
-    \item \textbf{generate-plaintext-titles.yml}: Monitors \fname{custom\_configuration.tex} and runs LuaLaTeX to generate UTF-8 plain text title variants for LADOK and DiVA reporting. These plaintext titles and subtitles are placed in:
-    \begin{itemize}[topsep=0pt, partopsep=0pt]
-        \item \fname{custom\_configuration\_plaintext.tex}
+\begin{enumerate}
+    \item \textbf{\fname{generate-thesis-assets.yml}:} Monitors \fname{publications\_map.json}. Whenever this mapping is updated, the workflow generates:
+    \begin{itemize}
+        \item \fname{generated/publications\_generated.tex} --- Formatted list of included and non-included publications for the front matter.
+        \item \fname{generated/thesis\_contributions\_generated.tex} --- Author CReDiT contribution matrix.
+        \item \fname{generated/publications\_dividers\_generated.tex} --- Divider pages and tab markers preceding each appended publication.
     \end{itemize}
+    These fragments are included directly in your thesis using:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\input{generated/publications_generated.tex}
+\input{generated/thesis_contributions_generated.tex}
+\input{generated/publications_dividers_generated.tex}
+\end{lstlisting}
+
+    \item \textbf{\fname{generate-plaintext-titles.yml}:} Monitors \fname{custom\_configuration.tex} and runs \LuaLaTeX{} to generate UTF-8 plain text title variants for LADOK and DiVA reporting. These plaintext titles and subtitles are placed in:
+    \begin{itemize}
+        \item \fname{generated/custom\_configuration\_plaintext.tex}
+    \end{itemize}
+    and automatically included in your thesis with:
+    \begin{lstlisting}[style=latexExampleForAuthors]
+\IfFileExists{generated/custom_configuration_plaintext.tex}
+{\input{generated/custom_configuration_plaintext}}{}
+    \end{lstlisting}
 \end{enumerate}
 
 \subsection{Bibliographic Verification and Archiving}
+\label{sec:UserBibManagement}
 
 Complementing the academic declaration above, this template provides automated verification to ensure bibliographic integrity, proper attribution, and standard-compliant persistent identifiers (\glspl{PID}). Every time you commit updates to \fname{references.bib} or the document source, GitHub Actions inspects your references against external registries and generates an archival subset (stripping unnecessary metadata).
 
@@ -1356,9 +1379,13 @@ Complementing the academic declaration above, this template provides automated v
 When you push your work to GitHub, the automated script:
 \begin{enumerate}
     \item Identifies the works you actually cited in the thesis.
+    
     \item Checks whether your \glspl{DOI}, \glspl{ISBN}, or patent numbers exist in international databases (Crossref, Google Books, and Open Library).
+    
     \item Flags potential errors, such as a mismatch between the publication year in your \fname{.bib} file and the official registered date.
+    
     \item Calculates the percentage of your references equipped with a \gls{PID} (\gls{DOI}, \gls{ISBN}, or permanent \gls{URL}).
+    
     \item Generates a clean bibliography file named \fname{referencesUsed.bib} containing only cited works, stripping internal notes, abstracts, and local file paths.
 \end{enumerate}
 
@@ -1392,7 +1419,7 @@ To ensure the automated cleanup functions smoothly, your repository tracks the f
 If you want the workflow to prune \fname{referencesUsed.bib} down strictly to the references you cited, download \fname{output.aux} (or \fname{output.bcf}) from Overleaf's \enquote{Logs and output files} panel, place it into the project root directory, and push it to GitHub.}
 
 \subsection{Avoiding Merge Conflicts with Auto-Commits}
-\generalExpl{Because the GitHub Actions runner automatically commits updates to \fname{referencesUsed.bib} and \fname{.bib\_validator\_cache.json}, always pull changes before starting a new editing session with \texttt{git pull --rebase}. This prevents merge conflicts between your local work and the runner's automated commits.}
+\generalExpl{Because the GitHub Actions runner automatically commits updates to \fname{referencesUsed.bib} and \fname{.bib\_validator\_cache.json}, always pull changes before starting a new editing session with \texttt{git pull --rebase}. This prevents merge conflicts between your local work and the runner's automated commits].}
 
 \begin{lstlisting}[language=bash]
 # Fetch and rebase before starting local edits
