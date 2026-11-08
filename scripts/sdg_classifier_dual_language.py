@@ -5,6 +5,7 @@ sdg_classifier_dual_language.py
 
 Audits and classifies research text against the UN SDGs using Elsevier V4,
 UN DESA keyword sets, and dual-language auxiliary engineering terms (English and Swedish).
+Also employs terms extracted by generate_swedish_sdg_dictionary.py
 
 Supports:
   - Dual-language JSON ingestion (extracting primary & alternative titles,
@@ -51,7 +52,9 @@ AUXILIARY_SDG_TERMS = {
         # Energy & Household Poverty
         "energy poverty", "household poverty", "energy coaching",
         # Swedish Terms
-        "energifattigdom", "hushållsfattigdom", "energicoachning"
+        "energifattigdom", "hushållsfattigdom", "energicoachning",
+        "fattigdom", "globalt mål 1 - ingen fattigdom", "hållbar utveckling",
+        "avskaffa fattigdom", "extrem fattigdom", "multidimensionell fattigdom"
     ],
     2: [
         # Food systems & bio-based coatings / agriculture
@@ -59,7 +62,8 @@ AUXILIARY_SDG_TERMS = {
         "food supply chain", "food security", "chitosan", "antimicrobial coatings",
         # Swedish Terms
         "livsmedelssystem", "matsystem", "livsmedelsförsörjning", "livsmedelsstyrning",
-        "matsystemsstyrning", "livsmedelskedja"
+        "matsystemsstyrning", "livsmedelskedja",
+        "avskaffa hunger", "tryggad livsmedelsförsörjning", "god näringsstatus"
     ],
     3: [
         # Clinical & Cardiovascular
@@ -83,7 +87,10 @@ AUXILIARY_SDG_TERMS = {
         # Swedish Terms
         "hälso- och sjukvård", "medicinsk teknik", "läkemedelstillförsel",
         "mikronålar", "hjärtstopp", "ryggmärgsskada", "gånganalys",
-        "rehabilitering", "elektromyografi", "strålbehandling"
+        "rehabilitering", "elektromyografi", "strålbehandling",
+        "globalt mål 3 - hälsa och välbefinnande", "hälso- och sjukvård", "hälsovård",
+        "hållbar utveckling", "sjukvård",
+        "hälsa och välbefinnande", "folkhälsa", "mödradödlighet"
     ],
     4: [
         # Pedagogy & Educational Research
@@ -92,7 +99,9 @@ AUXILIARY_SDG_TERMS = {
         "education fiction", "digital response systems",
         # Swedish Terms
         "lärarutbildning", "lärarstudenter", "digital kompetens", "pedagogisk praktik",
-        "slöjd", "utbildningsfiktion", "utmaningsbaserat lärande", "bedömning i skolan"
+        "slöjd", "utbildningsfiktion", "utmaningsbaserat lärande", "bedömning i skolan",
+        "globalt mål 4 - god utbildning för alla", "hållbar utveckling", "utbildning",
+        "god utbildning", "likvärdig utbildning", "inkluderande utbildning"
     ],
     5: [
         # Diversity & Governance
@@ -100,7 +109,8 @@ AUXILIARY_SDG_TERMS = {
         "gender equality", "female executives", "daughter effect",
         # Swedish Terms
         "bolagsstyrning", "könsmässig mångfald", "homosocialitet", "jämställdhet",
-        "jämställdhetsfond", "kvinnlig representation"
+        "jämställdhetsfond", "kvinnlig representation",
+        "jämställdhet", "diskriminering av kvinnor", "våld mot kvinnor"
     ],
     6: [
         # Water & Wastewater
@@ -108,7 +118,9 @@ AUXILIARY_SDG_TERMS = {
         "water distribution networks", "wastewater treatment",
         # Swedish Terms
         "grundvatten", "gråvatten", "dagvattenhantering", "avloppsrening",
-        "vattenförsörjning"
+        "vattenförsörjning", "diväteoxid", "globalt mål 6 - rent vatten och sanitet",
+        "rent vatten och sanitet", "sanitet", "vatten",
+        "dricksvatten", "sanitet och hygien"
     ],
     7: [
         # Clean Energy, Grid & Heat Recovery
@@ -119,7 +131,8 @@ AUXILIARY_SDG_TERMS = {
         # Swedish Terms
         "fjärrvärme", "spillvärme", "värmeåtervinning", "smarta mätare",
         "efterfrågeflexibilitet", "energiomställning", "blykyld reaktor",
-        "kärnbränsle", "elkraftteknik"
+        "kärnbränsle", "elkraftteknik",
+        "hållbar energi", "förnybar energi", "energieffektivisering"
     ],
     8: [
         # Workplace Safety & Manufacturing
@@ -127,7 +140,9 @@ AUXILIARY_SDG_TERMS = {
         "collaborative product development", "assembly features",
         # Swedish Terms
         "säkerhetskultur", "säkerhetspraktiker", "byggsektorn",
-        "arbetsplatskultur", "monteringsegenskaper", "tillverkningsteknik"
+        "arbetsplatskultur", "monteringsegenskaper", "tillverkningsteknik",
+        "bebyggelse", "bosättning", "globalt mål 11 - hållbara städer och samhällen", "stad",
+        "anständiga arbetsvillkor", "ekonomisk tillväxt", "resurseffektivitet i konsumtion och produktion"
     ],
     9: [
         # AI / Software / Digital Infrastructure
@@ -153,14 +168,16 @@ AUXILIARY_SDG_TERMS = {
         "sakernas internet", "telekommunikation", "molninfrastruktur",
         "kraftelektronik", "halvledare", "godståg", "järnvägsinfrastruktur",
         "banavgifter", "cellfri massiv mimo", "metaytor", "metayta",
-        "additiv tillverkning", "asfaltbindemedel"
+        "additiv tillverkning", "asfaltbindemedel",
+        "hållbar industri", "innovationer och infrastruktur", "motståndskraftig infrastruktur"
     ],
     10: [
         # Inclusion & Equity
         "assistive technology", "prosthetic users", "physical rehabilitation",
         "mobility inequality", "gender disparities in leadership",
         # Swedish Terms
-        "hjälpmedelsteknik", "fysisk rehabilitering", "tillgänglighet"
+        "hjälpmedelsteknik", "fysisk rehabilitering", "tillgänglighet",
+        "minskad ojämlikhet", "inkomsttillväxt för de fattigaste", "social och ekonomisk inkludering"
     ],
     11: [
         # Urban Infrastructure, Mobility, Acoustics & Housing
@@ -171,7 +188,8 @@ AUXILIARY_SDG_TERMS = {
         # Swedish Terms
         "urban mobilitet", "kollektivtrafik", "delningsbostäder", "delat boende",
         "grönområden", "stadsplanering", "trafikbuller", "miljöakustik",
-        "klimatneutrala städer", "smarta städer", "markvibrationer"
+        "klimatneutrala städer", "smarta städer", "markvibrationer",
+        "hållbara städer och samhällen", "trygga bostäder", "hållbara transportsystem"
     ],
     12: [
         # Circular Economy & Materials
@@ -181,7 +199,8 @@ AUXILIARY_SDG_TERMS = {
         # Swedish Terms
         "cirkulär ekonomi", "cirkulära leveranskedjor", "cirkulär tillverkning",
         "biokol", "natriumjonbatterier", "återvinning", "återanvändning",
-        "biografit", "lignin"
+        "biografit", "lignin",
+        "hållbar konsumtion och produktion", "hållbar förvaltning av naturresurser", "minska matsvinnet"
     ],
     13: [
         # Climate Mitigation & Clean Processing
@@ -189,21 +208,38 @@ AUXILIARY_SDG_TERMS = {
         "climate criteria", "fossil-free steelmaking", "h-dri", "climate policy",
         # Swedish Terms
         "koldioxidinfångning", "fossilfritt stål", "klimatåtgärder",
-        "klimatdeklaration", "växthusgasutsläpp"
+        "klimatdeklaration", "växthusgasutsläpp",
+        "globalt mål 13 - bekämpa klimatförändringen", "klimatförändring",
+        "bekämpa klimatförändringarna", "klimatåtgärder", "klimatanpassning"
     ],
+    14: [
+        # Swedish Terms
+        "biodiversitet", "biologisk mångfald", "biologiska mångfalden", "ekosystem", "globalt mål 14 - hav och marina resurser",
+        "hav och marina resurser", "marina föroreningar", "marint skräp"
+        ],
+    15: [
+        # Swedish Terms
+        "biodiversitet", "biologisk mångfald", "biologiska mångfalden", "ekosystem", "globalt mål 15 - ekosystem och biologisk mångfald"
+        "ekosystem och biologisk mångfald", "landbaserade ekosystem", "sötvattensekosystem"
+        ],
+
     16: [
         # Governance, Transparency & Media Monitoring
         "open science", "transparent policymaking", "media monitoring",
         "intersectional invisibility", "open data governance",
         # Swedish Terms
-        "öppen vetenskap", "transparens i styrning", "mediebevakning"
+        "öppen vetenskap", "transparens i styrning", "mediebevakning",
+        "fred", "globalt mål 16 - fredliga och inkluderande samhällen", "institution", "rättvisa",
+        "fredliga och inkluderande samhällen", "minska våld", "övergrepp och våld mot barn"
     ],
     17: [
         # Global Partnerships & Science Diplomacy
         "academic internationalisation", "science diplomacy",
         "transnational education", "development-focused scholarships",
         # Swedish Terms
-        "akademisk internationalisering", "forskningsdiplomati"
+        "akademisk internationalisering", "forskningsdiplomati",
+        "globalt mål 17 - genomförande och globalt partnerskap", "koordination", "samarbete",
+        "genomförande och globalt partnerskap", "inhemsk resursmobilisering", "utvecklingsbistånd"
     ]
 }
 
