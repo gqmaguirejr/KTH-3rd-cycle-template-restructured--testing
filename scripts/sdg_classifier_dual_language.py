@@ -13,6 +13,10 @@ Supports:
   - Standalone PDF or text file ingestion.
   - In-text explicit SDG mention parsing.
   - In-place updating of JSON files with verified SDGs.
+
+Note that the transformer model SDGdetector, performs poorly on technical documents as it was not trained on this kind of data.
+
+OSDG https://github.com/osdg-ai/osdg-tool available at https://www.osdg.ai/ does much better than SDGdetector, but still not as specific as sdg_classifier_dual_language.py. However, according to its web page: "OSDG currently supports 15 languages: English, Arabic, Danish, Dutch, Finnish, French, German, Italian, Korean, Polish, Portuguese, Russian, Spanish, Swedish, and Turkish." See the paper at https://arxiv.org/abs/2211.11252
 """
 
 from __future__ import annotations
@@ -48,7 +52,7 @@ GENERIC_SDG_META_TERMS = {
 
 # Dual-Language Auxiliary Terms (English & Swedish)
 AUXILIARY_SDG_TERMS = {
-    1: [
+    1: [ # SDG 1 (No Poverty)
         # Energy & Household Poverty
         "energy poverty", "household poverty", "energy coaching",
 
@@ -60,7 +64,7 @@ AUXILIARY_SDG_TERMS = {
         "ekonomiska resurser", "mikrofinansiering", "social trygghet", "fattigdomsminskning",
         "utsatta grupper", "ekonomisk utsatthet"
     ],
-    2: [
+    2: [ # SDG 2 (Zero Hunger)
         # Food systems & bio-based coatings / agriculture
         "food systems governance", "local food systems", "food supply systems",
         "food supply chain", "food security", "chitosan", "antimicrobial coatings",
@@ -72,7 +76,7 @@ AUXILIARY_SDG_TERMS = {
         "motståndskraftiga jordbruksmetoder", "genetisk mångfald", "livsmedelsmarknader",
         "livsmedelsstrategin", "matsvinn", "underernäring", "lokalproducerad mat"
     ],
-    3: [
+    3: [ # SDG 3 (Good Health & Well-Being)
         # Clinical & Cardiovascular
         "cardiac arrest", "cardiac", "electrocardiogram", "ecg", "ecgi",
         "arrhythmia", "healthcare", "health care", "clinical adoption",
@@ -91,6 +95,7 @@ AUXILIARY_SDG_TERMS = {
         "myopia", "microneedle", "microneedles", "drug delivery",
         "electromyography", "motor unit", "motor units", "radiation therapy",
         "radiotherapy", "spinal cord injury", "corticomuscular coherence",
+        "wellbeing", "outdoor recreation",
         # Swedish Terms
         "hälso- och sjukvård", "medicinsk teknik", "läkemedelstillförsel",
         "mikronålar", "hjärtstopp", "ryggmärgsskada", "gånganalys",
@@ -102,13 +107,14 @@ AUXILIARY_SDG_TERMS = {
         "barnadödlighet", "smittsamma sjukdomar", "icke-smittsamma sjukdomar",
         "psykisk hälsa", "missbruk", "trafikolyckor", "sexuell och reproduktiv hälsa",
         "allmän hälso- och sjukvård", "kemikalieexponering", "luftföroreningar och hälsa",
-        "medicinteknik", "hjälpmedelsteknik"
+        "medicinteknik", "hjälpmedelsteknik", "välbefinnande", "friluftsliv", "naturkontakt"
     ],
-    4: [
+    4: [ # SDG 4 (Quality Education)
         # Pedagogy & Educational Research
         "challenge-based learning", "teacher education", "teacher students",
         "digital competence", "pedagogical practice", "sloyd", "global competence",
         "education fiction", "digital response systems",
+        "educational facilities", "classroom", "classrooms",
         # Swedish Terms
         "lärarutbildning", "lärarstudenter", "digital kompetens", "pedagogisk praktik",
         "slöjd", "utbildningsfiktion", "utmaningsbaserat lärande", "bedömning i skolan",
@@ -117,9 +123,9 @@ AUXILIARY_SDG_TERMS = {
         "god utbildning", "likvärdig utbildning", "inkluderande utbildning",
         "förskoleverksamhet", "grundskola", "gymnasieskola", "högre utbildning",
         "yrkesutbildning", "livslångt lärande", "läs- och skrivkunnighet",
-        "didaktik"
+        "didaktik", "klassrum", "skola", "skolor", "elever", "grundskoleelever",
     ],
-    5: [
+    5: [ # SDG 5 (Gender Equality)
         # Diversity & Governance
         "corporate governance", "homosocial", "homosociality", "gender diversity",
         "gender equality", "female executives", "daughter effect",
@@ -132,7 +138,7 @@ AUXILIARY_SDG_TERMS = {
         "homosocialitet",
         "jämställdhetsintegrering", "styrelsesammansättning"
     ],
-    6: [
+    6: [ # SDG 6 (Clean Water and Sanitation)
         # Water & Wastewater
         "groundwater intelligence", "greywater reuse", "rainwater harvesting",
         "water distribution networks", "wastewater treatment",
@@ -144,21 +150,26 @@ AUXILIARY_SDG_TERMS = {
         "vattenförorening", "avloppsvatten", "vatteneffektivitet","integrerad vattenresursförvaltning",
         "vattenskydd", "avsaltning"
     ],
-    7: [
+    7: [ # SDG 7 (Affordable & Clean Energy)
         # Clean Energy, Grid & Heat Recovery
         "district heating", "excess heat", "heat recovery", "pvt",
         "concentrating solar power", "smart meter", "smart meters",
         "demand flexibility", "energy transition", "lead-cooled reactor",
         "nuclear fuel", "electric power engineering", "supercritical co2",
+        "energy storage", "battery", "batteries",
+        "sodium-ion battery", "lithium-ion battery",
+        "anode materials", "structural battery", 
         # Swedish Terms
         "fjärrvärme", "spillvärme", "värmeåtervinning", "smarta mätare",
         "efterfrågeflexibilitet", "energiomställning", "blykyld reaktor",
         "kärnbränsle", "elkraftteknik",
         "hållbar energi", "förnybar energi", "energieffektivisering",
         "ren energiteknik", "fossilfria bränslen", "smarta elnät",
-        "solceller", "vindkraft", "värmepumpar",
+        "solceller", "vindkraft", "värmepumpar", "energylagring",
+        "batteri", "batterier", "natriumjonbatterier", "litiumjonbatterier",
+        "strukturella batterier",
     ],
-    8: [
+    8: [ # SDG 8 (Decent Work and Economic Growth)
         # Workplace Safety & Manufacturing
         "safety culture", "safety practices", "construction sector",
         "collaborative product development", "assembly features",
@@ -170,7 +181,7 @@ AUXILIARY_SDG_TERMS = {
         "trygg arbetsmiljö", "arbetstagares rättigheter",
         "arbetsplatsolyckor", "produktionssystem", "monteringsprocesser", "arbetsmiljö"
     ],
-    9: [
+    9: [ # SDG 9 (Industry, Innovation and Infrastructure)
         # AI / Software / Digital Infrastructure
         "artificial intelligence", "machine learning", "deep learning",
         "federated learning", "neural network", "neural networks",
@@ -189,8 +200,23 @@ AUXILIARY_SDG_TERMS = {
         "cell-free massive mimo", "reconfigurable intelligent surface",
         "articulated robot", "unbound granular materials", "asphalt binder",
         "additive manufacturing", "metasurface", "metasurfaces",
-        "rail infrastructure",
+        "quantum sensor", "quantum sensors",
+        "magnetometer", "magnetometers", "magnetometer array",
+        "inertial navigation", "inertial navigation system",
+        "autonomous vehicle", "autonomous vehicles",
+        "autonomous underwater vehicle", "autonomous underwater vehicles", "auv",
+        "5g", "o-ran",  "radio access network", "ran", "manufacturing systems",
+        "quantum sensing", "atomic magnetometer",
+        "inertial sensor", "sensor fusion",
+        "doppler velocity log", "dvl",
+        "road infrastructure", "asphalt concrete",
+        "pavement engineering", "bitumen",
+        "freight volume", "freight volumes",
+        "passenger volume", "passenger volumes",
         # Swedish Terms
+        "väginfrastruktur", "asfaltbeläggning", "vägbyggnad",
+        "kvantsensorer", "tröghetssensor", "sensorfusion",
+        "5g-nät", "lokala 5g-nät", "privata 5g-nät",
         "artificiell intelligens", "maskininlärning", "djupinlärning",
         "sakernas internet", "telekommunikation", "molninfrastruktur",
         "kraftelektronik", "halvledare", "godståg", "järnvägsinfrastruktur",
@@ -200,9 +226,14 @@ AUXILIARY_SDG_TERMS = {
         "inkluderande industrialisering", "småföretagens tillgång till finansiering",
         "uppgradera industriell infrastruktur", "ren teknik och miljöanpassade processer",
         "vetenskaplig forskning och teknisk kapacitet", "informations- och kommunikationsteknik",
-        "tillgång till internet", "cyberfysiska system", "järnvägsinfrastruktur", "tågtrafik", "persontåg", "snabbtåg"
+        "tillgång till internet", "cyberfysiska system",
+        "tågtrafik", "persontåg", "snabbtåg",
+        "kvantsensor", "tröghetsnavigering", "autonoma undervattensfarkoster"
+        "godsvolym", "godsvolymer",
+        "resandevolym", "resandevolymer",
+        "passagerarvolym", "passagerarvolymer",
     ],
-    10: [
+    10: [ # SDG 10 (Reduced Inequalities)
         # Inclusion & Equity
         "assistive technology", "prosthetic users", "physical rehabilitation",
         "mobility inequality", "gender disparities in leadership",
@@ -213,13 +244,28 @@ AUXILIARY_SDG_TERMS = {
         "migration och rörlighet", "säker migration", "tillgänglighet för personer med funktionsnedsättning",
         "funktionsvariation"
     ],
-    11: [
+    11: [ # SDG 11 (Sustainable Cities and Communities)
         # Urban Infrastructure, Mobility, Acoustics & Housing
         "urban mobility", "public transport", "on-demand public transport",
         "cycling", "green space", "urban green", "shared housing",
         "traffic noise", "environmental acoustics", "climate-neutral cities",
         "wheelchair accessibility", "smart cities", "ground-borne vibration",
+        "sustainable housing", "passenger rail",
+        "bicycle", "bicycling", "cyclist", "cyclists", "route choice",
+        # English Terms (Urban Public Transit & Micromobility)
+        "tram", "trams", "tramway", "tramways", "light rail", "light rail transit",
+        "subway", "subways", "metro system", "metro systems", "underground rail",
+        "bike sharing", "bike-sharing", "bikeshare", "bicycle sharing", "shared micromobility",
+        "commuter train", "commuter trains", "commuter rail", "suburban rail",
         # Swedish Terms
+        "pendeltåg", "pendeltågen", "pendeltågstrafik", "pendeltågsstation",
+        "spårvagn", "spårvagnar", "spårväg", "spårvägar", "lättbana",
+        "tunnelbana", "tunnelbanan", "tunnelbanetrafik", "tunnelbanestation",
+        "cykeldelning", "delade cyklar", "lånecykel", "lånecyklar", "lånecykelsystem",
+        "mikromobilitet",
+        "tillgänglighet i stadsmiljö", "rullstolstillgänglighet",
+        "fastighetsförvaltning"
+        "cykling", "cyklist", "cyklister", "cykelinfrastruktur", "cykelväg",
         "urban mobilitet", "kollektivtrafik", "delningsbostäder", "delat boende",
         "grönområden", "stadsplanering", "trafikbuller", "miljöakustik",
         "klimatneutrala städer", "smarta städer", "markvibrationer",
@@ -227,15 +273,24 @@ AUXILIARY_SDG_TERMS = {
         "inkluderande stadsplanering", "kultur- och naturarv", "katastrofriskreducering",
         "miljöpåverkan från städer", "luftkvalitet i städer", "kommunal avfallshantering",
         "gröna områden och allmänna platser", "stads- och regionplanering",
-        "bebyggelse", "bosättning", "globalt mål 11 - hållbara städer och samhällen", "stad"
+        "bebyggelse", "bosättning", "globalt mål 11 - hållbara städer och samhällen", "stad",
+        "samhällsbyggnad", "samhällsbyggnadsprocessen",
+        "fastighetsteknik", "fastighetsvetenskap",
+        "fastighetsrätt", "delningsboende", "kollektivt boende",
+        "persontåg", "tågtrafikutbud", "resandeprognoser",
+        "bostäder",
 
     ],
-    12: [
+    12: [ # SDG 12 (Responsible Consumption and Production)
         # Circular Economy & Materials
         "circular economy", "circular supply chain", "circular manufacturing",
         "biowaste valorization", "hard carbon", "sodium-ion battery",
         "catalytic graphitization", "bio-based carbon", "remanufacturing",
+        "steelmaking", "ironmaking", "sustainable lifestyles", "end-of-life",
+        "slag", "refractory", "refractories",
         # Swedish Terms
+        "slagg", "infodring", "eldfast material",
+        "ståltillverkning", "hållbara livsstilar", "delningsekonomi",
         "cirkulär ekonomi", "cirkulära leveranskedjor", "cirkulär tillverkning",
         "biokol", "natriumjonbatterier", "återvinning", "återanvändning",
         "biografit", "lignin",
@@ -245,11 +300,15 @@ AUXILIARY_SDG_TERMS = {
         "hållbarhetsredovisning", "hållbar offentlig upphandling",
         "biomassa"
     ],
-    13: [
+    13: [ #SDG 13 (Climate Action)
         # Climate Mitigation & Clean Processing
         "carbon dioxide removal", "carbon removal", "beccs", "sustainable aviation fuel",
         "climate criteria", "fossil-free steelmaking", "h-dri", "climate policy",
+        "carbon footprint", "low-carbon", "lca", "life cycle assessment", 
+        "ghg emissions",
         # Swedish Terms
+        "livscykelanalys",
+        "koldioxidavtryck", "koldioxidsnål",
         "koldioxidinfångning", "fossilfritt stål", "klimatåtgärder",
         "klimatdeklaration", "växthusgasutsläpp",
         "globalt mål 13 - bekämpa klimatförändringen", "klimatförändring",
@@ -258,15 +317,25 @@ AUXILIARY_SDG_TERMS = {
         "klimatstrategier", "kunskap och kapacitet om klimatförändringar",
         "koldioxidutsläpp", "negativa utsläpp"
     ],
-    14: [
+    14: [ # SDG 14 (Life Below Water)
+        "underwater acoustics", "sonar", "sonars",
+        "autonomous underwater vehicle", "autonomous underwater vehicles",
+        "multibeam sonar",
+        "marine technology", "ocean observation", "oceanographic",
+        "underwater vehicle", "underwater vehicles",
+        "subsea", "subsea technology",
+        "underwater positioning", "marine robotics",
         # Swedish Terms
+        "undervattensrobotik", "undervattenspositionering",
+        "undervattensfarkoster",
         "biodiversitet", "biologisk mångfald", "biologiska mångfalden", "ekosystem", "globalt mål 14 - hav och marina resurser",
         "hav och marina resurser", "marina föroreningar", "marint skräp",
         "eutrofiering", "marina och kustnära ekosystem", "havsförsurning",
         "hållbart fiske", "överfiske", "kust- och havsområden",
         "havsrättskonventionen", "blå ekonomi", "undervattensakustik",
+        "undervattensteknik", "havsobservation", "marinteknik",
         ],
-    15: [
+    15: [ # SDG 15 (Life on Land)
         # Swedish Terms
         "biodiversitet", "biologisk mångfald", "biologiska mångfalden", "ekosystem", "globalt mål 15 - ekosystem och biologisk mångfald",
         "ekosystem och biologisk mångfald", "landbaserade ekosystem", "sötvattensekosystem",
@@ -274,7 +343,7 @@ AUXILIARY_SDG_TERMS = {
         "skyddade arter", "tjuvjakt", "invasiva främmande arter", "skogsbruksmetoder", "våtmarker"
         ],
 
-    16: [
+    16: [ # SDG 16 (Peace, Justice, and Strong Institutions)
         # Governance, Transparency & Media Monitoring
         "open science", "transparent policymaking", "media monitoring",
         "intersectional invisibility", "open data governance",
@@ -286,7 +355,7 @@ AUXILIARY_SDG_TERMS = {
         "korruption och mutor", "effektiva och transparenta institutioner", "ansvarsskyldighet",
         "representativt beslutsfattande", "allmän tillgång till information"
     ],
-    17: [
+    17: [ # SDG 17 (Partnerships for the Goals)
         # Global Partnerships & Science Diplomacy
         "academic internationalisation", "science diplomacy",
         "transnational education", "development-focused scholarships",
