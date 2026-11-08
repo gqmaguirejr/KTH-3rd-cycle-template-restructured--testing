@@ -53,13 +53,12 @@ AUXILIARY_SDG_TERMS = {
         "energy poverty", "household poverty", "energy coaching",
 
         # Swedish Terms
-
         "energifattigdom", "hushållsfattigdom", "energicoachning",
-        "fattigdom", "globalt mål 1 - ingen fattigdom", "hållbar utveckling",
+        "fattigdom", "globalt mål 1 - ingen fattigdom", # "hållbar utveckling",
         "avskaffa fattigdom", "extrem fattigdom", "multidimensionell fattigdom",
         "relativ fattigdom", "sociala trygghetssystem", "grundläggande service",
         "ekonomiska resurser", "mikrofinansiering", "social trygghet", "fattigdomsminskning",
-        "utsatta grupper", "energifattigdom", "hushållsfattigdom", "ekonomisk utsatthet"
+        "utsatta grupper", "ekonomisk utsatthet"
     ],
     2: [
         # Food systems & bio-based coatings / agriculture
@@ -71,8 +70,7 @@ AUXILIARY_SDG_TERMS = {
         "avskaffa hunger", "tryggad livsmedelsförsörjning", "god näringsstatus",
         "hållbart jordbruk", "jordbrukets produktivitet", "småskaliga livsmedelsproducenter",
         "motståndskraftiga jordbruksmetoder", "genetisk mångfald", "livsmedelsmarknader",
-        "matsystem", "livsmedelsförsörjning", "livsmedelsstrategin",
-        "matsvinn", "underernäring", "lokalproducerad mat"
+        "livsmedelsstrategin", "matsvinn", "underernäring", "lokalproducerad mat"
     ],
     3: [
         # Clinical & Cardiovascular
@@ -97,15 +95,14 @@ AUXILIARY_SDG_TERMS = {
         "hälso- och sjukvård", "medicinsk teknik", "läkemedelstillförsel",
         "mikronålar", "hjärtstopp", "ryggmärgsskada", "gånganalys",
         "rehabilitering", "elektromyografi", "strålbehandling",
-        "globalt mål 3 - hälsa och välbefinnande", "hälso- och sjukvård", "hälsovård",
-        "hållbar utveckling", "sjukvård",
+        "globalt mål 3 - hälsa och välbefinnande", "hälsovård",
+        # "hållbar utveckling",
+        "sjukvård",
         "hälsa och välbefinnande", "folkhälsa", "mödradödlighet",
         "barnadödlighet", "smittsamma sjukdomar", "icke-smittsamma sjukdomar",
         "psykisk hälsa", "missbruk", "trafikolyckor", "sexuell och reproduktiv hälsa",
         "allmän hälso- och sjukvård", "kemikalieexponering", "luftföroreningar och hälsa",
-        "läkemedelstillförsel", "mikronålar", "medicinteknik", "strålbehandling",
-        "ryggmärgsskada", "gånganalys", "elektromyografi", "rehabilitering",
-        "hjälpmedelsteknik"
+        "medicinteknik", "hjälpmedelsteknik"
     ],
     4: [
         # Pedagogy & Educational Research
@@ -115,13 +112,12 @@ AUXILIARY_SDG_TERMS = {
         # Swedish Terms
         "lärarutbildning", "lärarstudenter", "digital kompetens", "pedagogisk praktik",
         "slöjd", "utbildningsfiktion", "utmaningsbaserat lärande", "bedömning i skolan",
-        "globalt mål 4 - god utbildning för alla", "hållbar utveckling", "utbildning",
+        "globalt mål 4 - god utbildning för alla", # "hållbar utveckling",
+        "utbildning",
         "god utbildning", "likvärdig utbildning", "inkluderande utbildning",
         "förskoleverksamhet", "grundskola", "gymnasieskola", "högre utbildning",
         "yrkesutbildning", "livslångt lärande", "läs- och skrivkunnighet",
-        "digital kompetens", "pedagogisk praktik", "lärarutbildning",
-        "lärarstudenter", "utbildningsfiktion", "utmaningsbaserat lärande",
-        "bedömning i skolan", "didaktik"
+        "didaktik"
     ],
     5: [
         # Diversity & Governance
@@ -133,8 +129,8 @@ AUXILIARY_SDG_TERMS = {
         "jämställdhet", "diskriminering av kvinnor", "våld mot kvinnor",
         "obetalt hem- och omsorgsarbete", "fullt deltagande i ledarskap",
         "beslutsfattande", "reproduktiv hälsa", "lika rätt till ekonomiska resurser",
-        "bolagsstyrning", "könsmässig mångfald", "homosocialitet",
-        "jämställdhetsintegrering", "kvinnlig representation", "styrelsesammansättning"
+        "homosocialitet",
+        "jämställdhetsintegrering", "styrelsesammansättning"
     ],
     6: [
         # Water & Wastewater
@@ -144,12 +140,9 @@ AUXILIARY_SDG_TERMS = {
         "grundvatten", "gråvatten", "dagvattenhantering", "avloppsrening",
         "vattenförsörjning", "diväteoxid", "globalt mål 6 - rent vatten och sanitet",
         "rent vatten och sanitet", "sanitet", "vatten",
-        "dricksvatten", "sanitet och hygien",
-                "vattenkvalitet",
-        "vattenförorening",
-        "avloppsvatten", "vatteneffektivitet","integrerad vattenresursförvaltning",
-        "vattenskydd", "grundvatten", "gråvatten", "dagvattenhantering",
-        "avloppsrening", "vattenförsörjning", "avsaltning"
+        "dricksvatten", "sanitet och hygien", "vattenkvalitet",
+        "vattenförorening", "avloppsvatten", "vatteneffektivitet","integrerad vattenresursförvaltning",
+        "vattenskydd", "avsaltning"
     ],
     7: [
         # Clean Energy, Grid & Heat Recovery
@@ -163,8 +156,7 @@ AUXILIARY_SDG_TERMS = {
         "kärnbränsle", "elkraftteknik",
         "hållbar energi", "förnybar energi", "energieffektivisering",
         "ren energiteknik", "fossilfria bränslen", "smarta elnät",
-        "solceller", "vindkraft", "elkraftteknik", "energiomställning", "efterfrågeflexibilitet",
-        "kärnbränsle", "blykyld reaktor", "värmepumpar",
+        "solceller", "vindkraft", "värmepumpar",
     ],
     8: [
         # Workplace Safety & Manufacturing
@@ -173,11 +165,10 @@ AUXILIARY_SDG_TERMS = {
         # Swedish Terms
         "säkerhetskultur", "säkerhetspraktiker", "byggsektorn",
         "arbetsplatskultur", "monteringsegenskaper", "tillverkningsteknik",
-        "bebyggelse", "bosättning", "globalt mål 11 - hållbara städer och samhällen", "stad",
         "anständiga arbetsvillkor", "ekonomisk tillväxt", "resurseffektivitet i konsumtion och produktion",
         "full sysselsättning", "ungdomsarbetslöshet", "tvångsarbete",
-        "trygg arbetsmiljö", "arbetstagares rättigheter", "säkerhetskultur",
-        "arbetsplatsolyckor", "byggsektorn", "produktionssystem", "monteringsprocesser", "arbetsmiljö"
+        "trygg arbetsmiljö", "arbetstagares rättigheter",
+        "arbetsplatsolyckor", "produktionssystem", "monteringsprocesser", "arbetsmiljö"
     ],
     9: [
         # AI / Software / Digital Infrastructure
@@ -208,10 +199,7 @@ AUXILIARY_SDG_TERMS = {
         "inkluderande industrialisering", "småföretagens tillgång till finansiering",
         "uppgradera industriell infrastruktur", "ren teknik och miljöanpassade processer",
         "vetenskaplig forskning och teknisk kapacitet", "informations- och kommunikationsteknik",
-        "tillgång till internet", "järnvägsinfrastruktur",
-        "godståg", "banavgifter", "metaytor", "metayta",
-        "cellfri massiv mimo", "additiv tillverkning", "artificiell intelligens",
-        "maskininlärning", "cyberfysiska system"
+        "tillgång till internet", "cyberfysiska system"
     ],
     10: [
         # Inclusion & Equity
@@ -238,8 +226,8 @@ AUXILIARY_SDG_TERMS = {
         "inkluderande stadsplanering", "kultur- och naturarv", "katastrofriskreducering",
         "miljöpåverkan från städer", "luftkvalitet i städer", "kommunal avfallshantering",
         "gröna områden och allmänna platser", "stads- och regionplanering",
-        "delningsbostäder", "trafikbuller", "miljöakustik", "markvibrationer",
-        "urban mobilitet", "klimatneutrala städer"
+        "bebyggelse", "bosättning", "globalt mål 11 - hållbara städer och samhällen", "stad"
+
     ],
     12: [
         # Circular Economy & Materials
@@ -252,10 +240,9 @@ AUXILIARY_SDG_TERMS = {
         "biografit", "lignin",
         "hållbar konsumtion och produktion", "hållbar förvaltning av naturresurser", "minska matsvinnet",
         "kemikaliehantering", "avfallsminskning", "materialåtervinning",
-        "cirkulär ekonomi", "cirkulära leveranskedjor", "hållbarhetstänkande i företag",
+        "hållbarhetstänkande i företag",
         "hållbarhetsredovisning", "hållbar offentlig upphandling",
-        "biokol", "biografit", "biomassa", "natriumjonbatterier",
-        "remanufacturing"
+        "biomassa"
     ],
     13: [
         # Climate Mitigation & Clean Processing
@@ -265,11 +252,10 @@ AUXILIARY_SDG_TERMS = {
         "koldioxidinfångning", "fossilfritt stål", "klimatåtgärder",
         "klimatdeklaration", "växthusgasutsläpp",
         "globalt mål 13 - bekämpa klimatförändringen", "klimatförändring",
-        "bekämpa klimatförändringarna", "klimatåtgärder", "klimatanpassning"
+        "bekämpa klimatförändringarna", "klimatanpassning",
         "motståndskraft mot klimatrelaterade faror", "klimatpolitik",
         "klimatstrategier", "kunskap och kapacitet om klimatförändringar",
-        "växthusgasutsläpp", "koldioxidutsläpp", "koldioxidinfångning",
-        "fossilfritt stål", "klimatdeklaration", "negativa utsläpp"
+        "koldioxidutsläpp", "negativa utsläpp"
     ],
     14: [
         # Swedish Terms
@@ -281,7 +267,7 @@ AUXILIARY_SDG_TERMS = {
         ],
     15: [
         # Swedish Terms
-        "biodiversitet", "biologisk mångfald", "biologiska mångfalden", "ekosystem", "globalt mål 15 - ekosystem och biologisk mångfald"
+        "biodiversitet", "biologisk mångfald", "biologiska mångfalden", "ekosystem", "globalt mål 15 - ekosystem och biologisk mångfald",
         "ekosystem och biologisk mångfald", "landbaserade ekosystem", "sötvattensekosystem",
         "hållbart skogsbruk", "avskogning", "återplantering av skog", "markförstöring",
         "skyddade arter", "tjuvjakt", "invasiva främmande arter", "skogsbruksmetoder", "våtmarker"
@@ -309,7 +295,7 @@ AUXILIARY_SDG_TERMS = {
         "genomförande och globalt partnerskap", "inhemsk resursmobilisering", "utvecklingsbistånd",
         "skuldlättnad", "tekniköverföring", "kapacitetsuppbyggnad", "multilaterala handelssystemet",
         "makroekonomisk stabilitet", "samstämmighet i politiken", "globala partnerskap",
-        "tillförlitliga data och statistik", "akademisk internationalisering"
+        "tillförlitliga data och statistik",
     ]
 }
 
