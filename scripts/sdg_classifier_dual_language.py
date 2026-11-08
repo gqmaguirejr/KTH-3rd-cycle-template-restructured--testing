@@ -189,6 +189,7 @@ AUXILIARY_SDG_TERMS = {
         "cell-free massive mimo", "reconfigurable intelligent surface",
         "articulated robot", "unbound granular materials", "asphalt binder",
         "additive manufacturing", "metasurface", "metasurfaces",
+        "rail infrastructure",
         # Swedish Terms
         "artificiell intelligens", "maskininlärning", "djupinlärning",
         "sakernas internet", "telekommunikation", "molninfrastruktur",
@@ -199,7 +200,7 @@ AUXILIARY_SDG_TERMS = {
         "inkluderande industrialisering", "småföretagens tillgång till finansiering",
         "uppgradera industriell infrastruktur", "ren teknik och miljöanpassade processer",
         "vetenskaplig forskning och teknisk kapacitet", "informations- och kommunikationsteknik",
-        "tillgång till internet", "cyberfysiska system"
+        "tillgång till internet", "cyberfysiska system", "järnvägsinfrastruktur", "tågtrafik", "persontåg", "snabbtåg"
     ],
     10: [
         # Inclusion & Equity
@@ -299,6 +300,30 @@ AUXILIARY_SDG_TERMS = {
     ]
 }
 
+# ---------------------------------------------------------------------------
+# Load and Pre-compile STRINGS Co-occurrence Rules
+# ---------------------------------------------------------------------------
+STRINGS_RULES_FILE = Path("STRINGS_rules.json")
+COMPILED_STRINGS_RULES: dict[int, list[dict]] = {}
+
+if STRINGS_RULES_FILE.is_file():
+    with open(STRINGS_RULES_FILE, "r", encoding="utf-8") as f:
+        _raw_rules = json.load(f)
+        for _g_str, _rule_list in _raw_rules.items():
+            _g = int(_g_str)
+            COMPILED_STRINGS_RULES[_g] = []
+            for _r in _rule_list:
+                # Combine OR terms in each clause into a single regex: (?:pat1|pat2|...)
+                compiled_clauses = [
+                    re.compile("|".join(clause), flags=re.IGNORECASE)
+                    for clause in _r["clauses"]
+                    if clause
+                ]
+                if compiled_clauses:
+                    COMPILED_STRINGS_RULES[_g].append({
+                        "raw": _r["raw"],
+                        "clauses": compiled_clauses
+                    })
 
 def clean_text_artifacts(text: str) -> str:
     """Removes HTML and TeX artifacts and normalizes whitespace."""
@@ -441,10 +466,38 @@ def extract_from_pdf(pdf_path: Path) -> str:
     return clean_text_artifacts(full_text)
 
 
+def evaluate_strings_rules(text: str) -> tuple[dict[int, int], dict[int, list[tuple[str, int]]]]:
+    """Evaluates multi-term co-occurrence rules from STRINGS_SDG_queries_FINAL.xlsx.
+    
+    A rule matches if ALL its clauses (AND blocks) find at least one match (OR blocks).
+    """
+    rule_counts = {i: 0 for i in range(1, 18)}
+    matched_rules = {i: [] for i in range(1, 18)}
+
+    if not COMPILED_STRINGS_RULES:
+        return rule_counts, matched_rules
+
+    for sdg_num, rules in COMPILED_STRINGS_RULES.items():
+        hits = 0
+        rule_matches = []
+        for r in rules:
+            # Check if all AND clauses are satisfied in the text
+            if all(clause_pat.search(text) for clause_pat in r["clauses"]):
+                hits += 1
+                rule_matches.append((r["raw"], 1))
+
+        if hits > 0:
+            rule_counts[sdg_num] = hits
+            matched_rules[sdg_num] = rule_matches
+
+    return rule_counts, matched_rules
+
 def scan_text_for_sdgs(
     text: str,
 ) -> tuple[dict[int, int], dict[int, list[tuple[str, int]]], set[int]]:
-    """Calculates keyword match frequencies and captures explicit in-text SDG mentions."""
+    """Calculates keyword match frequencies, STRINGS co-occurrence expressions,
+    and explicit author declarations.
+    """
     sdg_terms = build_dual_language_term_index()
     counts: dict[int, int] = {i: 0 for i in range(1, 18)}
     matched_phrases: dict[int, list[tuple[str, int]]] = {i: [] for i in range(1, 18)}
@@ -452,6 +505,7 @@ def scan_text_for_sdgs(
     padded_text = f" {text} "
     explicit_mentions = extract_explicit_sdg_mentions(text)
 
+    # 1. Standard vocabulary matching (Elsevier, UoA, and Swedish auxiliaries)
     for sdg_num, terms in sdg_terms.items():
         counter = Counter()
         for phrase in terms:
@@ -459,15 +513,20 @@ def scan_text_for_sdgs(
                 continue
 
             escaped = re.escape(phrase)
-            pattern = rf"(?<!\w){escaped}(?!\w)"
-            matches = len(re.findall(pattern, padded_text, flags=re.IGNORECASE))
+            matches = len(re.findall(rf"(?<!\w){escaped}(?!\w)", padded_text, flags=re.IGNORECASE))
             if matches > 0:
                 counter[phrase] += matches
 
         counts[sdg_num] = sum(counter.values())
         matched_phrases[sdg_num] = counter.most_common(10)
 
-    # SDG 17 Pattern Matching
+    # 2. Evaluate STRINGS co-occurrence rules (AND/OR queries)
+    strings_counts, strings_matched = evaluate_strings_rules(padded_text)
+    for g in range(1, 18):
+        counts[g] += strings_counts[g]
+        matched_phrases[g].extend(strings_matched[g])
+
+    # 3. SDG 17 Pattern Matching
     sdg17_counter = Counter()
     for pattern in getattr(sdg_dict, "SDG17_PATTERNS", []):
         hits = re.findall(pattern, padded_text, flags=re.IGNORECASE)
@@ -475,8 +534,8 @@ def scan_text_for_sdgs(
             clean_name = pattern.replace(r"\b", "").replace(r".*?", " ")
             sdg17_counter[clean_name] += len(hits)
 
-    counts[17] = sum(sdg17_counter.values())
-    matched_phrases[17] = sdg17_counter.most_common(10)
+    counts[17] += sum(sdg17_counter.values())
+    matched_phrases[17].extend(sdg17_counter.most_common(10))
 
     return counts, matched_phrases, explicit_mentions
 
