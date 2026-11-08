@@ -303,6 +303,11 @@ AUXILIARY_SDG_TERMS = {
 # ---------------------------------------------------------------------------
 # Load and Pre-compile STRINGS Co-occurrence Rules
 # ---------------------------------------------------------------------------
+# The STRINGS project (Science, Technology, Research and Innovations for the Global Goals) is a global research initiative led by the Science Policy Research Unit (SPRU) at the University of Sussex, UCL STEaPP, and the UNDP to map and align science and innovation with the UN Sustainable Development Goals (SDGs).
+# Confraria, Ciarli, Colonna, and Noyons, “The STRINGS queries to identify documents related to the SDGs (+ country-SDG data)”. Zenodo, Jan. 08, 2024. doi: 10.5281/zenodo.10470841.
+# Creative Commons Attribution 4.0 International
+# https://zenodo.org/records/10470841/files/STRINGS_SDG_queries_FINAL.xlsx?download=1
+# The spreadsheet is compiled with compile_strings_queries.py
 STRINGS_RULES_FILE = Path("STRINGS_rules.json")
 COMPILED_STRINGS_RULES: dict[int, list[dict]] = {}
 
