@@ -17,6 +17,9 @@ Supports:
 Note that the transformer model SDGdetector, performs poorly on technical documents as it was not trained on this kind of data.
 
 OSDG https://github.com/osdg-ai/osdg-tool available at https://www.osdg.ai/ does much better than SDGdetector, but still not as specific as sdg_classifier_dual_language.py. However, according to its web page: "OSDG currently supports 15 languages: English, Arabic, Danish, Dutch, Finnish, French, German, Italian, Korean, Polish, Portuguese, Russian, Spanish, Swedish, and Turkish." See the paper at https://arxiv.org/abs/2211.11252
+
+See also https://aurora-universities.eu/research/open-science/dashboard/deliverables/
+There is a list of related efforts at https://aurora-universities.eu/research/open-science/dashboard/faq/
 """
 
 from __future__ import annotations
