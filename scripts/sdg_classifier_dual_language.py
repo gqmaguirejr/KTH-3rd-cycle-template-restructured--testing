@@ -70,6 +70,10 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "CBL", "SDT", "WIA", "WIAs"
 
     ],
+    6: [
+        "CLEW", "CLEWs",
+        "ABVA", "VA",
+    ],
     7: [
         # Solar & Clean Generation
         "PV", "PVT", "CCS", "BECCS", "SNG",
@@ -122,6 +126,14 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "GIS",
 
+        "BV", "AD", # BV (Biowaste Valorization) and AD (Anaerobic Digestion)
+
+        "SCV", "SCM", "RFID",
+
+        "ABVA", "VA",
+
+        "MCDA", "MCDM", "TRL",
+
     ],
     11: [
         # Public & Active Transit
@@ -135,6 +147,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "EPC",
 
+        "ABVA", "VA",
     ],
     12: [
         # Metallurgy & Decarbonized Materials
@@ -143,6 +156,11 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "CMS", "CSC", "CSCs", "EoL", "XPS", "XPSs",
         # Material Characterization
         "FTIR", "TGA",
+
+        "BV", "AD", # BV (Biowaste Valorization) and AD (Anaerobic Digestion)
+
+        "SCV", "SCM", "DPP"  # Digital Product Passport
+
     ],
     13: [
         # Climate Metrics & Policy
@@ -154,6 +172,8 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "CSP", "TES", "sCO2", "P2H2P", "DNI",
 
         "GWP", "F-gas",
+
+        "CLEW", "CLEWs",
     ],
     14: [
         # Marine & Underwater Technology
@@ -344,7 +364,21 @@ AUXILIARY_SDG_TERMS = {
         # Water & Wastewater
         "groundwater intelligence", "greywater reuse", "rainwater harvesting",
         "water distribution networks", "wastewater treatment",
+
+        # Water-Energy Nexus & Industrial Water Consumption (Target 6.4)
+        "water impact", "water consumption", "water impacts",
+
+        # Wastewater Facilities, Biological Treatment & Nitrogen Removal (Target 6.3)
+        "wastewater treatment plant", "biological treatment process",
+        "nitrogen removal", "sewage system", "wastewater temperature",
+
         # Swedish Terms
+        "spillvatten", "reningsverk", "reningsverket", "reningsprocess",
+        "reningsprocessen", "biologisk rening", "biologiska reningsprocessen",
+        "kväverening", "reningsresultat", "avloppsanläggningar",
+        "va-huvudman", "va-huvudmannen", "va-huvudmännen",
+
+        "vattenpåverkan", "vattenanvändning", "vattenförbrukning",
         "grundvatten", "gråvatten", "dagvattenhantering", "avloppsrening",
         "vattenförsörjning", "diväteoxid", "globalt mål 6 - rent vatten och sanitet",
         "rent vatten och sanitet", "sanitet", "vatten",
@@ -384,8 +418,24 @@ AUXILIARY_SDG_TERMS = {
         "commercial refrigeration", "refrigeration system", "refrigeration systems",
         "air conditioning", "energy transition", "heat pumps",
 
+        # Thermal Grids, Sector Coupling & Energy System Modelling (Target 7.3)
+        "district heating systems", "district heating system",
+        "excess heat recovery", "industrial excess heat", "urban excess heat",
+        "thermal storage", "electric boilers", "energy system optimisation",
+        "energy system optimization", "exergy analysis",
+
+        # Bio-based Heating & Fossil Substitution (Target 7.2)
+        "bio-oil", "tall oil pitch", "fast pyrolysis", "fossil oil",
+        "power generation", "tradeoff between power generation",
 
         # Swedish Terms
+        "bioolja", "tallbeck", "snabbpyrolys", "fossil olja",
+        "elproduktion",
+
+        "fjärrvärmesystem", "fjärrvärmenät", "återvinning av överskottsvärme",
+        "industriell överskottsvärme", "urban överskottsvärme", "elpannor",
+        "termisk lagring", "energisystemmodellering", "exergianalys",
+
         "värmeåtervinning", "överskottsvärme", "kylsystem",
         "kommersiell kyla", "luftkonditionering", "energiomställning",
         "värmepumpar", "värmepump", "energideklarationer",
@@ -449,6 +499,7 @@ AUXILIARY_SDG_TERMS = {
 
 
         # Swedish Terms
+
         "manuellt arbete", "öka produktiviteten", "ökar produktiviteten",
         "öka effektiviteten", "arbetsmiljö i skogsbruket",
 
@@ -600,7 +651,38 @@ AUXILIARY_SDG_TERMS = {
         # Open Science, Research Infrastructure & Open Source (Target 9.5)
         "open science", "open source", "open-source software",
 
+        # Smart Supply Chains, Industrial IoT & Factory Logistics (Target 9.2 & 9.4)
+        "supply chain visibility", "supply chain management", "extended supply chain",
+        "extended supply chains", "intelligent supply chains", "intelligent supply chain",
+        "manufacturing companies", "real-time visibility", "technological integration",
+        "incoming goods",
+
+        # Utility Infrastructure, Process Modeling & Plant Sizing (Target 9.1 & 9.4)
+        "process modeling", "process modelling", "thermodynamic modeling",
+        "thermodynamic modelling", "infrastructure investment", "facility dimensioning",
+
+        # Building Utility Infrastructure, Living Labs & Decision Support (Target 9.1 & 9.4)
+        "water and wastewater infrastructure", "wastewater infrastructure",
+        "water utilities", "pilot installations", "living lab",
+        "decision-support framework", "multi-criteria decision analysis",
+        "evaporative cooling", "numerical modelling", "numerically modelled",
+
         # Swedish Terms
+        "vatten- och avloppssystem", "vatten- och avloppssystemen",
+        "va-bolag", "pilotanläggningar", "pilotanläggning",
+        "beslutsstödsramverk", "flerkriteriebeslutsanalys",
+        "flerkriterieanalys", "resiliens och flexibilitet",
+        "evaporativ kylning",
+
+        "processmodellering", "termodynamisk modellering", "utbyggnadsplanering",
+        "vatten- och avloppsanläggningar", "avloppsanläggning", "reningsverk",
+        "dimensionering och drift", "investeringar i organisationens historia",
+
+        "synlighet i försörjningskedjor", "försörjningskedjor", "försörjningskedja",
+        "utökade försörjningskedjor", "intelligenta försörjningskedjor",
+        "tillverkande företag", "realtidsvisibilitet", "inkommande gods",
+        "teknisk integration", "interorganisatoriskt samarbete",
+
         "öppen vetenskap", "öppen källkod",
         
         "avloppsrening", "avloppsreningsverk", "vatteninfrastruktur",
@@ -788,9 +870,45 @@ AUXILIARY_SDG_TERMS = {
         "commercial buildings", "building owners", "neighboring buildings",
         "district heating", "space heating demand", "surplus heat",
 
+        # Urban District Energy Grids & Spatial Infrastructure Planning (Target 11.c & 11.a)
+        "district heating systems", "district heating system",
+        "urban excess heat", "network optimisation", "network optimization",
+        "spatial feasibility", "resilient and low-carbon",
 
+        # Municipal Solid Waste & Urban Bio-waste Management (Target 11.6)
+        "municipal solid waste", "biowaste", "food waste prevention",
+        "decentralized anaerobic digestion",
+
+
+        # Urban Climate Action & Municipal Sustainability Planning (Target 11.b)
+        "urban sustainability", "climate action plan", "urban climate action",
+        "urban climate actions", "metropolitan area", "surrounding regions",
+
+        # Building Energy Regulations & Municipal Utilities (Target 11.c)
+        "energy performance of buildings", "building energy performance",
+        "municipal utilities", "central heating plants",
+
+        # Building Water-Energy Nexus & Integrated Facilities (Target 11.c)
+        "building water-energy nexus", "water systems in the built environment",
+        "greywater reuse", "rainwater harvesting", "property owners",
+        "residential buildings",
 
         # Swedish Terms
+        "vatten- och energinexus i byggnader", "gråvattenåtervinning",
+        "regnvatteninsamling", "bostadshus", "fastighetsägare",
+
+        "energiprestanda", "energikraven på byggnader", "energikrav",
+        "värmeåtervinningsanläggningar", "medlemskommuner", "flerfamiljshus",
+
+        "urban hållbarhet", "klimathandlingsplan", "urbana klimatåtgärder",
+        "stadsregion", "storstadsområde",
+
+        "kommunalt fast avfall", "bioavfall", "mat- och trädgårdsavfall",
+        "avfallshanteringssystem", "decentraliserad rötning",
+
+        "fjärrvärmesystem", "fjärrvärmenät", "urban överskottsvärme",
+        "rumslig genomförbarhet", "kostnadsoptimering av nät",
+
         "kommersiella byggnader", "fastighetsägare", "närliggande byggnader",
         "fjärrvärme", "värmebehov", "överskottsvärme", "energideklarationer",
 
@@ -912,7 +1030,27 @@ AUXILIARY_SDG_TERMS = {
         # Sustainable Resource Management & Forestry Equipment (Target 12.2)
         "sustainable forestry", "site preparation", "environmental impacts",
 
+        # Biowaste Valorization, Biorefineries & Methane Pledge (Target 12.3, 12.4, 12.5)
+        "biowaste valorization", "biowaste", "biorefineries", "biorefinery",
+        "anaerobic digestion", "global methane pledge", "feedstock in biorefineries",
+        "biowaste prevention",
+
+        # Bio-waste Pyrolysis & By-product Fuels (Target 12.2 & 12.5)
+        "fast pyrolysis", "tall oil pitch", "pyrolysis of food waste",
+
+        # Supply Chain Traceability, Due Diligence & Disclosures (Target 12.6)
+        "supply chain visibility", "extended supply chain", "extended supply chains",
+        "traceability in supply chains", "supply chain due diligence",
+
         # Swedish Terms
+        "synlighet i försörjningskedjor", "utökade försörjningskedjor",
+        "spårbarhet i leverantörskedjan",
+
+        "snabbpyrolys", "tallbeck", "pyrolys av matavfall",
+        "bioavfallsvärdering", "värdeförädling av bioavfall", "bioavfall",
+        "bioraffinaderier", "bioraffinaderi", "rötning",
+        "globala metanlöftet", "förebygga bioavfall",
+
         "hållbart skogsbruk", "markberedning", "minska miljöpåverkan",
         "ekologisk påverkan",
 
@@ -1009,8 +1147,21 @@ AUXILIARY_SDG_TERMS = {
         "direct carbon emissions", "decarbonization of the heating",
         "climate targets",
 
+        # Thermal Decarbonization & Clean Heat Supply (Target 13.2)
+        "decarbonising heat supply", "decarbonizing heat supply",
+        "low-carbon district heating",
+
+        # Building Energy Standards & External Carbon Sourcing (Target 13.2)
+        "building energy performance", "energy requirements on buildings",
+        "external carbon source",
 
         # Swedish Terms
+        "energiprestanda", "energikraven på byggnader", "extern kolkälla",
+        "kolkälla",
+
+        "utfasningen av fossila bränslen i värmeförsörjningen",
+        "koldioxidsnåla fjärrvärmesystem",
+
         "fluorerade köldmedier", "köldmedium", "köldmedier",
         "växthusgaser", "f-gas förordning", "f-gas", "klimatmål",
         "koldioxidutsläpp",
@@ -1119,8 +1270,26 @@ AUXILIARY_SDG_TERMS = {
         "bilateral research funding", "international student recruitment",
         "global partnerships", "global partnership", "hybrid governance",
 
+        # Multi-Stakeholder Collaboration, Transdisciplinarity & Silo Elimination (Target 17.14 & 17.16)
+        "transdisciplinary collaboration", "interdisciplinary and transdisciplinary",
+        "transdisciplinary", "operate in silos", "siloed",
+        "cross-sectoral collaboration", "multi-actor collaboration",
+
+        # Academic Partnerships & University Exchanges (Target 17.16)
+        "academic partnership", "academic exchange", "university exchange",
+        
+        # Inter-organizational Data Sharing & Integration (Target 17.16)
+        "interorganisational collaboration", "inter-organisational collaboration",
+        "cross-functional collaboration",
+
 
         # Swedish Terms
+        "interorganisatoriskt samarbete", "tvärfunktionellt samarbete",
+        "akademiskt partnerskap", "akademiskt utbyte", "universitetsutbyte",
+        "transdisciplinärt samarbete", "tvärvetenskapligt och transdisciplinärt",
+        "transdisciplinärt", "samarbete mellan olika aktörer", "arbeta i silos",
+        "verkar i silos", "tvärsektoriell samverkan",
+
         "akademisk internationalisering", "internationalisering",
         "vetenskapsdiplomati", "forskningsdiplomati", "forskningssäkerhet",
         "bilateral forskningsfinansiering", "bilateral forskning",
@@ -1216,6 +1385,12 @@ def extract_explicit_sdg_mentions(text: str) -> set[int]:
             i += 1
     return explicit_goals
 
+# Generic ICT / computing tokens that bleed into clean energy unless energy-qualified
+SDG7_EXCLUDED_TERMS = {
+    "internet of things",
+    "internet of things (iot)",
+    "iot",
+}
 # Add tokens to exclude from SDG 14 when they lack marine context
 SDG14_EXCLUDED_TERMS = {
     "navigation", "sensor fusion", "perception", "trajectory", "control technologies",
@@ -1242,6 +1417,10 @@ def build_dual_language_term_index() -> dict[int, list[str]]:
             t_clean = t.strip().lower()
             t_clean = re.sub(r"^(and|the|och|att)\s+", "", t_clean).strip()
             if not t_clean or t_clean in GENERIC_SDG_META_TERMS:
+                continue
+
+            # Suppress generic ICT tokens from SDG 7
+            if i == 7 and t_clean in SDG7_EXCLUDED_TERMS:
                 continue
 
             # Suppress standalone 'forest' in SDG 14
