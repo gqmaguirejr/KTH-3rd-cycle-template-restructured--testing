@@ -62,6 +62,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "LNP", "mRNA", "2PP", "RUMS", "DNA", "RNA", "PZT", "PZT-5H", "ASR",
         # Public Health & Protection
         "GBV",
+        "NVH", "S&R",
     ],
     4: [
         # Educational Acronyms
@@ -73,6 +74,8 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
     6: [
         "CLEW", "CLEWs",
         "ABVA", "VA",
+        "PINN", "PINNs",  # Physics-informed neural networks & AI infrastructure
+        "RMG",
     ],
     7: [
         # Solar & Clean Generation
@@ -88,6 +91,8 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "CSP", "TES", "sCO2", "P2H2P", "DNI",
 
         "COP", "EPC",
+        "LFR", "SMR", "SMRs", "LBE", "Gen-IV", "GenIV", "AFA", "AFM",
+
     ],
     9: [
         # Connectivity, AI & Computation
@@ -134,6 +139,15 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "MCDA", "MCDM", "TRL",
 
+        "DEM", "UGM", "UGMs", "OGM",
+
+        "CNOSSOS-EU", "CNOSSOS",
+
+        "LME", "LBE", "SSRT", "AFA", "AFM",
+
+        "NVH", "S&R",
+
+        "PINN", "PINNs", # Physics-informed neural networks & AI infrastructure
     ],
     11: [
         # Public & Active Transit
@@ -148,6 +162,10 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "EPC",
 
         "ABVA", "VA",
+
+        "CNOSSOS-EU", "CNOSSOS",
+
+        "NVH",
     ],
     12: [
         # Metallurgy & Decarbonized Materials
@@ -161,6 +179,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "SCV", "SCM", "DPP"  # Digital Product Passport
 
+        "UGM", "UGMs", "OGM",
     ],
     13: [
         # Climate Metrics & Policy
@@ -269,7 +288,23 @@ AUXILIARY_SDG_TERMS = {
         "tonal noise", "acoustic legislation", "sound pressure levels",
         "sound power level",
 
+        # Road Traffic Noise Pollution & Population Exposure (Target 3.9)
+        "road traffic noise", "population exposure to noise", "noise exposure",
+        "environmental acoustics", "noise mitigation",
+
+        # Psychoacoustics, Annoying Sounds & Interior Comfort (Target 3.4 & 3.9)
+        "annoying sound", "annoying sounds", "disturbing sounds", "disturbing sound",
+        "interior noise", "interior vibration", "interior vibrations",
+        "sound and vibration perception", "interior comfort",
+        "vibrational interior comfort", "acoustic comfort",
+
         # Swedish Terms
+        "störande ljud", "störande buller", "interiörbuller", "interiörvibrationer",
+        "akustisk komfort", "upplevd komfort",
+
+        "vägtrafikbuller", "bullerexponering", "befolkningens bullerexponering",
+        "miljöakustik", "bullerbedömning",
+
         "globala utsläpp", "avgasutsläpp", "transportutsläpp",
         "utsläppsminskning",
 
@@ -322,7 +357,15 @@ AUXILIARY_SDG_TERMS = {
         "work industry-related activities", "student engagement",
         "engineering education", "pedagogy", "pedagogies",
 
+        # Higher Education Digitalization & Assessment Practices (Target 4.3 & 4.4)
+        "digital assessment", "digital assessment practices", "assessment practice",
+        "student-centred approach", "student-centered approach", "pedagogical development",
+
         # Swedish Terms
+        "digital bedömning", "digitala bedömningspraktiker", "bedömningspraktik",
+        "bedömningspraktiker", "digitala hjälpmedel", "tekniska högskolor",
+        "tekniskt lärosäte", "utbildningsutveckling", "studentcentrerat förhållningssätt",
+
         "challenge-based learning", "stem-outreach", "autentiskt lärande",
         "arbetslivsrelaterade aktiviteter", "studentengagemang",
         "ingenjörsutbildning", "forskarutbildning", "föruniversitär",
@@ -372,7 +415,17 @@ AUXILIARY_SDG_TERMS = {
         "wastewater treatment plant", "biological treatment process",
         "nitrogen removal", "sewage system", "wastewater temperature",
 
+        # Groundwater Intelligence, Aquifer Mass-Balance & Tech Water Footprint (Target 6.4, 6.5)
+        "groundwater intelligence", "water intelligence", "water-stressed",
+        "local water risk", "circular water use", "aquifer mass-balance",
+        "groundwater dependence", "sustainable water management",
+        "physics-informed neural-network", "safe-aquifer",
+
         # Swedish Terms
+        "vattenintelligens", "grundvattenintelligens", "vattenstressade",
+        "lokal vattenrisk", "cirkulär vattenanvändning", "grundvattenberoende",
+        "hållbar vattenförvaltning", "säkra akviferer", "grundvattenstress",
+
         "spillvatten", "reningsverk", "reningsverket", "reningsprocess",
         "reningsprocessen", "biologisk rening", "biologiska reningsprocessen",
         "kväverening", "reningsresultat", "avloppsanläggningar",
@@ -428,7 +481,18 @@ AUXILIARY_SDG_TERMS = {
         "bio-oil", "tall oil pitch", "fast pyrolysis", "fossil oil",
         "power generation", "tradeoff between power generation",
 
+        # Generation IV Nuclear, Fast Reactors & Heavy Liquid Metal Coolants (Target 7.a)
+        "generation iv", "generation iv nuclear", "fast nuclear reactors",
+        "fast reactors", "liquid metal cooled", "liquid lead",
+        "lead-bismuth eutectic", "high-temperature energy applications",
+        "heat-transfer medium", "nuclear reactor", "nuclear reactors",
+
         # Swedish Terms
+        "generation iv", "generation iv kärnkraft", "generation iv kärnkraftsreaktorer",
+        "kärnkraftsreaktor", "kärnkraftsreaktorer", "snabb reaktor", "snabba reaktorer",
+        "smält bly", "bly-vismut", "bly-vismut eutektisk",
+        "värmetransportmedium", "högtemperatur-energiapplikationer",
+
         "bioolja", "tallbeck", "snabbpyrolys", "fossil olja",
         "elproduktion",
 
@@ -667,7 +731,59 @@ AUXILIARY_SDG_TERMS = {
         "decision-support framework", "multi-criteria decision analysis",
         "evaporative cooling", "numerical modelling", "numerically modelled",
 
+        # Pavement Engineering, Unbound Granular Materials & Aggregate Mechanics (Target 9.1 & 9.5)
+        "unbound granular material", "unbound granular materials",
+        "asphalt pavement layers", "asphalt pavement", "pavement layers",
+        "pavement performance", "pavement design", "pavement structural design",
+        "road materials", "road construction", "discrete element method",
+        "aggregate fracture",
+
+        # Acoustic Sensing, Traffic Monitoring Hardware & Sensor Networks (Target 9.1 & 9.5)
+        "acoustic sensing", "noise sensors", "noise sensor", "traffic sensor",
+        "traffic sensors", "multifunctional sensors", "roadside noise sensors",
+        "traffic monitoring", "intelligent traffic management", "traffic flow estimation",
+        "environmental acoustics",
+
+        # High-Temperature Structural Alloys & Liquid Metal Degradation (Target 9.5)
+        "alumina-forming steels", "alumina-forming austenitic",
+        "alumina-forming austenitic steel", "liquid metal embrittlement",
+        "liquid metal corrosion", "erosion-corrosion", "slow strain rate testing",
+        "ferritic steel", "martensitic steel",
+
+        # Rail Vehicle Engineering, Component Testing & Noise Abatement (Target 9.1 & 9.5)
+        "rail vehicles", "rail vehicle", "rail vehicle design",
+        "train interiors", "train interior", "shaker rigs", "shaker rig",
+        "squeak and rattle", "vibration testing", "source isolation",
+        "interior noise and vibration", "interior noise", "operating vehicles",
+
+        # Resilient Water Infrastructure, AI Telemetry & Data Center Footprints (Target 9.1 & 9.5)
+        "resilient infrastructure", "water intelligence", "digital infrastructure",
+        "groundwater intelligence", "monitoring-system design", "data centres",
+        "physics-informed neural-network", "physics-informed neural network",
+
+
         # Swedish Terms
+        "resilient infrastruktur", "digital infrastruktur", "vattenintelligens",
+        "grundvattenintelligens", "datacenter", "monitoreringssystem",
+        "fysikinformerad neural nätverksmodell",
+
+        "spårfordon", "tåginredning", "skakrigg", "skakriggar",
+        "skrammel och gnissel", "vibrationstestning", "källisolering",
+        "interiörbuller",
+
+        "aluminiumoxidbildande stål", "flytande metallförsprödning",
+        "flytande metallkorrosion", "erosionskorrosion",
+        "ferritiskt stål", "martensitiskt stål",
+
+        "akustisk avkänning", "ljudnivåmätare", "bullersensorer", "bullersensor",
+        "trafiksensorer", "trafiksensor", "trafikövervakning", "trafikflödesberäkning",
+        "intelligent trafikledning", "miljöakustik",
+
+        "obundet granulärt material", "obundna granulära material",
+        "asfaltbeläggningslager", "vägbeläggning", "vägbeläggningens prestanda",
+        "vägbyggnad", "vägutformning", "diskreta elementmetoden",
+        "aggregatbrott", "ballastmaterial",
+
         "vatten- och avloppssystem", "vatten- och avloppssystemen",
         "va-bolag", "pilotanläggningar", "pilotanläggning",
         "beslutsstödsramverk", "flerkriteriebeslutsanalys",
@@ -893,7 +1009,22 @@ AUXILIARY_SDG_TERMS = {
         "greywater reuse", "rainwater harvesting", "property owners",
         "residential buildings",
 
+        # Smart City Traffic Telematics & Noise Routing (Target 11.2 & 11.6)
+        "vehicle routing", "noise mitigation strategies", "city-wide noise assessments",
+        "noise sensors", "roadside noise sensors", "intelligent traffic management",
+
+        # Public Rail Transit Attractiveness & Modal Shift (Target 11.2)
+        "intercity trains", "intercity train", "rail vehicle passengers",
+        "passenger comfort", "comfortable train journeys", "modal shift to rail",
+        "modes of transportation",
+
         # Swedish Terms
+        "intercitytåg", "tågresenärer", "passagerarkomfort", "bekväma tågresor",
+        "överflyttning till järnväg",
+
+        "fordonsruttplanering", "intelligent trafikledning", "ljudnivåmätare",
+        "bullersensorer", "trafikövervakning",
+
         "vatten- och energinexus i byggnader", "gråvattenåtervinning",
         "regnvatteninsamling", "bostadshus", "fastighetsägare",
 
@@ -1042,7 +1173,15 @@ AUXILIARY_SDG_TERMS = {
         "supply chain visibility", "extended supply chain", "extended supply chains",
         "traceability in supply chains", "supply chain due diligence",
 
+        # Marginal Aggregates, Demolition Brick Recycling & Virgin Ballast Reduction (Target 12.2 & 12.5)
+        "marginal aggregates", "marginal-quality aggregates", "crushed brick",
+        "reduce the demand for high-quality aggregates", "recycled aggregates",
+
         # Swedish Terms
+        "aggregat av lägre kvalitet", "material av lägre kvalitet",
+        "krossat tegel", "nybrutna ballastmaterial", "minska behovet av nybrutna ballastmaterial",
+        "återvunnen ballast",
+
         "synlighet i försörjningskedjor", "utökade försörjningskedjor",
         "spårbarhet i leverantörskedjan",
 
@@ -1282,8 +1421,16 @@ AUXILIARY_SDG_TERMS = {
         "interorganisational collaboration", "inter-organisational collaboration",
         "cross-functional collaboration",
 
+        # Bilateral Cooperation, Cross-Sectoral Evidence & Knowledge-to-Action (Target 17.6 & 17.16)
+        "bilateral collaboration", "sweden–india collaboration", "sweden-india collaboration",
+        "knowledge-to-action", "knowledge-to-action pathway", "multi-stakeholder partnership",
+        "linking research, public authorities",
+
 
         # Swedish Terms
+        "samarbete mellan sverige och indien", "kunskap-till-handling",
+        "kunskap-till-handling-process", "tvärsektoriell samverkan",
+
         "interorganisatoriskt samarbete", "tvärfunktionellt samarbete",
         "akademiskt partnerskap", "akademiskt utbyte", "universitetsutbyte",
         "transdisciplinärt samarbete", "tvärvetenskapligt och transdisciplinärt",
