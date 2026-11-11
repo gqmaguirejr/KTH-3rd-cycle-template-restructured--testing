@@ -53,6 +53,83 @@ GENERIC_SDG_META_TERMS = {
     "hållbar utveckling", "globala målen", "agenda2030"
 }
 
+# Define dedicated case-sensitive acronyms
+ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
+    3: [
+        # Clinical & Diagnostics
+        "ECG", "ECGI", "EMG", "MRI", "PET", "CT",
+        # Therapeutics, Biomaterials & Genetics
+        "LNP", "mRNA", "2PP", "RUMS", "DNA", "RNA", "PZT", "PZT-5H", "ASR",
+        # Public Health & Protection
+        "GBV",
+    ],
+    7: [
+        # Solar & Clean Generation
+        "PV", "PVT", "CSP", "CCS", "BECCS", "SNG",
+        # Storage & Grid Infrastructure
+        "BESS", "LIB", "LIBs", "SIB", "SIBs", "GSHP", "LCOE",
+        # Energy Modeling Frameworks
+        "OSeMOSYS", "ESOMs", "CLEWs"
+    ],
+    9: [
+        # Connectivity, AI & Computation
+        "5G", "6G", "AI", "ML", "DL", "FL", "XAI", "XRL", "IoT",
+        "MIMO", "RIS", "ssRIS", "SMS", "SCA", "FPPSCA", "OFDM", "RAN", "O-RAN",
+        "RU", "RUs", "DU", "DUs", "CU", "CUs", "UE", "UEs",
+        "O-RU", "O-RUs", "O-DU", "O-DUs", "O-CU", "O-CUs",
+        "O-CU-CP", "O-CU-UP", "RIC", "SMO", "SLA",
+        # Hardware, Robotics & Navigation
+        "MEMS", "PCB", "MOSFET", "MOSFETs", "SiC", "AGV",
+        "INS", "DVL",
+        # Systems, Design & Digital Engineering
+        "CPS", "CFD", "BIM", "STEP", "AP242",
+        "SANS",  # Small-Angle Neutron Scattering
+        # Aerial Robotics & Urban Air Mobility (Target 9.1 & 9.5)
+        "UAM", "UAV", "UAVs",
+        # Industrial Decarbonization & Clean Facility Retrofit (Target 9.4)
+        "BECCS", "DACCS", "CCS", "CRCF",
+
+        # Additive Manufacturing & Advanced Characterization (Target 9.5)
+        "AM", "XRD", "PBF", "PBF-EB", "PBF-LB",
+    ],
+    11: [
+        # Public & Active Transit
+        "BRT", "LRT", "TOD", "MaaS", "ITS",
+        # Connected & Autonomous Transport (Target 11.2)
+        "CAV", "CAVs",
+        # Spatial Analysis & Built Environment
+        "GIS",
+        # Smart City Operations
+        "ICCC", "ICCCs", "SPV", "SPVs"
+    ],
+    12: [
+        # Metallurgy & Decarbonized Materials
+        "EAF", "DRI", "H-DRI",
+        # Circular Economy & Supply Chains
+        "CMS", "CSC", "CSCs", "EoL", "XPS", "XPSs",
+        # Material Characterization
+        "FTIR", "TGA",
+    ],
+    13: [
+        # Climate Metrics & Policy
+        "GHG", "LCA", "CDR", "NDC",
+        # Heavy Industry Transition & Carbon Removal
+        "H-DRI", "BECCS", "CCS", "DACCS", "CRCF",
+
+
+    ],
+    14: [
+        # Marine & Underwater Technology
+        "AUV", "AUVs", "ROV", "ROVs", "DVL", "SONAR"
+    ],
+    17: [
+        # Country classifications & Global North-South Cooperation
+        "LMIC", "LMICs", "ODA",
+        # Open Modeling & Inter-institutional Frameworks
+        "CLEWs",
+    ],
+}
+
 # Dual-Language Auxiliary Terms (English & Swedish)
 AUXILIARY_SDG_TERMS = {
     1: [ # SDG 1 (No Poverty)
@@ -81,7 +158,7 @@ AUXILIARY_SDG_TERMS = {
     ],
     3: [ # SDG 3 (Good Health & Well-Being)
         # Clinical & Cardiovascular
-        "cardiac arrest", "cardiac", "electrocardiogram", "ecg", "ecgi",
+        "cardiac arrest", "cardiac", "electrocardiogram",
         "arrhythmia", "healthcare", "health care", "clinical adoption",
         "clinical", "clinicians", "medical imaging", "biomedical",
         "cardiovascular", "heart disease", "patient monitoring",
@@ -99,7 +176,49 @@ AUXILIARY_SDG_TERMS = {
         "electromyography", "motor unit", "motor units", "radiation therapy",
         "radiotherapy", "spinal cord injury", "corticomuscular coherence",
         "wellbeing", "outdoor recreation",
+        # --- Existing Clinical & Health Terms ---
+        "health", "patient", "patients", "medicine",
+        "disease", "diseases", "treatment", "therapy",
+        # --- Built Environment, Housing & Mental Well-Being (Target 3.4) ---
+        "well-being", "wellbeing", "mental health", "quality of life",
+        "social cohesion", "loneliness", "involuntary loneliness",
+        "healthy public spaces", "restorative environment", "nature connectedness",
+        # --- Environmental Health: Noise, Air Quality & Particulates (Target 3.9) ---
+        "traffic noise", "road traffic noise", "environmental noise", "noise annoyance",
+        "particulate emissions", "particulate matter", "air quality", "air pollution",
+        # --- MedTech, Biomaterials & Drug Delivery (Target 3.b) ---
+        "drug delivery", "transdermal delivery", "deep lung delivery", "therapeutic delivery",
+        "medical imaging", "orthovolt therapy", "active implants", "micro-implant",
+        "implantable", "microneedles", "biomedical engineering", "biologics",
+        # --- Health Systems & Climate Resilience (Target 3.8 & 3.d) ---
+        "health systems", "healthcare services", "healthcare access", "access to healthcare",
+        "health adaptation", "access to care", "care provision",
+        # Environmental Acoustics & Noise Annoyance (Target 3.9)
+        "acoustic annoyance", "noise annoyance", "disturbances",
+        "inhabitants exposed to noise", "aircraft noise",
+        # Biometrics, Psychophysiology & Road Safety (Target 3.6 & 3.4)
+        "biometrics", "biometric data", "psychophysiology",
+        "heart activity", "brain activity", "cognitive load",
+        "risk perception", "road safety", "road users",
+        "smartwatch", "smartwatches",
+
+
         # Swedish Terms
+        "biometrisk data", "biometriska data", "psykofysiologi",
+        "hjärtaktivitet", "hjärnaktivitet", "kognitiv belastning",
+        "riskuppfattning", "trafiksäkerhet", "trafikanter",
+        "smartklockor", "smartklocka",
+
+        "akustisk störning", "bullerstörning", "bullerstörningar",
+        "bullerexponering", "störningar",
+        "hälso- och sjukvård", "sjukvårdssystem", "sjukvård", "vårdtillgång",
+        "läkemedelstillförsel", "läkemedelsfrisättning", "medicinteknik", "medicinsk teknik",
+        "medicinsk avbildning", "mikronålar", "läkemedel", "biologiska läkemedel",
+        "mikroimplantat",
+        "trafikbuller", "vägtrafikbuller", "miljöbuller", "bullerexponering",
+        "partikelutsläpp", "luftkvalitet", "luftföroreningar",
+        "välbefinnande", "psykiskt välbefinnande", "fysiskt välbefinnande", "välmående",
+        "psykisk hälsa", "folkhälsa", "livskvalitet", "ensamhet", "ofrivillig ensamhet",
         "hälso- och sjukvård", "medicinsk teknik", "läkemedelstillförsel",
         "mikronålar", "hjärtstopp", "ryggmärgsskada", "gånganalys",
         "rehabilitering", "elektromyografi", "strålbehandling",
@@ -155,14 +274,32 @@ AUXILIARY_SDG_TERMS = {
     ],
     7: [ # SDG 7 (Affordable & Clean Energy)
         # Clean Energy, Grid & Heat Recovery
-        "district heating", "excess heat", "heat recovery", "pvt",
+        "district heating", "excess heat", "heat recovery",
         "concentrating solar power", "smart meter", "smart meters",
         "demand flexibility", "energy transition", "lead-cooled reactor",
         "nuclear fuel", "electric power engineering", "supercritical co2",
         "energy storage", "battery", "batteries",
         "sodium-ion battery", "lithium-ion battery",
         "anode materials", "structural battery", 
+
+        # --- Additions for Energy-Resilient & Efficient Production (Target 7.3) ---
+        "reconfigurable manufacturing systems", "reconfigurable manufacturing system",
+        "rms creation", "energy-efficient manufacturing",
+
+        # Energy Communities, Justice & Grid Flexibility (Target 7.1 & 7.2)
+        "energy community", "energy communities", "energy justice",
+        "flexibility capital", "just transition", "electricity grid",
+        "smart grid", "smart grids",
+
         # Swedish Terms
+        "energigemenskap", "energigemenskaper", "energirättvisa",
+        "flexibilitetskapital", "rättvis omställning", "smarta elnät",
+        "smarta elmätare",
+
+        # Swedish Energy Efficiency & Low-Energy Compounds (Target 7.3)
+        "energisnål", "energisnåla", "energisnålt",
+        "energisparande", "energianvändning", "energieffektivisering",
+        "lågenergi", "energieffektiva produkter",
         "fjärrvärme", "spillvärme", "värmeåtervinning", "smarta mätare",
         "efterfrågeflexibilitet", "energiomställning", "blykyld reaktor",
         "kärnbränsle", "elkraftteknik",
@@ -171,12 +308,33 @@ AUXILIARY_SDG_TERMS = {
         "solceller", "vindkraft", "värmepumpar", "energylagring",
         "batteri", "batterier", "natriumjonbatterier", "litiumjonbatterier",
         "strukturella batterier",
+
+        "omkonfigurerbara tillverkningssystem",
     ],
     8: [ # SDG 8 (Decent Work and Economic Growth)
         # Workplace Safety & Manufacturing
         "safety culture", "safety practices", "construction sector",
         "collaborative product development", "assembly features",
+        "social entrepreneurship", "social enterprises",
+
+        # Sustainable Finance, Capital Allocation & Financial Sector (Target 8.10)
+        "sustainable finance", "financial sector", "investment flows",
+        "redirect investments", "redirecting investments", "green projects",
+        "financing the climate transition",
+
+        # Driver Ergonomics, Cognitive Load & Operator Safety (Target 8.8)
+        "cognitive load", "human-machine interaction", "human-computer interaction",
+        "remotely controlled vehicle", "driver information",
+
         # Swedish Terms
+        "kognitiv belastning", "människa-maskininteraktion",
+        "människa-datorinteraktion", "fjärrstyrt fordon", "förarinformation",
+
+        "hållbar finansiering", "finansiella sektorn", "finanssektorn",
+        "investeringsflöden", "omfördela investeringar", "gröna projekt",
+
+        "entreprenörskap", "socialt företagande", "idéburna verksamheter",
+        "kooperativa företag", "sociala företag",
         "säkerhetskultur", "säkerhetspraktiker", "byggsektorn",
         "arbetsplatskultur", "monteringsegenskaper", "tillverkningsteknik",
         "anständiga arbetsvillkor", "ekonomisk tillväxt", "resurseffektivitet i konsumtion och produktion",
@@ -194,9 +352,9 @@ AUXILIARY_SDG_TERMS = {
         # Electrical & Hardware Engineering
         "power converter", "power converters", "traction inverter",
         "inverter", "inverters", "power electronics", "gate driver",
-        "gate drivers", "silicon carbide", "mosfet", "mosfets",
+        "gate drivers", "silicon carbide",
         "semiconductor", "semiconductors", "soft switching",
-        "printed circuit board", "pcb", "hardware prototype",
+        "printed circuit board", "hardware prototype",
         "circuit design", "finite element method",
         # Infrastructure, Transport, Robotics & Materials
         "rail freight", "rail infrastructure", "track access charges",
@@ -207,16 +365,96 @@ AUXILIARY_SDG_TERMS = {
         "magnetometer", "magnetometers", "magnetometer array",
         "inertial navigation", "inertial navigation system",
         "autonomous vehicle", "autonomous vehicles",
-        "autonomous underwater vehicle", "autonomous underwater vehicles", "auv",
-        "5g", "o-ran",  "radio access network", "ran", "manufacturing systems",
+        "autonomous underwater vehicle", "autonomous underwater vehicles",
+        "radio access network", "manufacturing systems",
         "quantum sensing", "atomic magnetometer",
         "inertial sensor", "sensor fusion",
-        "doppler velocity log", "dvl",
+        "doppler velocity log",
         "road infrastructure", "asphalt concrete",
         "pavement engineering", "bitumen",
         "freight volume", "freight volumes",
         "passenger volume", "passenger volumes",
+        "automated guided vehicle",
+        # Open-RAN & Cellular Disaggregation (Target 9.c)
+        "open ran", "open-ran",
+        "radio unit", "radio units",
+        "distributed unit", "distributed units",
+        "centralized unit", "centralized units",
+        "ran intelligent controller", "near-rt ric", "non-rt ric",
+        "functional split", "functional splits", "wireless fronthaul",
+        "optical fronthaul",
+        # Automated Manufacturing & Assembly Systems (Target 9.2 & 9.5)
+        "automated assembly", "assembly systems", "product development",
+        "concept detailing", "manufacturing process", "manufacturing systems",
+        "specialized equipment", "feeders, grippers, and fixtures",
+        "product information model", "step ap242",
+
+        # Enterprise Finance & Capital Supply (Target 9.3)
+        "access to financial services", "affordable credit", "access to finance",
+        "venture debt", "growth capital",
+
+        # Turbomachinery, Aerodynamics & Computational Mechanics
+        "aeroelastic", "aeroelasticity", "transonic", "compressor cascade",
+        "turbomachinery", "aeroengine", "aeroengines", "aerodynamic damping",
+        "axial compressor", "flutter onset",
+
+        # Advanced Materials Engineering & Metallurgy
+        "stainless steel", "stainless steels", "duplex stainless steel",
+        "phase separation", "phase transformation", "neutron scattering",
+        "neutron diffraction", "intermetallic", "intermetallics",
+
+        # Aerial Transport Infrastructure, Logistics & Drones (Target 9.1 & 9.5)
+        "drone", "drones", "drone industry", "drone transport",
+        "drone services", "urban air mobility", "unmanned aerial vehicle",
+        "transport of goods", "simulation platform", "flight routes",
+
+        # Industrial Robotics, Kinematics & Calibration (Target 9.2 & 9.5)
+        "articulated robot", "articulated robots",
+        "industrial robot", "industrial robots", "industrial robotics",
+        "robotic system", "robotic systems", "end-effector", "end-effectors",
+        "robot accuracy", "robot calibration", "stiffness model", "joint stiffness",
+        "high-precision", "high precision", "contact applications",
+
+        # Carbon Capture Plant Infrastructure & Engineering (Target 9.4)
+        "capture facility", "capture facilities", "capture technology",
+        "capture technologies", "pressurized capture", "physical design",
+        "technoeconomic", "techno-economic", "beccs facilities",
+
+        # Rail Systems Engineering & Infrastructure Asset Management (Target 9.1)
+        "systems engineering", "rail infrastructure", "rail main lines",
+        "model-based systems engineering", "asset management",
+        "railway infrastructure", "tracks and yards",
+
+        # Advanced Additive Manufacturing & Characterization (Target 9.5)
+        "powder bed fusion", "electron beam powder bed fusion",
+        "laser powder bed fusion", "synchrotron", "synchrotron techniques",
+        "synchrotron x-ray", "melt pool", "rapid solidification",
+        "alloy design", "hot work tool steel",
+
         # Swedish Terms
+        "pulverbäddsfusion", "synkrotron", "synkrotrontekniker",
+        "synkrotronljus", "smältpool", "legeringsdesign", "verktygsstål",
+        "systemteknik", "järnvägsinfrastruktur", "tillgångsförvaltning",
+        "spåranläggning", "bangårdar", "modellbaserad systemteknik",
+        "artikulär robot", "artikulära robotar", "industrirobotik",
+        "robotsystem", "sluteffektor", "sluteffektorn", "sluteffektorns",
+        "robotkalibrering", "ledstyvhet", "ledstyvhetsmodell",
+        "kvasistatisk", "kvasistatiska", "högprecision",
+
+        "drönare", "drönarindustri", "drönartransporter", "drönartjänster",
+        "luftburen mobilitet", "obemannade luftfartyg", "godstransport",
+        "godstransporter", "simuleringsplattform", "flygrutter",
+
+        "rostfritt stål", "rostfria stål", "duplexa rostfria stål",
+        "fasseparation", "fasomvandling", "neutronspridning",
+        "neutrondiffraktion", "intermetalliska faser",
+
+        "aeroelasticitet", "flygmotorer", "kompressorblad", "skovelerosion",
+        "transsonisk", "strömningsberäkning",
+        "kapitalförsörjning", "tillgång till finansiering", "öka tillgången till finansiering",
+        "företagsfinansiering", "såddkapital", "tillväxtkapital",
+        "automatiserad montering", "monteringsprocess", "tillverkningsprocess",
+        "tillverkningssystem", "produktionsutveckling", "informationsmodellering",
         "väginfrastruktur", "asfaltbeläggning", "vägbyggnad",
         "kvantsensorer", "tröghetssensor", "sensorfusion",
         "5g-nät", "lokala 5g-nät", "privata 5g-nät",
@@ -235,12 +473,35 @@ AUXILIARY_SDG_TERMS = {
         "godsvolym", "godsvolymer",
         "resandevolym", "resandevolymer",
         "passagerarvolym", "passagerarvolymer",
+        # Swedish 5G / Telecom variants (with and without hyphens, inflections)
+        "5g nät", "5g-nät", "5g nätet", "5g-nätet", "5g näten", "5g-näten",
+        "lokala 5g nät", "lokala 5g-nät", "privata 5g nät", "privata 5g-nät",
+        "privat 5g nät", "privat 5g-nät", "lokalt 5g nät", "lokalt 5g-nät",
+        
+        # Industrial Automation & Factory Robotics (Target 9.2 & Target 9.5)
+        "industrirobot", "industrirobotar",
+        "produktionslina", "produktionslinor", "processtyrning", "industriell användning",
+        "industriellt bruk", "systemintegratör", "systemintegratören",
+
+        "koldioxidinfångning", "avskiljningsanläggning", "avskiljningsanläggningar",
+        "infångningsteknik", "anläggningsdesign",
+
     ],
     10: [ # SDG 10 (Reduced Inequalities)
         # Inclusion & Equity
         "assistive technology", "prosthetic users", "physical rehabilitation",
         "mobility inequality", "gender disparities in leadership",
+        # Global Mobility & Migration (Target 10.7 & Target 10.b)
+        "international student mobility", "student mobility",
+        "brain drain", "frustrated return", "transnational mobility",
+        "knowledge transfer to developing countries",
+        # Energy Equity & Vulnerability (Target 10.2 & 10.3)
+        "energy justice", "just transition", "vulnerable consumers",
+
         # Swedish Terms
+        "energirättvisa", "rättvis omställning",
+        "studentmobilitet", "internationell studentmobilitet",
+        "kompetensflykt", "transnationell rörlighet",
         "hjälpmedelsteknik", "fysisk rehabilitering", "tillgänglighet",
         "minskad ojämlikhet", "inkomsttillväxt för de fattigaste", "social och ekonomisk inkludering",
         "lika möjligheter", "diskriminerande lagstiftning", "finansmarknadsreglering",
@@ -260,7 +521,54 @@ AUXILIARY_SDG_TERMS = {
         "subway", "subways", "metro system", "metro systems", "underground rail",
         "bike sharing", "bike-sharing", "bikeshare", "bicycle sharing", "shared micromobility",
         "commuter train", "commuter trains", "commuter rail", "suburban rail",
+        # --- NEW ADDITIONS FOR DISASTER RESILIENCE & EMERGENCY COMMUNICATIONS (Target 11.5 & 11.b) ---
+        "connectivity during disasters", "emergency communications", "disaster connectivity",
+        "disaster resilience", "resilient infrastructure", "critical societal infrastructure",
+        "network resiliency", "resilient network design", "disaster management",
+        
+        # --- NEW ADDITIONS FOR DENSE INDOOR BUILT ENVIRONMENTS (Target 11.1 & 11.c) ---
+        "indoor dense spaces", "indoor dense space", "indoor deployment scenarios",
+        "built environment", "dense indoor spaces", "dense urban spaces",
+
+        # Built Environment & Construction Practices (Target 11.c)
+        "construction sector", "construction sites", "building safety",
+
+        "circular construction", "deconstruction", "building deconstruction",
+        "reusable building components", "reclaimed concrete", "donor building",
+
+        # Urban Safety, Crime Prevention & Housing Management (Target 11.1 & 11.7)
+        "place management", "housing management", "perceived safety",
+        "situational crime prevention", "residential areas", "crime prevention through environmental design",
+        "multi-family housing", "cooperative housing",
+
+        # Intelligent & Connected Mobility Systems (Target 11.2)
+        "connected and autonomous vehicles", "autonomous vehicles",
+        "autonomous mobility", "intelligent transport systems",
+        "cooperative intelligent transport systems",
+
+        # Rail Transit Systems & Infrastructure (Target 11.2)
+        "rail infrastructure", "railway infrastructure", "rail main lines",
+
+        # Micromobility & Active Road Users (Target 11.2)
+        "electric scooters", "electric scooter", "travel patterns",
+        "travel diaries", "road users",
+
+
         # Swedish Terms
+        "elsparkcykel", "elsparkcyklar", "resmönster",
+        "resedagböcker", "trafikanter",
+
+        "järnvägsinfrastruktur", "spårbunden trafik",
+        "uppkopplade och autonoma fordon", "autonoma fordon",
+        "autonom mobilitet", "intelligenta transportsystem",
+        "hållbara transportsystem",
+        "platsförvaltning", "platsförvaltare", "bostadsförvaltning", "bostadsförvaltare",
+        "fastighetsförvaltare", "fastighetsförvaltning", "flerbostadshus",
+        "bostadsområde", "bostadsområden", "upplevd trygghet", "trygghet",
+        "brottsförebyggande", "brottsprevention", "bostadsrätter", "allmännyttan",
+        "allmännyttiga", "störningshantering",
+        "cirkulärt byggande", "återbruk i byggsektorn", "demontering",
+        "byggsektorn", "byggarbetsplatser", "byggarbetsplats",
         "pendeltåg", "pendeltågen", "pendeltågstrafik", "pendeltågsstation",
         "spårvagn", "spårvagnar", "spårväg", "spårvägar", "lättbana",
         "tunnelbana", "tunnelbanan", "tunnelbanetrafik", "tunnelbanestation",
@@ -282,6 +590,11 @@ AUXILIARY_SDG_TERMS = {
         "fastighetsrätt", "delningsboende", "kollektivt boende",
         "persontåg", "tågtrafikutbud", "resandeprognoser",
         "bostäder",
+        # New Swedish disaster & built-environment terms
+        "kritisk samhällsinfrastruktur", "samhällsinfrastruktur",
+        "täta inomhusmiljöer", "tät inomhusmiljö", "byggd miljö",
+        "uppkoppling under katastrofer", "nätverksrobusthet", "resilienta nät",
+        "katastrofberedskap", "kriskommunikation"
 
     ],
     12: [ # SDG 12 (Responsible Consumption and Production)
@@ -291,7 +604,42 @@ AUXILIARY_SDG_TERMS = {
         "catalytic graphitization", "bio-based carbon", "remanufacturing",
         "steelmaking", "ironmaking", "sustainable lifestyles", "end-of-life",
         "slag", "refractory", "refractories",
+        # Renewable Feedstocks & Bio-based Production (Target 12.2 & 12.5)
+        "renewable feedstock", "renewable feedstocks", "biomass pyrolysis",
+        "bio-oil", "biochar", "syngas", "syngas production", "pyrolysis volatiles",
+        # Lean Production & Industrial Waste Elimination (Target 12.5 & 12.6)
+        "lean management", "corporate lean", "operational excellence",
+        "lean production", "production waste", "waste elimination",
+        "implementation waste", "operations management system",
+
+        "material passports", "reclaimed elements", "component reuse", "digital twins for circularity",
+        "lifecycle", "life-cycle", "lifecycle-resilient", "lifecycle goals",
+        "resource investments", "resource investment",
+
+        # Material Longevity, Degradation Mitigation & Service Life (Target 12.2)
+        "service life", "delay embrittlement", "embrittlement",
+        "decomposition", "corrosive environments",
+
+        # Production Efficiency & Material Handling (Target 12.2 & 12.5)
+        "material handling", "resource requirements", "resource requirement",
+        "positioning error", "error reductions",
+
+        # Circular Metallurgy & Recyclable Materials (Target 12.5)
+        "recycling-friendly materials", "recycling-friendly",
+        "recyclable materials", "material recycling",
+
         # Swedish Terms
+        "lättare att återvinna", "återvinningsbara material",
+        "materialåtervinning",
+        "materialhantering", "resurskrav", "positioneringsfel", "felminskningar",
+        "livslängd", "fördröja försprödning", "försprödning",
+        "korrosiva miljöer",
+        "livscykel", "livscykelresistent", "livscykelresistenta", "livscykelmål",
+        "resursinvestering", "resursinvesteringar",
+        "materialpass", "komponentåterbruk",
+        "lean management", "operationell excellens", "produktionssystem",
+        "slöseri", "resursoptimering",
+        "förnybar råvara", "förnybara råvaror", "biomassa", "syntesgas", "pyrolysolja",
         "slagg", "infodring", "eldfast material",
         "ståltillverkning", "hållbara livsstilar", "delningsekonomi",
         "cirkulär ekonomi", "cirkulära leveranskedjor", "cirkulär tillverkning",
@@ -305,11 +653,42 @@ AUXILIARY_SDG_TERMS = {
     ],
     13: [ #SDG 13 (Climate Action)
         # Climate Mitigation & Clean Processing
-        "carbon dioxide removal", "carbon removal", "beccs", "sustainable aviation fuel",
+        "carbon dioxide removal", "carbon removal", "sustainable aviation fuel",
         "climate criteria", "fossil-free steelmaking", "h-dri", "climate policy",
-        "carbon footprint", "low-carbon", "lca", "life cycle assessment", 
+        "carbon footprint", "low-carbon", "life cycle assessment", 
         "ghg emissions",
+        "fossil fuel substitution", "fossil replacement", "reduce fossil",
+        "fossil-free materials", "fossil bitumen", "decarbonised materials",
+        "climate crisis", "climate action", "climate neutrality",
+        "climate-neutral", "climate-neutrality", "climate awareness",
+        "climate communication",
+        "low-carbon pathway", "low-carbon production", "low-carbon manufacturing",
+        "low carbon footprint", "environmental footprint",
+        "engine efficiency", "aeroengines efficiency", "propulsion efficiency",
+        "fuel burn reduction", "power-to-weight ratio",
+
+        # Carbon Removal Certification & Accounting (Target 13.2)
+        "carbon removal certification", "carbon removal certification framework",
+        "carbon removal", "carbon dioxide removal", "direct air capture",
+        "ghg emissions", "lca emissions", "double accounting",
+
+        # Climate Finance & Policy Frameworks (Target 13.a)
+        "climate finance", "financing the climate transition", "climate transition",
+        "climate policy council", "sustainable activities",
+
+
         # Swedish Terms
+        "klimatfinansiering", "finansiera klimatomställningen", "klimatomställning",
+        "klimatpolitiska rådet", "hållbara aktiviteter",
+
+        "ramverk för certifiering av koldioxidupptag", "koldioxidupptag",
+        "direkt luftinfångning",
+
+        "energieffektivisering i flygmotorer", "minska bränsleförbrukning",
+        "koldioxidsnål", "minska koldioxidavtryck", "livscykelanalys", "livscykelanalyser",
+        "klimatkris", "klimatneutral",
+        "klimatneutralitet", "klimatneutrala",
+        "fossilt bitumen", "minska fossila", "fossilfritt material", "fossiloberoende",
         "livscykelanalys",
         "koldioxidavtryck", "koldioxidsnål",
         "koldioxidinfångning", "fossilfritt stål", "klimatåtgärder",
@@ -321,7 +700,7 @@ AUXILIARY_SDG_TERMS = {
         "koldioxidutsläpp", "negativa utsläpp"
     ],
     14: [ # SDG 14 (Life Below Water)
-        "underwater acoustics", "sonar", "sonars",
+        "underwater acoustics", 
         "autonomous underwater vehicle", "autonomous underwater vehicles",
         "multibeam sonar",
         "marine technology", "ocean observation", "oceanographic",
@@ -350,25 +729,47 @@ AUXILIARY_SDG_TERMS = {
         # Governance, Transparency & Media Monitoring
         "open science", "transparent policymaking", "media monitoring",
         "intersectional invisibility", "open data governance",
+
         # Swedish Terms
         "öppen vetenskap", "transparens i styrning", "mediebevakning",
         "fred", "globalt mål 16 - fredliga och inkluderande samhällen", "institution", "rättvisa",
         "fredliga och inkluderande samhällen", "minska våld", "övergrepp och våld mot barn",
         "rättssäkerhet", "lika tillgång till rättvisa", "olagliga finansiella flöden",
         "korruption och mutor", "effektiva och transparenta institutioner", "ansvarsskyldighet",
-        "representativt beslutsfattande", "allmän tillgång till information"
+        "representativt beslutsfattande", "allmän tillgång till information",
     ],
     17: [ # SDG 17 (Partnerships for the Goals)
         # Global Partnerships & Science Diplomacy
-        "academic internationalisation", "science diplomacy",
         "transnational education", "development-focused scholarships",
+
+        # Capacity Building & Open Tools Transfer (Target 17.6 & 17.9)
+        "capacity building", "open-source tools", "open source tools",
+        "open data practices", "developing countries", "low- and middle-income countries",
+        "low- and midde- income countries",  # handle abstract spelling variant
+        "implementation of the paris agreement", "paris agreement",
+
+        # Academic Partnerships, Science Cooperation & Diplomacy (Target 17.6 & 17.16)
+        "internationalisation", "internationalization",
+        "academic internationalisation", "academic internationalization",
+        "science diplomacy", "research security", "bilateral research",
+        "bilateral research funding", "international student recruitment",
+        "global partnerships", "global partnership", "hybrid governance",
+
+
         # Swedish Terms
-        "akademisk internationalisering", "forskningsdiplomati",
-        "globalt mål 17 - genomförande och globalt partnerskap", "koordination", "samarbete",
-        "genomförande och globalt partnerskap", "inhemsk resursmobilisering", "utvecklingsbistånd",
-        "skuldlättnad", "tekniköverföring", "kapacitetsuppbyggnad", "multilaterala handelssystemet",
+        "akademisk internationalisering", "internationalisering",
+        "vetenskapsdiplomati", "forskningsdiplomati", "forskningssäkerhet",
+        "bilateral forskningsfinansiering", "bilateral forskning",
+        "internationell studentrekrytering",
+        "skuldlättnad", "tekniköverföring", "multilaterala handelssystemet",
         "makroekonomisk stabilitet", "samstämmighet i politiken", "globala partnerskap",
         "tillförlitliga data och statistik",
+        "kapacitetsuppbyggnad", "öppen källkod", "öppna data",
+        "låg- och medelinkomstländer", "utvecklingsländer",
+        "genomförande av parisavtalet", "parisavtalet",
+        "akademisk internationalisering", 
+        "globalt mål 17 - genomförande och globalt partnerskap", "koordination", "samarbete",
+        "genomförande och globalt partnerskap", "inhemsk resursmobilisering", "utvecklingsbistånd",
     ]
 }
 
@@ -403,11 +804,12 @@ if STRINGS_RULES_FILE.is_file():
                     })
 
 def clean_text_artifacts(text: str) -> str:
-    """Removes HTML and TeX artifacts and normalizes whitespace."""
+    """Removes HTML and TeX artifacts and normalizes whitespace. Preserves case."""
     if not text:
         return ""
     # Strip HTML tags
     t = re.sub(r"<[^>]+>", " ", text)
+
     # Strip TeX comments
     t = re.sub(r"(?<!\\)%.*?\n", "\n", t)
     t = t.replace(r"\%", "%")
@@ -415,8 +817,12 @@ def clean_text_artifacts(text: str) -> str:
     t = re.sub(r"\\[a-zA-Z]+(\[[^\]]*\])?(\{([^}]*)\})?", r" \3 ", t)
     t = re.sub(r"[{}]", " ", t)
     t = t.replace("---", " ").replace("--", " ")
-    return " ".join(t.split()).lower()
 
+    # Replace slashes with spaces to unglue compound alternatives (e.g. A/B -> A B)
+    t = t.replace("/", " ")
+
+    t = re.sub(r'([,.;:?!])([a-zA-ZåäöÅÄÖ])', r'\1 \2', t)
+    return " ".join(t.split())  # <-- Removed .lower()
 
 def extract_explicit_sdg_mentions(text: str) -> set[int]:
     """Captures explicitly cited SDGs (e.g., 'SDG 3, 9, 11', 'SDGs 8 and 12', 'Mål 9')."""
@@ -450,7 +856,7 @@ def extract_explicit_sdg_mentions(text: str) -> set[int]:
 def build_dual_language_term_index() -> dict[int, list[str]]:
     """Builds the comprehensive SDG keyword index across English, Swedish, and extensions."""
     mapping = {}
-    for i in range(1, 17):
+    for i in range(1, 18):
         var_name = f"sdg{i}_terms"
         raw_terms = list(getattr(sdg_dict, var_name, []))
 
@@ -572,50 +978,55 @@ def evaluate_strings_rules(text: str) -> tuple[dict[int, int], dict[int, list[tu
 def scan_text_for_sdgs(
     text: str,
 ) -> tuple[dict[int, int], dict[int, list[tuple[str, int]]], set[int]]:
-    """Calculates keyword match frequencies, STRINGS co-occurrence expressions,
-    and explicit author declarations.
-    """
     sdg_terms = build_dual_language_term_index()
     counts: dict[int, int] = {i: 0 for i in range(1, 18)}
     matched_phrases: dict[int, list[tuple[str, int]]] = {i: [] for i in range(1, 18)}
 
-    padded_text = f" {text} "
-    explicit_mentions = extract_explicit_sdg_mentions(text)
+    # Track 1: Case-Sensitive Acronym Matching
+    for sdg_num, acronyms in ACRONYMS_SDG_TERMS.items():
+        acronym_counter = Counter()
+        for acr in acronyms:
+            pattern = rf"\b{re.escape(acr)}\b"
+            matches = len(re.findall(pattern, text))
+            if matches > 0:
+                acronym_counter[acr] += matches
 
-    # 1. Standard vocabulary matching (Elsevier, UoA, and Swedish auxiliaries)
+        counts[sdg_num] += sum(acronym_counter.values())
+        matched_phrases[sdg_num].extend(acronym_counter.most_common(10))
+
+    # Track 2: Case-Insensitive General Phrase Matching
+    lower_text = f" {text.lower()} "
     for sdg_num, terms in sdg_terms.items():
         counter = Counter()
         for phrase in terms:
             if len(phrase) < 3:
                 continue
+            escaped = re.escape(phrase.lower())
+            
+            # Allow single-word Swedish roots (length >= 6) to match compound headwords
+            # e.g., 'livscykel' matches 'livscykelresistenta'
+            if " " not in phrase and len(phrase) >= 6:
+                pattern = rf"(?<!\w){escaped}"
+            else:
+                pattern = rf"(?<!\w){escaped}(?!\w)"
 
-            escaped = re.escape(phrase)
-            matches = len(re.findall(rf"(?<!\w){escaped}(?!\w)", padded_text, flags=re.IGNORECASE))
+            matches = len(re.findall(pattern, lower_text))
             if matches > 0:
                 counter[phrase] += matches
 
-        counts[sdg_num] = sum(counter.values())
-        matched_phrases[sdg_num] = counter.most_common(10)
+        counts[sdg_num] += sum(counter.values())
+        matched_phrases[sdg_num].extend(counter.most_common(10))
 
-    # 2. Evaluate STRINGS co-occurrence rules (AND/OR queries)
-    strings_counts, strings_matched = evaluate_strings_rules(padded_text)
+    # Track 3: STRINGS co-occurrence rules
+    strings_counts, strings_matched = evaluate_strings_rules(lower_text)
     for g in range(1, 18):
         counts[g] += strings_counts[g]
         matched_phrases[g].extend(strings_matched[g])
 
-    # 3. SDG 17 Pattern Matching
-    sdg17_counter = Counter()
-    for pattern in getattr(sdg_dict, "SDG17_PATTERNS", []):
-        hits = re.findall(pattern, padded_text, flags=re.IGNORECASE)
-        if hits:
-            clean_name = pattern.replace(r"\b", "").replace(r".*?", " ")
-            sdg17_counter[clean_name] += len(hits)
-
-    counts[17] += sum(sdg17_counter.values())
-    matched_phrases[17].extend(sdg17_counter.most_common(10))
+    # Track 4: Explicit author declarations
+    explicit_mentions = extract_explicit_sdg_mentions(text)
 
     return counts, matched_phrases, explicit_mentions
-
 
 def main():
     parser = argparse.ArgumentParser(
