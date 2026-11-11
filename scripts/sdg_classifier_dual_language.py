@@ -91,7 +91,10 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "CSP", "TES", "sCO2", "P2H2P", "DNI",
 
         "COP", "EPC",
+
         "LFR", "SMR", "SMRs", "LBE", "Gen-IV", "GenIV", "AFA", "AFM",
+
+        "SB", "SBs", "PIPS",
 
     ],
     9: [
@@ -148,6 +151,8 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "NVH", "S&R",
 
         "PINN", "PINNs", # Physics-informed neural networks & AI infrastructure
+
+        "SB", "SBs", "PIPS", "CFRP",
     ],
     11: [
         # Public & Active Transit
@@ -487,7 +492,14 @@ AUXILIARY_SDG_TERMS = {
         "lead-bismuth eutectic", "high-temperature energy applications",
         "heat-transfer medium", "nuclear reactor", "nuclear reactors",
 
+        # Structural Batteries & Multifunctional Energy Storage (Target 7.2 & 7.a)
+        "structural batteries", "structural battery", "structural electrolyte",
+        "bicontinuous electrolytes", "energy density and mechanical performance",
+
         # Swedish Terms
+        "strukturella batterier", "strukturellt batteri", "strukturell elektrolyt",
+        "energitäthet och mekanisk prestanda",
+
         "generation iv", "generation iv kärnkraft", "generation iv kärnkraftsreaktorer",
         "kärnkraftsreaktor", "kärnkraftsreaktorer", "snabb reaktor", "snabba reaktorer",
         "smält bly", "bly-vismut", "bly-vismut eutektisk",
@@ -761,8 +773,22 @@ AUXILIARY_SDG_TERMS = {
         "groundwater intelligence", "monitoring-system design", "data centres",
         "physics-informed neural-network", "physics-informed neural network",
 
+        # Structural Batteries, Multifunctional Composites & Advanced Electrolytes (Target 9.5)
+        "structural batteries", "structural battery", "structural electrolyte",
+        "structural electrolytes", "structural electrodes", "structural electrode",
+        "bicontinuous electrolytes", "bicontinuous polymer-liquid electrolytes",
+        "multifunctional materials", "carbon fibers", "carbon fiber",
+        "polymerization-induced phase separation", "fiber-matrix adhesion",
+        "laminated structural batteries",
+
 
         # Swedish Terms
+        "strukturella batterier", "strukturellt batteri", "strukturell elektrolyt",
+        "strukturella elektrolyter", "strukturella elektroder", "strukturell elektrod",
+        "bikontinuerlig elektrolyter", "multifunktionella material",
+        "kolfibrer", "kolfiber", "polymerisationsinducerad fasseparation",
+        "laminerade strukturella batterier",
+
         "resilient infrastruktur", "digital infrastruktur", "vattenintelligens",
         "grundvattenintelligens", "datacenter", "monitoreringssystem",
         "fysikinformerad neural nätverksmodell",
@@ -1018,7 +1044,14 @@ AUXILIARY_SDG_TERMS = {
         "passenger comfort", "comfortable train journeys", "modal shift to rail",
         "modes of transportation",
 
+        # Electric Vehicle Battery Lightweighting & Range Extension (Target 11.2)
+        "electric vehicles", "electric vehicle", "heavy battery packs",
+        "shift toward electric vehicles",
+
+
         # Swedish Terms
+        "elfordon", "batteripaket", "övergången till elfordon",
+        
         "intercitytåg", "tågresenärer", "passagerarkomfort", "bekväma tågresor",
         "överflyttning till järnväg",
 
