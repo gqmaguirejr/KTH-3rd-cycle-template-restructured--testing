@@ -20,6 +20,8 @@ OSDG https://github.com/osdg-ai/osdg-tool available at https://www.osdg.ai/ does
 
 See also https://aurora-universities.eu/research/open-science/dashboard/deliverables/
 There is a list of related efforts at https://aurora-universities.eu/research/open-science/dashboard/faq/
+
+Note that OpenAlex has their own ML based SDG classifier, see https://help.openalex.org/data/sdgs/
 """
 
 from __future__ import annotations
@@ -63,6 +65,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         # Public Health & Protection
         "GBV",
         "NVH", "S&R",
+        "SCI", "iSCI",
     ],
     4: [
         # Educational Acronyms
@@ -96,6 +99,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "SB", "SBs", "PIPS",
 
+        "RVACS", "USBO",
     ],
     9: [
         # Connectivity, AI & Computation
@@ -153,7 +157,21 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "PINN", "PINNs", # Physics-informed neural networks & AI infrastructure
 
         "SB", "SBs", "PIPS", "CFRP",
+
+        "MRV", # Magnetic Resonance Velocimetry
+
+        "RVACS", "USBO",
+
+        "TAC", "D-TAC", # Track Access Charges
+        "TRV", # abbreviation for Trafikverket
+
+        "LHC", "CERN",
+
+        "EVRP",
     ],
+    10: [
+        "SCI", "iSCI",
+        ],
     11: [
         # Public & Active Transit
         "BRT", "LRT", "TOD", "MaaS", "ITS",
@@ -171,6 +189,8 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "CNOSSOS-EU", "CNOSSOS",
 
         "NVH",
+
+        "BEV", "EVRP",
     ],
     12: [
         # Metallurgy & Decarbonized Materials
@@ -303,7 +323,20 @@ AUXILIARY_SDG_TERMS = {
         "sound and vibration perception", "interior comfort",
         "vibrational interior comfort", "acoustic comfort",
 
+        # Neurorehabilitation, Gait Analysis & Health Informatics (Target 3.4 & 3.8)
+        "gait analysis", "pathological gait", "personalized rehabilitation",
+        "individualized rehabilitation", "health informatics",
+        "neuromusculoskeletal modeling", "sensorimotor impairment",
+
+        "noise reduction systems",
+
         # Swedish Terms
+        "ljuddämpningssystem",
+
+        "gånganalys", "patologisk gång", "personlig rehabilitering",
+        "individualiserade rehabiliteringsprogram", "hälsoinformatik",
+        "neuromuskuloskeletal modellering",
+
         "störande ljud", "störande buller", "interiörbuller", "interiörvibrationer",
         "akustisk komfort", "upplevd komfort",
 
@@ -427,6 +460,9 @@ AUXILIARY_SDG_TERMS = {
         "physics-informed neural-network", "safe-aquifer",
 
         # Swedish Terms
+        # Wastewater Process Optimization & High-Solids Flows (Target 6.3)
+        "rening av avloppsvatten",
+        
         "vattenintelligens", "grundvattenintelligens", "vattenstressade",
         "lokal vattenrisk", "cirkulär vattenanvändning", "grundvattenberoende",
         "hållbar vattenförvaltning", "säkra akviferer", "grundvattenstress",
@@ -455,7 +491,6 @@ AUXILIARY_SDG_TERMS = {
         "anode materials", "structural battery", 
 
         # --- Additions for Energy-Resilient & Efficient Production (Target 7.3) ---
-        "reconfigurable manufacturing systems", "reconfigurable manufacturing system",
         "rms creation", "energy-efficient manufacturing",
 
         # Energy Communities, Justice & Grid Flexibility (Target 7.1 & 7.2)
@@ -496,7 +531,27 @@ AUXILIARY_SDG_TERMS = {
         "structural batteries", "structural battery", "structural electrolyte",
         "bicontinuous electrolytes", "energy density and mechanical performance",
 
+        # Lead-Cooled Fast Reactors, Passive Safety & Nuclear Fuel (Target 7.a)
+        "lead-cooled fast reactor", "next-generation reactor", "passively safe",
+        "nuclear fuel", "actinide", "cladding integrity", "core design",
+
+        # Transport Energy Consumption & Battery-Electric Fleets (Target 7.2 & 7.3)
+        "energy consumption", "battery-electric", "battery-electric vehicle",
+        "energy-minimal", "energy-informed",
+
+        # SDG 7 (Target 7.2: Clean electricity & biofuels in maritime transit)
+        "green electricity", "fossil-free operations", "fossil-free alternatives",
+
+
         # Swedish Terms
+        "fossilfri", "högmiljöprestanda", "hög miljöprestanda",
+        
+        "energiförbrukning", "energianvändning", "batterielektriska",
+        "batterielektrisk",
+
+        "blykyld snabbreaktor", "nästa generations reaktor", "passivt säker",
+        "kärnbränsle", "kapslingsintegriteten", "härddesign", "friklassning",
+
         "strukturella batterier", "strukturellt batteri", "strukturell elektrolyt",
         "energitäthet och mekanisk prestanda",
 
@@ -539,7 +594,6 @@ AUXILIARY_SDG_TERMS = {
         "batteri", "batterier", "natriumjonbatterier", "litiumjonbatterier",
         "strukturella batterier",
 
-        "omkonfigurerbara tillverkningssystem",
     ],
     8: [ # SDG 8 (Decent Work and Economic Growth)
         # Workplace Safety & Manufacturing
@@ -781,8 +835,70 @@ AUXILIARY_SDG_TERMS = {
         "polymerization-induced phase separation", "fiber-matrix adhesion",
         "laminated structural batteries",
 
+        # Experimental & Computational Fluid Mechanics, Rheology & Industrial Flows (Target 9.4 & 9.5)
+        "magnetic resonance velocimetry", "computational fluid dynamics",
+        "turbulent flows", "turbulent pipe flows", "non-newtonian fluids",
+        "non-newtonian", "rheological models", "particle-laden",
+        "paper industry", "flow phenomena",
+
+        # Bio-based Coatings, Nanocomposites & Corrosion Engineering (Target 9.4 & 9.5)
+        "nanocomposites", "nanocomposite", "nanoparticles", "nanoparticle",
+        "corrosion prevention", "corrosion resistance", "anticorrosive coatings",
+        "anti-corrosion", "antifouling", "biopolymer", "biomaterial",
+        "surface coatings", "functional coatings",
+
+        # Digital Fabrication, Structural Optimization & Computational Design (Target 9.4 & 9.5)
+        "fabrication methods", "digital fabrication", "structural efficiency",
+        "computational design", "design processes", "design process",
+        "analysis and simulation",
+
+        # Railway Track Infrastructure, Rolling-Stock Wear & Access Charges (Target 9.1 & 9.4)
+        "railway", "railways", "track access charges", "differentiated track access charges",
+        "track-friendly vehicles", "rail damage", "track maintenance",
+        "axle load", "average axle load",
+
+        # Large-Scale Scientific Research Infrastructure & Particle Physics (Target 9.5)
+        "large hadron collider", "particle physics", "high-energy physics",
+        "detector calibration", "charged particle tracks",
+
+        # SDG 9 (Target 9.2 & 9.4: resilient industrial manufacturing and retrofit/upgrade capabilities
+        "reconfigurable manufacturing systems", "reconfigurable manufacturing system",
+        "design for assembly", "modular product architecture", "manufacturing resilience",
+
+        # Railway Network Demand, Forecasting & Infrastructure Investment (Target 9.1)
+        "railroad", "railroads", "rail passenger demand", "passenger demand",
+        "investments in the railway network", "guided transport",
+
+        # Duct Acoustics, Aeroacoustics & Engine Noise Reduction Hardware (Target 9.4 & 9.5)
+        "duct acoustics", "perforated plates", "perforated plate",
+        "transfer impedance", "noise reduction systems", "aircraft liners",
+        "jet engines", "mufflers", "grazing flow", "scattering matrix",
+
 
         # Swedish Terms
+        "kanalakustik", "perforerade plattor", "perforerad platta",
+        "perforerade plåtar", "ljuddämpningssystem", "flygplansmotorer",
+        "förbränningsmotorer", "turbofläktmotorer", "transferimpedans",
+
+        "järnvägsinvesteringar", "efterfrågan på tågresor", "spårbunden trafik",
+
+        "omkonfigurerbara tillverkningssystem",
+
+        "partikelfysik", "högenergifysik",
+
+        "järnväg", "järnvägsinfrastruktur", "banavgifter", "spårslitage",
+        "banunderhåll", "axeltryck", "spårvänliga fordon", "trafikverket",
+
+        "tillverkningsmetoder", "digital tillverkning", "strukturell effektivitet",
+        "designprocesser", "analys och simulering",
+
+        "nanokompositer", "nanokomposit", "nanopartiklar", "korrosionsskydd",
+        "korrosionsresistens", "korrosionsskyddande beläggningar", "biopolymer",
+        "biomaterial", "antimikrobiella beläggningar",
+
+        "magnetresonansvelocimetri", "turbulenta flöden", "icke-newtonska vätskor",
+        "reologiska modeller", "pappersindustrin", "strömningsdynamik",
+
         "strukturella batterier", "strukturellt batteri", "strukturell elektrolyt",
         "strukturella elektrolyter", "strukturella elektroder", "strukturell elektrod",
         "bikontinuerlig elektrolyter", "multifunktionella material",
@@ -919,7 +1035,21 @@ AUXILIARY_SDG_TERMS = {
         "diversity work", "reproduce inequality", "power structures",
         "underlying hierarchies",
 
+        # Disability Inclusion, Physical Impairments & Non-Normative Modeling (Target 10.2)
+        "individuals with impairments", "individuals with disabilities",
+        "people with disabilities", "sensorimotor impairment",
+        "neurological impairments", "without disability",
+        "assumptions of normalcy", "spinal cord injury",
+
+        # SDG 10 (Target 10.2 & 10.3: reducing socio-economic and spatial inequalities in access to services)
+        "transport equity", "distributional fairness",
+
         # Swedish Terms
+        "fördelningsrättvisa", "transporträttvisa",
+        "funktionsnedsättning", "funktionsnedsättningar",
+        "individer med funktionsnedsättningar", "sensorimotorisk funktionsnedsättning",
+        "neurologiska funktionsnedsättningar", "ryggmärgsskada",
+
         "mångfaldsarbete", "reproducera ojämställdhet", "maktstrukturer",
         "underliggande hierarkier",
         "energirättvisa", "rättvis omställning",
@@ -1048,8 +1178,51 @@ AUXILIARY_SDG_TERMS = {
         "electric vehicles", "electric vehicle", "heavy battery packs",
         "shift toward electric vehicles",
 
+        # Architectural Practice, Computational Design & Building Performance (Target 11.3 & 11.c)
+        "practice of architecture", "architectural design", "building design",
+        "building architecture", "urban architecture", "computational design",
+        "informed design", "performance-driven design", "microclimate",
+        "daylight", "structural efficiency",
+        "building design", "architectural design",
+
+        # Autonomous Urban Transit, Fleet Routing & Co-Modal Logistics (Target 11.2)
+        "sustainable urban transportation", "urban transportation",
+        "urban road networks", "autonomous vehicles", "driverless",
+        "freight distribution", "passenger transportation",
+
+        # Public Transit Service Frequency, Interchanges & Modal Shift (Target 11.2)
+        "urban transport", "bus service", "frequency of service",
+        "guided transport", "passenger demand",
+
+        "noise reduction systems",
+
+        # SDG 11 (Target 11.2: providing equitable access to safe, affordable, and sustainable transport systems for all),
+        "transport equity", "distributional fairness",
+
+        # Waterborne Public Transit, Ferries & Maritime Commuting (Target 11.2)
+        "public transport on water", "ferry traffic", "ferries",
+        "passenger transport", "electric hybrid ferry",
+
 
         # Swedish Terms
+        "kollektivtrafik på vatten", "färjetrafik", "färjor",
+        
+        "fördelningsrättvisa", "transporträttvisa",
+
+        "ljuddämpningssystem",
+        
+        "stadstrafik", "busstrafik", "tur täthet", "turtäthet",
+        
+        "hållbara stadstransporter", "stadstransporter", "urbana vägnät",
+        "självkörande fordon", "persontransporter", "samlastning",
+
+        "arkitekturpraktik", "arkitektonisk design", "byggnadsdesign",
+        "stadsarkitektur", "beräkningsbaserad design", "mikroklimat",
+        "dagsljus", "strukturell effektivitet"
+
+        "beräkningsbaserad design",
+        "mikroklimat", "dagsljus", "strukturell effektivitet", "byggnadsdesign",
+
         "elfordon", "batteripaket", "övergången till elfordon",
         
         "intercitytåg", "tågresenärer", "passagerarkomfort", "bekväma tågresor",
@@ -1210,7 +1383,19 @@ AUXILIARY_SDG_TERMS = {
         "marginal aggregates", "marginal-quality aggregates", "crushed brick",
         "reduce the demand for high-quality aggregates", "recycled aggregates",
 
+        # Green Chemistry, Biopolymers & Chemical Substitution (Target 12.4 & 12.5)
+        "green solvents", "biopolymer", "biodegradable", "epoxy resin",
+        "food packaging",
+
+        # Radioactive Waste Minimization & Radiological Clearance (Target 12.4)
+        "final repository", "radiological control",
+
         # Swedish Terms
+        "slutförvaring", "friklassning",
+
+        "gröna lösningsmedel", "biopolymer", "biologisk nedbrytbarhet",
+        "epoxihartser", "livsmedelsförpackningar",
+
         "aggregat av lägre kvalitet", "material av lägre kvalitet",
         "krossat tegel", "nybrutna ballastmaterial", "minska behovet av nybrutna ballastmaterial",
         "återvunnen ballast",
@@ -1327,7 +1512,17 @@ AUXILIARY_SDG_TERMS = {
         "building energy performance", "energy requirements on buildings",
         "external carbon source",
 
+        # Architectural Climate Impact & Environmental Analysis (Target 13.2)
+        "climate impact", "environmental analysis",
+
+        # SDG 13 (Target 13.2: Fossil-free transition)
+        "fossil-free", "transition from fossil fuels",
+
         # Swedish Terms
+        "fossilfri",
+
+        "klimatpåverkan", "miljöanalys",
+        
         "energiprestanda", "energikraven på byggnader", "extern kolkälla",
         "kolkälla",
 
@@ -1382,7 +1577,13 @@ AUXILIARY_SDG_TERMS = {
         "kelp forest", "kelp forests", "mangrove forest", "mangrove forests",
         "mangrove", "mangroves",
 
+        # Marine Antifouling, Biofouling & Non-Toxic Marine Coatings (Target 14.1)
+        "marine antifouling", "antifouling", "biofouling", "marine corrosion",
+
         # Swedish Terms
+        "marina resurser", "marina ekosystemet", "blå ekonomin", "plastföroreningar",
+        "marin antifouling", "marin korrosion",
+
         "kelpskog", "kelpskogar", "kelpskogen", "kelpskogarna",
         "tångskog", "tångskogar", "tångskogen", "tångskogarna",
         "mangroveskog", "mangroveskogar", "mangroveskogen", "mangroveskogarna",
@@ -1418,6 +1619,7 @@ AUXILIARY_SDG_TERMS = {
         "intersectional invisibility", "open data governance",
 
         # Swedish Terms
+
         "öppen vetenskap", "transparens i styrning", "mediebevakning",
         "fred", "globalt mål 16 - fredliga och inkluderande samhällen", "institution", "rättvisa",
         "fredliga och inkluderande samhällen", "minska våld", "övergrepp och våld mot barn",
@@ -1565,6 +1767,10 @@ def extract_explicit_sdg_mentions(text: str) -> set[int]:
             i += 1
     return explicit_goals
 
+SDG2_EXCLUDED_TERMS = {
+    "absoluta",
+}
+
 # Generic ICT / computing tokens that bleed into clean energy unless energy-qualified
 SDG7_EXCLUDED_TERMS = {
     "internet of things",
@@ -1597,6 +1803,10 @@ def build_dual_language_term_index() -> dict[int, list[str]]:
             t_clean = t.strip().lower()
             t_clean = re.sub(r"^(and|the|och|att)\s+", "", t_clean).strip()
             if not t_clean or t_clean in GENERIC_SDG_META_TERMS:
+                continue
+
+            # Suppress generic false-positive tokens from SDG 2
+            if i == 2 and t_clean in SDG2_EXCLUDED_TERMS:
                 continue
 
             # Suppress generic ICT tokens from SDG 7
@@ -1650,10 +1860,10 @@ def extract_from_dual_language_json(json_path: Path) -> tuple[str, dict]:
     if isinstance(abstracts_obj, dict):
         corpus_parts.append(abstracts_obj.get("eng", ""))
         corpus_parts.append(abstracts_obj.get("swe", ""))
-
-    # Top-level language string fallbacks
-    corpus_parts.append(data.get("eng", ""))
-    corpus_parts.append(data.get("swe", ""))
+    else:
+        # Top-level language string fallbacks
+        corpus_parts.append(data.get("eng", ""))
+        corpus_parts.append(data.get("swe", ""))
 
     raw_corpus = ". ".join(p for p in corpus_parts if p)
     cleaned_corpus = clean_text_artifacts(raw_corpus)
