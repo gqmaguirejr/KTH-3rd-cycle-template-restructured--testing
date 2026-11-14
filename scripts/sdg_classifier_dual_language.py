@@ -89,7 +89,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         # Energy Modeling Frameworks
         "OSeMOSYS", "ESOMs", "CLEWs",
         # Grid Electrification & Vehicle-Grid Integration (Target 7.1 & 7.2)
-        "V2G", "EV", "EVs", "BEV", "BEVs"
+        "V2G", "EV", "EVs", "BEV", "BEVs",
         # Concentrated Solar, Thermal Storage & Power Cycles (Target 7.2, 9.4, 13.2)
         "CSP", "TES", "sCO2", "P2H2P", "DNI",
 
@@ -100,6 +100,11 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "SB", "SBs", "PIPS",
 
         "RVACS", "USBO",
+
+        "PWR", "PWRs", "BWR", "BWRs",
+
+        "SAF", # Sustainable Aviation Fuel
+
     ],
     9: [
         # Connectivity, AI & Computation
@@ -170,7 +175,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "EVRP",
     ],
     10: [
-        "SCI", "iSCI",
+        "iSCI",
         ],
     11: [
         # Public & Active Transit
@@ -202,7 +207,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "BV", "AD", # BV (Biowaste Valorization) and AD (Anaerobic Digestion)
 
-        "SCV", "SCM", "DPP"  # Digital Product Passport
+        "SCV", "SCM", "DPP",  # Digital Product Passport
 
         "UGM", "UGMs", "OGM",
     ],
@@ -330,7 +335,26 @@ AUXILIARY_SDG_TERMS = {
 
         "noise reduction systems",
 
+        # Target 3.4: Radiotherapy & Oncology
+        "adaptive radiation therapy", "lung cancer", "organs-at-risk", "dosimetric",
+
+        # Target 3.4 & 3.8: Musculoskeletal Biomechanics & Ergonomic Injury Prevention
+        "musculoskeletal", "joint loading", "injury mechanisms",
+
+        # Environmental Noise Health Outcomes (Target 3.9)
+        "sleep disturbance", "burden of disease", "noise events",
+        "environmental noise directive",
+
+
         # Swedish Terms
+        "sömnstörning", "sömnproblem", "bullerhändelser",
+        
+        "biomekanik", "biomekanisk", "biomekaniska",
+        "muskuloskeletala", "ledbelastning", "skadeorsaker",
+
+        "strålbehandling", "adaptiv strålbehandling", "tumör", "tumören",
+        "lungcancer", "riskorgan", "dosplanering", "partikelstrålning",
+        
         "ljuddämpningssystem",
 
         "gånganalys", "patologisk gång", "personlig rehabilitering",
@@ -542,8 +566,33 @@ AUXILIARY_SDG_TERMS = {
         # SDG 7 (Target 7.2: Clean electricity & biofuels in maritime transit)
         "green electricity", "fossil-free operations", "fossil-free alternatives",
 
+        # Advanced Nuclear Fuels, SMRs & Fast-Spectrum Systems (Target 7.a)
+        "small modular reactor", "small modular reactors",
+        "uranium mononitride", "advanced nuclear fuel",
+        "fast-spectrum systems", "nuclear energy systems",
+
+        # Reactor Physics, Pressurized Water Reactors & Fuel Depletion (Target 7.a)
+        "pressurized water reactor", "pressurized water reactors",
+        "boiling water reactor", "boiling water reactors",
+        "reactor physics", "fuel pellets", "fuel depletion",
+        "nodal calculations", "lattice calculations",
+
+        # Target 7.2 & 7.3: Sustainable Aviation Fuels & Energy Efficiency
+        "sustainable aviation fuel", "energy efficiency", "total energy use",
+
 
         # Swedish Terms
+        "elflyg", "energieffektivitet", "hållbart bränsle", "flygbränsle",
+
+        "tryckvattenreaktor", "tryckvattenreaktorer",
+        "kokvattenreaktor", "kokvattenreaktorer",
+        "reaktorfysik", "bränslekutsar", "bränsleutbränning",
+
+        "små modulära reaktorer", "uranmononitrid",
+        "avancerat kärnbränsle", "snabba reaktorsystem",
+        "kärnenergisystem",
+
+
         "fossilfri", "högmiljöprestanda", "hög miljöprestanda",
         
         "energiförbrukning", "energianvändning", "batterielektriska",
@@ -874,8 +923,44 @@ AUXILIARY_SDG_TERMS = {
         "transfer impedance", "noise reduction systems", "aircraft liners",
         "jet engines", "mufflers", "grazing flow", "scattering matrix",
 
+        # Advanced Nuclear Materials & Irradiation Characterization (Target 9.5)
+        "uranium mononitride", "small modular reactors",
+        "nuclear energy systems", "irradiation damage", "ion implantation",
+
+        # Scientific Machine Learning & Surrogate Modeling (Target 9.5)
+        "surrogate models", "surrogate model", "uncertainty quantification",
+        "deep neural networks", "recurrent neural networks",
+
+        # Target 9.5: Scientific Research, AI/RL & Computational Engineering
+        "reinforcement learning", "deep reinforcement learning",
+        "multi-agent reinforcement learning", "fluid mechanics",
+        "active flow control", "drag reduction",
+        "numerical simulations", "high-performance computers",
+
+        # Target 9.5
+        "finite element models", "finite element model", "structural dynamics",
+
+        # Target 9.5
+        "multiphase flows", "multiphase flow", "computer simulations",
+        "rheology", "paper pulp processing", "industrial processes",
 
         # Swedish Terms
+        "flerfasflöden", "reologi", "pappersmassa",
+        "industriella processer", "datorberäkningar", "datorsimuleringar",
+
+        "finita elementmodeller", "finita elementmetoden", "strukturdynamik",
+        "numeriska simuleringar",
+
+        "förstärkningsinlärning", "djup förstärkningsinlärning",
+        "fluidmekanik", "strömningsmekaniken", "aktiv flödeskontroll",
+        "strömningskontroll", "dragreduktion", "numerisk simulering",
+        "högpresterande datorer",
+
+        "surrogatmodeller", "osäkerhetskvantifiering",
+
+        "uranmononitrid", "små modulära reaktorer",
+        "kärnenergisystem", "strålskador", "jonimplantering",
+
         "kanalakustik", "perforerade plattor", "perforerad platta",
         "perforerade plåtar", "ljuddämpningssystem", "flygplansmotorer",
         "förbränningsmotorer", "turbofläktmotorer", "transferimpedans",
@@ -1002,7 +1087,7 @@ AUXILIARY_SDG_TERMS = {
         "vetenskaplig forskning och teknisk kapacitet", "informations- och kommunikationsteknik",
         "tillgång till internet", "cyberfysiska system",
         "tågtrafik", "persontåg", "snabbtåg",
-        "kvantsensor", "tröghetsnavigering", "autonoma undervattensfarkoster"
+        "kvantsensor", "tröghetsnavigering", "autonoma undervattensfarkoster",
         "godsvolym", "godsvolymer",
         "resandevolym", "resandevolymer",
         "passagerarvolym", "passagerarvolymer",
@@ -1044,7 +1129,14 @@ AUXILIARY_SDG_TERMS = {
         # SDG 10 (Target 10.2 & 10.3: reducing socio-economic and spatial inequalities in access to services)
         "transport equity", "distributional fairness",
 
+        # Environmental Justice & Equitable Urban Exposure (Target 10.2 & 10.3)
+        "fairer cities", "population-centric", "heterogeneous exposure",
+
+        "work visas", "student visas", "visa requirements", "visa policy",
+
         # Swedish Terms
+        "rättvisare", "rättvisare städer", "befolkningscentrerad",
+        
         "fördelningsrättvisa", "transporträttvisa",
         "funktionsnedsättning", "funktionsnedsättningar",
         "individer med funktionsnedsättningar", "sensorimotorisk funktionsnedsättning",
@@ -1058,7 +1150,8 @@ AUXILIARY_SDG_TERMS = {
         "hjälpmedelsteknik", "fysisk rehabilitering", "tillgänglighet",
         "minskad ojämlikhet", "inkomsttillväxt för de fattigaste", "social och ekonomisk inkludering",
         "lika möjligheter", "diskriminerande lagstiftning", "finansmarknadsreglering",
-        "migration och rörlighet", "säker migration", "tillgänglighet för personer med funktionsnedsättning",
+        "migration och rörlighet", "säker migration",
+        "tillgänglighet för personer med funktionsnedsättning",
         "funktionsvariation"
     ],
     11: [ # SDG 11 (Sustainable Cities and Communities)
@@ -1218,7 +1311,7 @@ AUXILIARY_SDG_TERMS = {
 
         "arkitekturpraktik", "arkitektonisk design", "byggnadsdesign",
         "stadsarkitektur", "beräkningsbaserad design", "mikroklimat",
-        "dagsljus", "strukturell effektivitet"
+        "dagsljus", "strukturell effektivitet",
 
         "beräkningsbaserad design",
         "mikroklimat", "dagsljus", "strukturell effektivitet", "byggnadsdesign",
@@ -1290,7 +1383,7 @@ AUXILIARY_SDG_TERMS = {
         "cykeldelning", "delade cyklar", "lånecykel", "lånecyklar", "lånecykelsystem",
         "mikromobilitet",
         "tillgänglighet i stadsmiljö", "rullstolstillgänglighet",
-        "fastighetsförvaltning"
+        "fastighetsförvaltning",
         "cykling", "cyklist", "cyklister", "cykelinfrastruktur", "cykelväg",
         "urban mobilitet", "kollektivtrafik", "delningsbostäder", "delat boende",
         "grönområden", "stadsplanering", "trafikbuller", "miljöakustik",
@@ -1333,7 +1426,8 @@ AUXILIARY_SDG_TERMS = {
 
         # Material Longevity, Degradation Mitigation & Service Life (Target 12.2)
         "service life", "delay embrittlement", "embrittlement",
-        "decomposition", "corrosive environments",
+        "corrosive environments",
+        "material decomposition", "thermal decomposition", "chemical decomposition",
 
         # Production Efficiency & Material Handling (Target 12.2 & 12.5)
         "material handling", "resource requirements", "resource requirement",
@@ -1518,7 +1612,15 @@ AUXILIARY_SDG_TERMS = {
         # SDG 13 (Target 13.2: Fossil-free transition)
         "fossil-free", "transition from fossil fuels",
 
+        # Target 13.2: Swedish Climate-Criteria Procurement & Carbon Equivalents
+        "carbon dioxide equivalents", "aviation fuel",
+
+
         # Swedish Terms
+        "klimatkriterier", "klimatkriterium", "klimatpåverkan",
+        "klimatnytta", "utsläpp av växthusgaser", "koldioxidekvivalenter",
+        "koldioxidvärdering", "kondensstrimmor",
+
         "fossilfri",
 
         "klimatpåverkan", "miljöanalys",
@@ -1683,8 +1785,9 @@ AUXILIARY_SDG_TERMS = {
         "låg- och medelinkomstländer", "utvecklingsländer",
         "genomförande av parisavtalet", "parisavtalet",
         "akademisk internationalisering", 
-        "globalt mål 17 - genomförande och globalt partnerskap", "koordination", "samarbete",
+        "globalt mål 17 - genomförande och globalt partnerskap", "samarbete",
         "genomförande och globalt partnerskap", "inhemsk resursmobilisering", "utvecklingsbistånd",
+        "policykoordination", "internationell koordination",
     ]
 }
 
@@ -1777,10 +1880,24 @@ SDG7_EXCLUDED_TERMS = {
     "internet of things (iot)",
     "iot",
 }
+
+SDG10_EXCLUDED_TERMS = {
+    "visas",
+}
+
 # Add tokens to exclude from SDG 14 when they lack marine context
 SDG14_EXCLUDED_TERMS = {
     "navigation", "sensor fusion", "perception", "trajectory", "control technologies",
     "forest",  # Prevents kelp/mangrove forest fragments from matching terrestrial forestry
+}
+
+SDG15_EXCLUDED_TERMS = {
+    "natural convection",
+}
+
+
+CUSTOM_TERM_REGEX = {
+    (15, "natura"): r"\bnatura(?!l)\w*\b",
 }
 
 def build_dual_language_term_index() -> dict[int, list[str]]:
@@ -1813,14 +1930,23 @@ def build_dual_language_term_index() -> dict[int, list[str]]:
             if i == 7 and t_clean in SDG7_EXCLUDED_TERMS:
                 continue
 
+            # Suppress Swedish verb "visas" in SDG 10
+            if i == 10 and t_clean in SDG10_EXCLUDED_TERMS:
+                continue
+
             # Suppress standalone 'forest' in SDG 14
             if i == 14 and t_clean in SDG14_EXCLUDED_TERMS:
+                continue
+
+            # Suppress excluded terms in SDG 15
+            if i == 15 and t_clean in SDG15_EXCLUDED_TERMS:
                 continue
 
             cleaned_terms.add(t_clean)
 
         mapping[i] = sorted(list(cleaned_terms), key=len, reverse=True)
     return mapping
+
 
 
 def extract_from_dual_language_json(json_path: Path) -> tuple[str, dict]:
@@ -1944,14 +2070,17 @@ def scan_text_for_sdgs(
         for phrase in terms:
             if len(phrase) < 3:
                 continue
-            escaped = re.escape(phrase.lower())
-            
-            # Allow single-word Swedish roots (length >= 6) to match compound headwords
-            # e.g., 'livscykel' matches 'livscykelresistenta'
-            if " " not in phrase and len(phrase) >= 6:
-                pattern = rf"(?<!\w){escaped}"
+
+            if (sdg_num, phrase) in CUSTOM_TERM_REGEX:
+                pattern = CUSTOM_TERM_REGEX[(sdg_num, phrase)]
             else:
-                pattern = rf"(?<!\w){escaped}(?!\w)"
+                escaped = re.escape(phrase.lower())
+                # Allow single-word Swedish roots (length >= 6) to match compound headwords
+                # e.g., 'livscykel' matches 'livscykelresistenta'
+                if " " not in phrase and len(phrase) >= 6:
+                    pattern = rf"(?<!\w){escaped}"
+                else:
+                    pattern = rf"(?<!\w){escaped}(?!\w)"
 
             matches = len(re.findall(pattern, lower_text))
             if matches > 0:
