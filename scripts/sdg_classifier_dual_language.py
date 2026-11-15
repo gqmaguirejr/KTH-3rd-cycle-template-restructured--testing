@@ -243,7 +243,13 @@ AUXILIARY_SDG_TERMS = {
         "energy poverty", "household poverty", "energy coaching",
         "mobility coaching",
 
+        # Land Tenure Rights, Access to Land & Deprivation (Target 1.4)
+        "legal access to the land", "legal access to land",
+        "adverse possession", "deprivation", "land tenure",
+
         # Swedish Terms
+        "laglig tillgång till marken", "laglig rätt till marken",
+        "besittningsrätt", "markrättigheter",
         "mobilitetscoachning", "personlig mobilitets-coachning",
         "energifattigdom", "hushållsfattigdom", "energicoachning",
         "fattigdom", "globalt mål 1 - ingen fattigdom", # "hållbar utveckling",
@@ -256,7 +262,12 @@ AUXILIARY_SDG_TERMS = {
         # Food systems & bio-based coatings / agriculture
         "food systems governance", "local food systems", "food supply systems",
         "food supply chain", "food security", "chitosan", "antimicrobial coatings",
+
         # Swedish Terms
+        # Swedish Smallholder & Agricultural Investment Terms (Target 2.3 & 2.a)
+        "småbrukare", "jordbruksmark", "jordbruksinvesteringar",
+        "livsmedelspriser", "bymark",
+
         "livsmedelssystem", "matsystem", "livsmedelsförsörjning", "livsmedelsstyrning",
         "matsystemsstyrning", "livsmedelskedja",
         "avskaffa hunger", "tryggad livsmedelsförsörjning", "god näringsstatus",
@@ -345,8 +356,21 @@ AUXILIARY_SDG_TERMS = {
         "sleep disturbance", "burden of disease", "noise events",
         "environmental noise directive",
 
+        # Ophthalmology, Optometry & Vision Health (Target 3.4 & 3.8)
+        "myopia control", "nearsightedness", "orthokeratology", "retina",
+        "ocular diseases", "sight-threatening",
+        "myopic", "myopes", "non-myopes", "emmetropia", "emmetropes",
+        "contact lenses", "ophthalmology",
+
 
         # Swedish Terms
+        "närsynthet", "ögonsjukdomar", "ortokeratologi",
+        "näthinnan", "hornhinneförändringar", "synfältet",
+        "myopin", "myopisk", "myoper", "icke-myoper", "icke-myoperna",
+        "myopikontroll", "myopikontrollglasögon", "myopikontrolleffekt",
+        "närsynthetsprogression", "närsynthetsutveckling",
+        "emmetropi", "kontaktlinser", "hornhinnan",
+
         "sömnstörning", "sömnproblem", "bullerhändelser",
         
         "biomekanik", "biomekanisk", "biomekaniska",
@@ -483,7 +507,14 @@ AUXILIARY_SDG_TERMS = {
         "groundwater dependence", "sustainable water management",
         "physics-informed neural-network", "safe-aquifer",
 
+        # Water Distribution Systems & Contamination Tracking (Target 6.1 & 6.3)
+        "water distribution network", "contamination tracking",
+        "contaminant flows", "contamination source",
+
         # Swedish Terms
+        "vattenledningsnät", "vattenledningslaboratorium",
+        "föroreningsspårning", "föroreningsflöden", "föroreningskälla",
+
         # Wastewater Process Optimization & High-Solids Flows (Target 6.3)
         "rening av avloppsvatten",
         
@@ -582,6 +613,13 @@ AUXILIARY_SDG_TERMS = {
 
 
         # Swedish Terms
+        "vindkraftsparker", "vindkraftens",
+
+        # Swedish Power Systems, Electricity Markets & Nuclear Energy (Target 7.1, 7.2 & 7.a)
+        "kärnkraft", "elsystem", "elkraftssystem", "elmarknad", "elpriser",
+        "elektriska energisystem", "kraftsystemstyrning", "rotationsenergi",
+        "spänningsreglering",
+
         "elflyg", "energieffektivitet", "hållbart bränsle", "flygbränsle",
 
         "tryckvattenreaktor", "tryckvattenreaktorer",
@@ -944,7 +982,24 @@ AUXILIARY_SDG_TERMS = {
         "multiphase flows", "multiphase flow", "computer simulations",
         "rheology", "paper pulp processing", "industrial processes",
 
+        # Geotechnical & Transport Infrastructure Engineering (Target 9.1)
+        "tunnel projects", "tunnel project", "geotechnical risks", "georisks",
+        "construction projects",
+
+        # Industrial R&D, Automotive Engineering & Virtual Prototyping (Target 9.5)
+        "vehicle manufacturers", "vehicle dynamics", "driving simulator",
+        "driving simulators", "computer-aided engineering",
+
+
         # Swedish Terms
+        "fordonstillverkare", "fordonsdynamik", "körsimulator",
+        "körsimulatorer", "datorstödd teknik",
+
+        "järnvägsfordon",
+
+        "transportinfrastruktur", "tunnelprojekt", "bergtunnelprojekt",
+        "georisk", "georisker", "byggprojekt",
+
         "flerfasflöden", "reologi", "pappersmassa",
         "industriella processer", "datorberäkningar", "datorsimuleringar",
 
@@ -1296,8 +1351,21 @@ AUXILIARY_SDG_TERMS = {
         "public transport on water", "ferry traffic", "ferries",
         "passenger transport", "electric hybrid ferry",
 
+        # Civil Infrastructure, Tunneling & Construction Projects (Target 11.2 & 11.c)
+        "transport infrastructure", "construction projects", "construction project",
+        "tunnel projects", "tunnel project",
+
+        # Target 11.c: Sustainable Buildings & Renovation
+        "renovation of buildings", "renovation projects", "building stock",
+
 
         # Swedish Terms
+        "renovering av byggnader", "renoveringsprojekt", "nybyggnad",
+        "byggnader", "beståndsnivå",
+        
+        "transportinfrastruktur", "byggprojekt", "tunnelprojekt",
+        "bergtunnelprojekt", "anläggningsprojekt",
+
         "kollektivtrafik på vatten", "färjetrafik", "färjor",
         
         "fördelningsrättvisa", "transporträttvisa",
@@ -1615,8 +1683,11 @@ AUXILIARY_SDG_TERMS = {
         # Target 13.2: Swedish Climate-Criteria Procurement & Carbon Equivalents
         "carbon dioxide equivalents", "aviation fuel",
 
-
+        "embodied greenhouse gas emissions", "embodied emissions",
+        
         # Swedish Terms
+        "inbyggd klimatpåverkan", "klimatberäkningar", "klimatkrav",
+
         "klimatkriterier", "klimatkriterium", "klimatpåverkan",
         "klimatnytta", "utsläpp av växthusgaser", "koldioxidekvivalenter",
         "koldioxidvärdering", "kondensstrimmor",
@@ -1897,6 +1968,25 @@ SDG15_EXCLUDED_TERMS = {
 
 
 CUSTOM_TERM_REGEX = {
+    (3, "myopia"): r"(?<!\w)myopia(?!\w)",
+    (3, "myopic"): r"(?<!\w)myopic(?!\w)",
+    (3, "myopes"): r"(?<!\w)myopes(?!\w)",
+    (3, "emmetropia"): r"(?<!\w)emmetropia(?!\w)",
+    (3, "myopin"): r"(?<!\w)myopin(?!\w)",
+    (3, "myopisk"): r"(?<!\w)myopisk(?!\w)",
+    (3, "myoper"): r"(?<!\w)myoper(?!\w)",
+    (3, "myopikontroll"): r"(?<!\w)myopikontroll(?!\w)",
+    (3, "närsynthet"): r"(?<!\w)närsynthet(?!\w)",
+    (3, "ortokeratologi"): r"(?<!\w)ortokeratologi(?!\w)",
+    (3, "näthinnan"): r"(?<!\w)näthinnan(?!\w)",
+    (3, "hornhinnan"): r"(?<!\w)hornhinnan(?!\w)",
+    (3, "synfältet"): r"(?<!\w)synfältet(?!\w)",
+    (3, "ögonsjukdomar"): r"(?<!\w)ögonsjukdomar(?!\w)",
+    (9, "georisk"): r"(?<!\w)georisk(?!\w)",
+    (11, "georisk"): r"(?<!\w)georisk(?!\w)",
+    (11, "cyclist"): r"(?<!\w)cyclist(?!\w)",
+    (11, "cyklist"): r"(?<!\w)cyklist(?!\w)",
+    (11, "cyklister"): r"(?<!\w)cyklister(?!\w)",
     (15, "natura"): r"\bnatura(?!l)\w*\b",
 }
 
@@ -1917,7 +2007,7 @@ def build_dual_language_term_index() -> dict[int, list[str]]:
 
         cleaned_terms = set()
         for t in raw_terms:
-            t_clean = t.strip().lower()
+            t_clean = t.strip().lower().rstrip(",.;:")
             t_clean = re.sub(r"^(and|the|och|att)\s+", "", t_clean).strip()
             if not t_clean or t_clean in GENERIC_SDG_META_TERMS:
                 continue
