@@ -32,6 +32,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import unicodedata
 
 try:
     import fitz  # PyMuPDF
@@ -611,8 +612,13 @@ AUXILIARY_SDG_TERMS = {
         # Target 7.2 & 7.3: Sustainable Aviation Fuels & Energy Efficiency
         "sustainable aviation fuel", "energy efficiency", "total energy use",
 
+        # Target 7.3: Energy Conservation / Saving
+        "save energy",
 
         # Swedish Terms
+        # Target 7.3: Energy Conservation / Saving
+        "spara energi",
+
         "vindkraftsparker", "vindkraftens",
 
         # Swedish Power Systems, Electricity Markets & Nuclear Energy (Target 7.1, 7.2 & 7.a)
@@ -990,8 +996,17 @@ AUXILIARY_SDG_TERMS = {
         "vehicle manufacturers", "vehicle dynamics", "driving simulator",
         "driving simulators", "computer-aided engineering",
 
+        # Targets 9.1 & 9.5: Railway Electrification & Simulation
+        "electric railways", "pantograph-catenary", "overhead contact line",
+        "finite element modelling",
 
         # Swedish Terms
+        # Target 9.1: regional and transborder infrastructure
+        "vattenvägen",
+
+        # Target 9.1: rail infrastructure maintenance
+        "banarbetet",
+
         "fordonstillverkare", "fordonsdynamik", "körsimulator",
         "körsimulatorer", "datorstödd teknik",
 
@@ -1189,7 +1204,13 @@ AUXILIARY_SDG_TERMS = {
 
         "work visas", "student visas", "visa requirements", "visa policy",
 
+        # Target 10.2: Inclusion of Persons with Disabilities
+        "visual impairments",
+
         # Swedish Terms
+        # Target 10.2: Inclusion of Persons with Disabilities
+        "synnedsättning",
+
         "rättvisare", "rättvisare städer", "befolkningscentrerad",
         
         "fördelningsrättvisa", "transporträttvisa",
@@ -1358,8 +1379,21 @@ AUXILIARY_SDG_TERMS = {
         # Target 11.c: Sustainable Buildings & Renovation
         "renovation of buildings", "renovation projects", "building stock",
 
+        # Target 11.2: passenger rail and public transport services
+        "passenger rail",
+
+        # Target 11.2: Accessible Transport Systems
+        "night train",
+
+        "electric railways",
 
         # Swedish Terms
+        # Target 11.2: sustainable transport systems
+        "vattenvägen",
+
+        # Target 11.2: passenger rail and public transport services
+        "persontrafik på järnväg", "nattågstrafik",
+
         "renovering av byggnader", "renoveringsprojekt", "nybyggnad",
         "byggnader", "beståndsnivå",
         
@@ -1982,7 +2016,9 @@ CUSTOM_TERM_REGEX = {
     (3, "hornhinnan"): r"(?<!\w)hornhinnan(?!\w)",
     (3, "synfältet"): r"(?<!\w)synfältet(?!\w)",
     (3, "ögonsjukdomar"): r"(?<!\w)ögonsjukdomar(?!\w)",
+    (6, "vatten"): r"(?<!\w)vatten(?!\w)",
     (9, "georisk"): r"(?<!\w)georisk(?!\w)",
+    (9, "körsimulator"): r"(?<!\w)körsimulator(?!\w)",
     (11, "georisk"): r"(?<!\w)georisk(?!\w)",
     (11, "cyclist"): r"(?<!\w)cyclist(?!\w)",
     (11, "cyklist"): r"(?<!\w)cyklist(?!\w)",
@@ -2140,6 +2176,9 @@ def scan_text_for_sdgs(
     sdg_terms = build_dual_language_term_index()
     counts: dict[int, int] = {i: 0 for i in range(1, 18)}
     matched_phrases: dict[int, list[tuple[str, int]]] = {i: [] for i in range(1, 18)}
+
+    # Normalize compatibility characters (e.g., ligatures like 'ﬁ' -> 'fi') before matching
+    text = unicodedata.normalize("NFKC", text)
 
     # Track 1: Case-Sensitive Acronym Matching
     for sdg_num, acronyms in ACRONYMS_SDG_TERMS.items():
