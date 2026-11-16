@@ -248,7 +248,11 @@ AUXILIARY_SDG_TERMS = {
         "legal access to the land", "legal access to land",
         "adverse possession", "deprivation", "land tenure",
 
+        "property rights",
+        
         # Swedish Terms
+        "äganderätt",
+        
         "laglig tillgång till marken", "laglig rätt till marken",
         "besittningsrätt", "markrättigheter",
         "mobilitetscoachning", "personlig mobilitets-coachning",
@@ -474,21 +478,47 @@ AUXILIARY_SDG_TERMS = {
         # Diversity & Governance
         "corporate governance", "homosocial", "homosociality", "gender diversity",
         "gender equality", "female executives", "daughter effect",
+
         # Workplace Culture, STEM/Tech Gender Balance (Target 5.5)
         "male-dominated", "androcentric", "gender equality practices",
         "gendered power relations", "homosocial cultures",
 
+        # Core Gender Equality & Anti-Discrimination (Targets 5.1 & 5.c)
+        "gender gap", "gender bias", "gender discrimination", "gender disparity",
+        "sexism", "women's rights",
+
+        # Gender-Based Violence & Safety (Target 5.2)
+        "gender-based violence", "domestic violence", "intimate partner violence",
+        "sexual harassment", "violence against women",
+
+        # Unpaid Care & Domestic Work (Target 5.4)
+        "unpaid care", "parental leave", "work-life balance",
+
+        # Women's Leadership, STEM & Economic Participation (Targets 5.5 & 5.b)
+        "female leadership", "women in leadership", "women in stem",
+        "female representation", "glass ceiling",
 
         # Swedish Terms
+        "kvinnligt ledarskap", "kvinnlig representation", "glastak",
+
+        "obetalt hemarbete", "föräldraledighet",
+
+        "könsrelaterat våld", "våld i nära relationer", "mäns våld mot kvinnor", "sexuella trakasserier",
+        
+        "jämställdhetsintegrering", "könsroller", "könsdiskriminering", "könsfördelning",
+        "könsgap", "kvinnors rättigheter",
+
         "mansdominerad", "mansdominerade", "androcentriska",
         "jämställdhetspraktiker", "könade maktrelationer", "ojämställdhet",
         "bolagsstyrning", "könsmässig mångfald",
         "jämställdhetsfond", "kvinnlig representation",
         "jämställdhet", "diskriminering av kvinnor", "våld mot kvinnor",
         "obetalt hem- och omsorgsarbete", "fullt deltagande i ledarskap",
-        "beslutsfattande", "reproduktiv hälsa", "lika rätt till ekonomiska resurser",
+        "reproduktiv hälsa", "lika rätt till ekonomiska resurser",
         "homosocialitet",
         "jämställdhetsintegrering", "styrelsesammansättning"
+        "kvinnors deltagande i beslutsfattande", "jämställt beslutsfattande"
+
     ],
     6: [ # SDG 6 (Clean Water and Sanitation)
         # Water & Wastewater
@@ -512,7 +542,14 @@ AUXILIARY_SDG_TERMS = {
         "water distribution network", "contamination tracking",
         "contaminant flows", "contamination source",
 
+        # Stormwater & Runoff Water Quality Treatment (Target 6.3)
+        "road runoff", "run-off treatment", "sedimentation reservoir",
+        "dissolved pollutants",
+
         # Swedish Terms
+        "dagvatten", "vägavrinning", "sedimentering", "reningssystem",
+        "vattenprover",
+
         "vattenledningsnät", "vattenledningslaboratorium",
         "föroreningsspårning", "föroreningsflöden", "föroreningskälla",
 
@@ -615,7 +652,11 @@ AUXILIARY_SDG_TERMS = {
         # Target 7.3: Energy Conservation / Saving
         "save energy",
 
+        "liquid hydrogen",
+
         # Swedish Terms
+        "hållbar flygfotogen", "flygfotogen", "flytande väte",
+
         # Target 7.3: Energy Conservation / Saving
         "spara energi",
 
@@ -722,6 +763,7 @@ AUXILIARY_SDG_TERMS = {
 
 
         # Swedish Terms
+        "besöksnäringen",
 
         "manuellt arbete", "öka produktiviteten", "ökar produktiviteten",
         "öka effektiviteten", "arbetsmiljö i skogsbruket",
@@ -1000,7 +1042,24 @@ AUXILIARY_SDG_TERMS = {
         "electric railways", "pantograph-catenary", "overhead contact line",
         "finite element modelling",
 
+        # Road & Pavement Infrastructure Engineering (Target 9.1 & 9.5)
+        "flexible pavements", "subgrade", "subgrades", "resilient modulus",
+
+        # Target 9.1 on regional/transborder and sustainable transit infrastructure
+        "mobility hub", "mobility hubs", "intermodality",
+
+        "rolling stock", "railway procurement",
+
+
         # Swedish Terms
+        "nattåg", "nattågen", "sovvagn", "sovvagnar", "liggvagn", "liggvagnar",
+        "personvagnar", "lok och vagnar", "rullande materiel",
+
+        "mobilitetshubb", "mobilitetshubbar", "intermodalitet",
+
+        # Swedish Civil & Tunnel Infrastructure Engineering (Target 9.1 & 9.5)
+        "trafiktunnlar", "sprutbetong", "bergrum", "bärförmåga",
+
         # Target 9.1: regional and transborder infrastructure
         "vattenvägen",
 
@@ -1207,7 +1266,17 @@ AUXILIARY_SDG_TERMS = {
         # Target 10.2: Inclusion of Persons with Disabilities
         "visual impairments",
 
+        # Target 10.2 / 10.3: Workplace Inclusion, Diversity & Anti-Discrimination
+        "diversity management", "inclusive recruitment", "diversity and inclusion",
+        "minority", "tokenism", "microaggressions",
+
+        # Inclusion of children/youth
+        "children's rights", "child rights"
+
+
         # Swedish Terms
+        "barns rättigheter", "barnrättsperspektiv",
+
         # Target 10.2: Inclusion of Persons with Disabilities
         "synnedsättning",
 
@@ -1387,7 +1456,36 @@ AUXILIARY_SDG_TERMS = {
 
         "electric railways",
 
+        # Municipal Street Networks & Urban Infrastructure Management (Target 11.2 & 11.3)
+        "street network", "municipalities",
+
+        "mobility hub", "mobility hubs", "intermodality", "intermodal", "winter cities", "winter city",
+        "waiting time",
+
+        # Swedish urban & spatial planning
+        "urbana värmeöeffekter", "urbana värmemönster", "värmebelastning",
+        "urban morfologi", "trädskikt",
+
+        "physical planning", "detailed development plan", "detailed development plans",
+        "places for play", "playgrounds",
+        
+        "night trains", "sleeper train", "sleeper trains"
+
+
         # Swedish Terms
+        "nattåg", "nattågen", "nattåget", "sovvagn", "sovvagnar", "sovvagnarna",
+        "liggvagn", "liggvagnar", "personvagnar",
+
+        "fysisk planering", "fysiska planeringen", "kommunal planering", "detaljplan", "detaljplaner",
+        "detaljplanerna", "planläggning", "planbeskrivningar", "plan- och bygglagen",
+        "platser för lek", "lekplatser",
+
+        "mobilitetshubb", "mobilitetshubbar", "intermodalitet", "intermodal",
+        "vinterstäder", "vinterstad",
+
+
+        # Municipal Street Networks & Urban Infrastructure Management (Target 11.2 & 11.3)
+        "gatunät", "kommuner",
         # Target 11.2: sustainable transport systems
         "vattenvägen",
 
@@ -1719,7 +1817,13 @@ AUXILIARY_SDG_TERMS = {
 
         "embodied greenhouse gas emissions", "embodied emissions",
         
+        "planetary boundaries", "planetary limits",
+
         # Swedish Terms
+        "urban heat island", "urbana värmeöeffekter",
+
+        "planetens gränser",
+
         "inbyggd klimatpåverkan", "klimatberäkningar", "klimatkrav",
 
         "klimatkriterier", "klimatkriterium", "klimatpåverkan",
@@ -1825,7 +1929,42 @@ AUXILIARY_SDG_TERMS = {
         "open science", "transparent policymaking", "media monitoring",
         "intersectional invisibility", "open data governance",
 
+        # Target 16.6 / 16.10: Accountable Institutions & Journalism/Media Pluralism
+        "journalists", "newsroom", "newsrooms", "accountability",
+        "media organizations", "democratic necessity", "institutional branding", "accountability",
+
+        "power relations", "governance", "depoliticisation", "policy mobility", "planning practice", 
+
+        "ecological justice", "social justice", "environmental justice",
+        "conflicts between social, economic, and ecological justice",
+        "hegemonic", "counter-hegemonic", "hegemony",
+        "institutional reconfiguration", "institutional reconfigurations", "institutional context", "institutional contexts",
+        "urban governance", "local capacity", "public policy", "policy translation",
+
+        "martial law", "property rights", "land administration", "cadastral",
+        "rule of law", "legal framework", "legal frameworks", "legal harmonization",
+        "comparative law", "institutional resilience", "institutional coordination",
+        "institutional adaptability", "social stability",
+
+        # Human rights, children's rights & statutory law
+        "convention on the rights of the child", "children's rights", "child rights",
+        "best interests of the child", "public administration", "legislation", "jurisprudential"
+
+
         # Swedish Terms
+        "barnkonventionen", "barns rättigheter", "barnrättsperspektiv", "barnets bästa",
+        "offentlig verksamhet", "lagstiftning", "lagstiftaren", "svensk rätt", "svensk lag",
+        "rättsvetenskaplig", "rättstillämpare",
+
+        "krigstillstånd", "väpnad konflikt", "äganderätt", "markförvaltning",
+        "kadastersystem", "rättslig analys", "komparativ rätt", "rättslig harmonisering",
+        "institutionell samordning", "institutionell anpassningsförmåga", "social stabilitet",
+        
+        "ekologisk rättvisa", "social rättvisa", "miljörättvisa",
+        "hegemonisk", "hegemoniska", "mothegemoniska",
+        "institutionell", "institutionella",
+        "lokal kapacitet", "offentlig förvaltning", "policyöversättning",
+        "maktrelationer", "styrning", "avpolitisering", "policymobilitet", "planeringspraktik",
 
         "öppen vetenskap", "transparens i styrning", "mediebevakning",
         "fred", "globalt mål 16 - fredliga och inkluderande samhällen", "institution", "rättvisa",
@@ -2325,6 +2464,7 @@ def main():
             "sdg_vector": vector,
             "explicit_mentions": sorted(list(explicit_mentions)),
             "metadata_assigned_sdgs": sorted(list(file_assigned_sdgs)),
+            "inferred_by_keywords": sorted(top_by_keyword),
             "ranked_matches": {f"SDG {g}": c for g, c in ranked if c > 0},
             "recommended": top_candidates,
         }
