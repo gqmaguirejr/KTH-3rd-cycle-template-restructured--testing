@@ -367,8 +367,11 @@ AUXILIARY_SDG_TERMS = {
         "myopic", "myopes", "non-myopes", "emmetropia", "emmetropes",
         "contact lenses", "ophthalmology",
 
+        "neuromodulation", "medical device",
 
         # Swedish Terms
+        "neuromodulering",
+
         "närsynthet", "ögonsjukdomar", "ortokeratologi",
         "näthinnan", "hornhinneförändringar", "synfältet",
         "myopin", "myopisk", "myoper", "icke-myoper", "icke-myoperna",
@@ -1110,8 +1113,13 @@ AUXILIARY_SDG_TERMS = {
         "high-speed railway", "railway bridge", "railway bridges",
         "structural optimisation", "structural optimization", "structural health monitoring",
 
+        "technological advancements",
 
         # Swedish Terms
+        "teknikmognad", "transportsystemet",
+
+        "kombitrafik", "kontaktledningen", "ellastbil", "terminaler",
+
 
         # Swedish university innovation policy
         "innovationspolicy", "innovationspolitik", "innovationsprojekt",
@@ -1585,7 +1593,15 @@ AUXILIARY_SDG_TERMS = {
         "informality", "informal settlements", "slum upgrading", "multisectoral upgrading",
         "urban upgrading",
 
+        "regional planning", 
+
+        "car-sharing", "ridesharing", "modal shift",
+
         # Swedish Terms
+        "bildelning", "samåkning", 
+
+        "regionala planeringen", "stadsbyggande", "stadsrummet", "trafikplanering",
+
         "informella bosättningar", "stadsförnyelse",
         
         "stadsplanerare", "urbana områden",
@@ -1845,6 +1861,9 @@ AUXILIARY_SDG_TERMS = {
         "material and energy flow analysis", 
 
         # Swedish Terms
+        "hållbar konsumtion", "hållbar produktion", "konsumtionsmönster", "hållbara konsumtionsmönster",
+        "värderingsskiften",
+
         "cirkulär ekonomi", "material- och energiflödesanalys", "avfallshantering",
         
         "matsvinn", "livsmedelsresurs",
