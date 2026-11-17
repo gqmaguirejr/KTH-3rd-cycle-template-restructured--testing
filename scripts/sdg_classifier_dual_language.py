@@ -452,7 +452,13 @@ AUXILIARY_SDG_TERMS = {
         "digital assessment", "digital assessment practices", "assessment practice",
         "student-centred approach", "student-centered approach", "pedagogical development",
 
+        # African higher education & university capacity
+        "african universities", "university",
+        
+
         # Swedish Terms
+        "afrikanska universitet", "universitet",
+        
         "digital bedömning", "digitala bedömningspraktiker", "bedömningspraktik",
         "bedömningspraktiker", "digitala hjälpmedel", "tekniska högskolor",
         "tekniskt lärosäte", "utbildningsutveckling", "studentcentrerat förhållningssätt",
@@ -498,7 +504,18 @@ AUXILIARY_SDG_TERMS = {
         "female leadership", "women in leadership", "women in stem",
         "female representation", "glass ceiling",
 
+        # Swedish gender-based violence, sexual offenses & women's safety/mobility
+        "gender-related violence", "gender-related crime", "women's mobility", "young girls",
+
+        # Honor-based violence
+        "honor-based violence", "honour-based violence",
+
         # Swedish Terms
+        "hedersrelaterat våld",
+
+        "genusrelaterat våld", "genusrelaterade brott", "sexualbrott", "kvinnors rörlighet",
+        "unga flickor",
+
         "kvinnligt ledarskap", "kvinnlig representation", "glastak",
 
         "obetalt hemarbete", "föräldraledighet",
@@ -654,7 +671,17 @@ AUXILIARY_SDG_TERMS = {
 
         "liquid hydrogen",
 
+        # Hyphenated energy-efficiency compounds
+        "energy-efficient", "energy-efficient lighting", "led lighting",
+
+        "biofuel", "biofuels", "renewable fuels",
+
         # Swedish Terms
+        # Swedish biofuels & renewable fuels
+        "biobränsle", "biobränslen", "biobränsleavdrag", "förnybara bränslen",
+
+        "energieffektiv belysning",
+        
         "hållbar flygfotogen", "flygfotogen", "flytande väte",
 
         # Target 7.3: Energy Conservation / Saving
@@ -761,8 +788,22 @@ AUXILIARY_SDG_TERMS = {
         "manual labor", "manual labour", "boost productivity", "improving efficiency",
         "workplace productivity", "harsh working conditions",
 
+        # Swedish labor crime, informal work, collective bargaining & productivity
+        "human trafficking", "undeclared work", "informal employment", "collective bargaining",
+        "labor rights", "labour rights", "workplace crime", "labour exploitation", "labor exploitation",
+
+        # Sustainable finance & private-sector investment
+        "private sector finance", "sustainable finance",
 
         # Swedish Terms
+        "hållbar finansiering",
+        
+        "fackföreningar", "arbetsgivar-organisationer", "arbetsgivarorganisationer",
+
+        "arbetslivskriminalitet", "människohandel", "svartarbete", "kollektivavtal",
+        "arbetsmarknadens parter", "löneutveckling", "produktivitet", "byggbranschen",
+        "osund konkurrens",
+
         "besöksnäringen",
 
         "manuellt arbete", "öka produktiviteten", "ökar produktiviteten",
@@ -1050,8 +1091,46 @@ AUXILIARY_SDG_TERMS = {
 
         "rolling stock", "railway procurement",
 
+        "dam safety", "hydraulic structure", "hydraulic structures", "spillway", "spillways", "cavitation"
+        "shotcrete", "rock support",
+
+        # Structural engineering, precast concrete & non-destructive testing
+        "precast concrete", "non-destructive testing", "semi-destructive testing", "full-scale testing",
+        "structural capacity", "structural survey", "technical standards", "eurocodes",
+
+        # Digital transformation & PropTech
+        "digital transformation", "digitalization", "proptech", "smart buildings",
+
+        "hollow core slabs", "sandwich panels",
+
+        # Concrete dams, structural reliability & design codes
+        "concrete dam", "concrete dams", "model code", "structural reliability", "partial safety factor",
+
+        # High-speed rail, bridge engineering & structural optimization
+        "high-speed railway", "railway bridge", "railway bridges",
+        "structural optimisation", "structural optimization", "structural health monitoring",
+
 
         # Swedish Terms
+
+        # Swedish university innovation policy
+        "innovationspolicy", "innovationspolitik", "innovationsprojekt",
+
+        "höghastighetsjärnväg", "strukturoptimering", "samverkansbroar", "brokonstruktionens",
+        
+        "adaptiv styrning", "modellprediktiv styrning", "byggnadens styrsystem"
+
+        "betongdammar", "betongdammars", "stabilitetsberäkning", "partialkoefficient",
+
+        "digital transformation", "digitalisering", "affärsmodellsinnovation",
+        
+        "prefabricerad betong", "oförstörande provning", "fullskaleprovning", "bärförmåga",
+        "tekniska standarder", "eurokoder",
+
+        "bergförstärkning",
+        
+        "dammsäkerhet", "hydraulisk struktur", "utskov", "kavitation"
+        
         "nattåg", "nattågen", "sovvagn", "sovvagnar", "liggvagn", "liggvagnar",
         "personvagnar", "lok och vagnar", "rullande materiel",
 
@@ -1273,8 +1352,18 @@ AUXILIARY_SDG_TERMS = {
         # Inclusion of children/youth
         "children's rights", "child rights"
 
+        # Indigenous rights & social exclusion/inclusion
+        "indigenous", "exclusion and inclusion", "dispossessed",
 
+        # Segregation, social isolation & equality
+        "segregation", "social isolation", "gated communities",
+
+        
         # Swedish Terms
+        "segregation", "social isolering", "jämlikhet", "grindsamhällen",
+        
+        "urfolk", "urfolkshistoriska", "exkludering",
+        
         "barns rättigheter", "barnrättsperspektiv",
 
         # Target 10.2: Inclusion of Persons with Disabilities
@@ -1462,17 +1551,67 @@ AUXILIARY_SDG_TERMS = {
         "mobility hub", "mobility hubs", "intermodality", "intermodal", "winter cities", "winter city",
         "waiting time",
 
-        # Swedish urban & spatial planning
-        "urbana värmeöeffekter", "urbana värmemönster", "värmebelastning",
-        "urban morfologi", "trädskikt",
+        # Safe pedestrian environments & urban light pollution
+        "light pollution", "outdoor lighting", "street lighting", "pedestrian safety",
+
 
         "physical planning", "detailed development plan", "detailed development plans",
         "places for play", "playgrounds",
         
         "night trains", "sleeper train", "sleeper trains"
 
+        # Smart buildings & real estate sector
+        "smart buildings", "smart building", "real estate", "commercial real estate",
+
+        "donor buildings",
+
+        # Target 11.4: Cultural & built heritage conservation
+        "cultural heritage", "built heritage", "architectural conservation",
+        "historic preservation", "history of conservation", "historic buildings",
+        "architectural heritage",
+
+        # Built-environment / timber-construction terms, if you want architectural building-element studies to register a trace under Target 11.c
+        "timber construction", "architectural structure", "building element", "building elements",
+
+        # Swedish shared-mobility & car-dependency terms
+        "car dependency", "passenger transport",
+
+        # Swedish public-space safety, housing shortage & rapid urban growth
+        "public spaces", "housing shortage", "rapid population growth", "municipal services",
+
+        "urban planners", "waste management",
+
+        # Informal settlements & urban upgrading
+        "informality", "informal settlements", "slum upgrading", "multisectoral upgrading",
+        "urban upgrading",
 
         # Swedish Terms
+        "informella bosättningar", "stadsförnyelse",
+        
+        "stadsplanerare", "urbana områden",
+        
+        "arkitekturhistorisk", "arkitekturhistoriska", "konsekvensanalys", "kulturmiljöanalys",
+
+        "offentliga rum", "offentliga rummet", "brist på bostäder", "bostadsförsörjning",
+        "befolkningstillväxt", "kommunalservice", "otrygghet"
+
+        "privatbilism", "delade mobilitetstjänster", "hållbara transporter",
+
+        "byggnadselement", "träkonstruktion",
+        
+        "kulturfastighet", "kulturfastighetsutredningen",
+
+        "kulturarv", "kulturhistorisk", "kulturhistoriska", "kulturmiljö", "byggnadsvård",
+        "restaureringshistoria", "restaureringsideologi", "arkitekturhistoria",
+        
+        "smarta byggnader", "fastighetssektorn", "fastighetsbolag",
+        
+        # Swedish urban & spatial planning
+        "ljusföroreningar", "utomhusbelysning", "gatubelysning", "fotgängarsäkerhet",
+
+        "urbana värmeöeffekter", "urbana värmemönster", "värmebelastning",
+        "urban morfologi", "trädskikt",
+
         "nattåg", "nattågen", "nattåget", "sovvagn", "sovvagnar", "sovvagnarna",
         "liggvagn", "liggvagnar", "personvagnar",
 
@@ -1684,7 +1823,40 @@ AUXILIARY_SDG_TERMS = {
         # Radioactive Waste Minimization & Radiological Clearance (Target 12.4)
         "final repository", "radiological control",
 
+        # Deconstruction, salvage & reuse
+        "reusability", "refurbishment", "salvaged elements",
+        "designed for disassembly", "design for disassembly", "deconstruction",
+        "reused elements", "compressive strength",
+
+        "service-life",
+
+        "material loss", "minimise material loss", "minimize material loss", "timber construction", "mass customisation", "mass customization",
+
+        # Sharing economy & sustainable business models
+        "sustainable business model", "sustainable business models", "sharing economy",
+        "transport-efficient",
+        
+        # Structural material minimization
+        "material efficiency", "mass minimisation", "mass minimization",
+
+        # Post-harvest food loss & food preservation
+        "post-harvest spoilage", "food loss", "food spoilage",
+
+        "material and energy flow analysis", 
+
         # Swedish Terms
+        "cirkulär ekonomi", "material- och energiflödesanalys", "avfallshantering",
+        
+        "matsvinn", "livsmedelsresurs",
+        
+        "materialeffektivitet", "minimera massan",
+        
+        "hållbara affärsmodeller", "delningsekonomi", "transporteffektivt",
+
+        "materialspill", "träbyggande", "massanpassning",
+        
+        "återanvändbarhet", "återbruk", "demontering", "demonterbarhet",
+
         "slutförvaring", "friklassning",
 
         "gröna lösningsmedel", "biopolymer", "biologisk nedbrytbarhet",
@@ -1819,7 +1991,16 @@ AUXILIARY_SDG_TERMS = {
         
         "planetary boundaries", "planetary limits",
 
+        "emissions trading", "carbon tax", "climate declaration",
+
+        "climate goals", "climate finance", "sustainability regulation",
+
         # Swedish Terms
+        "klimatfinansiering", "hållbarhetsreglering",
+
+        # Swedish climate policy & emissions trading
+        "globala uppvärmningen", "handel med utsläppsrätter", "koldioxidskatt",
+        
         "urban heat island", "urbana värmeöeffekter",
 
         "planetens gränser",
@@ -1891,7 +2072,16 @@ AUXILIARY_SDG_TERMS = {
         # Marine Antifouling, Biofouling & Non-Toxic Marine Coatings (Target 14.1)
         "marine antifouling", "antifouling", "biofouling", "marine corrosion",
 
+        # Marine biomass & seaweed aquacultur
+        "seaweed", "macroalgae", "kelp", "aquaculture",
+
+        "seafood", "blue food", "aquaculture",
+
         # Swedish Terms
+        "sjömat", "blå mat", "algodling",
+
+        "tång", "brunalger", "makroalger", "vattenbruk",
+
         "marina resurser", "marina ekosystemet", "blå ekonomin", "plastföroreningar",
         "marin antifouling", "marin korrosion",
 
@@ -1914,7 +2104,14 @@ AUXILIARY_SDG_TERMS = {
         "sustainable forestry", "forest machinery", "site preparation",
         "plant regeneration",
 
+        # Ecological light pollution & dark-sky conservation
+        "light pollution", "artificial light at night", "dark sky", "dark skies", "harm to wildlife", "wildlife protection",
+
+
+
         # Swedish Terms
+        "ljusföroreningar", "ljusförorening", "artificiellt ljus", "mörkerEkologi", "djurliv",
+
         "hållbart skogsbruk", "skogsmaskiner", "skogsmaskin",
         "markberedning", "skogsföryngring", "plantering",
 
@@ -1950,8 +2147,33 @@ AUXILIARY_SDG_TERMS = {
         "convention on the rights of the child", "children's rights", "child rights",
         "best interests of the child", "public administration", "legislation", "jurisprudential"
 
+        # Cartels, tax evasion, trafficking & public procurement integrity
+        "human trafficking", "cartel", "cartels", "bid rigging", "tax evasion", "public procurement",
+
+        # Swedish crime, organized crime, fear of crime & procurement vetting
+        "fear of crime", "organized crime", "organised crime", "sexual offenses", "sexual offences",
+        "background checks",
+
+        # Indigenous land governance, decolonization & reconciliation
+        "decolonization", "reconciliation", "settler colonialism", "indigenous lands",
+        "spatial governance",
+
+        # Rule of law & police accountability
+        "police brutality", "police violence",
 
         # Swedish Terms
+        "polisvåld",
+
+        "dekolonisering", "försoning", "bosättarkolonialism", "samiska marker", "rumslig styrning",
+
+        "svart ekonomi", "kriminella ekonomin",
+
+        "brott", "brottslighet", "rädsla för brott", "organiserad brottslighet", "sexualbrott",
+        "bakgrundskontroller", "illegala aktiviteter", "illegal marknad",
+        
+        "människohandel", "kartellbildning", "skatteundandragande", "arbetslivskriminalitet",
+        "offentlig upphandling", "osund konkurrens",
+
         "barnkonventionen", "barns rättigheter", "barnrättsperspektiv", "barnets bästa",
         "offentlig verksamhet", "lagstiftning", "lagstiftaren", "svensk rätt", "svensk lag",
         "rättsvetenskaplig", "rättstillämpare",
@@ -1964,7 +2186,9 @@ AUXILIARY_SDG_TERMS = {
         "hegemonisk", "hegemoniska", "mothegemoniska",
         "institutionell", "institutionella",
         "lokal kapacitet", "offentlig förvaltning", "policyöversättning",
-        "maktrelationer", "styrning", "avpolitisering", "policymobilitet", "planeringspraktik",
+        "maktrelationer", "avpolitisering", "policymobilitet", "planeringspraktik",
+
+        "samhällsstyrning", "offentlig styrning", "samordnad styrning", "politisk styrning",
 
         "öppen vetenskap", "transparens i styrning", "mediebevakning",
         "fred", "globalt mål 16 - fredliga och inkluderande samhällen", "institution", "rättvisa",
