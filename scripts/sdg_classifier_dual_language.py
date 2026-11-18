@@ -62,7 +62,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         # Clinical & Diagnostics
         "ECG", "ECGI", "EMG", "MRI", "CT", "PET-CT", "PET/CT",
         # Therapeutics, Biomaterials & Genetics
-        "LNP", "mRNA", "2PP", "RUMS", "DNA", "RNA", "PZT", "PZT-5H", "ASR",
+        "LNP", "mRNA", "2PP", "RUMS", "DNA", "RNA", "PZT", "PZT-5H",
         # Public Health & Protection
         "GBV",
         "NVH", "S&R",
@@ -96,7 +96,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "COP", "EPC",
 
-        "LFR", "SMR", "SMRs", "LBE", "Gen-IV", "GenIV", "AFA", "AFM",
+        "LFR", "SMR", "SMRs", "LBE", "Gen-IV", "GenIV", "AFA",
 
         "SB", "SBs", "PIPS",
 
@@ -147,7 +147,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "GIS",
 
-        "BV", "AD", # BV (Biowaste Valorization) and AD (Anaerobic Digestion)
+        "BV", # BV (Biowaste Valorization)
 
         "SCV", "SCM", "RFID",
 
@@ -159,7 +159,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
 
         "CNOSSOS-EU", "CNOSSOS",
 
-        "LME", "LBE", "SSRT", "AFA", "AFM",
+        "LME", "LBE", "SSRT", "AFA",
 
         "NVH", "S&R",
 
@@ -209,11 +209,13 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         # Material Characterization
         "FTIR", "TGA",
 
-        "BV", "AD", # BV (Biowaste Valorization) and AD (Anaerobic Digestion)
+        "BV", # BV (Biowaste Valorization)
 
         "SCV", "SCM", "DPP",  # Digital Product Passport
 
         "UGM", "UGMs", "OGM",
+
+        "FTIR", "AFM-IR", "nano-FTIR",
     ],
     13: [
         # Climate Metrics & Policy
@@ -384,8 +386,23 @@ AUXILIARY_SDG_TERMS = {
 
         "gene therapy", "gene therapies", "genetic diseases",
 
+        "injury prevention", "home care", "homecare",
+
+        "personalized medicine", "drug discovery",
+
+        "Alzheimer's disease",
 
         # Swedish Terms
+         "Alzheimers sjukdom", "hjärn-mrt", "hjärntumör",
+        
+        "personlig medicin", "läkemedelsutveckling",
+        
+        "traumatisk hjärnskada", "traumatiska hjärnskador", "hjärnskada", "hjärnskador",
+        
+        "hjälpmedel", "skadeprevention",
+
+        "hemtjänst", "hemtjänsten", "hälsoriskfaktorer", "personlig omvårdnad",
+
         "genterapi", "genterapier", "genetiska sjukdomar",
         
         "prebiotika", "prebiotiska", "kostfiber", "kostfibrer",
@@ -618,10 +635,11 @@ AUXILIARY_SDG_TERMS = {
         "vattenpåverkan", "vattenanvändning", "vattenförbrukning",
         "grundvatten", "gråvatten", "dagvattenhantering", "avloppsrening",
         "vattenförsörjning", "diväteoxid", "globalt mål 6 - rent vatten och sanitet",
-        "rent vatten och sanitet", "sanitet", "vatten",
+        "rent vatten och sanitet", "sanitet",
         "dricksvatten", "sanitet och hygien", "vattenkvalitet",
         "vattenförorening", "avloppsvatten", "vatteneffektivitet","integrerad vattenresursförvaltning",
-        "vattenskydd", "avsaltning"
+        "vattenskydd", "avsaltning",
+       
     ],
     7: [ # SDG 7 (Affordable & Clean Energy)
         # Clean Energy, Grid & Heat Recovery
@@ -715,7 +733,19 @@ AUXILIARY_SDG_TERMS = {
 
         "nuclear energy", "light water reactor", "light water reactors",
 
+        "drop-in fuels", "HVO", "hydrogenated vegetable oil", 
+
+        "water-gas shift", "water–gas shift", "water gas shift",
+
         # Swedish Terms
+        "vatten-gas-skift", "vatten-gas-skiftreaktion", "vatten-gas-skiftreaktioner", "vattengasskift",
+        
+        "biomassaförgasning", "smältkarbonatbränslecell", "bränslecell",
+        "energilagring", "energisektor", "energisäkerhet",
+
+        "elbilsladdning", "smart laddning", "laststyrning",
+
+        "drop-in-bränslen", "hydrerad vegetabilisk olja",
         "kärnenergi", "lättvattenreaktor", "lättvattenreaktorer",
         
         "landbaserad vindkraft", "vindkraftsplanering", "vindkraftspotential", "utjämnad energikostnad",
@@ -844,7 +874,17 @@ AUXILIARY_SDG_TERMS = {
         # Sustainable finance & private-sector investment
         "private sector finance", "sustainable finance",
 
+        "work-related", "fall accidents",
+
         # Swedish Terms
+        "arbetsrelaterade", "fallolyckor",
+
+        "ergonomics", "ergonomi", "work environment",
+
+
+        "arbetsförhållanden", "goda arbetsförhållanden", "arbetsbelastning",
+        "arbetsmiljö", "sjukskrivningar", "personalomsättning",
+
         "hållbar finansiering",
         
         "fackföreningar", "arbetsgivar-organisationer", "arbetsgivarorganisationer",
@@ -1179,7 +1219,17 @@ AUXILIARY_SDG_TERMS = {
 
         "biocatalysis", "biocatalytic", "enzyme catalysis", "scaled-up",
         
+        "finite element",
+
+        "atomic force microscopy",
+
         # Swedish Terms
+        "numerisk modellering",
+        
+        "atomkraftsmikroskopi",
+        
+        "finita element", "finit elementanalys",
+        
         "biokatalys", "biokatalytisk", "enzymkatalys", "pappers- och massaindustrin",
 
         "bioteknik", "automatiserade system", "produktionssystem",
@@ -1960,7 +2010,13 @@ AUXILIARY_SDG_TERMS = {
 
         "valorization", "ecotoxicity", "biobased plastics",
 
+        "precast concrete reuse", "concrete reuse",
+
         # Swedish Terms
+        "biopolymerer", "lignocellulose", "lignocellulosa",
+        
+        "återanvändande", "återtillverkning",
+
         "ekotoxicitet", "biobaserade plaster",
         
         "matförluster", "sidoströmmar", "valorisation", "valorisering",
@@ -2526,7 +2582,7 @@ CUSTOM_TERM_REGEX = {
     (3, "hornhinnan"): r"(?<!\w)hornhinnan(?!\w)",
     (3, "synfältet"): r"(?<!\w)synfältet(?!\w)",
     (3, "ögonsjukdomar"): r"(?<!\w)ögonsjukdomar(?!\w)",
-    (6, "vatten"): r"(?<!\w)vatten(?!\w)",
+    (6, "vatten"): r"(?<![-\w])vatten(?!(?:-[a-zåäöA-ZÅÄÖ0-9]|\w))",
     (9, "georisk"): r"(?<!\w)georisk(?!\w)",
     (9, "körsimulator"): r"(?<!\w)körsimulator(?!\w)",
     (10, "tillgänglighet"): ( # exclude "molekylär tillgänglighet" and "molekylära tillgängligheten" and others from SDG 10
