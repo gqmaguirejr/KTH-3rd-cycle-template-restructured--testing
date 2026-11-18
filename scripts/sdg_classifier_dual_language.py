@@ -60,7 +60,7 @@ GENERIC_SDG_META_TERMS = {
 ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
     3: [
         # Clinical & Diagnostics
-        "ECG", "ECGI", "EMG", "MRI", "PET", "CT",
+        "ECG", "ECGI", "EMG", "MRI", "CT", "PET-CT", "PET/CT",
         # Therapeutics, Biomaterials & Genetics
         "LNP", "mRNA", "2PP", "RUMS", "DNA", "RNA", "PZT", "PZT-5H", "ASR",
         # Public Health & Protection
@@ -103,8 +103,11 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "RVACS", "USBO",
 
         "PWR", "PWRs", "BWR", "BWRs",
+        "LWR", "LWRs",
 
         "SAF", # Sustainable Aviation Fuel
+
+
 
     ],
     9: [
@@ -369,7 +372,34 @@ AUXILIARY_SDG_TERMS = {
 
         "neuromodulation", "medical device",
 
+        "biomarkers", "interstitial fluid",
+
+        "oncology", "lymphoma", "breast cancer", "radiological",
+
+        "mobile health", "self-management",
+
+        "immunotherapy", "multiple myeloma",
+        
+        "prebiotic", "dietary fibre",
+
+        "gene therapy", "gene therapies", "genetic diseases",
+
+
         # Swedish Terms
+        "genterapi", "genterapier", "genetiska sjukdomar",
+        
+        "prebiotika", "prebiotiska", "kostfiber", "kostfibrer",
+        
+        "immunoterapi", "multipelt myelom",
+
+        "protes", "protesfot", "underbensprotes", "protesbärare", "kraftplattor", "hälisättning",
+
+        "hjärt-kärlsjukdomar", "kardiovaskulära sjukdomar", "egenvård", "mobilapplikationer",
+
+        "onkologi", "lymfom", "bröstcancer", "radiologiska",
+
+        "biomarkörer", "interstitiell vätska",
+
         "neuromodulering",
 
         "närsynthet", "ögonsjukdomar", "ortokeratologi",
@@ -456,11 +486,11 @@ AUXILIARY_SDG_TERMS = {
         "student-centred approach", "student-centered approach", "pedagogical development",
 
         # African higher education & university capacity
-        "african universities", "university",
+        "african universities", # "university",
         
 
         # Swedish Terms
-        "afrikanska universitet", "universitet",
+        "afrikanska universitet", # "universitet",
         
         "digital bedömning", "digitala bedömningspraktiker", "bedömningspraktik",
         "bedömningspraktiker", "digitala hjälpmedel", "tekniska högskolor",
@@ -679,7 +709,23 @@ AUXILIARY_SDG_TERMS = {
 
         "biofuel", "biofuels", "renewable fuels",
 
+        "electrocatalysis", "electrocatalysts", "energy conversion",
+        
+        "wind farm", "wind farms",
+
+        "nuclear energy", "light water reactor", "light water reactors",
+
         # Swedish Terms
+        "kärnenergi", "lättvattenreaktor", "lättvattenreaktorer",
+        
+        "landbaserad vindkraft", "vindkraftsplanering", "vindkraftspotential", "utjämnad energikostnad",
+        
+        "elektrokatalys", "elektrokatalysatorer", "vattenspjälkning", "energiomvandling",
+
+        "spillvärmeåtervinning",
+        
+        "bränsleceller", "vätgas",
+
         # Swedish biofuels & renewable fuels
         "biobränsle", "biobränslen", "biobränsleavdrag", "förnybara bränslen",
 
@@ -1115,10 +1161,46 @@ AUXILIARY_SDG_TERMS = {
 
         "technological advancements",
 
+        "bioprocessing", "continuous manufacturing", 
+
+        "3d-printed", "microfabrication",
+
+        "reaction efficiency", "industrially applicable",
+
+        "metal–organic frameworks", "metal-organic frameworks", "covalent organic frameworks",
+
+        "graph database",
+
+        "corrosion", "material degradation",
+
+        "kraft pulping", "kraft pulp", "kraft mills", "unit operation",
+
+        "biotechnology", "automated system", "production system",
+
+        "biocatalysis", "biocatalytic", "enzyme catalysis", "scaled-up",
+        
         # Swedish Terms
+        "biokatalys", "biokatalytisk", "enzymkatalys", "pappers- och massaindustrin",
+
+        "bioteknik", "automatiserade system", "produktionssystem",
+        
+        "sulfatmassaframställning", "kraftmassafabriker", "enhetsoperation",
+        
+        "korrosion", "materialdegradering",
+        
+        "grafdatabas", "datainfrastruktur",
+        
+        "metallorganiska ramverk", "kovalenta organiska ramverk",
+        
+        "reaktionseffektivitet", "industriellt tillämpbar",
+
+        "3d-printning", "3d-printade", 
+
+        "bioprocessering", "kontinuerlig produktion",
+
         "teknikmognad", "transportsystemet",
 
-        "kombitrafik", "kontaktledningen", "ellastbil", "terminaler",
+        "kombitrafik", "kontaktledningen", "ellastbil", # "terminaler",
 
 
         # Swedish university innovation policy
@@ -1598,6 +1680,10 @@ AUXILIARY_SDG_TERMS = {
         "car-sharing", "ridesharing", "modal shift",
 
         # Swedish Terms
+        "rumslig planering", "inkluderande planeringsprocesser",
+        # Swedish Architectural Conservation & Cultural Heritage
+        "konserveringsarbeten", "konservering", "byggnadsvård", "kulturmiljövård", "musealt",
+
         "bildelning", "samåkning", 
 
         "regionala planeringen", "stadsbyggande", "stadsrummet", "trafikplanering",
@@ -1860,7 +1946,37 @@ AUXILIARY_SDG_TERMS = {
 
         "material and energy flow analysis", 
 
+        "biomass valorization", "bio-based materials",
+
+        "cellulose-based materials", "cellulose fibers", "renewable sources", "fossil-based products",
+
+        "cellulose nanocrystals", "nanocellulose", "lignocellulosic biomass", "biobased polymer", "bio-based polymer", "surfactant-free",
+
+        "polyethylene terephthalate", "food contact materials", "non-intentionally added substances",
+
+        "chemical consumption", "process closure",
+        
+        "electrosynthesis", "organic electrosynthesis",
+
+        "valorization", "ecotoxicity", "biobased plastics",
+
         # Swedish Terms
+        "ekotoxicitet", "biobaserade plaster",
+        
+        "matförluster", "sidoströmmar", "valorisation", "valorisering",
+        
+        "elektrosyntes", "organisk elektrosyntes",
+
+        "kemikalieförbrukning", "lutåtervinning",
+        
+        "återvunnen plast", "polyetentereftalat",
+        
+        "cellulosa-nanokristaller", "nanocellulosa", "lignocellulosisk biomassa", "biobaserade polymerkompositer", "tensidfria",
+
+        "cellulosabaserade material", "cellulosafibrer", "förnybara råvaror", "fossilbaserade produkter",
+        
+        "biobaserade material", "jordbruksgrödor",
+        
         "hållbar konsumtion", "hållbar produktion", "konsumtionsmönster", "hållbara konsumtionsmönster",
         "värderingsskiften",
 
@@ -2014,7 +2130,13 @@ AUXILIARY_SDG_TERMS = {
 
         "climate goals", "climate finance", "sustainability regulation",
 
+        "zero-emission technology",
+
         # Swedish Terms
+        "co2-avskiljning", "koldioxidinfångning",
+        
+        "nollemissionsteknik",
+
         "klimatfinansiering", "hållbarhetsreglering",
 
         # Swedish climate policy & emissions trading
@@ -2181,6 +2303,8 @@ AUXILIARY_SDG_TERMS = {
         "police brutality", "police violence",
 
         # Swedish Terms
+        "deltagande planering", "medborgardeltagande", "brukarmedverkan",
+
         "polisvåld",
 
         "dekolonisering", "försoning", "bosättarkolonialism", "samiska marker", "rumslig styrning",
@@ -2250,8 +2374,12 @@ AUXILIARY_SDG_TERMS = {
         "knowledge-to-action", "knowledge-to-action pathway", "multi-stakeholder partnership",
         "linking research, public authorities",
 
+        "cross-departmental collaboration",
+
 
         # Swedish Terms
+         "avdelningsöverskridande samarbete", "datadelning",
+        
         "samarbete mellan sverige och indien", "kunskap-till-handling",
         "kunskap-till-handling-process", "tvärsektoriell samverkan",
 
@@ -2401,6 +2529,12 @@ CUSTOM_TERM_REGEX = {
     (6, "vatten"): r"(?<!\w)vatten(?!\w)",
     (9, "georisk"): r"(?<!\w)georisk(?!\w)",
     (9, "körsimulator"): r"(?<!\w)körsimulator(?!\w)",
+    (10, "tillgänglighet"): ( # exclude "molekylär tillgänglighet" and "molekylära tillgängligheten" and others from SDG 10
+        r"(?<!molekylär\s)(?<!molekylära\s)"
+        r"(?<!spektral\s)(?<!spektrala\s)"
+        r"(?<!beräkningsmässig\s)(?<!beräkningsmässiga\s)"
+        r"(?<!\w)tillgänglighet"
+    ),
     (11, "georisk"): r"(?<!\w)georisk(?!\w)",
     (11, "cyclist"): r"(?<!\w)cyclist(?!\w)",
     (11, "cyklist"): r"(?<!\w)cyklist(?!\w)",
