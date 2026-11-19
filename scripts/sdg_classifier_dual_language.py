@@ -56,6 +56,17 @@ GENERIC_SDG_META_TERMS = {
     "hållbar utveckling", "globala målen", "agenda2030"
 }
 
+HYPHEN_TO_ASCII = str.maketrans({
+    "\u2010": "-",   # HYPHEN
+    "\u2011": "-",   # NON-BREAKING HYPHEN (e.g., tracheostomy‑dependent)
+    "\u2012": "-",   # FIGURE DASH
+    "\ufe63": "-",   # SMALL HYPHEN-MINUS
+    "\uff0d": "-",   # FULLWIDTH HYPHEN-MINUS
+    "\u00ad": "",    # SOFT HYPHEN
+    "\u2014": " ",   # EM DASH
+    "\u2015": " ",   # HORIZONTAL BAR
+})
+
 # Define dedicated case-sensitive acronyms
 ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
     3: [
@@ -392,8 +403,20 @@ AUXILIARY_SDG_TERMS = {
 
         "Alzheimer's disease",
 
+        "tracheostomy","intensive care", "adverse events",
+
+        "head injuries", "head impacts", "in vivo",
+
+        "menstruation", "menstrual",
+
         # Swedish Terms
-         "Alzheimers sjukdom", "hjärn-mrt", "hjärntumör",
+        "menstruationscykel", "menstruationscykler",
+
+        "trakeostomi", "intensivvård",
+
+        "psykisk ohälsa", "psykosocial ohälsa", "utmattningssyndrom", "sjukfrånvaro",
+
+        "Alzheimers sjukdom", "hjärn-mrt", "hjärntumör",
         
         "personlig medicin", "läkemedelsutveckling",
         
@@ -560,7 +583,11 @@ AUXILIARY_SDG_TERMS = {
         # Honor-based violence
         "honor-based violence", "honour-based violence",
 
+        "gender identity", "heteronormativity",
+
         # Swedish Terms
+        "könsidentitet", "genusteori",  "heteronormativitet",
+
         "hedersrelaterat våld",
 
         "genusrelaterat våld", "genusrelaterade brott", "sexualbrott", "kvinnors rörlighet",
@@ -876,7 +903,11 @@ AUXILIARY_SDG_TERMS = {
 
         "work-related", "fall accidents",
 
+        "psychosocial safety climate", "psychological safety", "employee voice"
+
         # Swedish Terms
+        "psykosocialt säkerhetsklimat",
+
         "arbetsrelaterade", "fallolyckor",
 
         "ergonomics", "ergonomi", "work environment",
@@ -1223,7 +1254,15 @@ AUXILIARY_SDG_TERMS = {
 
         "atomic force microscopy",
 
+        "human-robot collaboration", "human-robot interaction",
+    
+        "cybersecurity",
+
+        "wireless", "wireless waveforms", "wired or wireless", "communication systems", "modern communication systems"
+
         # Swedish Terms
+        "cybersäkerhet",
+
         "numerisk modellering",
         
         "atomkraftsmikroskopi",
@@ -1498,8 +1537,11 @@ AUXILIARY_SDG_TERMS = {
         # Segregation, social isolation & equality
         "segregation", "social isolation", "gated communities",
 
+        "transgender", "non-binary", "sexual and gender minorities",
         
         # Swedish Terms
+        "transpersoner", "mikroaggressioner",
+
         "segregation", "social isolering", "jämlikhet", "grindsamhällen",
         
         "urfolk", "urfolkshistoriska", "exkludering",
@@ -1729,11 +1771,21 @@ AUXILIARY_SDG_TERMS = {
 
         "car-sharing", "ridesharing", "modal shift",
 
+        "property management", "facility management",
+
         # Swedish Terms
+        "stadsbyggnadspraktik",
+        "stadsformsmodell", "stadsformsmodeller",
+        "planeringspraktik", "planeringspraktiken",
+        "stadsbyggnad", "stadsanalys", "rumslig analys", "planeringspraktik",
+
+        "samhällsplanering", "regional planering",
+
         "rumslig planering", "inkluderande planeringsprocesser",
         # Swedish Architectural Conservation & Cultural Heritage
         "konserveringsarbeten", "konservering", "byggnadsvård", "kulturmiljövård", "musealt",
-
+        "fysisk planering", "fysiska planeringsprocessen",
+        
         "bildelning", "samåkning", 
 
         "regionala planeringen", "stadsbyggande", "stadsrummet", "trafikplanering",
@@ -2012,7 +2064,15 @@ AUXILIARY_SDG_TERMS = {
 
         "precast concrete reuse", "concrete reuse",
 
+        "material optimisation", "material optimization", "reused precast concrete", "precast concrete reuse", "material efficiency",
+
+
         # Swedish Terms
+        "överkonsumtion", "överkonsumtionen",
+
+        "materialeffektivitet", "materialoptimering", "återanvända prefabricerade betongelement",
+        "återanvänd betong",
+        
         "biopolymerer", "lignocellulose", "lignocellulosa",
         
         "återanvändande", "återtillverkning",
@@ -2188,7 +2248,15 @@ AUXILIARY_SDG_TERMS = {
 
         "zero-emission technology",
 
+        "wildfire", "wildfires",
+
+        "traffic emissions",
+
         # Swedish Terms
+        "trafikutsläpp", "vägtrafikutsläpp",
+
+        "skogsbränder",
+
         "co2-avskiljning", "koldioxidinfångning",
         
         "nollemissionsteknik",
@@ -2305,8 +2373,14 @@ AUXILIARY_SDG_TERMS = {
         "light pollution", "artificial light at night", "dark sky", "dark skies", "harm to wildlife", "wildlife protection",
 
 
+        "wildfire", "wildfires",
+        "burn severity", "burn severities", "burned area", "burned areas"
+        "forest fire", "forest fires",
 
         # Swedish Terms
+        "bränt område", "brända områden",
+        "skogsbränder",
+        
         "ljusföroreningar", "ljusförorening", "artificiellt ljus", "mörkerEkologi", "djurliv",
 
         "hållbart skogsbruk", "skogsmaskiner", "skogsmaskin",
@@ -2499,6 +2573,13 @@ def clean_text_artifacts(text: str) -> str:
     # Strip HTML tags
     t = re.sub(r"<[^>]+>", " ", text)
 
+    # t = unicodedata.normalize("NFC", text)
+    t = t.translate(HYPHEN_TO_ASCII)
+    # En-dash between letters acts as compound hyphen (e.g., water–gas, Human–Technology–Organization);
+    # elsewhere (e.g., numeric ranges or parenthetical dashes) treat as separator space.
+    t = re.sub(r"(?<=[a-zA-ZåäöÅÄÖ])\u2013(?=[a-zA-ZåäöÅÄÖ])", "-", t)
+    t = t.replace("\u2013", " ")
+    
     # Strip TeX comments
     t = re.sub(r"(?<!\\)%.*?\n", "\n", t)
     t = t.replace(r"\%", "%")
@@ -2568,6 +2649,8 @@ SDG15_EXCLUDED_TERMS = {
 
 
 CUSTOM_TERM_REGEX = {
+    (1, "dependent children"): r"(?<!-)\bdependent children\b",
+    (2, "domestication"): r"\bdomestication\b(?!\s+of\s+technolog)",
     (3, "myopia"): r"(?<!\w)myopia(?!\w)",
     (3, "myopic"): r"(?<!\w)myopic(?!\w)",
     (3, "myopes"): r"(?<!\w)myopes(?!\w)",
@@ -2596,6 +2679,7 @@ CUSTOM_TERM_REGEX = {
     (11, "cyklist"): r"(?<!\w)cyklist(?!\w)",
     (11, "cyklister"): r"(?<!\w)cyklister(?!\w)",
     (15, "natura"): r"\bnatura(?!l)\w*\b",
+    (17, "samarbete"): r"\bsamarbete\b(?!\s+mellan\s+människa\s+och\s+robot)",
 }
 
 def build_dual_language_term_index() -> dict[int, list[str]]:
