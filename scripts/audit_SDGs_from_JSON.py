@@ -4,6 +4,7 @@ audit_SDGs_from_JSON.py
 
 Audit SDG assignment and classifier error frequencies across all unique
 divaID records in all-with-SDGs.json by invoking sdg_classifier_dual_language.py.
+It can even be applied to a single JSON file.
 """
 import ast
 import json
