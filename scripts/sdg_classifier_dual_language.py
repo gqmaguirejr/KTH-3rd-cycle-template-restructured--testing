@@ -240,7 +240,7 @@ ACRONYMS_SDG_TERMS: dict[int, list[str]] = {
         "EAF", "DRI", "H-DRI", "NG-DRI",
 
         # Fluid Dynamics & Acoustic Engineering (Target 9.5)
-        "RANS", "URANS", "LES", "SPL", "SWL", "BPF",
+        "RANS", "URANS", "LES", "SWL", "BPF",
 
         # Electric & Freight Transport (Target 9.1 & 11.2)
         "EV", "EVs", "BEV", "BEVs", "HDV", "HDVs", "CLD", "CLDs",
@@ -504,7 +504,15 @@ AUXILIARY_SDG_TERMS = {
 
         "menstruation", "menstrual",
 
+        "thyroidectomy",
+
+        "physical activity", "sedentary lifestyle", "sedentary lifestyles",
+
         # Swedish Terms
+        "fysisk aktivitet", "stillasittande",
+
+        "tyroidektomi",
+        
         "menstruationscykel", "menstruationscykler",
 
         "trakeostomi", "intensivvård",
@@ -622,9 +630,12 @@ AUXILIARY_SDG_TERMS = {
 
         # African higher education & university capacity
         "african universities", # "university",
-        
+
+        "reading comprehension",
 
         # Swedish Terms
+        "läsförståelse",
+
         "afrikanska universitet", # "universitet",
         
         "digital bedömning", "digitala bedömningspraktiker", "bedömningspraktik",
@@ -736,6 +747,8 @@ AUXILIARY_SDG_TERMS = {
         "dissolved pollutants",
 
         # Swedish Terms
+        "vattenförsörjning", "vattenförluster", "läcklokalisering",
+
         "dagvatten", "vägavrinning", "sedimentering", "reningssystem",
         "vattenprover",
 
@@ -860,6 +873,8 @@ AUXILIARY_SDG_TERMS = {
         "water-gas shift", "water–gas shift", "water gas shift",
 
         # Swedish Terms
+        "kärnfusion", "tokamak",
+
         "vatten-gas-skift", "vatten-gas-skiftreaktion", "vatten-gas-skiftreaktioner", "vattengasskift",
         
         "biomassaförgasning", "smältkarbonatbränslecell", "bränslecell",
@@ -1171,6 +1186,7 @@ AUXILIARY_SDG_TERMS = {
 
         # Open Science, Research Infrastructure & Open Source (Target 9.5)
         "open science", "open source", "open-source software",
+        "open-source",
 
         # Smart Supply Chains, Industrial IoT & Factory Logistics (Target 9.2 & 9.4)
         "supply chain visibility", "supply chain management", "extended supply chain",
@@ -1359,7 +1375,25 @@ AUXILIARY_SDG_TERMS = {
 
         "industrial heat",
 
+        "MIMO-system",
+
+        "network digital twin", "digital twin",
+
+        "blockchain", "smart contract", "large language model",
+
+        "beamforming",
+        "silicon micromachining",
+
+
         # Swedish Terms
+        "kiselmikromekanik", "strålformning",
+
+        "smarta kontrakt", "stora språkmodeller",
+        
+        "trådlösa", "federerad inlärning", "digital nätverkstvilling", "digital tvilling",
+
+        "MIMO-kommunikationsnätverk",
+
         "industrivärme", "processvärme",
 
         "elektrolysör", "elektrolysörer", "stålverk", "stålverket", "ljusbågsugn",
@@ -1876,7 +1910,13 @@ AUXILIARY_SDG_TERMS = {
 
         "property management", "facility management",
 
+        "carbon-neutral cities", "carbon neutral cities",
+
         # Swedish Terms
+        "klimatneutrala städer",
+
+        "bostadsarkitektur",
+
         "stadsbyggnadspraktik",
         "stadsformsmodell", "stadsformsmodeller",
         "planeringspraktik", "planeringspraktiken",
@@ -2357,8 +2397,11 @@ AUXILIARY_SDG_TERMS = {
 
         "green transition",
 
+        "carbon-neutral", "carbon neutral",
 
         # Swedish Terms
+        "klimatneutral",
+
         "grön omställning",
 
         "trafikutsläpp", "vägtrafikutsläpp",
