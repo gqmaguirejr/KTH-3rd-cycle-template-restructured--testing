@@ -13,6 +13,103 @@ import re
 import unicodedata
 from typing import Any
 
+global args
+
+# ligature. LaTeX commonly does it for ff, fi, fl, ffi, ffl, ...
+ligrature_table= {'\ufb00': 'ff', # 'ﬀ'
+                  '\ufb03': 'f‌f‌i', # 'ﬃ'
+                  '\ufb04': 'ffl', # 'ﬄ'
+                  '\ufb01': 'fi', # 'ﬁ'
+                  '\ufb02': 'fl', # 'ﬂ'
+                  '\ua732': 'AA', # 'Ꜳ'
+                  '\ua733': 'aa', # 'ꜳ'
+                  '\ua733': 'aa', # 'ꜳ'
+                  '\u00c6': 'AE', # 'Æ'
+                  '\u00e6': 'ae', # 'æ'
+                  '\uab31': 'aə', # 'ꬱ'
+                  '\ua734': 'AO', # 'Ꜵ'
+                  '\ua735': 'ao', # 'ꜵ'
+                  '\ua736': 'AU', # 'Ꜷ'
+                  '\ua737': 'au', # 'ꜷ'
+                  '\ua738': 'AV', # 'Ꜹ'
+                  '\ua739': 'av', # 'ꜹ'
+                  '\ua73a': 'AV', # 'Ꜻ'  - note the bar
+                  '\ua73b': 'av', # 'ꜻ'  - note the bar
+                  '\ua73c': 'AY', # 'Ꜽ'
+                  '\ua76a': 'ET', # 'Ꝫ'
+                  '\ua76b': 'et', # 'ꝫ'
+                  '\uab41': 'əø', # 'ꭁ'
+                  '\u01F6': 'Hv', # 'Ƕ'
+                  '\u0195': 'hu', # 'ƕ'
+                  '\u2114': 'lb', # '℔'
+                  '\u1efa': 'IL', # 'Ỻ'
+                  '\u0152': 'OE', # 'Œ'
+                  '\u0153': 'oe', # 'œ'
+                  '\ua74e': 'OO', # 'Ꝏ'
+                  '\ua74f': 'oo', # 'ꝏ'
+                  '\uab62': 'ɔe', # 'ꭢ'
+                  '\u1e9e': 'fs', # 'ẞ'
+                  '\u00df': 'fz', # 'ß'
+                  '\ufb06': 'st', # 'ﬆ'
+                  '\ufb05': 'ſt', # 'ﬅ'  -- long ST
+                  '\ua728': 'Tz', # 'Ꜩ'
+                  '\ua729': 'tz', # 'ꜩ'
+                  '\u1d6b': 'ue', # 'ᵫ'
+                  '\uab63': 'uo', # 'ꭣ'
+                  #'\u0057': 'UU', # 'W'
+                  #'\u0077': 'uu', # 'w'
+                  '\ua760': 'VY', # 'Ꝡ'
+                  '\ua761': 'vy', # 'ꝡ'
+                  # 
+                  '\u0238': 'db', # 'ȸ'
+                  '\u02a3': 'dz', # 'ʣ'
+                  '\u1b66': 'dʐ', # 'ꭦ'
+                  '\u02a5': 'dʑ', # 'ʥ'
+                  '\u02a4': 'dʒ', # 'ʤ'
+                  '\u02a9': 'fŋ', # 'ʩ'
+                  '\u02aa': 'ls', # 'ʪ'
+                  '\u02ab': 'lz', # 'ʫ'
+                  '\u026e': 'lʒ', # 'ɮ'
+                  '\u0239': 'qp', # 'ȹ'
+                  '\u02a8': 'tɕ', # 'ʨ'
+                  '\u02a6': 'ts', # 'ʦ'
+                  '\uab67': 'tʂ', # 'ꭧ'
+                  '\u02a7': 'tʃ', # 'ʧ'
+                  '\uab50': 'ui', # 'ꭐ'
+                  '\uab51': 'ui', # 'ꭑ' -- turned ui
+                  '\u026f': 'uu', # 'ɯ'
+                  # digraphs with single code points
+                  '\u01f1': 'DZ', # 'Ǳ'
+                  '\u01f2': 'Dz', # 'ǲ'
+                  '\u01f3': 'dz', # 'ǳ'
+                  '\u01c4': 'DŽ', # 'Ǆ'
+                  '\u01c5': 'Dž', # 'ǅ'
+                  '\u01c6': 'dž', # 'ǆ'
+                  '\u0132': 'IJ', # 'Ĳ'
+                  '\u0133': 'ij', # 'ĳ'
+                  '\u01c7': 'LJ', # 'Ǉ'
+                  '\u01c8': 'Lj', # 'ǈ'
+                  '\u01c9': 'lj', # 'ǉ'
+                  '\u01ca': 'NJ', # 'Ǌ'
+                  '\u01cb': 'Nj', # 'ǋ'
+                  '\u01cc': 'nj', # 'ǌ'
+                  '\u1d7a': 'th', # 'ᵺ'
+                  }
+
+def replace_ligature(s: str) -> str:
+    global args
+    # check for ligratures and replace them with separate characters
+    if not s:
+        return s
+    
+    for l in ligrature_table:
+        if s.find(l) >= 0:
+            if args.verbose:
+                print("found ligrature {0} replacing with {1}".format(l, ligrature_table[l]))  
+            s=s.replace(l, ligrature_table[l])
+    #
+    return s
+
 
 def clean_diva_text(text: str) -> str:
     # 1. Canonical composition
@@ -26,6 +123,9 @@ def clean_diva_text(text: str) -> str:
 
     # 4. Collapse multiple spaces/tabs while preserving intentional newlines
     text = re.sub(r"[ \t]+", " ", text)
+
+    # 5. Replace ligatures
+    text = replace_ligature(text)
 
     return text.strip()
 
@@ -74,6 +174,8 @@ def normalize_diva_record(data: Any) -> Any:
 
 
 def main():
+    global args
+
     parser = argparse.ArgumentParser(
         description="Normailize Unicode in JSON dict"
     )
