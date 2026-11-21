@@ -16,7 +16,7 @@ from typing import Any
 global args
 
 # ligature. LaTeX commonly does it for ff, fi, fl, ffi, ffl, ...
-ligrature_table= {'\ufb00': 'ff', # 'ﬀ'
+ligature_table= {'\ufb00': 'ff', # 'ﬀ'
                   '\ufb03': 'f‌f‌i', # 'ﬃ'
                   '\ufb04': 'ffl', # 'ﬄ'
                   '\ufb01': 'fi', # 'ﬁ'
@@ -98,15 +98,15 @@ ligrature_table= {'\ufb00': 'ff', # 'ﬀ'
 
 def replace_ligature(s: str) -> str:
     global args
-    # check for ligratures and replace them with separate characters
+    # check for ligatures and replace them with separate characters
     if not s:
         return s
     
-    for l in ligrature_table:
+    for l in ligature_table:
         if s.find(l) >= 0:
             if args.verbose:
-                print("found ligrature {0} replacing with {1}".format(l, ligrature_table[l]))  
-            s=s.replace(l, ligrature_table[l])
+                print("found ligature {0} replacing with {1}".format(l, ligature_table[l]))  
+            s=s.replace(l, ligature_table[l])
     #
     return s
 
